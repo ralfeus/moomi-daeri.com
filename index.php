@@ -1,6 +1,4 @@
 <?php
-print("Hi there");exit();
-
 // Version
 define('VERSION', '1.5.1.3');
 /// Constants
