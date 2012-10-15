@@ -416,11 +416,27 @@ class ModelSaleCustomer extends Model {
 		return $query->row['total'];
 	}
 			
-	public function addTransaction($customer_id, $description = '', $amount = '', $order_id = 0) {
-		$customer_info = $this->getCustomer($customer_id);
+	public function addTransaction($customerId, $description = '', $amount = '', $order_id = 0) {
+		$customer_info = $this->getCustomer($customerId);
 		
-		if ($customer_info) { 
-			$this->db->query("INSERT INTO " . DB_PREFIX . "customer_transaction SET customer_id = '" . (int)$customer_id . "', order_id = '" . (int)$order_id . "', description = '" . $this->db->escape($description) . "', amount = '" . (float)$amount . "', date_added = NOW()");
+		if ($customer_info) {
+            /// Add transaction
+			$this->db->query("
+			    INSERT INTO " . DB_PREFIX . "customer_transaction
+			    SET
+			        customer_id = '" . (int)$customerId . "',
+			        order_id = '" . (int)$order_id . "',
+			        description = '" . $this->db->escape($description) . "',
+			        amount = '" . (float)$amount . "',
+			        date_added = NOW()"
+            );
+            /// Update customer's balance
+            $this->db->query("
+                UPDATE " . DB_PREFIX . "customer
+                SET
+                    balance = balance - " . (float)$amount . "
+                WHERE customer_id = " . (int)$customerId
+            );
 
 			$this->language->load('mail/customer');
 			
@@ -439,7 +455,7 @@ class ModelSaleCustomer extends Model {
 			}	
 						
 			$message  = sprintf($this->language->get('text_transaction_received'), $this->currency->format($amount, $this->config->get('config_currency'))) . "\n\n";
-			$message .= sprintf($this->language->get('text_transaction_total'), $this->currency->format($this->getTransactionTotal($customer_id)));
+			$message .= sprintf($this->language->get('text_transaction_total'), $this->currency->format($this->getTransactionTotal($customerId)));
 								
 			$mail = new Mail();
 			$mail->protocol = $this->config->get('config_mail_protocol');
@@ -458,8 +474,13 @@ class ModelSaleCustomer extends Model {
 		}
 	}
 	
-	public function deleteTransaction($order_id) {
-		$this->db->query("DELETE FROM " . DB_PREFIX . "customer_transaction WHERE order_id = '" . (int)$order_id . "'");
+	public function deleteTransaction($order_id)
+    {
+        /// Delete transaction
+		$this->db->query("
+		    DELETE FROM " . DB_PREFIX . "customer_transaction
+		    WHERE order_id = " . (int)$order_id
+        );
 	}
 	
 	public function getTransactions($customer_id, $start = 0, $limit = 10) {

@@ -1,13 +1,51 @@
 <?php
 class ModelLocalisationCurrency extends Model {
 	public function addCurrency($data) {
-		$this->db->query("INSERT INTO " . DB_PREFIX . "currency SET title = '" . $this->db->escape($data['title']) . "', code = '" . $this->db->escape($data['code']) . "', symbol_left = '" . $this->db->escape($data['symbol_left']) . "', symbol_right = '" . $this->db->escape($data['symbol_right']) . "', decimal_place = '" . $this->db->escape($data['decimal_place']) . "', value = '" . $this->db->escape($data['value']) . "', status = '" . (int)$data['status'] . "', date_modified = NOW()");
+		$this->db->query("
+		    INSERT INTO " . DB_PREFIX . "currency
+		    SET
+		        title = '" . $this->db->escape($data['title']) . "',
+		        code = '" . $this->db->escape($data['code']) . "',
+		        symbol_left = '" . $this->db->escape($data['symbol_left']) . "',
+		        symbol_right = '" . $this->db->escape($data['symbol_right']) . "',
+		        decimal_place = '" . $this->db->escape($data['decimal_place']) . "',
+		        value = '" . $this->db->escape($data['value']) . "',
+		        status = '" . (int)$data['status'] . "',
+		        date_modified = NOW()"
+        );
+        $currencyId = $this->db->getLastId();
+        $this->db->query("
+            INSERT INTO " . DB_PREFIX . "currency_history
+            SET
+                date_added = NOW(),
+                currency_id = $currencyId,
+                rate = '" . $this->db->escape($data['value']) . "'
+       ");
 
 		$this->cache->delete('currency');
 	}
 	
 	public function editCurrency($currency_id, $data) {
-		$this->db->query("UPDATE " . DB_PREFIX . "currency SET title = '" . $this->db->escape($data['title']) . "', code = '" . $this->db->escape($data['code']) . "', symbol_left = '" . $this->db->escape($data['symbol_left']) . "', symbol_right = '" . $this->db->escape($data['symbol_right']) . "', decimal_place = '" . $this->db->escape($data['decimal_place']) . "', value = '" . $this->db->escape($data['value']) . "', status = '" . (int)$data['status'] . "', date_modified = NOW() WHERE currency_id = '" . (int)$currency_id . "'");
+		$this->db->query("
+		    UPDATE " . DB_PREFIX . "currency
+            SET
+                title = '" . $this->db->escape($data['title']) . "',
+                code = '" . $this->db->escape($data['code']) . "',
+                symbol_left = '" . $this->db->escape($data['symbol_left']) . "',
+                symbol_right = '" . $this->db->escape($data['symbol_right']) . "',
+                decimal_place = '" . $this->db->escape($data['decimal_place']) . "',
+                value = '" . $this->db->escape($data['value']) . "',
+                status = '" . (int)$data['status'] . "',
+                date_modified = NOW()
+            WHERE currency_id = " . (int)$currency_id
+        );
+        $this->db->query("
+            INSERT INTO " . DB_PREFIX . "currency_history
+            SET
+                date_added = NOW(),
+                currency_id = " . (int)$currency_id . ",
+                rate = '" . $this->db->escape($data['value']) . "'
+       ");
 
 		$this->cache->delete('currency');
 	}
@@ -119,16 +157,17 @@ class ModelLocalisationCurrency extends Model {
 			$lines = explode("\n", trim($content));
 				
 			foreach ($lines as $line) {
-				$currency = utf8_substr($line, 4, 3);
+				$currencyCode = utf8_substr($line, 4, 3);
 				$value = utf8_substr($line, 11, 6);
 				
-				if ((float)$value) {
-					$this->db->query("UPDATE " . DB_PREFIX . "currency SET value = '" . (float)$value . "', date_modified = '" .  $this->db->escape(date('Y-m-d H:i:s')) . "' WHERE code = '" . $this->db->escape($currency) . "'");
+				if ((float)$value)
+                {
+					$currency = $this->getCurrencyByCode($currencyCode);
+                    $currency['value'] = $value;
+                    $this->editCurrency($currency['currency_id'], $currency);
 				}
 			}
-			
-			$this->db->query("UPDATE " . DB_PREFIX . "currency SET value = '1.00000', date_modified = '" .  $this->db->escape(date('Y-m-d H:i:s')) . "' WHERE code = '" . $this->db->escape($this->config->get('config_currency')) . "'");
-			
+
 			$this->cache->delete('currency');
 		}
 	}

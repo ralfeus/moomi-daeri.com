@@ -21,7 +21,14 @@ class ModelSaleTransaction extends Model
                 currency_code = '" . $this->db->escape($currency_code) . "',
                 date_added = NOW()
         ");
-        return $this->db->getLastId();
+        $transactionId = $this->db->getLastId();
+        /// Update customer's balance
+        $this->db->query("
+                UPDATE " . DB_PREFIX . "customer
+                SET
+                    balance = balance - " . (float)$amount . "
+                WHERE customer_id = " . (int)$customerId
+        );
     }
 
     public function deleteTransaction($transactionId)

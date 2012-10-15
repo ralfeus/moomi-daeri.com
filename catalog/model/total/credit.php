@@ -51,6 +51,13 @@ class ModelTotalCredit extends ModelTotal {
 			        amount = '" . (float)$order_total['value'] . "',
 			        date_added = NOW()
             ");
+            /// Update customer's balance
+            $this->db->query("
+                UPDATE " . DB_PREFIX . "customer
+                SET
+                    balance = balance - " . (float)$order_total['value'] . "
+                WHERE customer_id = " . (int)$order_info['customer_id']
+            );
 		}
 	}
 
