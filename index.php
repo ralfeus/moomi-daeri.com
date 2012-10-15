@@ -1,5 +1,5 @@
 <?php
-//ini_set('display_errors', 0);
+///ini_set('display_errors', 0);
 
 // Version
 define('VERSION', '1.5.1.3');
