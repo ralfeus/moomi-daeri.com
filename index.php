@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL);
+print("Hi there");exit();
 
 // Version
 define('VERSION', '1.5.1.3');
