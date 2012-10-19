@@ -76,7 +76,8 @@ class ModelSaleRepurchaseOrder extends Model
                     ? $options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value'] : '',
                 'imagePath' => !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID])
                     ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '',
-                'itemUrl' => $options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'],
+                'itemUrl' => !empty($options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'])
+                    ? $options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'] : '',
                 'orderItemStatusId' => $repurchaseOrderItem['status'],
                 'price' => $repurchaseOrderItem['price'],
                 'publicComment' => !empty($repurchaseOrderItem['public_comment'])
