@@ -92,10 +92,10 @@ class ControllerSaleRepurchaseOrders extends Controller
             $page = $_REQUEST['page'];
         $urlParameters[] = "page=$page";
 
-        $url = implode("&", $urlParameters);
+        $url = '&' . implode("&", $urlParameters);
 
         $this->data['invoice'] = $this->url->link('sale/invoice/showForm' . $url, 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['print'] = $this->url->link('sale/order_items/print_page' . $url, 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['print'] = $this->url->link('sale/repurchaseOrders/printPage' . $url, 'token=' . $this->session->data['token'], 'SSL');
         $this->data['orders'] = array();
 
         $data = array(
@@ -110,6 +110,7 @@ class ControllerSaleRepurchaseOrders extends Controller
             'start'           => ($page - 1) * $this->config->get('config_admin_limit'),
             'limit'           => $this->config->get('config_admin_limit')
         );
+        $data = array_merge($data, $this->parameters);
 //        $this->log->write(print_r($data, true));
         $order_items = $this->modelSaleRepurchaseOrder->getOrders($data);
 //        $this->log->write(print_r($order_items, true));
@@ -165,12 +166,12 @@ class ControllerSaleRepurchaseOrders extends Controller
                     : "",
                 'amount' => $order_item['total'],
                 'quantity'		=> $order_item['quantity'],
-                'selected'      =>
-                    (isset($_REQUEST['selectedItems'])
-                        && is_array($_REQUEST['selectedItems'])
-                        && in_array($order_item['order_product_id'], $_REQUEST['selectedItems']))
-                        ? '"selected"'
-                        : '',
+//                'selected'      =>
+//                    (isset($_REQUEST['selectedItems'])
+//                        && is_array($_REQUEST['selectedItems'])
+//                        && in_array($order_item['order_product_id'], $this->parameters['selectedItems']))
+//                        ? '"selected"'
+//                        : '',
                 'actions'                    => $actions,
                 'whoOrders' => $order_item['whoOrders']
             );
@@ -257,6 +258,11 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->response->setOutput($this->render());
     }
 
+    protected function initParameters()
+    {
+        $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
+    }
+
     private function initStatuses()
     {
         $this->data['statuses'] = array();
@@ -268,6 +274,28 @@ class ControllerSaleRepurchaseOrders extends Controller
                 'name' => $order_item_status['name']
             );
 //        $this->log->write(print_r($this->data['statuses'], true));
+    }
+
+    public function printPage()
+    {
+        $this->getData();
+
+        /// Set interface
+        $this->data['textAmount'] = $this->language->get('AMOUNT');
+        $this->data['textComment'] = $this->language->get('COMMENT');
+        $this->data['textItemImage'] = $this->language->get('ITEM_IMAGE');
+        $this->data['textOrderId'] = $this->language->get('ORDER_ID');
+        $this->data['textCustomer'] = $this->language->get('CUSTOMER');
+        $this->data['textStatus'] = $this->language->get('STATUS');
+        $this->data['textQuantity'] = $this->language->get('QUANTITY');
+        $this->data['textWeight'] = $this->language->get('WEIGHT');
+        $this->data['textFilter'] = $this->language->get('FILTER');
+        $this->data['textInvoice'] = $this->language->get('INVOICE');
+        $this->data['textSiteName'] = $this->language->get('SITE_NAME');
+        $this->data['textWhoOrders'] = $this->language->get('WHO_ORDERS');
+
+        $this->template = 'sale/repurchaseOrdersListPrint.tpl';
+        $this->response->setOutput($this->render());
     }
 
     public function setAmount()
@@ -304,15 +332,13 @@ class ControllerSaleRepurchaseOrders extends Controller
     {
         if (empty($_REQUEST['statusId']))
             return;
-        if (empty($_REQUEST['selectedItems']))
-            return;
 
-        foreach ($_REQUEST['selectedItems'] as $orderId)
+        foreach ($this->parameters['selectedItems'] as $orderId)
             $this->modelSaleRepurchaseOrder->setStatus($orderId, $_REQUEST['statusId']);
 
         $json['newStatusName'] = Status::getStatus(
             $_REQUEST['statusId'], $this->config->get('config_language_id'));
-        $this->log->write(print_r($json, true));
+//        $this->log->write(print_r($json, true));
 
         $this->response->setOutput(json_encode($json));
     }

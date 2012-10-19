@@ -18,8 +18,8 @@ class ModelSaleRepurchaseOrder extends Model
     private function buildFilterString($data = array())
     {
         $filter = "op.product_id = " . REPURCHASE_ORDER_PRODUCT_ID;
-        if (isset($data['selected_items']) && count($data['selected_items']))
-            $filter = "op.order_product_id in (" . implode(', ', $data['selected_items']) . ")";
+        if (isset($data['selectedItems']) && count($data['selectedItems']))
+            $filter = "op.order_product_id in (" . implode(', ', $data['selectedItems']) . ")";
         else
         {
             if (isset($data['filterAmount']) && ($data['filterAmount'] != null))
@@ -126,7 +126,17 @@ class ModelSaleRepurchaseOrder extends Model
 
     public function getOrderOptionsString($repurchaseOrderId)
     {
-        return $this->modelOrderItem->getOrderItemOptionsString($repurchaseOrderId);
+        //return $this->modelOrderItem->getOrderItemOptionsString($repurchaseOrderId);
+        $options = '';
+        foreach ($this->getOrderOptions($repurchaseOrderId) as $option)
+//            $this->log->write(print_r($option, true));
+            if ($option['product_option_id'] == REPURCHASE_ORDER_IMAGE_URL_OPTION_ID)
+                continue;
+            elseif (preg_match(URL_PATTERN, $option['value']))
+                $options .= $option['name'] . ":" . '<a target="_blank" href="' . $option['value'] . '">hyperlink</a>' . "\n";
+            else
+                $options .= $option['name'] . ": " . $option['value'] . "\n";
+        return $options;
     }
 
     public function setAmount($orderId, $amount)

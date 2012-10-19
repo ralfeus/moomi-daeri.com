@@ -720,6 +720,7 @@ class ControllerSaleOrderItems extends Controller {
 
 		$this->response->setOutput($this->render());
 	}
+
     public function print_page_removed_nickname() {
         $this->load->language('sale/order_items');
 

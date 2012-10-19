@@ -90,8 +90,8 @@
                                         type="checkbox"
                                         id="selectedItems[]"
                                         name="selectedItems[]"
-                                        value="<?= $order['orderId'] ?>"
-                                        <?= $order['selected'] ?> />
+                                        value="<?= $order['orderId'] ?>" />
+                                        <!--?= $order['selected'] ?-->
                             </td>
                             <td><?= $order['orderId'] ?></td>
                             <td>
@@ -102,7 +102,7 @@
                                 endif; ?>
                                 <a href="<?= $href ?>" target="_blank"><img src="<?= $order['imagePath'] ?>" /></a>
                             </td>
-                            <td style="white-space: nowrap;"><a href="<?= $order['customerUrl'] ?>"><?= $order['customerName'] ?></a></td>
+                            <td style="white-space: nowrap;"><a href="<?= $order['customerUrl'] ?>"><?= $order['customerNick'] ?></a></td>
                             <td><a href="<?= $order['itemUrl'] ?>"><?= $order['siteName'] ?></a></td>
                             <td><?= $order['whoOrders'] ?></td>
                             <td><?= $order['quantity'] ?></td>
