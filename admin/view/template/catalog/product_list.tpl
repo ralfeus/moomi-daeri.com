@@ -15,6 +15,8 @@
     <div class="heading">
       <h1><img src="view/image/product.png" alt="" /> <?php echo $heading_title; ?></h1>
       <div class="buttons">
+          <a onclick="$('#form').attr('action', '<?php echo $enable; ?>'); $('#form').submit();" class="button"><?php echo $button_enable; ?></a>
+          <a onclick="$('#form').attr('action', '<?php echo $disable; ?>'); $('#form').submit();" class="button"><?php echo $button_disable; ?></a>
           <a onclick="location = '<?php echo $insert; ?>'" class="button"><?php echo $button_insert; ?></a>
           <a onclick="$('#form').attr('action', '<?php echo $copy; ?>'); $('#form').submit();" class="button"><?php echo $button_copy; ?></a>
           <a onclick="$('form').submit();" class="button"><?php echo $button_delete; ?></a>

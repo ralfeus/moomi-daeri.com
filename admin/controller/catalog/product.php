@@ -344,7 +344,9 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['insert'] = $this->url->link('catalog/product/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		$this->data['copy'] = $this->url->link('catalog/product/copy', 'token=' . $this->session->data['token'] . $url, 'SSL');	
 		$this->data['delete'] = $this->url->link('catalog/product/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
-    	
+        $this->data['enable'] = $this->url->link('catalog/product/enable', 'token=' . $this->session->data['token'] . $url, 'SSL');
+        $this->data['disable'] = $this->url->link('catalog/product/disable', 'token=' . $this->session->data['token'] . $url, 'SSL');
+
 		$this->data['products'] = array();
 
 		$data = array(
@@ -443,9 +445,11 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['button_delete'] = $this->language->get('button_delete');		
 		$this->data['button_filter'] = $this->language->get('FILTER');
 		$this->data['buttonManufacturer'] = $this->language->get('BUTTON_MANUFACTURER');
-		$this->data['buttonSupplier'] = $this->language->get('BUTTON_SUPPLIER');
-		 
- 		$this->data['token'] = $this->session->data['token'];
+        $this->data['buttonSupplier'] = $this->language->get('BUTTON_SUPPLIER');
+        $this->data['button_enable'] = $this->language->get('ENABLE');
+        $this->data['button_disable'] = $this->language->get('DISABLE');
+
+          $this->data['token'] = $this->session->data['token'];
 		
  		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
@@ -1387,5 +1391,76 @@ class ControllerCatalogProduct extends Controller {
 
 		return $output;
 	}
+
+    private function validateChange() {
+        if (!$this->user->hasPermission('modify', 'catalog/product')) {
+            $this->error['warning'] = $this->language->get('error_permission');
+        }
+
+        if (!$this->error) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function enable() {
+        $this->changeStatusProducts(1);
+    }
+
+    public function disable() {
+        $this->changeStatusProducts(0);
+    }
+
+    private function changeStatusProducts($status) {
+        $this->load->language('catalog/product');
+
+        $this->document->setTitle($this->language->get('heading_title'));
+
+        $this->load->model('catalog/product');
+
+        if (isset($this->request->post['selected']) && $this->validateChange()) {
+            $this->model_catalog_product->changeStatusProducts($this->request->post['selected'], $status);
+
+            $this->session->data['success'] = $this->language->get('text_success');
+
+            $url = '';
+
+            if (isset($this->request->get['filter_name'])) {
+                $url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
+            }
+
+            if (isset($this->request->get['filter_model'])) {
+                $url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
+            }
+
+            if (isset($this->request->get['filter_price'])) {
+                $url .= '&filter_price=' . $this->request->get['filter_price'];
+            }
+
+            if (isset($this->request->get['filter_quantity'])) {
+                $url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
+            }
+
+            if (isset($this->request->get['filter_status'])) {
+                $url .= '&filter_status=' . $this->request->get['filter_status'];
+            }
+
+            if (isset($this->request->get['sort'])) {
+                $url .= '&sort=' . $this->request->get['sort'];
+            }
+
+            if (isset($this->request->get['order'])) {
+                $url .= '&order=' . $this->request->get['order'];
+            }
+
+            if (isset($this->request->get['page'])) {
+                $url .= '&page=' . $this->request->get['page'];
+            }
+
+            $this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+        }
+        $this->getList();
+    }
 }
 ?>

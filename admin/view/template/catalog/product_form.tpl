@@ -255,21 +255,38 @@
             </tr>
             <tr>
               <td><?php echo $entry_category; ?></td>
-              <td><div class="scrollbox">
-                  <?php $class = 'odd'; ?>
-                  <?php foreach ($categories as $category) { ?>
-                  <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
-                  <div class="<?php echo $class; ?>">
-                    <?php if (in_array($category['category_id'], $product_category)) { ?>
-                    <input type="checkbox" name="product_category[]" value="<?php echo $category['category_id']; ?>" checked="checked" />
-                    <?php echo $category['name']; ?>
-                    <?php } else { ?>
-                    <input type="checkbox" name="product_category[]" value="<?php echo $category['category_id']; ?>" />
-                    <?php echo $category['name']; ?>
-                    <?php } ?>
-                  </div>
-                  <?php } ?>
-              </div></td>
+                <td>
+                    <?php $num = count($categories); ?>
+                    <?php $half_num = $num / 2; ?>
+                    <?php $i = 0; ?>
+                    <?php $class = 'odd'; ?>
+                    <table class="categories">
+                        <tr>
+                            <td>
+                                <?php foreach ($categories as $category) { ?>
+                                <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
+                                <?php if($i == $half_num) { ?>
+                            <td>
+                                <?php } ?>
+                                <div class="<?php echo $class; ?>">
+                                    <?php if (in_array($category['category_id'], $product_category)) { ?>
+                                    <input type="checkbox" name="product_category[]" value="<?php echo $category['category_id']; ?>" checked="checked" />
+                                    <?php echo $category['name']; ?>
+                                    <?php } else { ?>
+                                    <input type="checkbox" name="product_category[]" value="<?php echo $category['category_id']; ?>" />
+                                    <?php echo $category['name']; ?>
+                                    <?php } ?>
+                                </div>
+                                <?php $i++; ?>
+                                <?php if($i == $half_num || $i == $num) { ?>
+                            </td>
+                            <?php } ?>
+                            <?php } ?>
+                        </tr>
+                    </table>
+                    <a onclick="$(this).parent().find(':checkbox').attr('checked', true);"><?php echo $text_select_all; ?></a> / <a onclick="$(this).parent().find(':checkbox').attr('checked', false);"><?php echo $text_unselect_all; ?></a>
+                </td>
+
             </tr>
             <tr>
               <td><?php echo $entry_store; ?></td>

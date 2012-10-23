@@ -374,6 +374,25 @@ table.form > tbody > tr > td {
 	color: #000000;
 	border-bottom: 1px dotted #CCCCCC;
 }
+
+.categories {
+    border: 1px solid #CCCCCC;
+}
+.categories div {
+    padding: 3px;
+}
+.categories div input {
+    margin: 0px;
+    padding: 0px;
+    margin-right: 3px;
+}
+.categories div.even {
+    background: #FFFFFF;
+}
+.categories div.odd {
+    background: #E4EEF7;
+}
+
 .scrollbox {
 	border: 1px solid #CCCCCC;
 	width: 350px;

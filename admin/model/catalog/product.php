@@ -778,6 +778,18 @@ class ModelCatalogProduct extends Model {
 		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "product_to_layout WHERE layout_id = '" . (int)$layout_id . "'");
 
 		return $query->row['total'];
-	}			
+	}
+
+    public function changeStatusProducts($products, $status) {
+        function check_int($a) {
+            return (int)$a;
+        }
+        $arr_products = array_map('check_int', $products);
+        $products = implode("' OR product_id = '", $arr_products);
+        $this->db->query("UPDATE " . DB_PREFIX . "product SET status = '" . (int)(bool)$status . "' WHERE product_id = '" . $products . "'");
+
+        $this->cache->delete('product');
+    }
+
 }
 ?>

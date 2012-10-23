@@ -1,31 +1,31 @@
 <?php
 // HTTP
-define('HTTP_SERVER', '/admin/');
-define('HTTP_CATALOG', '/');
-define('HTTP_IMAGE', '/image/');
+define('HTTP_SERVER', '/moomi-daeri.com/admin/');
+define('HTTP_CATALOG', '/moomi-daeri.com/');
+define('HTTP_IMAGE', '/moomi-daeri.com/image/');
 
 // HTTPS
-define('HTTPS_SERVER', '/admin/');
-define('HTTPS_CATALOG', '/');
-define('HTTPS_IMAGE', '/image/');
+define('HTTPS_SERVER', '/moomi-daeri.com/admin/');
+define('HTTPS_CATALOG', '/moomi-daeri.com/');
+define('HTTPS_IMAGE', '/moomi-daeri.com/image/');
 
 // DIR
-define('DIR_APPLICATION', $_SERVER["DOCUMENT_ROOT"] . '/admin/');
-define('DIR_SYSTEM', $_SERVER["DOCUMENT_ROOT"] . '/system/');
-define('DIR_DATABASE', $_SERVER["DOCUMENT_ROOT"] . '/system/database/');
-define('DIR_LANGUAGE', $_SERVER["DOCUMENT_ROOT"] . '/admin/language/');
-define('DIR_TEMPLATE', $_SERVER["DOCUMENT_ROOT"] . '/admin/view/template/');
-define('DIR_CONFIG', $_SERVER["DOCUMENT_ROOT"] . '/system/config/');
-define('DIR_IMAGE', $_SERVER["DOCUMENT_ROOT"] . '/image/');
-define('DIR_CACHE', $_SERVER["DOCUMENT_ROOT"] . '/system/cache/');
-define('DIR_DOWNLOAD', $_SERVER["DOCUMENT_ROOT"] . '/download/');
-define('DIR_LOGS', $_SERVER["DOCUMENT_ROOT"] . '/system/logs/');
-define('DIR_CATALOG', $_SERVER["DOCUMENT_ROOT"] . '/catalog/');
+define('DIR_APPLICATION', 'D:\projects\moomi-daeri.com/admin/');
+define('DIR_SYSTEM', 'D:\projects\moomi-daeri.com/system/');
+define('DIR_DATABASE', 'D:\projects\moomi-daeri.com/system/database/');
+define('DIR_LANGUAGE', 'D:\projects\moomi-daeri.com/admin/language/');
+define('DIR_TEMPLATE', 'D:\projects\moomi-daeri.com/admin/view/template/');
+define('DIR_CONFIG', 'D:\projects\moomi-daeri.com/system/config/');
+define('DIR_IMAGE', 'D:\projects\moomi-daeri.com/image/');
+define('DIR_CACHE', 'D:\projects\moomi-daeri.com/system/cache/');
+define('DIR_DOWNLOAD', 'D:\projects\moomi-daeri.com/download/');
+define('DIR_LOGS', 'D:\projects\moomi-daeri.com/system/logs/');
+define('DIR_CATALOG', 'D:\projects\moomi-daeri.com/catalog/');
 
 // DB
 define('DB_DRIVER', 'mysql');
-define('DB_HOSTNAME', 'eu-cdbr-azure-west-a.cloudapp.net');
-define('DB_USERNAME', 'b583cee7586d89');
-define('DB_PASSWORD', '182afe14');
-define('DB_DATABASE', 'moomidae');
+define('DB_HOSTNAME', 'localhost');
+define('DB_USERNAME', 'root');
+define('DB_PASSWORD', 'ujcdsex');
+define('DB_DATABASE', 'moomidae_db');
 define('DB_PREFIX', '');
