@@ -453,6 +453,28 @@ table.layout
 input.large-field, select.large-field {
 	width: 300px;
 }
+
+table.header
+{
+    border-collapse: collapse;
+    display: block;
+    width: 100%;
+    border: 1px solid #DDDDDD;
+    margin-bottom: 20px;
+}
+
+table.header thead td
+{
+    background-color: #EFEFEF;
+    white-space: nowrap;
+}
+
+table.header .right
+{
+    padding: 0px;
+    text-align: right;
+}
+
 table.list {
 	border-collapse: collapse;
     display: block;

@@ -104,6 +104,7 @@ class ControllerAccountRepurchaseOrders extends Controller
         $this->data['textAccept'] = $this->language->get('ACCEPT');
         $this->data['textComment'] = $this->language->get('COMMENT');
         $this->data['textFilter'] = $this->language->get('FILTER');
+        $this->data['textFilterBy'] = $this->language->get('FILTER_BY');
         $this->data['textTimeAdded'] = $this->language->get('TIME_ADDED');
         $this->data['textNoItems'] = $this->language->get('NO_ITEMS');
         $this->data['textOrderItemId'] = $this->language->get('ORDER_ITEM_ID');
@@ -111,6 +112,7 @@ class ControllerAccountRepurchaseOrders extends Controller
         $this->data['textReject'] = $this->language->get('REJECT');
         $this->data['textStatus'] = $this->language->get('STATUS');
         $this->data['textTotal'] = $this->language->get('TOTAL');
+        $this->data['urlRepurchaseOrders'] = $this->url->link('account/repurchaseOrders', '', 'SSL');
 
         $template_name = '/template/account/repurchaseOrdersList.tpl';
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $template_name)) {
@@ -142,6 +144,7 @@ class ControllerAccountRepurchaseOrders extends Controller
 
     protected function initParameters()
     {
+        $this->parameters['filterOrderId'] = empty($_REQUEST['filterOrderId']) ? null : $_REQUEST['filterOrderId'];
         $this->parameters['filterStatusId'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
     }
 

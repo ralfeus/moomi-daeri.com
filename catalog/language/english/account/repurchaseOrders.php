@@ -8,3 +8,4 @@
  */
 
 $_['HEADING_TITLE'] = 'Agent order';
+$_['FILTER_BY'] = 'Filter by';

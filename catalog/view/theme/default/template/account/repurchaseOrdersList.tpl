@@ -6,23 +6,33 @@
         <?php endforeach; ?>
     </div>
     <h1><?php echo $headingTitle; ?></h1>
-    <form id="form" method="post">
-        <table class="list">
-            <thead><tr class="product-filter">
-                <td style="width: 670px;"/>
-                <td>
-                    <select name="filterStatusId[]" multiple="true">
-                        <?php foreach ($statuses as $status):
-                            if (in_array($status['status_id'], $filterStatusId))
-                                $selected = "selected=\"selected\"";
-                            else
-                                $selected = ""; ?>
-                            <option value="<?= $status['status_id'] ?>" <?= $selected ?>><?= $status['name'] ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </td>
-                <td><a onclick="filter();" class="button"><span><?= $textFilter; ?></span></a></td>
-            </tr></thead>
+    <form id="form" method="post" action="<?= $urlRepurchaseOrders ?>">
+        <table class="header">
+            <thead>
+                <tr>
+                    <td><?= $textFilterBy ?></td>
+                    <td class="right"><a onclick="filter();" class="button"><span><?= $textFilter; ?></span></a></td>
+                </tr>
+                <tr class="product-filter">
+                    <td>
+                        <?= $textOrderItemId ?>
+                        <input name="filterOrderId" value="<?= $filterOrderId ?>" size="3"/>
+                    </td>
+                    <td class="right" style="width: 100%;">
+                        <?= $textStatus ?>
+                        <select name="filterStatusId[]" multiple="true">
+                            <?php foreach ($statuses as $status):
+                                if (in_array($status['status_id'], $filterStatusId))
+                                    $selected = "selected=\"selected\"";
+                                else
+                                    $selected = ""; ?>
+                                <option value="<?= $status['status_id'] ?>" <?= $selected ?>><?= $status['name'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+
+                </tr>
+            </thead>
         </table>
         <?php if (!empty($orders)): ?>
             <?php foreach ($orders as $order): ?>
@@ -77,6 +87,7 @@ $(document).ready(function() {
         noneSelectedText: "-- No filter --",
         selectedList: 3
     });
+    $('button.ui-multiselect').css('width', '110px');
 });
 
 function accept(orderId)
@@ -86,7 +97,7 @@ function accept(orderId)
 
 function filter()
 {
-    $('#form').attr('action', 'index.php?route=account/repurchaseOrders');
+//    $('#form').attr('action', 'index.php?route=account/repurchaseOrders');
     $('#form').submit();
 }
 

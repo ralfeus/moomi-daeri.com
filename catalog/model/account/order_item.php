@@ -141,6 +141,8 @@ class ModelAccountOrderItem extends Model
                 $filter .= ($filter ? " AND" : "") . " LCASE(s.name) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_supplier'])) . "%'";
             if (!empty($data['filter_supplier_group']))
                 $filter .= ($filter ? " AND" : "") . " s.supplier_group_id = " . (int)$data['filter_supplier_group'];
+            if (!empty($data['filterOrderItemId']))
+                $filter .= ($filter ? " AND" : "") . " op.order_product_id = " . (int)$data['filterOrderItemId'];
             if (!empty($data['filterProductId']))
                 $filter .= ($filter ? " AND" : "") . " op.product_id = " . (int)$data['filterProductId'];
             if (!empty($data['filterStatusId']))

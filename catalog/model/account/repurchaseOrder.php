@@ -46,6 +46,8 @@ class ModelAccountRepurchaseOrder extends Model
             $filter .= ($filter ? " AND" : "") . " roh1.status = " . (int)$data['filter_order_status'];
         if (!empty($data['filter_order_item_status']))
             $filter .= ($filter ? " AND" : "") . " roih1.status = " . (int)$data['filter_order_item_status'];
+        if (!empty($data['filterOrderId']))
+            $filter .= ($filter ? " AND" : "") . " order_item_id = " . (int)$data['filterOrderId'];
 
         return $filter;
     }
@@ -119,6 +121,7 @@ class ModelAccountRepurchaseOrder extends Model
 //			" . ($limit ? "LIMIT $limit" : "")
 //        );
         $data['filterProductId'] = REPURCHASE_ORDER_PRODUCT_ID;
+        $data['filterOrderItemId'] = $data['filterOrderId'];
         $repurchaseOrderItems = $this->modelAccountOrderItem->getOrderItems($data);
         $items = array();
         foreach ($repurchaseOrderItems as $repurchaseOrderItem)

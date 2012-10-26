@@ -81,7 +81,7 @@ class ControllerAccountOrderItems extends Controller {
 					'order_url'					=> $this->url->link('sale/order/info', 'order_id=' . $orderItem['order_id'] . '&token=' . $this->session->data['token'], 'SSL'),
                     'options'       => nl2br($this->modelAccountOrderItem->getOrderItemOptionsString($orderItem['order_product_id'])),
                     'publicComment'                   => $orderItem['public_comment'],
-					'status'       	=> $orderItem['status'] ? Status::getStatus($orderItem['status'], $this->config->get('language_id')) : "",
+					'status'       	=> $orderItem['status'] ? Status::getStatus($orderItem['status'], $this->config->get('language_id'), true) : "",
                     'price'			=> $this->currency->format($orderItem['price'], $this->config->get('config_currency')),
 		            'weight'		=> $this->weight->format($orderItem['weight'],$orderItem['weight_class_id']),
                     'quantity'		=> $orderItem['quantity'],
