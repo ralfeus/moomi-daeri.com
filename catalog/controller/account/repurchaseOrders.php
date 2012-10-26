@@ -91,7 +91,7 @@ class ControllerAccountRepurchaseOrders extends Controller
                 'options' => $this->load->model('account/order_item')->getOrderItemOptions($repurchase_order['orderItemId']),
                 'quantity' => $repurchase_order['quantity'],
                 'statusId' => $repurchase_order['status'],
-                'statusName' => Status::getStatus($repurchase_order['status'], $this->config->get('config_language_id')),
+                'statusName' => Status::getStatus($repurchase_order['status'], $this->config->get('config_language_id'), true),
                 'timeAdded'    => $repurchase_order['timeAdded'],
                 'total'         => $this->currency->format($repurchase_order['total']),
             );
