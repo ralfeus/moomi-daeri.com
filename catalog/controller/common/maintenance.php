@@ -16,8 +16,8 @@ class ControllerCommonMaintenance extends Controller {
 			$this->load->library('user');
 			
 			$this->user = new User($this->registry);
-	
-			if (($route != 'payment') && !$this->user->isLogged()) {
+
+			if ($route != 'payment') {
 				return $this->forward('common/maintenance/info');
 			}						
         }
