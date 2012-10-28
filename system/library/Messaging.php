@@ -91,7 +91,7 @@ class Messaging extends LibraryClass
         Messaging::$instance->db->query("
             UPDATE " . DB_PREFIX . "messages
             SET
-                message = '" . json_encode($data) . "'
+                message = '" . Messaging::$instance->db->escape(json_encode($data)) . "'
             WHERE message_id = " . (int)$messageId
         );
         Messaging::$instance->load->library('SystemMessageClassFactory');

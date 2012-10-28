@@ -24,7 +24,7 @@ class ControllerSaleCreditManagement extends Controller
 //        $this->log->write("Starting");
         $request = Messaging::getSystemMessage($this->request->request['requestId']);
         $request['data']->status = ADD_CREDIT_STATUS_ACCEPTED;
-//        $this->log->write(print_r($request, true));
+        $this->log->write(print_r($request, true));
         Messaging::updateSystemMessage($request['messageId'], $request['data']);
     }
 

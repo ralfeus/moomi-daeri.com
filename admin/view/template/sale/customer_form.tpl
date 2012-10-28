@@ -368,14 +368,14 @@ function addTransaction() {
 		url: 'index.php?route=sale/customer/transaction&token=<?php echo $token; ?>&customer_id=<?php echo $customer_id; ?>',
 		dataType: 'html',
 		data: {
-            'description': encodeURIComponent($('#tab-transaction input[name=\'description\']').val()),
-            'amount': encodeURIComponent($('#tab-transaction input[name=\'amount\']').val()),
+            'description': $('#tab-transaction input[name=\'description\']').val(),
+            'amount': $('#tab-transaction input[name=\'amount\']').val(),
             'action': 'add'
         },
 		beforeSend: function() {
 			$('.success, .warning').remove();
 			$('#button-transaction').attr('disabled', true);
-			$('#transaction').before('<div class="error"><img src="view/image/loading.gif" alt="" /> <?php echo $text_wait; ?></div>');
+			$('#transaction').before('<div class="attention"><img src="view/image/loading.gif" alt="" /> <?php echo $text_wait; ?></div>');
 		},
 		complete: function() {
 			$('#button-transaction').attr('disabled', false);

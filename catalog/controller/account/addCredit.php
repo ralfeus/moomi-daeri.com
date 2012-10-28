@@ -11,6 +11,7 @@ class ControllerAccountAddCredit extends Controller
     public function __construct($registry)
     {
         parent::__construct($registry);
+        $this->load->language('account/addCredit');
         $this->takeSessionVariables();
     }
 

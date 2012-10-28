@@ -11,6 +11,7 @@ class ModelSaleTransaction extends Model
     public function addTransaction($invoiceId, $customerId, $amount, $currency_code, $description = '')
     {
 //        $this->log->write("Adding transaction");
+        $this->log->write($description);
         $this->db->query("
             INSERT INTO " . DB_PREFIX . "customer_transaction
             SET
