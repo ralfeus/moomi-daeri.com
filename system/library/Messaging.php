@@ -77,7 +77,7 @@ class Messaging extends LibraryClass
                 sender_id = " . (int)$senderId . ",
                 recipient_id = " . (int)$recipientId . ",
                 message_type_id = " . (int)$messageTypeId . ",
-                message = '" . json_encode($data) . "',
+                message = '" . Messaging::$instance->db->escape(json_encode($data)) . "',
                 time_added = NOW()
         ");
         Messaging::$instance->load->library('SystemMessageClassFactory');
