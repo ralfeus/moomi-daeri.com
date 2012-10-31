@@ -769,7 +769,7 @@ $(document).ready(function () {
     $('#get-html').click(function() {
         var html = '';
         $('#column_right a.selected').each(function() {
-            html += '&lt;img src="<?= HTTP_IMAGE ?>/data/' + this.attributes['file'].value + '" /&gt;&lt;br /&gt;<br />\r\n';
+            html += '&lt;img src="<?= HTTP_IMAGE ?>data/' + this.attributes['file'].value + '" /&gt;&lt;br /&gt;<br />\r\n';
         });
         showTextToCopy(html);
     });
@@ -794,6 +794,7 @@ function showTextToCopy(text)
             selection.addRange(range);
         }
     };
+    $('#copy-dialog').remove();
     $('body').append('<div id="copy-dialog" title="Copy to clipboard">' + text + '</div>');
     $('#copy-dialog').dialog({
         width: 540
