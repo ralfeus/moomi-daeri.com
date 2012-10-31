@@ -43,4 +43,4 @@ $_['button_copy']      = 'Copy';
 $_['button_rename']    = 'Rename';
 $_['button_upload']    = 'Upload';
 $_['button_refresh']   = 'Refresh';
-?>
+$_['GENERATE_HTML'] = 'Get HTML code';

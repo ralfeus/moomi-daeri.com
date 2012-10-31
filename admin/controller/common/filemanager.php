@@ -24,7 +24,8 @@ class ControllerCommonFileManager extends Controller {
 		$this->data['button_copy'] = $this->language->get('button_copy');
 		$this->data['button_rename'] = $this->language->get('button_rename');
 		$this->data['button_upload'] = $this->language->get('button_upload');
-		$this->data['button_refresh'] = $this->language->get('button_refresh'); 
+		$this->data['button_refresh'] = $this->language->get('button_refresh');
+        $this->data['textGenerateHtml'] = $this->language->get('GENERATE_HTML');
 		
 		$this->data['error_select'] = $this->language->get('error_select');
 		$this->data['error_directory'] = $this->language->get('error_directory');

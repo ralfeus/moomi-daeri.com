@@ -1,15 +1,18 @@
 <?php 
 class ControllerCatalogProduct extends Controller {
-	private $error = array(); 
-     
+	private $error = array();
+    private $modelCatalogProduct;
+
+    public function __construct($registry)
+    {
+        parent::__construct($registry);
+        $this->load->language('catalog/product');
+        $this->document->setTitle($this->language->get('heading_title'));
+        $this->modelCatalogProduct = $this->load->model('catalog/product');
+    }
+
   	public function index() {
-		$this->load->language('catalog/product');
-    	
-		$this->document->setTitle($this->language->get('heading_title')); 
-		
-		$this->load->model('catalog/product');
-		
-		$this->getList();
+	    $this->getList();
   	}
   
   	public function insert() {
@@ -65,12 +68,6 @@ class ControllerCatalogProduct extends Controller {
   	}
 
   	public function update() {
-    	$this->load->language('catalog/product');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/product');
-	
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);
 			
@@ -643,6 +640,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['button_add_special'] = $this->language->get('button_add_special');
 		$this->data['button_add_image'] = $this->language->get('button_add_image');
 		$this->data['button_remove'] = $this->language->get('button_remove');
+        $this->data['textImageManager'] = $this->language->get('IMAGE_MANAGER');
 		
     	$this->data['tab_general'] = $this->language->get('tab_general');
     	$this->data['tab_data'] = $this->language->get('tab_data');

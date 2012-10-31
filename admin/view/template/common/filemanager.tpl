@@ -110,7 +110,17 @@ img {
 </head>
 <body>
 <div id="container">
-  <div id="menu"><a id="create" class="button" style="background-image: url('view/image/filemanager/folder.png');"><?php echo $button_folder; ?></a><a id="delete" class="button" style="background-image: url('view/image/filemanager/edit-delete.png');"><?php echo $button_delete; ?></a><a id="move" class="button" style="background-image: url('view/image/filemanager/edit-cut.png');"><?php echo $button_move; ?></a><a id="copy" class="button" style="background-image: url('view/image/filemanager/edit-copy.png');"><?php echo $button_copy; ?></a><a id="rename" class="button" style="background-image: url('view/image/filemanager/edit-rename.png');"><?php echo $button_rename; ?></a><a id="upload" class="button" style="background-image: url('view/image/filemanager/upload.png');"><?php echo $button_upload; ?></a><a id="uploadmulti" class="button" style="background-image: url('view/image/filemanager/upload.png');">Upload+</a><a id="refresh" class="button" style="background-image: url('view/image/filemanager/refresh.png');"><?php echo $button_refresh; ?></a><span style="float: right; padding: 10px; font-size: 9px;">IM+ UL+ - (OC 1.5.1.x)</span></div>
+  <div id="menu">
+      <a id="create" class="button" style="background-image: url('view/image/filemanager/folder.png');"><?php echo $button_folder; ?></a>
+      <a id="delete" class="button" style="background-image: url('view/image/filemanager/edit-delete.png');"><?php echo $button_delete; ?></a>
+      <a id="move" class="button" style="background-image: url('view/image/filemanager/edit-cut.png');"><?php echo $button_move; ?></a>
+      <a id="copy" class="button" style="background-image: url('view/image/filemanager/edit-copy.png');"><?php echo $button_copy; ?></a>
+      <a id="rename" class="button" style="background-image: url('view/image/filemanager/edit-rename.png');"><?php echo $button_rename; ?></a>
+      <a id="upload" class="button" style="background-image: url('view/image/filemanager/upload.png');"><?php echo $button_upload; ?></a>
+      <a id="uploadmulti" class="button" style="background-image: url('view/image/filemanager/upload.png');">Upload+</a>
+      <a id="refresh" class="button" style="background-image: url('view/image/filemanager/refresh.png');"><?php echo $button_refresh; ?></a>
+      <a id="get-html" class="button" style="background-image: url('view/image/filemanager/getHtml.png');"><?= $textGenerateHtml ?></a>
+  </div>
   <div id="column_left"></div>
   <div id="column_right"></div>
 </div>
@@ -245,15 +255,52 @@ $(document).ready(function () {
 		},
 	});	
 
-	
-	$('#column_right a').live('click', function () {
-		if ($(this).attr('class') == 'selected') {
-			$(this).removeAttr('class');
-		} else {
-			$('#column_right a').removeAttr('class');
-			
-			$(this).attr('class', 'selected');
-		}
+	var previous = null;
+	$('#column_right a').live('click', function (eventData) {
+        //TODO: add multiselect with shift
+        if (eventData.ctrlKey)
+        {
+            if ($(this).attr('class') == 'selected')
+                $(this).removeAttr('class');
+            else
+            {
+                $(this).attr('class', 'selected');
+                previous = this;
+            }
+        }
+        else if (eventData.shiftKey)
+        {
+            if (previous == null)
+            {
+                $(this).attr('class', 'selected');
+                previous = this;
+            }
+            else
+            {
+                $('#colulmn_right a').removeAttr('class');
+                var selected = this;
+                var startRange = false;
+                $('#column_right a').each(function() {
+                    if ((this == selected) || (this == previous))
+                    {
+                        $(this).attr('class', 'selected');
+                        if (startRange)
+                            return false;
+                        else
+                            startRange = true;
+                    }
+                    else if (startRange)
+                        $(this).attr('class', 'selected');
+                });
+                $(this).attr('class', 'selected');
+            }
+        }
+        else
+        {
+            $('#column_right a').removeAttr('class');
+            $(this).attr('class', 'selected');
+            previous = this;
+        }
 	});
 	
 	$('#column_right a').live('dblclick', function () {
@@ -718,9 +765,41 @@ $(document).ready(function () {
 		})
 
 		// end Upload+ main code	
-		
+
+    $('#get-html').click(function() {
+        var html = '';
+        $('#column_right a.selected').each(function() {
+            html += '&lt;img src="<?= HTTP_IMAGE ?>/data/' + this.attributes['file'].value + '" /&gt;&lt;br /&gt;<br />\r\n';
+        });
+        showTextToCopy(html);
+    });
 });
 
+function showTextToCopy(text)
+{
+    jQuery.fn.selectText = function(){
+        var doc = document
+                , element = this[0]
+                , range, selection
+                ;
+        if (doc.body.createTextRange) {
+            range = document.body.createTextRange();
+            range.moveToElementText(element);
+            range.select();
+        } else if (window.getSelection) {
+            selection = window.getSelection();
+            range = document.createRange();
+            range.selectNodeContents(element);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    };
+    $('body').append('<div id="copy-dialog" title="Copy to clipboard">' + text + '</div>');
+    $('#copy-dialog').dialog({
+        width: 540
+    });
+    $('#copy-dialog').selectText();
+}
 //--></script>
 
 </body>
