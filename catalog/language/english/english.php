@@ -36,7 +36,7 @@ $_['textShippingMethod'] = 'Shipping method:';
 $_['textSubtotal'] = 'Subtotal:';
 $_['textTotal'] = 'Total:';
 $_['ORDER_ID'] = 'Order ID';
-
+$_['WARNING_HTML_PAGE_PROVIDED'] = "HTML page's URL instead of picture was provided";
 
 // Buttons
 $_['button_add_address']    = 'Add Address';

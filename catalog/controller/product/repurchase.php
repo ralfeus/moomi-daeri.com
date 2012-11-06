@@ -19,16 +19,35 @@ class ControllerProductRepurchase extends Controller
     {
         if (preg_match('/https?:\/\/([\w\-\.]+)/', $this->request->get['url']))
         {
-            $fileName = session_id() . '/' . time() . '.jpg';
-            if (!file_exists(DIR_IMAGE . 'upload/' . session_id()))
-                mkdir(DIR_IMAGE . 'upload/' . session_id());
-            file_put_contents(DIR_IMAGE . 'upload/' . $fileName, file_get_contents($this->request->get['url']));
-            $json['filePath'] = 'upload/' . $fileName;
+            $fileName = $this->getImageFileName($this->request->get['url']);
+            if ($fileName)
+            {
+                $dirName = DIR_IMAGE . 'upload/' . session_id();
+                if (!file_exists($dirName))
+                    mkdir($dirName);
+                file_put_contents($dirName . '/' . $fileName, file_get_contents($this->request->get['url']));
+                $json['filePath'] = 'upload/' . session_id() . '/' . $fileName;
+            }
+            else
+            {
+                $this->load->language('product/repurchase');
+                $json['warning'] = $this->language->get('WARNING_HTML_PAGE_PROVIDED');
+                $json['filePath'] = $this->request->get['url'];
+            }
         }
         else
             $json['error'] = "Doesn't seem to be URL";
 
         $this->response->setOutput(json_encode($json));
+    }
+
+    private function getImageFileName($fileName)
+    {
+        $this->log->write(image_type_to_extension(@exif_imagetype($fileName)));
+        if (@exif_imagetype($fileName))
+            return time() . image_type_to_extension(exif_imagetype($fileName));
+        else
+            return '';
     }
 
     public function index()
@@ -100,7 +119,7 @@ class ControllerProductRepurchase extends Controller
 
     public function uploadImage()
     {
-        $this->log->write(print_r($_FILES, true));
+        //$this->log->write(print_r($_FILES, true));
         foreach ($_FILES as $file)
             if (is_uploaded_file($file['tmp_name']))
             {

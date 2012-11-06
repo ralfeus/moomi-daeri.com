@@ -34,7 +34,9 @@
                                         <input type="file" id="imageFile" name="imageFile" value="File" onchange="ajaxFileUpload(this)"/>
                                     </td>
                                     <td class="right" rowspan="4">
-                                        <img id="image" src="<?= HTTP_IMAGE ?>/no_image.jpg" style="max-height: 240px; max-width: 320px;" />
+                                        <a href="<?= HTTP_IMAGE ?>/no_image.jpg" target="_blank">
+                                            <img id="image" src="<?= HTTP_IMAGE ?>/no_image.jpg" alt="Not an image" style="max-height: 240px; max-width: 320px;" />
+                                        </a>
                                     </td>
                                 </tr>
                                 <tr><td colspan="3">
@@ -219,7 +221,17 @@ function downloadImage(urlInput)
                 if (!json['error'])
                 {
                     urlInput.value = json['filePath'];
-                    $(urlInput.parentElement.parentElement).find('img').attr('src', '<?= HTTP_IMAGE ?>' + json['filePath']);
+                    $(urlInput.parentElement.parentElement).find('img#image').attr('title', json['warning']);
+                    if (json['warning'])
+                    {
+                        $(urlInput.parentElement.parentElement).find('img#image').attr('src', '<?= HTTP_IMAGE ?>/no_image.jpg');
+                        $(urlInput.parentElement.parentElement).find('img#image').parent().attr('href', json['filePath']);
+                    }
+                    else
+                    {
+                        $(urlInput.parentElement.parentElement).find('img#image').attr('src', '<?= HTTP_IMAGE ?>' + json['filePath']);
+                        $(urlInput.parentElement.parentElement).find('img#image').parent().attr('href', '<?= HTTP_IMAGE ?>' + json['filePath']);
+                    }
                 }
                 else
                     alert(json['error']);

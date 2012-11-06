@@ -82,11 +82,21 @@ class ControllerAccountRepurchaseOrders extends Controller
         foreach ($this->modelAccountRepurchaseOrder->getOrders($data) as $repurchase_order)
         {
             if (file_exists(DIR_IMAGE . $repurchase_order['imagePath']))
-                $repurchase_order['imagePath'] = $this->load->model('tool/image')->resize($repurchase_order['imagePath'], 100, 100);
+            {
+                $imagePath = $this->load->model('tool/image')->resize($repurchase_order['imagePath'], 100, 100);
+                $warningHint = '';
+            }
+            else
+            {
+                $imagePath = $this->load->model('tool/image')->resize('no_image.jpg', 100, 100);
+                $warningHint = $this->language->get('WARNING_HTML_PAGE_PROVIDED');
+            }
             $this->data['orders'][] = array(
                 'comment' => $repurchase_order['comment'],
+                'hint' => $warningHint,
                 'orderItemId' => $repurchase_order['orderItemId'],
-                'imagePath' => $repurchase_order['imagePath'],
+                'imagePath' => $imagePath,
+                'imageUrl' => $repurchase_order['imagePath'],
                 'itemUrl' => $repurchase_order['itemUrl'],
                 'options' => $this->load->model('account/order_item')->getOrderItemOptions($repurchase_order['orderItemId']),
                 'quantity' => $repurchase_order['quantity'],

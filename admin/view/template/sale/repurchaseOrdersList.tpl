@@ -94,14 +94,9 @@
                                         <!--?= $order['selected'] ?-->
                             </td>
                             <td><?= $order['orderId'] ?></td>
-                            <td>
-                                <?php if ($order['originalImagePath']):
-                                    $href = $order['originalImagePath'];
-                                else:
-                                    $href = $order['itemUrl'];
-                                endif; ?>
-                                <a href="<?= $href ?>" target="_blank"><img src="<?= $order['imagePath'] ?>" /></a>
-                            </td>
+                            <td><a href="<?= $order['originalImagePath'] ?>" target="_blank">
+                                <img src="<?= $order['imagePath'] ?>" title="<?= $order['hint'] ?>"/>
+                            </a></td>
                             <td style="white-space: nowrap;"><a href="<?= $order['customerUrl'] ?>"><?= $order['customerNick'] ?></a></td>
                             <td><a href="<?= $order['itemUrl'] ?>"><?= $order['siteName'] ?></a></td>
                             <td><?= $order['whoOrders'] ?></td>

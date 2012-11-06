@@ -101,3 +101,5 @@ $_['TRANSACTION'] = 'トランザクション';
 $_['TRANSACTION_ID'] = 'トランザクションID';
 $_['VIEW'] = 'ビュー';
 $_['WEIGHT'] = '重量';
+
+$_['WARNING_HTML_PAGE_PROVIDED'] = "代わりに画像のHTMLページのアドレスが提供されました";

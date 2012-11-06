@@ -45,7 +45,11 @@
                     <div class="order-content">
                         <table>
                             <tr>
-                                <td rowspan="3"><a href="<?= $order['itemUrl'] ?>"><image src="<?= $order['imagePath'] ?>" /></a></td>
+                                <td rowspan="3">
+                                    <a href="<?= $order['imageUrl'] ?>" target="_blank">
+                                        <image src="<?= $order['imagePath'] ?>" title="<?= $order['hint'] ?>"/>
+                                    </a>
+                                </td>
                                 <td style="white-space: nowrap;">
                                     <b><?php echo $textTimeAdded; ?></b> <?php echo $order['timeAdded']; ?><br />
                                 </td>

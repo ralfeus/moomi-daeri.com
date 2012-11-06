@@ -98,7 +98,7 @@ function error_handler($errno, $errstr, $errfile, $errline) {
 			break;
 	}
 		
-	if ($config->get('config_error_display')) {
+	if (error_reporting() && $config->get('config_error_display')) {
 		echo '<b>' . $error . '</b>: ' . $errstr . ' in <b>' . $errfile . '</b> on line <b>' . $errline . '</b>';
 	}
 	

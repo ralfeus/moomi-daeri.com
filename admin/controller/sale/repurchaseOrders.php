@@ -140,13 +140,20 @@ class ControllerSaleRepurchaseOrders extends Controller
             /// Get image path or URL
 
             if (file_exists(DIR_IMAGE . $order_item['imagePath']))
+            {
                 $image = $modelToolImage->resize($order_item['imagePath'], 100, 100);
+                $hint = '';
+            }
             else
+            {
                 $image = $modelToolImage->resize('no_image.jpg', 100, 100);
+                $hint = $this->language->get('WARNING_HTML_PAGE_PROVIDED');
+            }
 
             $this->data['orders'][] = array(
                 'comment'                   => $order_item['comment'],
                 'orderId'			            => $order_item['orderItemId'],
+                'hint' => $hint,
                 'imagePath'	            => $image,
                 'siteName'			 => $siteName,
                 'customerName' => $order_item['customerName'],
@@ -157,7 +164,9 @@ class ControllerSaleRepurchaseOrders extends Controller
                     'SSL'),
                 'itemUrl'	            => $order_item['itemUrl'],
                 'options'       => nl2br($this->modelSaleRepurchaseOrder->getOrderOptionsString($order_item['orderItemId'])),
-                'originalImagePath' => file_exists(DIR_IMAGE . $order_item['imagePath']) ? HTTP_IMAGE . $order_item['imagePath'] : '',
+                'originalImagePath' => file_exists(DIR_IMAGE . $order_item['imagePath'])
+                    ? HTTP_IMAGE . $order_item['imagePath']
+                    : $order_item['imagePath'],
                 'publicComment' => $order_item['publicComment'],
                 'status'       	=> $order_item['status']
                     ? Status::getStatus(
