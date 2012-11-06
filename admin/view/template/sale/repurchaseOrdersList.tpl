@@ -25,16 +25,15 @@
                 <thead>
                     <tr>
                         <td style="text-align: center;"><input type="checkbox" onclick="selectAll(this);" /></td>
-                        <td><?= $textOrderId ?></td>
+                        <td style="width: 1px"><?= $textOrderId ?></td>
                         <td><?= $textItemImage ?></td>
-                        <td><?= $textCustomer ?></td>
-                        <td><?= $textSiteName ?></td>
-                        <td><?= $textWhoOrders ?></td>
-                        <td><?= $textQuantity ?></td>
-                        <td><?= $textAmount ?> (<?= $currencyCode ?>)</td>
-                        <td><?= $textStatus ?></td>
+                        <td style="width: 1px"><?= $textCustomer ?></td>
+                        <td style="width: 1px"><?= $textSiteName ?></td>
+                        <td style="width: 1px"><?= $textQuantity ?></td>
+                        <td style="width: 1px"><?= $textAmount ?> (<?= $currencyCode ?>)</td>
+                        <td style="width: 1px"><?= $textStatus ?></td>
                         <td style="width: auto;" "><?= $textComment ?></td>
-                        <td><?= $textActions ?></td>
+                        <td style="width: 1px"><?= $textActions ?></td>
                     </tr>
                     <tr class="filter">
                         <td />
@@ -52,19 +51,6 @@
                             </select>
                         </td>
                         <td><input name="filterSiteName" value="<?= $filterSiteName ?>" onkeydown="filterKeyDown(event)" /></td>
-                        <td>
-                            <select name="filterWhoOrders" multiple="true">
-                                <option
-                                    <?= $filterWhoOrders ? "" : "selected" ?>
-                                    value="">-- No filter --</option>
-                                <option
-                                    <?= $filterWhoOrders == REPURCHASE_ORDER_CUSTOMER_BUYS_OPTION_VALUE_ID ? "selected" : ""?>
-                                    value="<?= REPURCHASE_ORDER_CUSTOMER_BUYS_OPTION_VALUE_ID ?>">Customer</option>
-                                <option
-                                    <?= $filterWhoOrders == REPURCHASE_ORDER_SHOP_BUYS_OPTION_VALUE_ID ? "selected" : ""?>
-                                    value="<?= REPURCHASE_ORDER_SHOP_BUYS_OPTION_VALUE_ID ?>">Shop</option>
-                            </select>
-                        </td>
                         <td />
                         <td><input name="filterAmount"  size="9" value="<?= $filterAmount; ?>" onkeydown="filterKeyDown(event);"/></td>
                         <td>
@@ -99,7 +85,6 @@
                             </a></td>
                             <td style="white-space: nowrap;"><a href="<?= $order['customerUrl'] ?>"><?= $order['customerNick'] ?></a></td>
                             <td><a href="<?= $order['itemUrl'] ?>"><?= $order['siteName'] ?></a></td>
-                            <td><?= $order['whoOrders'] ?></td>
                             <td><?= $order['quantity'] ?></td>
                             <td>
                                 <input
@@ -116,12 +101,14 @@
                                         alt="<?php echo $order['comment']; ?>"
                                         onblur="saveComment(<?= $order['orderId'] ?>, this, true);"
                                         onkeydown="if (event.keyCode == 13) saveComment(<?= $order['orderId'] ?>, this, true);"
+                                        style="width: 100%"
                                         value="<?php echo $order['comment']; ?>"/><br />
                                 Public<br />
                                 <input
                                         alt="<?php echo $order['publicComment']; ?>"
                                         onblur="saveComment(<?= $order['orderId'] ?>, this, false);"
                                         onkeydown="if (event.keyCode == 13) saveComment(<?= $order['orderId'] ?>, this, false);"
+                                        style="width: 100%"
                                         value="<?php echo $order['publicComment']; ?>"/><br />
                                 <span style="color: red; "><?= $order['options'] ?></span>
                             </td>
