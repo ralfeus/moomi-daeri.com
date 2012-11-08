@@ -202,8 +202,9 @@ $(document).ready(function() {
 });
 
 function filter() {
-    $('#form').attr('action', 'index.php?route=sale/order_items&token=<?= $token ?>');
-    $('#form').submit();
+    $('#form')
+            .attr('action', 'index.php?route=sale/order_items&token=<?= $token ?>')
+            .submit();
     return;
 }
 

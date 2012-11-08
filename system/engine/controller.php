@@ -10,6 +10,7 @@ abstract class Controller extends OpenCartBase
 	protected $output;
     protected $parameters = array(); // contains parameters passed to the controller and already handled
     protected $request;
+    protected $selfRoute;
     protected $session;
     protected $template;
 
@@ -20,6 +21,7 @@ abstract class Controller extends OpenCartBase
         $this->session = new Session();
         $this->language = $this->registry->get('language');
         $this->request = $this->registry->get('request');
+        $this->selfRoute = $this->url->link($_REQUEST['route'], 'token=' . $_REQUEST['token'], 'SSL');
         $this->session = $this->registry->get('session');
         $this->initParameters();
         $this->data['notifications'] = array();

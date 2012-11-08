@@ -17,23 +17,12 @@
       <div class="buttons"><a onclick="$('form').attr('action', '<?php echo $approve; ?>'); $('form').submit();" class="button"><?php echo $button_approve; ?></a><a onclick="location = '<?php echo $insert; ?>'" class="button"><?php echo $button_insert; ?></a><a onclick="$('form').attr('action', '<?php echo $delete; ?>'); $('form').submit();" class="button"><?php echo $button_delete; ?></a></div>
     </div>
     <div class="content">
-      <form action="" method="post" enctype="multipart/form-data" id="form">
+      <form action="<?= $urlSelf ?>" method="post" enctype="multipart/form-data" id="form">
         <table class="list">
           <thead>
             <tr>
               <td width="1" style="text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').attr('checked', this.checked);" /></td>
-              <td class="left"><?php if ($sort == 'name') { ?>
-                <a href="<?php echo $sort_name; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_name; ?></a>
-                <?php } else { ?>
-                <a href="<?php echo $sort_name; ?>"><?php echo $column_name; ?></a>
-                <?php } ?></td>
-              <td class="left">
-                  <?php if ($sort == "c.nickname"): ?>
-                    <a href="<?php echo $sort_nickname; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_nickname; ?></a>
-                  <?php else: ?>
-                    <a href="<?php echo $sort_nickname; ?>"><?php echo $column_nickname; ?></a>
-                  <?php endif; ?>
-              </td>
+              <td class="left"><?= $textCustomerName ?></td>
               <td class="left"><?php if ($sort == 'c.email') { ?>
                 <a href="<?php echo $sort_email; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_email; ?></a>
                 <?php } else { ?>
@@ -71,8 +60,14 @@
           <tbody>
             <tr class="filter">
               <td></td>
-              <td><input type="text" name="filter_name" value="<?php echo $filter_name; ?>" /></td>
-              <td><input type="text" name="filter_nickname" value="<?php echo $filter_nickname; ?>" /></td>
+              <td>
+                  <select name="filterCustomerId[]" multiple="true">
+                      <?php foreach ($customersToFilterBy as $key => $value):
+                      $selected = in_array($key, $filterCustomerId) ? 'selected' : ''; ?>
+                      <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
+                      <?php endforeach; ?>
+                  </select>
+              </td>
               <td><input type="text" name="filter_email" value="<?php echo $filter_email; ?>" /></td>
               <td><select name="filter_customer_group_id">
                   <option value="*"></option>
@@ -123,8 +118,10 @@
                 <?php } else { ?>
                 <input type="checkbox" name="selected[]" value="<?php echo $customer['customer_id']; ?>" />
                 <?php } ?></td>
-              <td class="left"><?php echo $customer['name']; ?></td>
-              <td class="left"><?php echo $customer['nickname']; ?></td>
+              <td class="left">
+                  <?= $customer['name'] ?><br />
+                  <?= $customer['nickname'] ?>
+              </td>
               <td class="left"><?php echo $customer['email']; ?></td>
               <td class="left"><?php echo $customer['customer_group']; ?></td>
               <td class="left"><?php echo $customer['status']; ?></td>
@@ -156,31 +153,48 @@
   </div>
 </div>
 <script type="text/javascript"><!--
+$(document).ready(function() {
+    $('.date').datepicker({dateFormat: 'yy-mm-dd'});
+    $("#filter_status_id\\[\\]").multiselect({
+        noneSelectedText: "-- No filter --",
+        selectedList: 3
+    });
+    $('[name=filterCustomerId\\[\\]]')
+            .multiselect({
+                noneSelectedText: "-- No filter --",
+                selectedList: 1
+            })
+            .multiselectfilter();
+    $('button.ui-multiselect').css('width', '250px');
+});
+
 function filter() {
+    $('#form').submit();
+    return;
 	url = 'index.php?route=sale/customer&token=<?php echo $token; ?>';
-	
+
 	var filter_name = $('input[name=\'filter_name\']').attr('value');
-	
+
 	if (filter_name) {
 		url += '&filter_name=' + encodeURIComponent(filter_name);
 	}
-	
+
 	var filter_email = $('input[name=\'filter_email\']').attr('value');
-	
+
 	if (filter_email) {
 		url += '&filter_email=' + encodeURIComponent(filter_email);
 	}
-	
+
 	var filter_customer_group_id = $('select[name=\'filter_customer_group_id\']').attr('value');
-	
+
 	if (filter_customer_group_id != '*') {
 		url += '&filter_customer_group_id=' + encodeURIComponent(filter_customer_group_id);
-	}	
-	
+	}
+
 	var filter_status = $('select[name=\'filter_status\']').attr('value');
-	
+
 	if (filter_status != '*') {
-		url += '&filter_status=' + encodeURIComponent(filter_status); 
+		url += '&filter_status=' + encodeURIComponent(filter_status);
 	}	
 	
 	var filter_approved = $('select[name=\'filter_approved\']').attr('value');
@@ -204,9 +218,4 @@ function filter() {
 	location = url;
 }
 //--></script>
-<script type="text/javascript"><!--
-$(document).ready(function() {
-	$('#date').datepicker({dateFormat: 'yy-mm-dd'});
-});
-//--></script>
-<?php echo $footer; ?> 
+<?php echo $footer; ?>

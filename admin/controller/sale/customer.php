@@ -14,10 +14,32 @@ class ControllerSaleCustomer extends Controller {
         $this->data['error_warning'] = '';
         $this->data['success'] = '';
     }
+
+    private function getCustomers()
+    {
+        foreach ($this->parameters as $key => $value)
+        {
+            if (strpos($key, 'filter') === false)
+                continue;
+            $data[$key] = $value;
+        }
+        unset($data['filterCustomerId']);
+        $tmpResult = array();
+        foreach ($this->modelSaleCustomer->getCustomers($data) as $customer)
+            if (!in_array($customer['customer_id'], $tmpResult))
+                $tmpResult[$customer['customer_id']] = $customer['name'] . ' / ' . $customer['nickname'];
+        natcasesort($tmpResult);
+        return $tmpResult;
+    }
   
   	public function index() {
     	$this->getList();
   	}
+
+    protected function initParameters()
+    {
+        $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
+    }
   
   	public function insert() {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
@@ -397,7 +419,10 @@ class ControllerSaleCustomer extends Controller {
 			'start'                    => ($page - 1) * $this->config->get('config_admin_limit'),
 			'limit'                    => $this->config->get('config_admin_limit')
 		);
-		
+        $data = array_merge($data, $this->parameters);
+        $this->data = array_merge($this->data, $this->parameters);
+
+        $this->data['customersToFilterBy'] = $this->getCustomers();
 		$customer_total = $this->model_sale_customer->getTotalCustomers($data);
 	
 		$results = $this->model_sale_customer->getCustomers($data);
@@ -435,8 +460,7 @@ class ControllerSaleCustomer extends Controller {
 		$this->data['text_default'] = $this->language->get('text_default');		
 		$this->data['text_no_results'] = $this->language->get('text_no_results');
 
-		$this->data['column_name'] = $this->language->get('column_name');
-        $this->data['column_nickname'] = $this->language->get('field_nickname');
+		$this->data['textCustomerName'] = $this->language->get('NAME');
 		$this->data['column_email'] = $this->language->get('column_email');
 		$this->data['column_customer_group'] = $this->language->get('column_customer_group');
 		$this->data['column_status'] = $this->language->get('column_status');
@@ -452,6 +476,7 @@ class ControllerSaleCustomer extends Controller {
 		$this->data['button_filter'] = $this->language->get('FILTER');
 
 		$this->data['token'] = $this->session->data['token'];
+        $this->data['urlSelf'] = $this->selfRoute;
 
 		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
