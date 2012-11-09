@@ -101,7 +101,7 @@ abstract class Controller extends OpenCartBase
 
     private function setSelfRoute()
     {
-        $token = empty($_REQUEST['token']) ? "token=" . $_REQUEST['token'] : "";
+        $token = empty($_REQUEST['token']) ? '' : "token=" . $_REQUEST['token'];
         $this->selfRoute = $this->url->link($_REQUEST['route'], $token, 'SSL');
     }
 
