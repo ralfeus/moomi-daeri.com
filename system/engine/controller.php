@@ -21,7 +21,7 @@ abstract class Controller extends OpenCartBase
         $this->session = new Session();
         $this->language = $this->registry->get('language');
         $this->request = $this->registry->get('request');
-        $this->selfRoute = $this->url->link($_REQUEST['route'], 'token=' . $_REQUEST['token'], 'SSL');
+        $this->setSelfRoute();
         $this->session = $this->registry->get('session');
         $this->initParameters();
         $this->data['notifications'] = array();
@@ -98,6 +98,12 @@ abstract class Controller extends OpenCartBase
 			exit();				
     	}
 	}
+
+    private function setSelfRoute()
+    {
+        $token = empty($_REQUEST['token']) ? "token=" . $_REQUEST['token'] : "";
+        $this->selfRoute = $this->url->link($_REQUEST['route'], $token, 'SSL');
+    }
 
     protected function takeSessionVariables()
     {
