@@ -75,6 +75,9 @@ $_['entry_layout']           = 'Layout Override:';
 $_['entry_main_category']    = 'Category:';
 $_['entry_seo_title']        = 'HTML Tag Title:';
 $_['entry_seo_h1']           = 'HTML Tag H1:';
+$_['entry_parent_option']         = 'Parent Option:';
+$_['entry_choose_option_help']         = 'Control + mouse-click to select or deselect multiple Parent Option Values.';
+$_['entry_parent_option_value']     = 'Parent Option Value:';
 
 // Error
 $_['error_warning']          = 'Warning: Please check the form carefully for errors!';
