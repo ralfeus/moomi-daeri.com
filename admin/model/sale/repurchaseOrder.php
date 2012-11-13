@@ -144,4 +144,16 @@ class ModelSaleRepurchaseOrder extends Model
     {
         $this->modelOrderItem->setOrderItemTotal($orderId, $amount);
     }
+
+    public function setQuantity($orderId, $quantity)
+    {
+        $query = "
+                UPDATE " . DB_PREFIX . "order_product
+                SET
+                    quantity = " . (int)$quantity . "
+                WHERE order_product_id = " . (int)$orderId
+        ;
+        //$this->log->write($query);
+        $this->db->query($query);
+    }
 }

@@ -24,9 +24,9 @@
             <table class="list">
                 <thead>
                     <tr>
-                        <td style="text-align: center;"><input type="checkbox" onclick="selectAll(this);" /></td>
+                        <td style="width: 1px; text-align: center;"><input type="checkbox" onclick="selectAll(this);" /></td>
                         <td style="width: 1px"><?= $textOrderId ?></td>
-                        <td><?= $textItemImage ?></td>
+                        <td style="width: 1px"><?= $textItemImage ?></td>
                         <td style="width: 1px"><?= $textCustomer ?></td>
                         <td style="width: 1px"><?= $textSiteName ?></td>
                         <td style="width: 1px"><?= $textQuantity ?></td>
@@ -85,12 +85,17 @@
                             </a></td>
                             <td style="white-space: nowrap;"><a href="<?= $order['customerUrl'] ?>"><?= $order['customerNick'] ?></a></td>
                             <td><a href="<?= $order['itemUrl'] ?>"><?= $order['siteName'] ?></a></td>
-                            <td><?= $order['quantity'] ?></td>
                             <td>
                                 <input
-                                    type="text"
+                                        onkeydown="quantityKeyDown(event, this, <?= $order['orderId'] ?>)"
+                                        style="width: 100%"
+                                        value="<?= $order['quantity'] ?>"
+                                        />
+                            </td>
+                            <td>
+                                <input
                                     onkeydown="amountKeyDown(event, this, <?= $order['orderId'] ?>)"
-                                    size = "9"
+                                    style="width: 100%"
                                     value="<?= $order['amount'] ?>"
                                 />
                             </td>
@@ -103,7 +108,7 @@
                                         onkeydown="if (event.keyCode == 13) saveComment(<?= $order['orderId'] ?>, this, true);"
                                         style="width: 100%"
                                         value="<?php echo $order['comment']; ?>"/><br />
-                                Public<br />
+                                Public <span style="color: red; background-color: yellow">(this comment will see the customer)</span><br />
                                 <input
                                         alt="<?php echo $order['publicComment']; ?>"
                                         onblur="saveComment(<?= $order['orderId'] ?>, this, false);"
@@ -149,7 +154,7 @@ $(document).ready(function() {
 function amountKeyDown(event, sender, orderId)
 {
     if (event.keyCode == 13)
-        setAmount(orderId, sender);
+        setProperty(orderId, sender, 'amount');
 }
 
 function filter() {
@@ -160,6 +165,12 @@ function filter() {
 function filterKeyDown(e) {
     if (e.keyCode == 13)
         filter();
+}
+
+function quantityKeyDown(event, sender, orderId)
+{
+    if (event.keyCode == 13)
+        setProperty(orderId, sender, 'quantity');
 }
 
 function saveComment(orderItemId, control, isPrivate) {
@@ -197,10 +208,11 @@ function selectAll(control)
     $('input[name*=\'selectedItems\']').attr('checked', control.checked);
 }
 
-function setAmount(orderId, sender)
+function setProperty(orderId, sender, propName)
 {
     $.ajax({
-        url: 'index.php?route=sale/repurchaseOrders/setAmount&token=<?= $this->session->data['token'] ?>&orderId=' + orderId + '&amount=' + sender.value,
+        url: 'index.php?route=sale/repurchaseOrders/setProperty&token=<?= $this->session->data['token'] ?>&orderId=' +
+                orderId + '&propName=' + propName + '&value=' + sender.value,
         dataType: 'json',
         beforeSend: function() {
             $(sender).attr('disabled', true);
@@ -212,10 +224,10 @@ function setAmount(orderId, sender)
         },
         success: function(json) {
             if (json['error'])
-                alert("setAmount(): " + json['error']);
+                alert("setProperty(): " + json['error']);
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            alert("setAmount(): " + jqXHR.responseText);
+            alert("setProperty(): " + jqXHR.responseText);
         }
     });
 }

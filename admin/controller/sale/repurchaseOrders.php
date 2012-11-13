@@ -269,7 +269,13 @@ class ControllerSaleRepurchaseOrders extends Controller
 
     protected function initParameters()
     {
+        $this->parameters['orderId'] = empty($_REQUEST['orderId']) ? null : $_REQUEST['orderId'];
+        if (!empty($_REQUEST['propName']) && in_array($_REQUEST['propName'], array('amount', 'quantity')))
+            $this->parameters['propName'] = $_REQUEST['propName'];
+        else
+            $this->parameters['propName'] = null;
         $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
+        $this->parameters['value'] = !empty($_REQUEST['value']) && is_numeric($_REQUEST['value']) ? $_REQUEST['value'] : null;
     }
 
     private function initStatuses()
@@ -307,15 +313,23 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->response->setOutput($this->render());
     }
 
-    public function setAmount()
+    public function setProperty()
     {
-        if (empty($_REQUEST['orderId']))
+        if (empty($this->parameters['orderId']))
             return;
-        if (empty($_REQUEST['amount']))
+        if (empty($this->parameters['value']))
             return;
-        if (!is_numeric($_REQUEST['amount']))
-            $json['error'] = 'Wrong amount format';
-        $this->modelSaleRepurchaseOrder->setAmount($_REQUEST['orderId'], $_REQUEST['amount']);
+        if (empty($this->parameters['propName']))
+            return;
+        switch ($this->parameters['propName'])
+        {
+            case 'amount':
+                $this->modelSaleRepurchaseOrder->setAmount($this->parameters['orderId'], $this->parameters['value']);
+                break;
+            case 'quantity':
+                $this->modelSaleRepurchaseOrder->setQuantity($this->parameters['orderId'], $this->parameters['value']);
+                break;
+        }
         $json['result'] = 'Done';
         $this->log->write(print_r($json, true));
         $this->response->setOutput(json_encode($json));
