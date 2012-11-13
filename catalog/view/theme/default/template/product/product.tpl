@@ -296,6 +296,15 @@
 <?php } ?>
 <?php echo $content_bottom; ?></div>
 <script type="text/javascript"><!--
+<?php foreach($options as $option): ?>
+    <?php if(!empty($option['parent_option_id'])): ?>
+        <?php foreach ($options as $inner_option): ?>
+            <?php if($inner_option['option_id'] == $option['parent_option_id']): ?>
+                $('#option-<?php echo $option['product_option_id'] ?>').chained('#option-<?php echo $inner_option['product_option_id'] ?>');
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+<?php endforeach; ?>
 $('.fancybox').fancybox({cyclic: true});
 //--></script>
 <script type="text/javascript"><!--
