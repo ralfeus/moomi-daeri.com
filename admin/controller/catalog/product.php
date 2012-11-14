@@ -1031,7 +1031,6 @@ class ControllerCatalogProduct extends Controller {
 					$product_option_value_data[] = array(
 						'product_option_value_id' => $product_option_value['product_option_value_id'],
 						'option_value_id'         => $product_option_value['option_value_id'],
-                        'parent_option_value'	  => $product_option_value['parent_option_value'],
 						'quantity'                => $product_option_value['quantity'],
 						'subtract'                => $product_option_value['subtract'],
 						'price'                   => $product_option_value['price'],
@@ -1045,7 +1044,6 @@ class ControllerCatalogProduct extends Controller {
 				
 				$this->data['product_options'][] = array(
 					'product_option_id'    => $product_option['product_option_id'],
-                    'parent_option_id'            => $product_option['parent_option_id'],
 					'option_id'            => $product_option['option_id'],
 					'name'                 => $product_option['name'],
 					'type'                 => $product_option['type'],
@@ -1063,15 +1061,6 @@ class ControllerCatalogProduct extends Controller {
 				);				
 			}
 		}
-        $this->load->model('catalog/option');
-        $options = $this->model_catalog_option->getOptions();
-        foreach($options as $option) {
-            if($option['type'] == 'select') {
-                $option['option_values'] = $this->model_catalog_option->getOptionValues($option['option_id']);
-                $this->data['options_selects'][] = $option;
-            }
-        }
-        $this->data['color_option_id'] = $this->config->get('config_color_option_id');
 		
 		$this->load->model('sale/customer_group');
 		
@@ -1262,24 +1251,23 @@ class ControllerCatalogProduct extends Controller {
   	}
 	
 	public function option() {
-        return true;
-//		$output = '';
-//
-//		$this->load->model('catalog/option');
-//
-//		$results = $this->model_catalog_option->getOptionValues($this->request->get['option_id']);
-//
-//		foreach ($results as $result) {
-//			$output .= '<option value="' . $result['option_value_id'] . '"';
-//
-//			if (isset($this->request->get['option_value_id']) && ($this->request->get['option_value_id'] == $result['option_value_id'])) {
-//				$output .= ' selected="selected"';
-//			}
-//
-//			$output .= '>' . $result['name'] . '</option>';
-//		}
-//
-//		$this->response->setOutput($output);
+		$output = ''; 
+		
+		$this->load->model('catalog/option');
+		
+		$results = $this->model_catalog_option->getOptionValues($this->request->get['option_id']);
+		
+		foreach ($results as $result) {
+			$output .= '<option value="' . $result['option_value_id'] . '"';
+
+			if (isset($this->request->get['option_value_id']) && ($this->request->get['option_value_id'] == $result['option_value_id'])) {
+				$output .= ' selected="selected"';
+			}
+
+			$output .= '>' . $result['name'] . '</option>';
+		}
+
+		$this->response->setOutput($output);
 	}
 		
 	public function autocomplete() {
