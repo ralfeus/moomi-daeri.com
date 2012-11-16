@@ -12,7 +12,7 @@ define('IS_PAID', 3);
 
 /// Order statuses (since used by scripts should be hard coded. Visual presentation in different languages are in database)
 define('OS_IN_PROGRESS', 2);
-define('ORDER_STATUS_FINISHED', 17);
+define('OS_FINISHED', 3);
 
 /// System messages identifiers
 define('SYS_MSG_ADD_CREDIT', 1); // add credit request
@@ -25,7 +25,7 @@ define('ORDER_ITEM_STATUS_PREPARE', 0x00050002);
 define('ORDER_ITEM_STATUS_READY', 0x00050003);
 define('ORDER_ITEM_STATUS_ORDERED', 0x00050005);
 define('ORDER_ITEM_STATUS_PACKED', 0x00050006);
-define('ORDER_ITEM_STATUS_FINISH', 0x00050004);
+define('ORDER_ITEM_STATUS_SHIPPED', 0x00050004);
 define('ORDER_ITEM_STATUS_SOLDOUT', 0x00050100);
 define('ORDER_ITEM_STATUS_CANCELLED', 0x00050101);
 

@@ -1,13 +1,12 @@
 <?php
 class ControllerSaleOrder extends Controller {
 	private $error = array();
-    private $modelSaleOrder;
 	
 	public function __construct($registry)
 	{
 		parent::__construct($registry);
 		$this->load->language('sale/order');
-		$this->modelSaleOrder = $this->load->model('sale/order');
+		$this->load->model('sale/order');
 		$this->document->setTitle($this->language->get('heading_title'));
 	}
 
@@ -1679,14 +1678,8 @@ class ControllerSaleOrder extends Controller {
 
 	public function history() {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->user->hasPermission('modify', 'sale/order')) { 
-			$this->modelSaleOrder->addOrderHistory($this->request->get['order_id'], $this->request->post);
-            if ($this->parameters['orderStatusId'] == ORDER_STATUS_FINISHED)
-            {
-                $orderItems = $this->modelSaleOrder->getOrderProducts($this->parameters['orderId']);
-                $modelSaleOrderItem = $this->load->model('sale/order_item');
-                foreach ($orderItems as $orderItem)
-                    $modelSaleOrderItem->setOrderItemStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_FINISH);
-            }
+			$this->model_sale_order->addOrderHistory($this->request->get['order_id'], $this->request->post);
+				
 			$this->data['success'] = $this->language->get('text_success');
 		} else {
 			$this->data['success'] = '';
@@ -1739,12 +1732,6 @@ class ControllerSaleOrder extends Controller {
 		
 		$this->response->setOutput($this->render());
   	}
-
-    protected function initParameters()
-    {
-        $this->parameters['orderStatusId'] = empty($_REQUEST['order_status_id']) ? null : $_REQUEST['order_status_id'];
-        $this->parameters['orderId'] = empty($_REQUEST['order_id']) ? null : $_REQUEST['order_id'];
-    }
 	
 	public function download() {
 		if (isset($this->request->get['order_option_id'])) {

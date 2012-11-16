@@ -32,24 +32,17 @@ class ModelCatalogProduct extends Model {
 		}
 	
 		if (isset($data['product_option'])) {
-            $color_option_id = $this->config->get('config_color_option_id');
 			foreach ($data['product_option'] as $product_option) {
 				if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image') {
-                    $this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int)$product_id . "', option_id = '" . (int)$product_option['option_id'] . "', required = '" . (int)$product_option['required'] . "', parent_option_id = '" . (int)$product_option['parent_option_id'] . "'");
-
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int)$product_id . "', option_id = '" . (int)$product_option['option_id'] . "', required = '" . (int)$product_option['required'] . "'");
+				
 					$product_option_id = $this->db->getLastId();
 				
 					if (isset($product_option['product_option_value'])) {
-                        if($product_option['option_id'] == $color_option_id) {
-                            foreach ($product_option['product_option_value'] as $key => $product_option_value) {
-                                $product_option['product_option_value'][$key]['option_value_id'] = $this->checkOptionByName($product_option_value['option_value_id'], $color_option_id);
-                            }
-                        }
-                        foreach ($product_option['product_option_value'] as $product_option_value) {
-                            $parent_option_value = implode(',', $product_option_value['parent_option_value']);
-                            $this->db->query("INSERT INTO " . DB_PREFIX . "product_option_value SET product_option_id = '" . (int)$product_option_id . "', product_id = '" . (int)$product_id . "', option_id = '" . (int)$product_option['option_id'] . "', option_value_id = '" . (int)$product_option_value['option_value_id'] . "', parent_option_value = '" . $this->db->escape($parent_option_value) . "', quantity = '" . (int)$product_option_value['quantity'] . "', subtract = '" . (int)$product_option_value['subtract'] . "', price = '" . (float)$product_option_value['price'] . "', price_prefix = '" . $this->db->escape($product_option_value['price_prefix']) . "', points = '" . (int)$product_option_value['points'] . "', points_prefix = '" . $this->db->escape($product_option_value['points_prefix']) . "', weight = '" . (float)$product_option_value['weight'] . "', weight_prefix = '" . $this->db->escape($product_option_value['weight_prefix']) . "'");
-                        }
-                    }
+						foreach ($product_option['product_option_value'] as $product_option_value) {
+							$this->db->query("INSERT INTO " . DB_PREFIX . "product_option_value SET product_option_id = '" . (int)$product_option_id . "', product_id = '" . (int)$product_id . "', option_id = '" . (int)$product_option['option_id'] . "', option_value_id = '" . $this->db->escape($product_option_value['option_value_id']) . "', quantity = '" . (int)$product_option_value['quantity'] . "', subtract = '" . (int)$product_option_value['subtract'] . "', price = '" . (float)$product_option_value['price'] . "', price_prefix = '" . $this->db->escape($product_option_value['price_prefix']) . "', points = '" . (int)$product_option_value['points'] . "', points_prefix = '" . $this->db->escape($product_option_value['points_prefix']) . "', weight = '" . (float)$product_option_value['weight'] . "', weight_prefix = '" . $this->db->escape($product_option_value['weight_prefix']) . "'");
+						} 
+					}
 				} else { 
 					$this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int)$product_id . "', option_id = '" . (int)$product_option['option_id'] . "', option_value = '" . $this->db->escape($product_option['option_value']) . "', required = '" . (int)$product_option['required'] . "'");
 				}
@@ -132,29 +125,8 @@ class ModelCatalogProduct extends Model {
 						
 		$this->cache->delete('product');
 	}
-
-    public function checkOptionByName($name, $option_id) {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE option_id = '" . $option_id . "' AND LCASE(name) LIKE '%" . $this->db->escape(strtolower($name)) . "%'");
-        if($query->rows) {
-            return $query->row['option_value_id'];
-        } else {
-            $this->db->query("INSERT INTO " . DB_PREFIX . "option_value SET option_id = '" . $option_id . "', sort_order = 1");
-
-            $option_value_id = $this->db->getLastId();
-
-            $this->load->model('localisation/language');
-
-            $languages = $this->model_localisation_language->getLanguages();
-
-            foreach($languages as $language) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "option_value_description SET option_value_id = '" . (int)$option_value_id . "', name = '" . $name . "', option_id = '" . $option_id . "', language_id = '" . $language['language_id'] . "'");
-            }
-            return $option_value_id;
-        }
-    }
-
-
-    public function editProduct($product_id, $data) {
+	
+	public function editProduct($product_id, $data) {
 		$this->db->query("UPDATE " . DB_PREFIX . "product SET model = '" . $this->db->escape($data['model']) . "', sku = '" . $this->db->escape($data['sku']) . "', upc = '" . $this->db->escape($data['upc']) . "', location = '" . $this->db->escape($data['location']) . "', quantity = '" . (int)$data['quantity'] . "', minimum = '" . (int)$data['minimum'] . "', subtract = '" . (int)$data['subtract'] . "', stock_status_id = '" . (int)$data['stock_status_id'] . "', date_available = '" . $this->db->escape($data['date_available']) . "', manufacturer_id = '" . (int)$data['manufacturer_id']  . "', supplier_id = '" . (int)$data['supplier_id'] . "', shipping = '" . (int)$data['shipping'] . "', price = '" . (float)$data['price'] . "', points = '" . (int)$data['points'] . "', weight = '" . (float)$data['weight'] . "', weight_class_id = '" . (int)$data['weight_class_id'] . "', length = '" . (float)$data['length'] . "', width = '" . (float)$data['width'] . "', height = '" . (float)$data['height'] . "', length_class_id = '" . (int)$data['length_class_id'] . "', status = '" . (int)$data['status'] . "', tax_class_id = '" . $this->db->escape($data['tax_class_id']) . "', sort_order = '" . (int)$data['sort_order'] . "', date_modified = NOW() WHERE product_id = '" . (int)$product_id . "'");
 
 		if (isset($data['image'])) {
@@ -193,23 +165,16 @@ class ModelCatalogProduct extends Model {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . (int)$product_id . "'");
 		
 		if (isset($data['product_option'])) {
-            $color_option_id = $this->config->get('config_color_option_id');
-            foreach ($data['product_option'] as $product_option) {
+			foreach ($data['product_option'] as $product_option) {
 				if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image') {
-                    $this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_option_id = '" . (int)$product_option['product_option_id'] . "', product_id = '" . (int)$product_id . "', option_id = '" . (int)$product_option['option_id'] . "', required = '" . (int)$product_option['required'] . "', parent_option_id = '" . (int)$product_option['parent_option_id'] . "'");
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_option_id = '" . (int)$product_option['product_option_id'] . "', product_id = '" . (int)$product_id . "', option_id = '" . (int)$product_option['option_id'] . "', required = '" . (int)$product_option['required'] . "'");
+				
 					$product_option_id = $this->db->getLastId();
 				
 					if (isset($product_option['product_option_value'])) {
-                        if($product_option['option_id'] == $color_option_id) {
-                            foreach ($product_option['product_option_value'] as $key => $product_option_value) {
-                                $product_option['product_option_value'][$key]['option_value_id'] = $this->checkOptionByName($product_option_value['option_value_id'], $color_option_id);
-                            }
-                        }
-                        foreach ($product_option['product_option_value'] as $product_option_value) {
-
-                            $parent_option_value = implode(',', $product_option_value['parent_option_value']);
-                            $this->db->query("INSERT INTO " . DB_PREFIX . "product_option_value SET product_option_value_id = '" . (int)$product_option_value['product_option_value_id'] . "', product_option_id = '" . (int)$product_option_id . "', product_id = '" . (int)$product_id . "', option_id = '" . (int)$product_option['option_id'] . "', option_value_id = '" . (int)$product_option_value['option_value_id'] . "', parent_option_value = '" . $this->db->escape($parent_option_value) . "', quantity = '" . (int)$product_option_value['quantity'] . "', subtract = '" . (int)$product_option_value['subtract'] . "', price = '" . (float)$product_option_value['price'] . "', price_prefix = '" . $this->db->escape($product_option_value['price_prefix']) . "', points = '" . (int)$product_option_value['points'] . "', points_prefix = '" . $this->db->escape($product_option_value['points_prefix']) . "', weight = '" . (float)$product_option_value['weight'] . "', weight_prefix = '" . $this->db->escape($product_option_value['weight_prefix']) . "'");
-                        }
+						foreach ($product_option['product_option_value'] as $product_option_value) {
+							$this->db->query("INSERT INTO " . DB_PREFIX . "product_option_value SET product_option_value_id = '" . (int)$product_option_value['product_option_value_id'] . "', product_option_id = '" . (int)$product_option_id . "', product_id = '" . (int)$product_id . "', option_id = '" . (int)$product_option['option_id'] . "', option_value_id = '" . $this->db->escape($product_option_value['option_value_id']) . "', quantity = '" . (int)$product_option_value['quantity'] . "', subtract = '" . (int)$product_option_value['subtract'] . "', price = '" . (float)$product_option_value['price'] . "', price_prefix = '" . $this->db->escape($product_option_value['price_prefix']) . "', points = '" . (int)$product_option_value['points'] . "', points_prefix = '" . $this->db->escape($product_option_value['points_prefix']) . "', weight = '" . (float)$product_option_value['weight'] . "', weight_prefix = '" . $this->db->escape($product_option_value['weight_prefix']) . "'");
+						}
 					}
 				} else { 
 					$this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_option_id = '" . (int)$product_option['product_option_id'] . "', product_id = '" . (int)$product_id . "', option_id = '" . (int)$product_option['option_id'] . "', option_value = '" . $this->db->escape($product_option['option_value']) . "', required = '" . (int)$product_option['required'] . "'");
@@ -548,29 +513,25 @@ class ModelCatalogProduct extends Model {
 				$product_option_value_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_option_value pov LEFT JOIN " . DB_PREFIX . "option_value ov ON (pov.option_value_id = ov.option_value_id) LEFT JOIN " . DB_PREFIX . "option_value_description ovd ON (ov.option_value_id = ovd.option_value_id) WHERE pov.product_option_id = '" . (int)$product_option['product_option_id'] . "' AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
 				
 				foreach ($product_option_value_query->rows as $product_option_value) {
-                    $parent_option_value = array();
-                    $parent_option_value = explode(',', $product_option_value['parent_option_value']);
-                    $product_option_value_data[] = array(
-                        'product_option_value_id' => $product_option_value['product_option_value_id'],
-                        'option_value_id'         => $product_option_value['option_value_id'],
-                        'name'                    => $product_option_value['name'],
-                        'image'                   => $product_option_value['image'],
-                        'quantity'                => $product_option_value['quantity'],
-                        'subtract'                => $product_option_value['subtract'],
-                        'price'                   => $product_option_value['price'],
-                        'price_prefix'            => $product_option_value['price_prefix'],
-                        'points'                  => $product_option_value['points'],
-                        'points_prefix'           => $product_option_value['points_prefix'],
-                        'weight'                  => $product_option_value['weight'],
-                        'weight_prefix'           => $product_option_value['weight_prefix'],
-                        'parent_option_value'	  => $parent_option_value
-                    );
+					$product_option_value_data[] = array(
+						'product_option_value_id' => $product_option_value['product_option_value_id'],
+						'option_value_id'         => $product_option_value['option_value_id'],
+						'name'                    => $product_option_value['name'],
+						'image'                   => $product_option_value['image'],
+						'quantity'                => $product_option_value['quantity'],
+						'subtract'                => $product_option_value['subtract'],
+						'price'                   => $product_option_value['price'],
+						'price_prefix'            => $product_option_value['price_prefix'],
+						'points'                  => $product_option_value['points'],
+						'points_prefix'           => $product_option_value['points_prefix'],						
+						'weight'                  => $product_option_value['weight'],
+						'weight_prefix'           => $product_option_value['weight_prefix']					
+					);
 				}
 				
 				$product_option_data[] = array(
 					'product_option_id'    => $product_option['product_option_id'],
 					'option_id'            => $product_option['option_id'],
-                    'parent_option_id'            => $product_option['parent_option_id'],
 					'name'                 => $product_option['name'],
 					'type'                 => $product_option['type'],
 					'product_option_value' => $product_option_value_data,
