@@ -266,7 +266,8 @@ class ControllerProductProduct extends Controller {
 								'option_value_id'         => $option_value['option_value_id'],
 								'name'                    => $option_value['name'],
 								'image'                   => $this->model_tool_image->resize($option_value['image'], 50, 50),
-								'price'                   => (float)$option_value['price'] ? $this->currency->format($this->tax->calculate($option_value['price'], $product_info['tax_class_id'], $this->config->get('config_tax'))) : false,
+                                'parent_option_value'	  => $option_value['parent_option_value'],
+                                'price'                   => (float)$option_value['price'] ? $this->currency->format($this->tax->calculate($option_value['price'], $product_info['tax_class_id'], $this->config->get('config_tax'))) : false,
 								'price_prefix'            => $option_value['price_prefix']
 							);
 						}
@@ -274,7 +275,8 @@ class ControllerProductProduct extends Controller {
 					
 					$this->data['options'][] = array(
 						'product_option_id' => $option['product_option_id'],
-						'option_id'         => $option['option_id'],
+                        'parent_option_id'            => $option['parent_option_id'],
+                        'option_id'         => $option['option_id'],
 						'name'              => $option['name'],
 						'type'              => $option['type'],
 						'option_value'      => $option_value_data,
@@ -291,8 +293,23 @@ class ControllerProductProduct extends Controller {
 					);						
 				}
 			}
-							
-			if ($product_info['minimum']) {
+            $array = array();
+            foreach ($this->data['options'] as $key => $option) {
+                if(!empty($option['parent_option_id'])) {
+                    foreach ($this->data['options'] as $inner_option) {
+                        if($inner_option['option_id'] == $option['parent_option_id']) {
+                            foreach ($inner_option['option_value'] as $inner_option_value) {
+                                $array[$inner_option_value['option_value_id']] = $inner_option_value['product_option_value_id'];
+                            }
+                            foreach ($option['option_value'] as $option_key => $option_value) {
+                                $this->data['options'][$key]['option_value'][$option_key]['parent_option_value'] = str_replace(array_keys($array), array_values($array), $option_value['parent_option_value']);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($product_info['minimum']) {
 				$this->data['minimum'] = $product_info['minimum'];
 			} else {
 				$this->data['minimum'] = 1;
