@@ -63,87 +63,93 @@ DD_belatedPNG.fix('#logo img');
 </head>
 <body>
 <div id="container">
-<div id="header">
-  <?php if ($logo) { ?>
-  <div id="logo"><a href="<?php echo $home; ?>"><img src="<?php echo $logo; ?>" title="<?php echo $name; ?>" alt="<?php echo $name; ?>" /></a></div>
-  <?php } ?>
-<?php
-$rowsCount = max(count($languages), count($currencies));
-if ($rowsCount > 1):
-?>
-  <span id="share42" style="position: fixed; z-index: 9999; margin-left: -72px; top: 200px; ">
-      <form id="selectors" action="<?php echo $action; ?>" method="post" enctype="multipart/form-data">
-          <table>
-              <tbody>
-<?php for ($i = 0; $i < $rowsCount; $i++): ?>
-                  <tr>
-                      <td>
-        <?php if (count($languages) > $i): ?>
-                          <div class="language-selector">
-                              <img
-                                  src="image/flags/<?= $languages[$i]['image'] ?>"
-                                  alt="<?= $languages[$i]['name'] ?>"
-                                  title="<?= $languages[$i]['name']; ?>"
-                                  onclick="changeLanguage('<?= $languages[$i]['code'] ?>')" />
-                          </div>
-        <?php endif; ?>
-                      </td>
-                      <td class="currency-selector">
-<?php
-        if (count($currencies) > $i):
-            if ($currencies[$i]['code'] == $currency_code):
-                $boldBegin = "<b>"; $boldEnd = "</b>";
-                $onClick = "";
-            else:
-                $boldBegin = ""; $boldEnd = "";
-                $onClick = 'onclick="changeCurrency(\'' . $currencies[$i]['code'] . '\')"';
-            endif;
-            $symbol = $currencies[$i]['symbol_left'] ? $currencies[$i]['symbol_left'] : $currencies[$i]['symbol_right'];
-?>
-                          <a title="<?= $currencies[$i]['title'] ?>" <?= $onClick ?>>
-                              <?= $boldBegin ?><?= $symbol ?> <?= $boldEnd ?>
-                          </a>
-        <?php endif; ?>
-                      </td>
-                  </tr>
-<?php endfor; ?>
-              </tbody>
-          </table>
-          <input type="hidden" name="language_code" value="" />
-          <input type="hidden" name="currency_code" value="" />
-          <input type="hidden" name="redirect" value="<?= $redirect ?>" />
-      </form>
-  </span>
-<?php endif; ?>
-  <div id="cart">
-    <div class="heading">
-      <h4><?php echo $text_cart; ?></h4>
-      <a><span id="cart_total"><?php echo $text_items; ?></span></a></div>
-    <div class="content"></div>
-  </div>
-  <div id="search">
-    <div class="button-search"></div>
-    <?php if ($filter_name) { ?>
-    <input type="text" name="filter_name" value="<?php echo $filter_name; ?>" />
-    <?php } else { ?>
-    <input type="text" name="filter_name" value="<?php echo $text_search; ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
-    <?php } ?>
-  </div>
-  <div id="welcome">
-    <?php if (!$logged) { ?>
-    <?php echo $text_welcome; ?>
-    <?php } else { ?>
-    <?php echo $text_logged; ?>
-    <?php } ?>
-  </div>
-  <div class="links">
-      <a class="button" href="<?php echo $home; ?>"><span><?php echo $text_home; ?></span></a>
-      <a class="button" href="<?php echo $wishlist; ?>" id="wishlist_total"><span><?php echo $text_wishlist; ?></span></a>
-      <a class="button" href="<?php echo $account; ?>"><span><?php echo $text_account; ?></span></a>
-      <a class="button" href="<?php echo $cart; ?>"><span><?php echo $text_cart; ?></span></a>
-      <a class="button" href="<?php echo $checkout; ?>"><span><?php echo $text_checkout; ?></span></a>
-      <a class="button" href="<?php echo $repurchase_order; ?>"><span><?php echo $text_repurchase_order; ?></span></a>
-  </div>
+<div id="header"
+    <?php if ($logo): ?>
+    style="background: url('<?= $logo ?>')"
+    <?php endif; ?>
+    >
+    <table style="width: 100%; height: 150px;">
+        <tbody>
+            <tr>
+                <td style="width: 100%;"></td>
+                <td style="vertical-align: bottom;">
+                    <span id="span-selectors">
+                        <form id="selectors" action="<?php echo $action; ?>" method="post" enctype="multipart/form-data">
+                            <table>
+                                <tbody>
+                                    <tr>
+<?php foreach ($languages as $language): ?>
+                                        <td style="text-align: center; vertical-align: middle;">
+                                            <div class="language-selector">
+                                                <img
+                                                    src="image/flags/<?= $language['image'] ?>"
+                                                    alt="<?= $language['name'] ?>"
+                                                    title="<?= $language['name']; ?>"
+                                                    onclick="changeLanguage('<?= $language['code'] ?>')" />
+                                            </div>
+                                        </td>
+<?php endforeach; ?>
+                                    </tr>
+                                    <tr>
+<?php foreach ($currencies as $currency): ?>
+                                        <td class="currency-selector">
+    <?php
+    if ($currency['code'] == $currency_code):
+        $boldBegin = "<b>"; $boldEnd = "</b>";
+        $onClick = "";
+    else:
+        $boldBegin = ""; $boldEnd = "";
+        $onClick = 'onclick="changeCurrency(\'' . $currency['code'] . '\')"';
+    endif;
+    $symbol = $currency['symbol_left'] ? $currency['symbol_left'] : $currency['symbol_right'];
+    ?>
+                                            <a title="<?= $currency['title'] ?>" <?= $onClick ?>>
+                                                <?= $boldBegin ?><?= $symbol ?> <?= $boldEnd ?>
+                                            </a>
+                                        </td>
+<?php endforeach; ?>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <input type="hidden" name="language_code" value="" />
+                            <input type="hidden" name="currency_code" value="" />
+                            <input type="hidden" name="redirect" value="<?= $redirect ?>" />
+                        </form>
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div id="cart">
+        <div class="heading">
+            <h4><?php echo $text_cart; ?></h4>
+            <a><span id="cart_total"><?php echo $text_items; ?></span></a>
+        </div>
+        <div class="content"></div>
+    </div>
+    <div id="search">
+        <div class="button-search"></div>
+        <?php if ($filter_name) { ?>
+        <input type="text" name="filter_name" value="<?php echo $filter_name; ?>" />
+        <?php } else { ?>
+        <input type="text" name="filter_name" value="<?php echo $text_search; ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
+        <?php } ?>
+    </div>
+    <div id="welcome">
+        <?php if (!$logged) { ?>
+        <?php echo $text_welcome; ?>
+        <?php } else { ?>
+        <?php echo $text_logged; ?>
+        <?php } ?>
+    </div>
+    <div class="links">
+        <a class="button" href="<?php echo $home; ?>"><span><?php echo $text_home; ?></span></a>
+        <a class="button" href="<?php echo $wishlist; ?>" id="wishlist_total"><span><?php echo $text_wishlist; ?></span></a>
+        <a class="button" href="<?php echo $account; ?>"><span><?php echo $text_account; ?></span></a>
+        <a class="button" href="<?php echo $cart; ?>"><span><?php echo $text_cart; ?></span></a>
+        <a class="button" href="<?php echo $checkout; ?>"><span><?php echo $text_checkout; ?></span></a>
+        <a class="button" href="<?php echo $repurchase_order; ?>"><span><?php echo $text_repurchase_order; ?></span></a>
+    </div>
 </div>
 <?php if ($categories) { ?>
 <div id="menu">

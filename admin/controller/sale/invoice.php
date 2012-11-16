@@ -46,7 +46,7 @@ class ControllerSaleInvoice extends Controller
 
     public function create()
     {
-        $this->log->write(print_r($_REQUEST, true));
+//        $this->log->write(print_r($_REQUEST, true));
         $comment = isset($_REQUEST['comment']) ? $_REQUEST['comment'] : '';
         if (!is_numeric($_REQUEST['discount']))
         {
@@ -177,7 +177,7 @@ class ControllerSaleInvoice extends Controller
             );
         }
         $this->data = array_merge($this->data, $this->parameters);
-        $this->log->write(print_r($this->parameters, true));
+//        $this->log->write(print_r($this->parameters, true));
     }
 
     private function getOrderAddress($order)
@@ -220,8 +220,8 @@ class ControllerSaleInvoice extends Controller
         $modelTransaction = $this->load->model('sale/transaction');
         $invoice = $this->modelSaleInvoice->getInvoice($invoiceId);
         $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
-        $this->log->write(print_r($invoice, true));
-        $this->log->write(print_r($customer, true));
+//        $this->log->write(print_r($invoice, true));
+//        $this->log->write(print_r($customer, true));
         if ($customer['await_invoice_confirmation'])
             $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_CUSTOMER_CONFIRMATION);
         else
