@@ -206,7 +206,7 @@ final class Cart extends OpenCartBase
 					$product_2 = explode(':', $key_2);
 					
 					if ($product_2[0] == $product_id) {
-						$discount_quantity += is_object($cartItem2) ? $cartItem2->quantity : $cartItem2;
+						$discount_quantity += $cartItem2->quantity;
 					}
 				}
 				
@@ -248,9 +248,10 @@ final class Cart extends OpenCartBase
 				}
 				
 				// Stock
-				if (!$product_query->row['quantity'] || ($product_query->row['quantity'] < (is_object($cartItem) ? $cartItem->quantity : $cartItem)))
+				if (!$product_query->row['quantity'] || ($product_query->row['quantity'] < $cartItem->quantity)) {
 					$stock = false;
-
+				}
+				
       			$product_data[$key] = array(
         			'key'             => $key,
         			'product_id'      => $product_query->row['product_id'],
@@ -260,16 +261,16 @@ final class Cart extends OpenCartBase
         			'image'           => $product_query->row['image'],
         			'option'          => $option_data,
 					'download'        => $download_data,
-        			'quantity'        => is_object($cartItem) ? $cartItem->quantity : $cartItem,
+        			'quantity'        => $cartItem->quantity,
         			'minimum'         => $product_query->row['minimum'],
 					'subtract'        => $product_query->row['subtract'],
 					'stock'           => $stock,
         			'price'           => ($price + $option_price),
-        			'total'           => ($price + $option_price) * (is_object($cartItem) ? $cartItem->quantity : $cartItem),
-					'reward'          => $reward * (is_object($cartItem) ? $cartItem->quantity : $cartItem),
-					'points'          => ($product_query->row['points'] + $option_points) * (is_object($cartItem) ? $cartItem->quantity : $cartItem),
+        			'total'           => ($price + $option_price) * $cartItem->quantity,
+					'reward'          => $reward * $cartItem->quantity,
+					'points'          => ($product_query->row['points'] + $option_points) * $cartItem->quantity,
 					'tax_class_id'    => $product_query->row['tax_class_id'],
-        			'weight'          => ($product_query->row['weight'] + $option_weight) * (is_object($cartItem) ? $cartItem->quantity : $cartItem),
+        			'weight'          => ($product_query->row['weight'] + $option_weight) * $cartItem->quantity,
         			'weight_class_id' => $product_query->row['weight_class_id'],
         			'length'          => $product_query->row['length'],
 					'width'           => $product_query->row['width'],

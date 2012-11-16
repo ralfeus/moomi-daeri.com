@@ -847,7 +847,7 @@ class ControllerSaleOrderItems extends Controller {
             $this->session->data['success'] = '';
             $this->load->model('sale/order_item');
             $this->load->model('localisation/order_item_status');
-//            $this->log->write("Setting status '$order_item_new_status' to items:\n" . print_r($order_items, true));
+            $this->log->write("Setting status '$order_item_new_status' to items:\n" . print_r($order_items, true));
 
             foreach ($order_items as $order_item_id)
                 if ($this->modelSaleOrderItem->setOrderItemStatus($order_item_id, $order_item_new_status))
@@ -868,7 +868,7 @@ class ControllerSaleOrderItems extends Controller {
     }
 
     public function save_comment() {
-//        $this->log->write(print_r($this->parameters, true));
+        $this->log->write(print_r($this->parameters, true));
         if (!$this->isValidOrderItemId($this->parameters['orderItemId']))
             $this->response->addHeader("HTTP/1.0 400 Bad request");
         else
