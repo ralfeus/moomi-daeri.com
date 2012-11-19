@@ -525,7 +525,12 @@ class ModelCatalogProduct extends Model {
         if (array_key_exists($dataHash, $this->session->data['productsCountCache']))
             return $this->session->data['productsCountCache'][$dataHash];
 
-		$sql = "SELECT COUNT(DISTINCT p.product_id) AS total FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id)";
+		$sql = "
+		    SELECT COUNT(DISTINCT p.product_id) AS total
+            FROM
+                " . DB_PREFIX . "product p
+                LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id)
+                LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id)";
 
 		if (!empty($data['filter_category_id'])) {
 			$sql .= " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)";			
@@ -535,8 +540,12 @@ class ModelCatalogProduct extends Model {
 			$sql .= " LEFT JOIN " . DB_PREFIX . "product_tag pt ON (p.product_id = pt.product_id)";			
 		}
 					
-		$sql .= " WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'";
-		
+		$sql .= "
+		    WHERE
+		        pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
+		        AND p.status = '1'
+		        AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
+		        AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'";
 		if (!empty($data['filter_name']) || !empty($data['filter_tag'])) {
 			$sql .= " AND (";
 								
