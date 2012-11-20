@@ -223,7 +223,15 @@ class ControllerCommonHome extends Controller {
 		switch ($range) {
 			case 'day':
 				for ($i = 0; $i < 24; $i++) {
-					$query = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "order` WHERE order_status_id > '0' AND (DATE(date_added) = DATE(NOW()) AND HOUR(date_added) = '" . (int)$i . "') GROUP BY HOUR(date_added) ORDER BY date_added ASC");
+					$query = $this->db->query("
+					    SELECT COUNT(*) AS total
+					    FROM `" . DB_PREFIX . "order`
+					    WHERE
+					        order_status_id > '0'
+					        AND DATE(date_added) = '" . date('Y-m-d 00:00:00') . "'
+                            AND HOUR(date_added) = '" . (int)$i . "'
+                        GROUP BY HOUR(date_added)
+                        ORDER BY date_added ASC");
 					
 					if ($query->num_rows) {
 						$data['order']['data'][]  = array($i, (int)$query->row['total']);
@@ -231,7 +239,14 @@ class ControllerCommonHome extends Controller {
 						$data['order']['data'][]  = array($i, 0);
 					}
 					
-					$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "customer WHERE DATE(date_added) = DATE(NOW()) AND HOUR(date_added) = '" . (int)$i . "' GROUP BY HOUR(date_added) ORDER BY date_added ASC");
+					$query = $this->db->query("
+					    SELECT COUNT(*) AS total
+					    FROM " . DB_PREFIX . "customer
+					    WHERE
+					        DATE(date_added) = '" . date('Y-m-d 00:00:00') . "'
+					        AND HOUR(date_added) = '" . (int)$i . "'
+                        GROUP BY HOUR(date_added)
+                        ORDER BY date_added ASC");
 					
 					if ($query->num_rows) {
 						$data['customer']['data'][] = array($i, (int)$query->row['total']);

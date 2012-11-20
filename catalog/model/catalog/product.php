@@ -21,7 +21,10 @@ class ModelCatalogProduct extends Model {
 		                pd2.product_id = p.product_id
 		                AND pd2.customer_group_id = '" . (int)$customer_group_id . "'
 		                AND pd2.quantity = '1'
-		                AND ((pd2.date_start = '0000-00-00' OR pd2.date_start < NOW()) AND (pd2.date_end = '0000-00-00' OR pd2.date_end > NOW()))
+		                AND (
+		                    (pd2.date_start = '0000-00-00' OR pd2.date_start < '" . date('Y-m-d H:00:00') . "')
+		                    AND (pd2.date_end = '0000-00-00' OR pd2.date_end > '" . date('Y-m-d H:00:00') . "')
+                        )
                     ORDER BY pd2.priority ASC, pd2.price ASC
                     LIMIT 1
                 ) AS discount,
@@ -31,7 +34,8 @@ class ModelCatalogProduct extends Model {
                     WHERE
                         ps.product_id = p.product_id
                         AND ps.customer_group_id = '" . (int)$customer_group_id . "'
-                        AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW()))
+                        AND ((ps.date_start = '0000-00-00' OR ps.date_start < '" . date('Y-m-d H:00:00') . "')
+                        AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00') . "'))
                     ORDER BY ps.priority ASC, ps.price ASC
                     LIMIT 1
                 ) AS special,
@@ -77,7 +81,7 @@ class ModelCatalogProduct extends Model {
                 p.product_id = '" . (int)$product_id . "'
                 AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
                 AND p.status = '1'
-                AND p.date_available <= NOW()
+                AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
                 AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
         ");
 		
@@ -129,7 +133,13 @@ class ModelCatalogProduct extends Model {
 				$sql .= " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)";			
 			}
 			
-			$sql .= " WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'"; 
+			$sql .= "
+			    WHERE
+			        pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
+			        AND p.status = '1'
+			        AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
+			        AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
+            ";
 			
 			if (!empty($data['filter_name']) || !empty($data['filter_tag'])) {
 				$sql .= " AND (";
@@ -258,7 +268,31 @@ class ModelCatalogProduct extends Model {
 			$customer_group_id = $this->config->get('config_customer_group_id');
 		}	
 				
-		$sql = "SELECT DISTINCT ps.product_id, (SELECT AVG(rating) FROM " . DB_PREFIX . "review r1 WHERE r1.product_id = ps.product_id AND r1.status = '1' GROUP BY r1.product_id) AS rating FROM " . DB_PREFIX . "product_special ps LEFT JOIN " . DB_PREFIX . "product p ON (ps.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND ps.customer_group_id = '" . (int)$customer_group_id . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW())) GROUP BY ps.product_id";
+		$sql = "
+		    SELECT DISTINCT
+		        ps.product_id,
+		        (
+                    SELECT AVG(rating)
+                    FROM " . DB_PREFIX . "review r1
+                    WHERE
+                        r1.product_id = ps.product_id
+                        AND r1.status = '1'
+                    GROUP BY r1.product_id
+                ) AS rating
+            FROM
+                " . DB_PREFIX . "product_special ps
+                LEFT JOIN " . DB_PREFIX . "product p ON (ps.product_id = p.product_id)
+                LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id)
+                LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id)
+            WHERE
+                p.status = '1'
+                AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
+                AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
+                AND ps.customer_group_id = '" . (int)$customer_group_id . "'
+                AND ((ps.date_start = '0000-00-00' OR ps.date_start < '" . date('Y-m-d H:00:00') . "')
+                AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00') . "'))
+            GROUP BY ps.product_id
+        ";
 
 		$sort_data = array(
 			'pd.name',
@@ -317,7 +351,7 @@ class ModelCatalogProduct extends Model {
 			        " . DB_PREFIX . "product p
 			        LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id)
                 WHERE
-                    p.status = '1' AND p.date_available <= NOW()
+                    p.status = '1' AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
                     AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
                 ORDER BY p.date_added DESC LIMIT " . (int)$limit
             );
@@ -341,7 +375,7 @@ class ModelCatalogProduct extends Model {
 		        " . DB_PREFIX . "product p
 		        LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id)
             WHERE
-                p.status = '1' AND p.date_available <= NOW()
+                p.status = '1' AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
                 AND p.product_id <> " . REPURCHASE_ORDER_PRODUCT_ID . "
                 AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
             ORDER BY p.viewed, p.date_added DESC
@@ -369,7 +403,7 @@ class ModelCatalogProduct extends Model {
 			        LEFT JOIN `" . DB_PREFIX . "product` p ON (op.product_id = p.product_id)
 			        LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id)
                 WHERE
-                    o.order_status_id > '0' AND p.status = '1' AND p.date_available <= NOW()
+                    o.order_status_id > '0' AND p.status = '1' AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
                     AND op.product_id <> " . REPURCHASE_ORDER_PRODUCT_ID . "
                     AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
                 GROUP BY op.product_id
@@ -471,7 +505,15 @@ class ModelCatalogProduct extends Model {
 			$customer_group_id = $this->config->get('config_customer_group_id');
 		}	
 		
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_discount WHERE product_id = '" . (int)$product_id . "' AND customer_group_id = '" . (int)$customer_group_id . "' AND quantity > 1 AND ((date_start = '0000-00-00' OR date_start < NOW()) AND (date_end = '0000-00-00' OR date_end > NOW())) ORDER BY quantity ASC, priority ASC, price ASC");
+		$query = $this->db->query("
+		    SELECT * FROM " . DB_PREFIX . "product_discount
+		    WHERE
+		        product_id = '" . (int)$product_id . "'
+                AND customer_group_id = '" . (int)$customer_group_id . "'
+                AND quantity > 1 AND ((date_start = '0000-00-00' OR date_start < '" . date('Y-m-d H:00:00') . "')
+                AND (date_end = '0000-00-00' OR date_end > '" . date('Y-m-d H:00:00') . "'))
+            ORDER BY quantity ASC, priority ASC, price ASC
+        ");
 
 		return $query->rows;		
 	}
@@ -485,7 +527,18 @@ class ModelCatalogProduct extends Model {
 	public function getProductRelated($product_id) {
 		$product_data = array();
 
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_related pr LEFT JOIN " . DB_PREFIX . "product p ON (pr.related_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE pr.product_id = '" . (int)$product_id . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'");
+		$query = $this->db->query("
+		    SELECT *
+		    FROM
+		        " . DB_PREFIX . "product_related pr
+		        LEFT JOIN " . DB_PREFIX . "product p ON (pr.related_id = p.product_id)
+		        LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id)
+            WHERE
+                pr.product_id = '" . (int)$product_id . "'
+                AND p.status = '1'
+                AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
+                AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
+        ");
 		
 		foreach ($query->rows as $result) { 
 			$product_data[$result['related_id']] = $this->getProduct($result['related_id']);
@@ -626,7 +679,20 @@ class ModelCatalogProduct extends Model {
 			$customer_group_id = $this->config->get('config_customer_group_id');
 		}		
 		
-		$query = $this->db->query("SELECT COUNT(DISTINCT ps.product_id) AS total FROM " . DB_PREFIX . "product_special ps LEFT JOIN " . DB_PREFIX . "product p ON (ps.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND ps.customer_group_id = '" . (int)$customer_group_id . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW()))");
+		$query = $this->db->query("
+		    SELECT COUNT(DISTINCT ps.product_id) AS total
+		    FROM
+		        " . DB_PREFIX . "product_special ps
+		        LEFT JOIN " . DB_PREFIX . "product p ON (ps.product_id = p.product_id)
+		        LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id)
+            WHERE
+                p.status = '1'
+                AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
+                AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
+                AND ps.customer_group_id = '" . (int)$customer_group_id . "'
+                AND ((ps.date_start = '0000-00-00' OR ps.date_start < '" . date('Y-m-d H:00:00') . "')
+                AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00') . "'))
+        ");
 		
 		if (isset($query->row['total'])) {
 			return $query->row['total'];
@@ -673,7 +739,13 @@ class ModelCatalogProduct extends Model {
 				$sql .= " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)";			
 			}
 			
-			$sql .= " WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'"; 
+			$sql .= "
+			    WHERE
+			        pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
+			        AND p.status = '1'
+			        AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
+			        AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "
+            '";
 			
 			if (!empty($data['filter_name']) || !empty($data['filter_tag'])) {
 				$sql .= " AND (";

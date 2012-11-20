@@ -45,7 +45,7 @@ final class Cart extends OpenCartBase
                 WHERE
                     p.product_id = '" . (int)$product_id . "'
                     AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
-                    AND p.date_available <= NOW() AND p.status = '1'
+                    AND p.date_available <= '" . date('Y-m-d H:00:00') . "' AND p.status = '1'
             ");
       	  	
 			if ($product_query->num_rows) {
@@ -210,14 +210,34 @@ final class Cart extends OpenCartBase
 					}
 				}
 				
-				$product_discount_query = $this->db->query("SELECT price FROM " . DB_PREFIX . "product_discount WHERE product_id = '" . (int)$product_id . "' AND customer_group_id = '" . (int)$customer_group_id . "' AND quantity <= '" . (int)$discount_quantity . "' AND ((date_start = '0000-00-00' OR date_start < NOW()) AND (date_end = '0000-00-00' OR date_end > NOW())) ORDER BY quantity DESC, priority ASC, price ASC LIMIT 1");
+				$product_discount_query = $this->db->query("
+				    SELECT price
+                    FROM " . DB_PREFIX . "product_discount
+                    WHERE
+                        product_id = '" . (int)$product_id . "'
+                        AND customer_group_id = '" . (int)$customer_group_id . "'
+                        AND quantity <= '" . (int)$discount_quantity . "'
+                        AND ((date_start = '0000-00-00' OR date_start < '" . date('Y-m-d H:00:00') . "')
+                        AND (date_end = '0000-00-00' OR date_end > '" . date('Y-m-d H:00:00') . "'))
+                    ORDER BY quantity DESC, priority ASC, price ASC
+                    LIMIT 1");
 				
 				if ($product_discount_query->num_rows) {
 					$price = $product_discount_query->row['price'];
 				}
 				
 				// Product Specials
-				$product_special_query = $this->db->query("SELECT price FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "' AND customer_group_id = '" . (int)$customer_group_id . "' AND ((date_start = '0000-00-00' OR date_start < NOW()) AND (date_end = '0000-00-00' OR date_end > NOW())) ORDER BY priority ASC, price ASC LIMIT 1");
+				$product_special_query = $this->db->query("
+				    SELECT price
+				    FROM " . DB_PREFIX . "product_special
+				    WHERE
+				        product_id = '" . (int)$product_id . "'
+				        AND customer_group_id = '" . (int)$customer_group_id . "'
+				        AND ((date_start = '0000-00-00' OR date_start < '" . date('Y-m-d H:00:00') . "')
+				        AND (date_end = '0000-00-00' OR date_end > '" . date('Y-m-d H:00:00') . "'))
+                    ORDER BY priority ASC, price ASC
+                    LIMIT 1
+                ");
 			
 				if ($product_special_query->num_rows) {
 					$price = $product_special_query->row['price'];
