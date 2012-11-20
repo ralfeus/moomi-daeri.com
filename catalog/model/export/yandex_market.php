@@ -19,7 +19,7 @@ class ModelExportYandexMarket extends Model {
 		            (p.product_id = ps.product_id)
 		            AND ps.customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "'
 		            AND ps.date_start < '" . date('Y-m-d H:00:00') . "'
-		            AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00') . "')
+		            AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "')
             WHERE
                 p2c.category_id IN (" . $this->db->escape($allowed_categories) . ")
                 AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'

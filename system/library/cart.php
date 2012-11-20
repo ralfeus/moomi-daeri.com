@@ -218,7 +218,7 @@ final class Cart extends OpenCartBase
                         AND customer_group_id = '" . (int)$customer_group_id . "'
                         AND quantity <= '" . (int)$discount_quantity . "'
                         AND ((date_start = '0000-00-00' OR date_start < '" . date('Y-m-d H:00:00') . "')
-                        AND (date_end = '0000-00-00' OR date_end > '" . date('Y-m-d H:00:00') . "'))
+                        AND (date_end = '0000-00-00' OR date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "'))
                     ORDER BY quantity DESC, priority ASC, price ASC
                     LIMIT 1");
 				
@@ -234,7 +234,7 @@ final class Cart extends OpenCartBase
 				        product_id = '" . (int)$product_id . "'
 				        AND customer_group_id = '" . (int)$customer_group_id . "'
 				        AND ((date_start = '0000-00-00' OR date_start < '" . date('Y-m-d H:00:00') . "')
-				        AND (date_end = '0000-00-00' OR date_end > '" . date('Y-m-d H:00:00') . "'))
+				        AND (date_end = '0000-00-00' OR date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "'))
                     ORDER BY priority ASC, price ASC
                     LIMIT 1
                 ");

@@ -9,7 +9,7 @@ class ModelCheckoutCoupon extends Model {
 		    WHERE
 		        code = '" . $this->db->escape($code) . "'
 		        AND ((date_start = '0000-00-00' OR date_start < '" . date('Y-m-d H:00:00') . "')
-		        AND (date_end = '0000-00-00' OR date_end > '" . date('Y-m-d H:00:00') . "'))
+		        AND (date_end = '0000-00-00' OR date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "'))
 		        AND status = '1'
         ");
 			

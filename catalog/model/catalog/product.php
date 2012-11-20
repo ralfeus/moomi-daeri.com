@@ -23,7 +23,7 @@ class ModelCatalogProduct extends Model {
 		                AND pd2.quantity = '1'
 		                AND (
 		                    (pd2.date_start = '0000-00-00' OR pd2.date_start < '" . date('Y-m-d H:00:00') . "')
-		                    AND (pd2.date_end = '0000-00-00' OR pd2.date_end > '" . date('Y-m-d H:00:00') . "')
+		                    AND (pd2.date_end = '0000-00-00' OR pd2.date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "')
                         )
                     ORDER BY pd2.priority ASC, pd2.price ASC
                     LIMIT 1
@@ -35,7 +35,7 @@ class ModelCatalogProduct extends Model {
                         ps.product_id = p.product_id
                         AND ps.customer_group_id = '" . (int)$customer_group_id . "'
                         AND ((ps.date_start = '0000-00-00' OR ps.date_start < '" . date('Y-m-d H:00:00') . "')
-                        AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00') . "'))
+                        AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "'))
                     ORDER BY ps.priority ASC, ps.price ASC
                     LIMIT 1
                 ) AS special,
@@ -290,7 +290,7 @@ class ModelCatalogProduct extends Model {
                 AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
                 AND ps.customer_group_id = '" . (int)$customer_group_id . "'
                 AND ((ps.date_start = '0000-00-00' OR ps.date_start < '" . date('Y-m-d H:00:00') . "')
-                AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00') . "'))
+                AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "'))
             GROUP BY ps.product_id
         ";
 
@@ -511,7 +511,7 @@ class ModelCatalogProduct extends Model {
 		        product_id = '" . (int)$product_id . "'
                 AND customer_group_id = '" . (int)$customer_group_id . "'
                 AND quantity > 1 AND ((date_start = '0000-00-00' OR date_start < '" . date('Y-m-d H:00:00') . "')
-                AND (date_end = '0000-00-00' OR date_end > '" . date('Y-m-d H:00:00') . "'))
+                AND (date_end = '0000-00-00' OR date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "'))
             ORDER BY quantity ASC, priority ASC, price ASC
         ");
 
@@ -691,7 +691,7 @@ class ModelCatalogProduct extends Model {
                 AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
                 AND ps.customer_group_id = '" . (int)$customer_group_id . "'
                 AND ((ps.date_start = '0000-00-00' OR ps.date_start < '" . date('Y-m-d H:00:00') . "')
-                AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00') . "'))
+                AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "'))
         ");
 		
 		if (isset($query->row['total'])) {
