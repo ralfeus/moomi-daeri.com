@@ -1685,10 +1685,7 @@ class ControllerSaleOrder extends Controller {
                 $orderItems = $this->modelSaleOrder->getOrderProducts($this->parameters['orderId']);
                 $modelSaleOrderItem = $this->load->model('sale/order_item');
                 foreach ($orderItems as $orderItem)
-                    if ($orderItem['product_id'] == REPURCHASE_ORDER_PRODUCT_ID)
-                        $modelSaleOrderItem->setOrderItemStatus($orderItem['order_product_id'], REPURCHASE_ORDER_ITEM_STATUS_FINISH);
-                    else
-                        $modelSaleOrderItem->setOrderItemStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_FINISH);
+                    $modelSaleOrderItem->setOrderItemStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_FINISH);
             }
 			$this->data['success'] = $this->language->get('text_success');
 		} else {
