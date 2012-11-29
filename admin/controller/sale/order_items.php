@@ -7,6 +7,7 @@ class ControllerSaleOrderItems extends Controller {
     public function __construct($registry)
     {
         parent::__construct($registry);
+//        $this->log->write(print_r($_REQUEST, true));
         $this->load->language('sale/order_items');
 
         $this->load->model('catalog/product');
@@ -592,7 +593,7 @@ class ControllerSaleOrderItems extends Controller {
         $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
         $this->parameters['sort'] = empty($_REQUEST['sort']) ? null : $_REQUEST['sort'];
         $this->parameters['token'] = $this->session->data['token'];
-//        $this->log->write(print_r($this->parameters, true));
+        $this->log->write(print_r($this->parameters, true));
     }
 
     private function initStatuses()
@@ -604,7 +605,8 @@ class ControllerSaleOrderItems extends Controller {
                 'name' => $order_item_status['name'],
                 'settable' => true,
                 'viewable' => true,
-                'set_status_url' => $this->url->link('sale/order_items/set_status', $this->buildUrlParameterString($this->parameters) . "&order_item_new_status=" . $order_item_status['status_id'], 'SSL')
+                'set_status_url' => $this->url->link('sale/order_items/set_status',
+                    "order_item_new_status=" . $order_item_status['status_id'] . '&token=' . $this->parameters['token'], 'SSL')
             );
         foreach (Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $repurchaseOrderStatus)
             $this->data['statuses'][GROUP_REPURCHASE_ORDER_ITEM_STATUS][] = array(
@@ -832,8 +834,8 @@ class ControllerSaleOrderItems extends Controller {
         $this->load->language('sale/order_items');
         $order_items = array();
 
-		if (isset($_REQUEST['selectedItems']))
-			$order_items = array_values($_REQUEST['selectedItems']);
+		if (isset($this->parameters['selectedItems']))
+			$order_items = array_values($this->parameters['selectedItems']);
         else
             $this->error['warning'] = $this->language->get('error_no_selected_items');
 
