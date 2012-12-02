@@ -118,9 +118,12 @@
                                 <span style="color: red; "><?= $order['options'] ?></span>
                             </td>
                             <td>
-                                <?php foreach ($order['actions'] as $action): ?>
-                                    [&nbsp;<a href="<?= $action['href'] ?>" target="_blank"><?= preg_replace('/\s/', '&nbsp;', $action['text']) ?></a>&nbsp;]
-                                <?php endforeach; ?>
+<?php foreach ($order['actions'] as $action): ?>
+                                [&nbsp;<a
+                                    <?= !empty($action['href']) ? 'href="' .  $action['href'] . '"' : '' ?>
+                                    <?= !empty($action['onclick']) ? 'onclick="' . $action['onclick'] . '"' : '' ?>
+                                    target="_blank"><?= preg_replace('/\s/', '&nbsp;', $action['text']) ?></a>&nbsp;]
+<?php endforeach; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -166,6 +169,44 @@ function filterKeyDown(e) {
     if (e.keyCode == 13)
         filter();
 }
+
+function imageManager(orderId, imageElement) {
+    $('#dialog').remove();
+
+    $('#content').prepend(
+        '<input id="image" type="hidden" />' +
+        '<div id="dialog" style="padding: 3px 0px 0px 0px;">' +
+            '<iframe src="<?= $urlImageManager ?>" ' +
+            '   style="padding:0; margin: 0; display: block; width: 100%; height: 100%;" ' +
+            '   frameborder="no" scrolling="auto">' +
+            '</iframe>' +
+        '</div>');
+
+    $('#dialog').dialog({
+        title: 'Image Manager',
+        close: function (event, ui) {
+            if ($('#image').attr('value')) {
+                $.ajax({
+                    url: '<?= $urlImageChange ?>&value='.replace(/&amp;/g, '&') + encodeURIComponent($('#image').attr('value')) + '&orderId=' + orderId,
+                    dataType: 'json',
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("saveComment(): " + jqXHR.responseText);
+                    },
+                    success: function(data) {
+                        if (data['image'])
+                        imageElement.attr('src', data['image']);
+                    }
+                });
+            }
+            $('#image').remove();
+        },
+        bgiframe: false,
+        width: 800,
+        height: 400,
+        resizable: false,
+        modal: false
+    });
+};
 
 function quantityKeyDown(event, sender, orderId)
 {

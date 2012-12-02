@@ -135,6 +135,11 @@ class ControllerSaleRepurchaseOrders extends Controller
                 'text' => $this->language->get('GOTO_ITEM'),
                 'href' => $order_item['itemUrl']
             );
+            $actions[] = array(
+                'text' => $this->language->get('CHANGE_PICTURE'),
+                'href' => '',
+                'onclick' => 'imageManager(' . $order_item['orderItemId'] . ', $(this).parent().parent().find(\'img\'))'
+            );
             /// Check if item URL is valid
             if (preg_match('/https?:\/\/([\w\-\.]+)/', $order_item['itemUrl'], $matches))
                 $siteName = $matches[1];
@@ -230,6 +235,8 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->data['order'] = $order;
         $this->data['currencyCode'] = $this->config->get('config_currency');
         $this->data['invoiceUrl'] = $this->url->link('sale/invoice/showForm', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['urlImageChange'] = $this->url->link('sale/repurchaseOrders/setProperty', 'propName=image&token=' . $this->parameters['token'], 'SSL');
+        $this->data['urlImageManager'] = $this->url->link('common/filemanager', 'field=image&token=' . $this->parameters['token'], 'SSL');
 //        $this->log->write(print_r($this->data['orders'], true));
     }
 
@@ -273,12 +280,15 @@ class ControllerSaleRepurchaseOrders extends Controller
     protected function initParameters()
     {
         $this->parameters['orderId'] = empty($_REQUEST['orderId']) ? null : $_REQUEST['orderId'];
-        if (!empty($_REQUEST['propName']) && in_array($_REQUEST['propName'], array('amount', 'quantity')))
+        if (!empty($_REQUEST['propName']) && in_array($_REQUEST['propName'], array('amount', 'image', 'quantity')))
             $this->parameters['propName'] = $_REQUEST['propName'];
         else
             $this->parameters['propName'] = null;
         $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
-        $this->parameters['value'] = !empty($_REQUEST['value']) && is_numeric($_REQUEST['value']) ? $_REQUEST['value'] : null;
+        $this->parameters['token'] = $this->session->data['token'];
+        $this->parameters['value'] =
+            !empty($_REQUEST['value']) && $this->isValidPropValue($this->parameters['propName'], $_REQUEST['value'])
+                ? $_REQUEST['value'] : null;
     }
 
     private function initStatuses()
@@ -292,6 +302,18 @@ class ControllerSaleRepurchaseOrders extends Controller
                 'name' => $order_item_status['name']
             );
 //        $this->log->write(print_r($this->data['statuses'], true));
+    }
+
+    private function isValidPropValue($propName, $propValue)
+    {
+        switch ($propName)
+        {
+            case 'amount':
+            case 'quantity':
+                return is_numeric($propValue);
+            case 'image':
+                return exif_imagetype(DIR_IMAGE . $propValue);
+        }
     }
 
     public function printPage()
@@ -318,6 +340,7 @@ class ControllerSaleRepurchaseOrders extends Controller
 
     public function setProperty()
     {
+        $this->log->write(print_r($this->parameters, true));
         if (empty($this->parameters['orderId']))
             return;
         if (empty($this->parameters['value']))
@@ -328,6 +351,10 @@ class ControllerSaleRepurchaseOrders extends Controller
         {
             case 'amount':
                 $this->modelSaleRepurchaseOrder->setAmount($this->parameters['orderId'], $this->parameters['value']);
+                break;
+            case 'image':
+                $this->modelSaleRepurchaseOrder->setImage($this->parameters['orderId'], $this->parameters['value']);
+                $json['image'] = $this->load->model('tool/image')->resize($this->parameters['value'], 100, 100);
                 break;
             case 'quantity':
                 $this->modelSaleRepurchaseOrder->setQuantity($this->parameters['orderId'], $this->parameters['value']);
