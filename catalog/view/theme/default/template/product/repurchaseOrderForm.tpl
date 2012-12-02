@@ -23,12 +23,12 @@
                     <td>
                         <div id='box'>
                             <table width="100%">
-                                <tr><td colspan="4">
+                                <tr><td colspan="5">
                                     <?php echo $entry_item_url; ?><br/>
                                     <input id="itemUrl" style="width: 100%;"/>
                                 </td></tr>
                                 <tr>
-                                    <td colspan="3">
+                                    <td colspan="4">
                                         <?php echo $entry_image_path; ?><br />
                                         <input id="imagePath" style="width: 100%" onblur="downloadImage(this);" /><br />
                                         <input type="file" id="imageFile" name="imageFile" value="File" onchange="ajaxFileUpload(this)"/>
@@ -39,25 +39,29 @@
                                         </a>
                                     </td>
                                 </tr>
-                                <tr><td colspan="3">
-                                    <input type="radio" id='whoBuys' value='<?= REPURCHASE_ORDER_SHOP_BUYS_OPTION_VALUE_ID ?>' checked="true" />&nbsp;<?= $textShopBuys ?><br />
-                                    <input type="radio" id='whoBuys' value='<?= REPURCHASE_ORDER_CUSTOMER_BUYS_OPTION_VALUE_ID ?>' />&nbsp;<?= $textCustomerBuys ?><br />
+                                <tr><td colspan="4">
+                                    <input type="radio" id='whoBuys' value='<?= REPURCHASE_ORDER_SHOP_BUYS_OPTION_VALUE_ID ?>' checked="true" disabled="true"/>&nbsp;<?= $textShopBuys ?><br />
+                                    <input type="radio" id='whoBuys' value='<?= REPURCHASE_ORDER_CUSTOMER_BUYS_OPTION_VALUE_ID ?>' disabled="true"/>&nbsp;<?= $textCustomerBuys ?><br />
                                 </td></tr>
                                 <tr>
-                                    <td width="33%">
+                                    <td width="25%">
                                         <?php echo $entry_size; ?><br />
                                         <input id="size" />
                                     </td>
-                                    <td width="33%">
+                                    <td width="25%">
                                         <?php echo $entry_color; ?><br />
                                         <input id="color" />
                                     </td>
-                                    <td width="33%">
+                                    <td width="25%">
                                         <?php echo $entry_quantity; ?><br />
                                         <input id="quantity" value="1" />
                                     </td>
+                                    <td width="25%">
+                                        <?= $textApproximatePrice ?>
+                                        <input id="price" />
+                                    </td>
                                 </tr>
-                                <tr><td colspan="3">
+                                <tr><td colspan="4">
                                     <?= $textComment ?><br />
                                     <textarea id="comment" style="width: 100%"></textarea>
                                 </td></tr>
@@ -115,8 +119,9 @@ function addOrdersToCart()
             url: 'index.php?route=checkout/cart/update',
             type: 'post',
             data: {
-                'quantity': $(this).find('#quantity').val(),
-                'product_id': <?= REPURCHASE_ORDER_PRODUCT_ID ?>,
+                'quantity': $(this).find('[id^="quantity"]').val(),
+                'itemPrice': $(this).find('[id^="price"]').val(),
+                'product_id': '<?= REPURCHASE_ORDER_PRODUCT_ID ?>',
                 'option[<?= REPURCHASE_ORDER_ITEM_URL_OPTION_ID ?>]': $(this).find('[id^="itemUrl"]').val(),
                 'option[<?= REPURCHASE_ORDER_IMAGE_URL_OPTION_ID ?>]': $(this).find('[id^="imagePath"]').val(),
                 'option[<?= REPURCHASE_ORDER_WHO_BUYS_OPTION_ID ?>]': $(this).find('[id^="whoBuys"]:checked').val(),
@@ -134,6 +139,9 @@ function addOrdersToCart()
             {
                 $('.wait').remove();
                 $('#addToCart').attr('disabled', false);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
             },
             success: function(json) {
                 $('.success, .warning, .attention, .information, .error').remove();

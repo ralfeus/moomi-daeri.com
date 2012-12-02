@@ -305,7 +305,9 @@ class ControllerCheckoutCart extends Controller {
     {
         $this->parameters['itemKey'] = empty($_REQUEST['itemKey']) ? null : $_REQUEST['itemKey'];
         $this->parameters['selected'] = empty($_REQUEST['selected']) ? false : $_REQUEST['selected'];
+        $this->parameters['itemPrice'] = empty($_REQUEST['itemPrice']) || !is_numeric($_REQUEST['itemPrice']) ? 0 : $_REQUEST['itemPrice'];
         $this->session->data['selectedCartItems'] = count($this->parameters['selected']) ? $this->parameters['selected'] : null;
+        $this->log->write(print_r($this->parameters, true));
     }
 
     public function removeItem()
@@ -363,7 +365,7 @@ class ControllerCheckoutCart extends Controller {
 			
 			if (!isset($json['error'])) {
 //                $this->log->write(print_r($option, true));
-				$this->cart->add($this->request->post['product_id'], $quantity, $option);
+				$this->cart->add($this->request->post['product_id'], $this->parameters['itemPrice'], $quantity, $option);
 			
 				$json['success'] = sprintf($this->language->get('text_success'), $this->url->link('product/product', 'product_id=' . $this->request->post['product_id']), $product_info['name'], $this->url->link('checkout/cart'));
 			
@@ -428,7 +430,7 @@ class ControllerCheckoutCart extends Controller {
 					);					
 				}
 			}
-				
+
 			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
 				$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
 			} else {

@@ -197,7 +197,7 @@ final class Cart extends OpenCartBase
 					$customer_group_id = $this->config->get('config_customer_group_id');
 				}
 				
-				$price = $product_query->row['price'];
+				$price = $cartItem->price ? $cartItem->price : $product_query->row['price'];
 				
 				// Product Discounts
 				$discount_quantity = 0;
@@ -300,11 +300,11 @@ final class Cart extends OpenCartBase
 				$this->remove($key);
 			}
     	}
-						
+//        $this->log->write(print_r($product_data, true));
 		return $product_data;
   	}
 		  
-  	public function add($product_id, $qty = 1, $options = array()) {
+  	public function add($product_id, $price = 0, $qty = 1, $options = array()) {
     	if (!$options)
       		$key = (int)$product_id;
     	else
@@ -314,11 +314,14 @@ final class Cart extends OpenCartBase
     		if (empty($this->session->data['cart'][$key]))
             {
                 $this->session->data['cart'][$key] = new stdClass();
+                $this->session->data['cart'][$key]->price = $this->currency->convert(
+                    (double)$price, $this->customer->getBaseCurrency()->getCode(), $this->config->get('config_currency'));
       			$this->session->data['cart'][$key]->quantity = (int)$qty;
 //                $this->session->data['cart'][$key]->selected = true;
             }
     		else
       			$this->session->data['cart'][$key]->quantity += (int)$qty;
+//        $this->log->write(print_r($this->session->data['cart'], true));
   	}
 
   	public function update($key, $qty) {

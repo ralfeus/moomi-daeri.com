@@ -82,6 +82,7 @@ class ControllerProductRepurchase extends Controller
         $this->data['entry_total'] = $this->language->get('field_total');
         $this->data['button_add'] = $this->language->get('ADD');
         $this->data['textAddToCart'] = $this->language->get('button_cart');
+        $this->data['textApproximatePrice'] = $this->language->get('APPROXIMATE_PRICE');
         $this->data['textComment'] = $this->language->get('COMMENT');
         $this->data['textCustomerBuys'] = $this->language->get('CUSTOMER_BUYS');
         $this->data['textShopBuys'] = $this->language->get('SHOP_BUYS');
