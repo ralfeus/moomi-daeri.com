@@ -2,11 +2,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
 <head>
-<title><?php echo $title; ?></title>
-<base href="<?php echo $base; ?>" />
+<title><?= $title ?></title>
+<base href="<?= $base ?>" />
 
-<link href="view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet">
-<link href="view/javascript/jquery/fileuploader.css" type="text/css" rel="stylesheet">
+<link href="view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
+<link href="view/javascript/jquery/fileuploader.css" type="text/css" rel="stylesheet" />
+<link href="view/javascript/plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" rel="stylesheet" />
 <script type="text/javascript" src="view/javascript/jquery/jquery-1.6.1.min.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>
 
@@ -15,8 +16,6 @@
 <script type="text/javascript" src="view/javascript/jquery/jstree/lib/jquery.cookie.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/jstree/plugins/jquery.tree.cookie.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/ajaxupload.js"></script>
-
-<style type="text/css">@import url(view/javascript/plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css);</style>
 <script type="text/javascript" src="view/javascript/plupload/js/plupload.full.js"></script>
 <script type="text/javascript" src="view/javascript/plupload/js/jquery.ui.plupload/jquery.ui.plupload.js"></script>
 
@@ -37,7 +36,7 @@ img {
 }
 #menu {
 	clear: both;
-	height: 29px;
+	height: 55px;
 	margin-bottom: 3px;
 }
 #column_left {
@@ -118,6 +117,7 @@ img {
       <a id="rename" class="button" style="background-image: url('view/image/filemanager/edit-rename.png');"><?php echo $button_rename; ?></a>
       <a id="upload" class="button" style="background-image: url('view/image/filemanager/upload.png');"><?php echo $button_upload; ?></a>
       <a id="uploadmulti" class="button" style="background-image: url('view/image/filemanager/upload.png');">Upload+</a>
+      <a id="get-by-url" class="button" style="background-image: url('view/image/filemanager/getByUrl.png');"><?= $textGetImageByUrl ?></a>
       <a id="refresh" class="button" style="background-image: url('view/image/filemanager/refresh.png');"><?php echo $button_refresh; ?></a>
       <a id="get-html" class="button" style="background-image: url('view/image/filemanager/getHtml.png');"><?= $textGenerateHtml ?></a>
   </div>
@@ -765,6 +765,58 @@ $(document).ready(function () {
 		})
 
 		// end Upload+ main code	
+
+    $('#get-by-url').click(function() {
+        window.dr = $(tree.selected).attr('directory');
+        if (!window.dr)
+        {
+            alert('<?= $error_directory ?>');
+            return false;
+        }
+        $('<div title="<?= $textEnterUrl ?>"></div>')
+            .html('<input id="url" style="width: 95%;" />')
+            .dialog({
+                autoOpen: true,
+                buttons: {
+                    OK: function(){
+                        var url = $(this).find('#url').val();
+                        $(this).dialog('close');
+                        if (url.match(<?= URL_PATTERN ?>))
+                        {
+                            $.ajax({
+                                url: '<?= $urlDownloadImage ?>&url='.replace('&amp;', '&') + encodeURI(url) + '&destination=' + window.dr,
+                                dataType: 'json',
+                                beforeSend: function()
+                                {
+//                    $(urlInput).attr('disabled', true);
+//                    $(urlInput).after('<span class="wait">&nbsp;<img src="catalog/view/theme/default/image/loading.gif" alt="" /></span>');
+                                },
+                                complete: function()
+                                {
+                                    $('.wait').remove();
+//                    $(urlInput).attr('disabled', false);
+                                },
+                                error: function(jqXHR, textStatus, errorThrown) {
+                                    alert(jqXHR.responseText);
+                                },
+                                success: function(json) {
+                                    if (!json['error'])
+                                    {
+                                        $('#refresh').click();
+                                    }
+                                    else
+                                        alert(json['error']);
+                                }
+                            });
+                        }
+                        else
+                            alert('<?= $textInvalidURLFormat ?>');
+                    },
+                    Cancel: function() { $(this).dialog('close'); }
+                },
+                modal: true
+            });
+    });
 
     $('#get-html').click(function() {
         var html = '';

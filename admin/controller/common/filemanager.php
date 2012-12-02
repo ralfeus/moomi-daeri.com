@@ -25,9 +25,12 @@ class ControllerCommonFileManager extends Controller {
 		$this->data['button_rename'] = $this->language->get('button_rename');
 		$this->data['button_upload'] = $this->language->get('button_upload');
 		$this->data['button_refresh'] = $this->language->get('button_refresh');
-        $this->data['textChoosePicture'] = $this->language->get('CHOOSE_SELECTED_ITEM');
+        $this->data['textEnterUrl'] = $this->language->get('ENTER_URL');
         $this->data['textGenerateHtml'] = $this->language->get('GENERATE_HTML');
-		
+        $this->data['textGetImageByUrl'] = $this->language->get('GET_BY_URL');
+        $this->data['textInvalidURLFormat'] = $this->language->get('ERROR_INVALID_URL_FORMAT');
+        $this->data['urlDownloadImage'] = $this->url->link($this->selfRoute . '/downloadImage', 'token=' . $this->parameters['token'], 'SSL');
+
 		$this->data['error_select'] = $this->language->get('error_select');
 		$this->data['error_directory'] = $this->language->get('error_directory');
 		
@@ -86,8 +89,33 @@ class ControllerCommonFileManager extends Controller {
 		
 		$this->response->setOutput(json_encode($json));		
 	}
-	
-	public function files() {
+
+    public function downloadImage()
+    {
+        if ($this->parameters['url'])
+        {
+            $fileName = $this->getImageFileName($this->parameters['url']);
+            if ($fileName)
+            {
+                $dirName = DIR_IMAGE . '/data/' . $this->parameters['destination'];
+                if (!file_exists($dirName))
+                    mkdir($dirName);
+                file_put_contents($dirName . '/' . $fileName, file_get_contents($this->parameters['url']));
+                $json['result'] = 'Done';
+            }
+            else
+            {
+                $json['error'] = $this->language->get('ERROR_INVALID_IMAGE');
+                $json['filePath'] = $this->parameters['url'];
+            }
+        }
+        else
+            $json['error'] = $this->language->get('ERROR_INVALID_URL_FORMAT');
+
+        $this->response->setOutput(json_encode($json));
+    }
+
+    public function files() {
 		$json = array();
 		
 		$this->load->model('tool/image');
@@ -148,7 +176,23 @@ class ControllerCommonFileManager extends Controller {
 		}
 		
 		$this->response->setOutput(json_encode($json));	
-	}	
+	}
+
+    private function getImageFileName($fileName)
+    {
+        $this->log->write(image_type_to_extension(@exif_imagetype($fileName)));
+        if (@exif_imagetype($fileName))
+            return time() . image_type_to_extension(exif_imagetype($fileName));
+        else
+            return '';
+    }
+
+    protected function initParameters()
+    {
+        $this->parameters['destination'] = empty($_REQUEST['destination']) ? 'upload' : $_REQUEST['destination'];
+        $this->parameters['url'] = empty($_REQUEST['url']) || !preg_match(URL_PATTERN, $_REQUEST['url']) ? null : $_REQUEST['url'];
+        $this->parameters['token'] = $this->session->data['token'];
+    }
 	
 	public function create() {
 		$this->load->language('common/filemanager');

@@ -476,7 +476,7 @@ class ControllerSaleCustomer extends Controller {
 		$this->data['button_filter'] = $this->language->get('FILTER');
 
 		$this->data['token'] = $this->session->data['token'];
-        $this->data['urlSelf'] = $this->selfRoute;
+        $this->data['urlSelf'] = $this->selfUrl;
 
 		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];

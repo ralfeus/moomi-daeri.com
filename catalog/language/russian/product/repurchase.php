@@ -7,6 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 $_['ADD_AGENT_ORDER'] = 'Создать заказ агента';
+$_['APPROXIMATE_PRICE'] = 'Ориентировочная цена';
 $_['HEADING_TITLE'] = 'Заказ агента';
 $_['ITEM_URL'] = 'Адрес товара';
 $_['IMAGE_PATH'] = "Адрес рисунка";

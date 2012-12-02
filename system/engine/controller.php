@@ -11,6 +11,7 @@ abstract class Controller extends OpenCartBase
     protected $parameters = array(); // contains parameters passed to the controller and already handled
     protected $request;
     protected $selfRoute;
+    protected $selfUrl;
     protected $session;
     protected $template;
 
@@ -21,7 +22,7 @@ abstract class Controller extends OpenCartBase
         $this->session = new Session();
         $this->language = $this->registry->get('language');
         $this->request = $this->registry->get('request');
-        $this->setSelfRoute();
+        $this->setSelfRoutes();
         $this->session = $this->registry->get('session');
         $this->initParameters();
         $this->data['notifications'] = array();
@@ -99,11 +100,12 @@ abstract class Controller extends OpenCartBase
     	}
 	}
 
-    private function setSelfRoute()
+    private function setSelfRoutes()
     {
         $token = empty($_REQUEST['token']) ? '' : "token=" . $_REQUEST['token'];
         $route = empty($_REQUEST['route']) ? 'common/home' : $_REQUEST['route'];
-        $this->selfRoute = $this->url->link($route, $token, 'SSL');
+        $this->selfUrl = $this->url->link($route, $token, 'SSL');
+        $this->selfRoute = $route;
     }
 
     protected function takeSessionVariables()

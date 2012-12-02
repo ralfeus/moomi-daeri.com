@@ -7,7 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 $_['ADD_AGENT_ORDER'] = 'Add agent order';
-$_['APPROXIMATE_PRICE'] = 'Approximate price';
+$_['APPROXIMATE_PRICE'] = 'ガイド価格';
 $_['HEADING_TITLE'] = 'Agent order';
 $_['ITEM_URL'] = 'Item URL';
 $_['IMAGE_PATH'] = "Image path";
