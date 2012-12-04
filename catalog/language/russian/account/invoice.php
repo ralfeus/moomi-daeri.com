@@ -1,6 +1,6 @@
 ﻿<?php
-$_['INVOICE'] = 'Счет #%s';
+$_['INVOICE'] = 'Инвойс #%s';
 $_['PACKAGE_NUMBER'] = 'Номер посылки';
-$_['errorAccessDenied'] = 'У вас нет доступа к этому счету';
-$_['headingTitle'] = 'Счета';
-$_['textInvoiceId'] = 'Номер счета:';
+$_['errorAccessDenied'] = 'У вас нет доступа к этому инвойсу';
+$_['headingTitle'] = 'Инвойсы';
+$_['textInvoiceId'] = 'Номер инвойса:';
