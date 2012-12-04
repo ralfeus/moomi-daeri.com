@@ -1680,13 +1680,13 @@ class ControllerSaleOrder extends Controller {
 	public function history() {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->user->hasPermission('modify', 'sale/order')) { 
 			$this->modelSaleOrder->addOrderHistory($this->request->get['order_id'], $this->request->post);
-            if ($this->parameters['orderStatusId'] == ORDER_STATUS_FINISHED)
-            {
-                $orderItems = $this->modelSaleOrder->getOrderProducts($this->parameters['orderId']);
-                $modelSaleOrderItem = $this->load->model('sale/order_item');
-                foreach ($orderItems as $orderItem)
-                    $modelSaleOrderItem->setOrderItemStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_FINISH);
-            }
+//            if ($this->parameters['orderStatusId'] == ORDER_STATUS_FINISHED)
+//            {
+//                $orderItems = $this->modelSaleOrder->getOrderProducts($this->parameters['orderId']);
+//                $modelSaleOrderItem = $this->load->model('sale/order_item');
+//                foreach ($orderItems as $orderItem)
+//                    $modelSaleOrderItem->setOrderItemStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_FINISH);
+//            }
 			$this->data['success'] = $this->language->get('text_success');
 		} else {
 			$this->data['success'] = '';
