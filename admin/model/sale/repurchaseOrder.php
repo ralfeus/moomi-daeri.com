@@ -154,6 +154,21 @@ class ModelSaleRepurchaseOrder extends Model
                 order_product_id = " . (int)$orderId . "
                 AND product_option_id = " . REPURCHASE_ORDER_IMAGE_URL_OPTION_ID
         );
+        if (!$this->db->countAffected())
+        {
+            $repurchaseOrder = $this->modelOrderItem->getOrderItem($orderId);
+            $this->db->query("
+                INSERT INTO " . DB_PREFIX . "order_option
+                SET
+                    order_id = " . $repurchaseOrder['order_id'] . ",
+                    order_product_id = " . (int)$orderId . ",
+                    product_option_id = " . REPURCHASE_ORDER_IMAGE_URL_OPTION_ID . ",
+                    product_option_value_id = 0,
+                    name = 'Image URL',
+                    value = '" . $this->db->escape($imagePath) . "',
+                    type = 'text'
+            ");
+        }
     }
 
     public function setQuantity($orderId, $quantity)

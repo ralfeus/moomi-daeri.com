@@ -87,7 +87,8 @@ class ControllerSaleRepurchaseOrders extends Controller
             $urlParameters['order'] = "order=$order";
         }
         if (empty($filterAmount) && empty($filterCustomerId) && empty($filterOrderId) &&
-            empty($filterSiteName) && empty($filterStatusId) && empty($filterWhoOrders))
+            empty($filterSiteName) && empty($filterStatusId) && empty($filterWhoOrders) &&
+            $_SERVER['REQUEST_METHOD'] == "GET")
             $filterStatusId = array(REPURCHASE_ORDER_ITEM_STATUS_WAITING);
         if (empty($_REQUEST['page']))
             $page = 1;
