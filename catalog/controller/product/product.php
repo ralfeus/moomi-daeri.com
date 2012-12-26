@@ -175,7 +175,7 @@ class ControllerProductProduct extends Controller {
 			$this->data['button_upload'] = $this->language->get('button_upload');
 			$this->data['button_continue'] = $this->language->get('button_continue');
 			
-			$this->data['$textAttachPicture'] = $this->language->get('ATTACH_FILE_TO_REVIEW');
+			$this->data['textAttachPicture'] = $this->language->get('ATTACH_FILE_TO_REVIEW');
             $this->data['textWeight'] = $this->language->get('WEIGHT');
 
 			$this->load->model('catalog/review');
