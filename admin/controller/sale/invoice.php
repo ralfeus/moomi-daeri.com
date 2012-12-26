@@ -493,7 +493,7 @@ class ControllerSaleInvoice extends Controller
 
     public function showForm()
     {
-//        $this->log->write(print_r($this->request->request, true));
+        $this->log->write(print_r($this->request->request, true));
         /// Set common interface values
         $this->data['buttonRecalculateShippingCost'] = $this->language->get('RECALCULATE_SHIPPING_COST');
         $this->data['textDiscount'] = $this->language->get('DISCOUNT');
