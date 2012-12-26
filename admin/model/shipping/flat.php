@@ -7,4 +7,3 @@ class ModelShippingFlat extends Model implements ShippingMethodModel
         return $this->config->get('flat_cost');
   	}
 }
-?>

@@ -8,11 +8,11 @@
  */
 class Shipping
 {
-    public static function getCost($weight, $shippingMethod, $registry = null)
+    public static function getCost($orderItems, $shippingMethod, $registry = null)
     {
         $shipping_method = explode(".", $shippingMethod);
         $shippingModel = $registry->get('load')->model("shipping/" . $shipping_method[0]);
-        return $shippingModel->getCost($shipping_method[1], $weight);
+        return $shippingModel->getCost($shipping_method[1], $orderItems);
     }
 
     public static function getName($shippingMethod, $registry = null)

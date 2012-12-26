@@ -406,7 +406,7 @@ class ControllerSaleInvoice extends Controller
         $this->data['shippingAddress'] = nl2br($this->getOrderAddress($firstItemOrder));
         $this->data['shippingCost'] =
             $this->currency->format(
-                Shipping::getCost($totalWeight, $firstItemOrder['shipping_method'], $this->registry),
+                Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], $this->registry),
                 $this->config->get('config_currency'));
         $this->data['shippingMethod'] = Shipping::getName($firstItemOrder['shipping_method'], $this->registry);
         $this->data['shippingMethodCode'] = $firstItemOrder['shipping_method'];
@@ -419,10 +419,10 @@ class ControllerSaleInvoice extends Controller
         $this->data['totalWeight'] = $totalWeight;
         $this->data['grandTotal'] =
             $this->currency->format(
-                $total + Shipping::getCost($totalWeight, $firstItemOrder['shipping_method'], $this->registry),
+                $total + Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], $this->registry),
                 $this->config->get('config_currency'));
         $this->data['totalCustomerCurrency'] = $this->currency->format(
-            $total + Shipping::getCost($totalWeight, $firstItemOrder['shipping_method'], $this->registry), $customer['base_currency_code']);
+            $total + Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], $this->registry), $customer['base_currency_code']);
 
         $this->template = 'sale/invoiceForm.tpl';
         $this->children = array(

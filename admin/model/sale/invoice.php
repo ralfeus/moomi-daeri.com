@@ -28,8 +28,10 @@ class ModelSaleInvoice extends Model
         if (!$weight)
             $weight = $tmpWeight;
 
-        /// Get shipping cost according to destination and weight
-        $shippingCost = Shipping::getCost($weight, $order['shipping_method'], $this->registry);
+        /// Get shipping cost according to destination and order items
+        /// The shipping cost calculation can take different order items factors into account
+        /// Therefore it's better to pass whole items and let shipping calculation classes use it
+        $shippingCost = Shipping::getCost($order_items, $order['shipping_method'], $this->registry);
 
         /// Calculate total. Currently it's subtotal, shipping and discount. In the future it can be something else
         $total = $subtotal + $shippingCost - $discount;
