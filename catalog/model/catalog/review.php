@@ -1,8 +1,56 @@
 <?php
 class ModelCatalogReview extends Model {		
 	public function addReview($product_id, $data) {
-		$this->db->query("INSERT INTO " . DB_PREFIX . "review SET author = '" . $this->db->escape($data['name']) . "', customer_id = '" . (int)$this->customer->getId() . "', product_id = '" . (int)$product_id . "', text = '" . $this->db->escape(strip_tags($data['text'])) . "', rating = '" . (int)$data['rating'] . "', date_added = NOW()");
+		$this->db->query("
+		    INSERT INTO " . DB_PREFIX . "review
+		    SET
+		        author = '" . $this->db->escape($data['name']) . "',
+		        customer_id = '" . (int)$this->customer->getId() . "',
+		        product_id = '" . (int)$product_id . "',
+		        text = '" . $this->db->escape(strip_tags($data['text'])) . "',
+		        rating = '" . (int)$data['rating'] . "',
+		        date_added = NOW()
+        ");
+        if (!empty($data['imageFilePath']))
+            $this->addReviewImages($this->db->getLastId(), $data['imageFilePath']);
 	}
+
+    private function addReviewImages($reviewId, $imagePaths)
+    {
+        $this->log->write(print_r($imagePaths, true));
+        if (!file_exists(DIR_IMAGE . '/reviews'))
+            mkdir(DIR_IMAGE . '/reviews');
+        foreach ($imagePaths as $imagePath)
+        {
+            $fullFilePath = DIR_IMAGE . $imagePath;
+            $this->log->write($fullFilePath);
+            if (file_exists($fullFilePath))
+            {
+                $this->log->write(basename($fullFilePath));
+                copy($fullFilePath, DIR_IMAGE . '/reviews/' . basename($fullFilePath));
+                $this->db->query("
+                    INSERT INTO " . DB_PREFIX . "review_images
+                    SET
+                        review_id = " . (int)$reviewId . ",
+                        image_path = '" . $this->db->escape('/reviews/' . basename($fullFilePath)) . "'
+                ");
+                unlink($fullFilePath);
+            }
+        }
+    }
+
+    public function getReviewImages($reviewId)
+    {
+        $query = $this->db->query("
+            SELECT *
+            FROM " . DB_PREFIX . "review_images
+            WHERE review_id = " . (int)$reviewId
+        );
+        $result = array();
+        foreach ($query->rows as $row)
+            $result[] = $row['image_path'];
+        return $result;
+    }
 		
 	public function getReviewsByProductId($product_id, $start = 0, $limit = 20) {
 		$query = $this->db->query("

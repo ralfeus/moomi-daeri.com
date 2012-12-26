@@ -48,4 +48,5 @@ $_['error_captcha']     = 'Warning: Verification code does not match the image!'
 $_['error_upload']      = 'Upload required!';
 $_['error_filename']    = 'Filename must be between 3 and 128 characters!';
 $_['error_filetype']    = 'Invalid file type!';
+$_['ATTACH_FILE_TO_REVIEW'] = 'Attach file to your review';
 ?>

@@ -237,17 +237,43 @@
     <textarea name="text" cols="40" rows="8" style="width: 98%;"></textarea>
     <span style="font-size: 11px;"><?php echo $text_note; ?></span><br />
     <br />
+    <table>
+        <thead>
+            <tr><td>
+                <?= $textAttachPicture ?><br />
+                <input type="file" id="imageFile" name="imageFile" onchange="ajaxFileUpload(this)"/>
+            </td></tr>
+        </thead>
+        <tbody>
+            <tr><td>
+                <input type="hidden" name="imageFilePath[]" />
+                <img />
+            </td></tr>
+            <tr><td>
+                <input type="hidden" name="imageFilePath[]" />
+                <img />
+            </td></tr>
+            <tr><td>
+                <input type="hidden" name="imageFilePath[]" />
+                <img />
+            </td></tr>
+            <tr><td>
+                <input type="hidden" name="imageFilePath[]" />
+                <img />
+            </td></tr>
+            <tr><td>
+                <input type="hidden" name="imageFilePath[]" />
+                <img />
+            </td></tr>
+        </tbody>
+    </table>
     <b><?php echo $entry_rating; ?></b> <span><?php echo $entry_bad; ?></span>&nbsp;
-    <input type="radio" name="rating" value="1" />
-    &nbsp;
-    <input type="radio" name="rating" value="2" />
-    &nbsp;
-    <input type="radio" name="rating" value="3" />
-    &nbsp;
-    <input type="radio" name="rating" value="4" />
-    &nbsp;
-    <input type="radio" name="rating" value="5" />
-    &nbsp; <span><?php echo $entry_good; ?></span><br />
+    <input type="radio" name="rating" value="1" />&nbsp;
+    <input type="radio" name="rating" value="2" />&nbsp;
+    <input type="radio" name="rating" value="3" />&nbsp;
+    <input type="radio" name="rating" value="4" />&nbsp;
+    <input type="radio" name="rating" value="5" />&nbsp;
+    <span><?php echo $entry_good; ?></span><br />
     <br />
     <b><?php echo $entry_captcha; ?></b><br />
     <input type="text" name="captcha" value="" />
@@ -306,7 +332,7 @@ $('#button-cart').bind('click', function() {
         data: $('.product-info input[type=\'text\'], .product-info input[type=\'hidden\'], .product-info input[type=\'radio\']:checked, .product-info input[type=\'checkbox\']:checked, .product-info select, .product-info textarea'),
         dataType: 'json',
         success: function(json) {
-            $('.success, .warning, .attention, information, .error').remove();
+            $('.success, .warning, .attention, .information, .error').remove();
 
             if (json['error']) {
                 if (json['error']['warning']) {
@@ -335,6 +361,7 @@ $('#button-cart').bind('click', function() {
 //--></script>
 <?php if ($options) { ?>
 <script type="text/javascript" src="catalog/view/javascript/jquery/ajaxupload.js"></script>
+<script src="catalog/view/javascript/ajaxfileupload.js" type="text/javascript"></script>
 <?php foreach ($options as $option) { ?>
 <?php if ($option['type'] == 'file') { ?>
 <script type="text/javascript"><!--
@@ -380,11 +407,21 @@ $('#review .pagination a').live('click', function() {
 $('#review').load('index.php?route=product/product/review&product_id=<?php echo $product_id; ?>');
 
 $('#button-review').bind('click', function() {
+    var counter = 0;
+    var args = {
+        name: $('input[name=\'name\']').val(),
+        text: $('textarea[name=\'text\']').val(),
+        rating: $('input[name=\'rating\']:checked').val() ? $('input[name=\'rating\']:checked').val() : '',
+        captcha: $('input[name=\'captcha\']').val()
+    };
+    $('[name=\'imageFilePath[]\'][value]').each(function(){
+        args['imageFilePath[' + counter++ + ']'] = this.value;
+    });
     $.ajax({
         type: 'POST',
         url: 'index.php?route=product/product/write&product_id=<?php echo $product_id; ?>',
         dataType: 'json',
-        data: 'name=' + encodeURIComponent($('input[name=\'name\']').val()) + '&text=' + encodeURIComponent($('textarea[name=\'text\']').val()) + '&rating=' + encodeURIComponent($('input[name=\'rating\']:checked').val() ? $('input[name=\'rating\']:checked').val() : '') + '&captcha=' + encodeURIComponent($('input[name=\'captcha\']').val()),
+        data: args,
         beforeSend: function() {
             $('.success, .warning').remove();
             $('#button-review').attr('disabled', true);
@@ -426,5 +463,38 @@ $('.datetime').datetimepicker({
     timeFormat: 'h:m'
 });
 $('.time').timepicker({timeFormat: 'h:m'});
+
+function ajaxFileUpload(fileObject)
+{
+    var orderElement = fileObject.parentElement;
+    $.ajaxFileUpload({
+        url:'index.php?route=product/product/uploadImage',
+        secureuri: false,
+        fileElementId: fileObject.id,
+        dataType: 'json',
+        success: function (data, status) {
+            if(typeof(data.error) != 'undefined')
+            {
+                if(data.error != '')
+                {
+                    alert(data.error);
+                }else
+                {
+                    alert(data.msg);
+                }
+            }
+            var firstEmptySlot = $('input[name=\'imageFilePath[]\']:not([value]):first');
+            firstEmptySlot.val(data['filePath']);
+            firstEmptySlot.next().attr('src', '<?= HTTP_IMAGE ?>' + data['filePath']);
+            if ($('input[name=\'imageFilePath[]\']:not([value])').length == 0)
+                $('input[type=file]').attr('disabled', true);
+        },
+        error: function (data, status, e) {
+            alert(e);
+        }
+    });
+
+    return false;
+}
 //--></script>
 <?php echo $footer; ?>

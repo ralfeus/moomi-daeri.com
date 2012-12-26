@@ -79,6 +79,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_language'] = $this->language->get('text_language');
     	$this->data['text_currency'] = $this->language->get('text_currency');
         $this->data['text_repurchase_order'] = $this->language->get('text_repurchase_order');
+        $this->data['textGallery'] = $this->language->get('GALLERY');
 				
 		$this->data['home'] = $this->url->link('common/home');
 		$this->data['wishlist'] = $this->url->link('account/wishlist');
@@ -87,6 +88,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['cart'] = $this->url->link('checkout/cart');
 		$this->data['checkout'] = $this->url->link('checkout/checkout', '', 'SSL');
         $this->data['repurchase_order'] = $this->url->link('product/repurchase', '', 'SSL');
+        $this->data['urlGallery'] = $this->url->link('product/gallery', '', 'SSL');
 		
 		if (isset($this->request->get['filter_name'])) {
 			$this->data['filter_name'] = $this->request->get['filter_name'];

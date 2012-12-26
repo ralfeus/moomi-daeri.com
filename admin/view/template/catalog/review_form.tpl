@@ -87,6 +87,13 @@
                 <?php } ?>
               </select></td>
           </tr>
+          <tr>
+              <td>
+<?php foreach ($images as $imagePath): ?>
+                <img src="<?= HTTP_IMAGE . $imagePath ?>" /><br />>
+<?php endforeach; ?>
+              </td>
+          </tr>
         </table>
       </form>
     </div>

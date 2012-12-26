@@ -410,6 +410,7 @@ class ControllerCatalogReview extends Controller {
 		} else {
 			$this->data['status'] = '';
 		}
+        $this->data['images'] = $this->model_catalog_review->getReviewImages($review_info['review_id']);
 
 		$this->template = 'catalog/review_form.tpl';
 		$this->children = array(

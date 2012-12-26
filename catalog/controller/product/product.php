@@ -175,8 +175,9 @@ class ControllerProductProduct extends Controller {
 			$this->data['button_upload'] = $this->language->get('button_upload');
 			$this->data['button_continue'] = $this->language->get('button_continue');
 			
-			$this->data['textWeight'] = $this->language->get('WEIGHT');
-			
+			$this->data['$textAttachPicture'] = $this->language->get('ATTACH_FILE_TO_REVIEW');
+            $this->data['textWeight'] = $this->language->get('WEIGHT');
+
 			$this->load->model('catalog/review');
 
 			$this->data['tab_description'] = $this->language->get('tab_description');
@@ -445,7 +446,14 @@ class ControllerProductProduct extends Controller {
 			$this->response->setOutput($this->render());
     	}
   	}
-	
+
+    protected function initParameters()
+    {
+       $this->parameters['imageFilePath'] = empty($_REQUEST['imageFilePath']) || !is_array($_REQUEST['imageFilePath']) ?
+           array() :
+           $_REQUEST['imageFilePath'];
+    }
+
 	public function review() {
     	$this->language->load('product/product');
 		
@@ -471,9 +479,11 @@ class ControllerProductProduct extends Controller {
 				'text'       => strip_tags($result['text']),
 				'rating'     => (int)$result['rating'],
         		'reviews'    => sprintf($this->language->get('text_reviews'), (int)$review_total),
-        		'date_added' => date($this->language->get('date_format_short'), strtotime($result['date_added']))
+        		'date_added' => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
+                'images' => $this->model_catalog_review->getReviewImages($result['review_id'])
         	);
-      	}			
+      	}
+        $this->log->write(print_r($this->data, true));
 			
 		$pagination = new Pagination();
 		$pagination->total = $review_total;
@@ -494,6 +504,7 @@ class ControllerProductProduct extends Controller {
 	}
 	
 	public function write() {
+        $this->log->write(print_r($_REQUEST, true));
 		$this->language->load('product/product');
 		
 		$this->load->model('catalog/review');
@@ -515,6 +526,7 @@ class ControllerProductProduct extends Controller {
 		if (!isset($this->session->data['captcha']) || ($this->session->data['captcha'] != $this->request->post['captcha'])) {
 			$json['error'] = $this->language->get('error_captcha');
 		}
+        $this->request->post = array_merge($this->request->post, $this->parameters);
 				
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && !isset($json['error'])) {
 			$this->model_catalog_review->addReview($this->request->get['product_id'], $this->request->post);
@@ -585,5 +597,21 @@ class ControllerProductProduct extends Controller {
 		
 		$this->response->setOutput(json_encode($json));		
 	}
+
+    public function uploadImage()
+    {
+        $this->log->write(print_r($_FILES, true));
+        $json = array();
+        foreach ($_FILES as $file)
+            if (is_uploaded_file($file['tmp_name']))
+            {
+                if (!file_exists(DIR_IMAGE . 'upload/' . session_id()))
+                    mkdir(DIR_IMAGE . 'upload/' . session_id());
+                $fileName = time() . '.' . pathinfo($file['name'], PATHINFO_EXTENSION);
+                move_uploaded_file($file['tmp_name'], DIR_IMAGE . 'upload/' . session_id() . '/' . $fileName);
+                $json['filePath'] = 'upload/' . session_id() . '/' . $fileName;
+            }
+        $this->response->setOutput(json_encode($json));
+    }
 }
 ?>

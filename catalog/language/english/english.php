@@ -92,6 +92,7 @@ $_['CONFIRM'] = "Confirm";
 $_['COLOR'] = 'Color';
 $_['CURRENCY'] = 'Currency';
 $_['FILTER'] = 'Filter';
+$_['GALLERY'] = 'Gallery';
 $_['INVOICE_ID'] = 'Invoice ID';
 $_['NO_ITEMS'] = 'There are no items';
 $_['ORDER_ITEM_ID'] = 'Order item ID';

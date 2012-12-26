@@ -148,7 +148,8 @@ DD_belatedPNG.fix('#logo img');
         <a class="button" href="<?php echo $account; ?>"><span><?php echo $text_account; ?></span></a>
         <a class="button" href="<?php echo $cart; ?>"><span><?php echo $text_cart; ?></span></a>
         <a class="button" href="<?php echo $checkout; ?>"><span><?php echo $text_checkout; ?></span></a>
-        <a class="button" href="<?php echo $repurchase_order; ?>"><span><?php echo $text_repurchase_order; ?></span></a>
+        <a class="button" href="<?php echo $repurchase_order; ?>"><span><?php echo $text_repurchase_order; ?></span></a><br />
+        <a class="button" href="<?= $urlGallery ?>"><span><?= $textGallery ?></span></a>
     </div>
 </div>
 <?php if ($categories) { ?>
