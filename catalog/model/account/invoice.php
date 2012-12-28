@@ -27,7 +27,7 @@ class ModelAccountInvoice extends Model
             $weight = $tmpWeight;
 
         /// Get shipping cost according to destination and weight
-        $shippingCost = Shipping::getCost($weight, $order['shipping_method'], $this->registry);
+        $shippingCost = Shipping::getCost($order_items, $order['shipping_method'], array('weight' => $weight), $this->registry);
 
         /// Calculate total. Currently it's just subtotal and shipping. In the future it can be something else
         $total = $subtotal + $shippingCost;

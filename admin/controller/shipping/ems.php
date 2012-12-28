@@ -4,11 +4,13 @@ class ControllerShippingEMS extends Controller {
 
     public function getCost()
     {
+//        $this->log->write(print_r($this->request->request, true));
         $modelShippingEms = $this->load->model('shipping/ems');
         $shippingMethodElements = explode('.', $this->request->request['method']);
         $cost = $modelShippingEms->getCost(
             $shippingMethodElements[1],
-            $this->request->request['weight']);
+            null,
+            array('weight' => $this->request->request['weight']));
         $json = array(
             'cost' => $cost
         );

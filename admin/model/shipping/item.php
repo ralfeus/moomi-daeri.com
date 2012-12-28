@@ -2,7 +2,7 @@
 require_once("ShippingMethodModel.php");
 class ModelShippingItem extends Model implements ShippingMethodModel
 {
-  	public function getCost($destination, $orderItems)
+  	public function getCost($destination, $orderItems, $ext = null)
     {
         $query = $this->db->query("
             SELECT *

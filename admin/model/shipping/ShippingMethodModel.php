@@ -8,5 +8,5 @@
  */
 interface ShippingMethodModel
 {
-    function getCost($destination, $weight);
+    function getCost($destination, $orderItems, $ext = null);
 }
