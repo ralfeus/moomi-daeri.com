@@ -27,7 +27,7 @@
         <table class="list">
           <thead>
             <tr>
-              <td width="1" style="text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').attr('checked', this.checked);" /></td>
+              <td style="width: 1px; text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').attr('checked', this.checked);" /></td>
               <td class="center"><?php echo $column_image; ?></td>
               <td class="left"><?php if ($sort == 'pd.name') { ?>
                 <a href="<?php echo $sort_name; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_name; ?></a>
@@ -59,7 +59,7 @@
                 <?php } else { ?>
                 <a href="<?php echo $sort_manufacturer; ?>"><?php echo $columnManufacturer; ?></a>
                 <?php } ?></td>	
-			  <td class="right"><?php if ($sort == 'p.supplier') { ?>
+			  <td style="width: 1px" class="right"><?php if ($sort == 'p.supplier') { ?>
                 <a href="<?php echo $sort_supplier; ?>" class="<?php echo strtolower($order); ?>"><?php echo $columnSupplier; ?></a>
                 <?php } else { ?>
                 <a href="<?php echo $sort_supplier; ?>"><?php echo $columnSupplier; ?></a>
@@ -89,7 +89,14 @@
                   <?php } ?>
                 </select></td>
 			  <td align="right"><input type="text" name="filter_manufacturer" value="<?php echo $filter_manufacturer; ?>" style="text-align: right;" /></td>
-			  <td align="right"><input type="text" name="filter_supplier" value="<?php echo $filter_supplier; ?>" style="text-align: right;" /></td>
+			  <td>
+                  <select name="filterSupplierId[]" multiple="true">
+                      <?php foreach ($suppliers as $key => $value):
+                      $selected = in_array($key, $filterSupplierId) ? 'selected' : ''; ?>
+                      <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
+                      <?php endforeach; ?>
+                  </select>
+			  </td>
               <td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td>
             </tr>
             <?php if ($products) { ?>
@@ -141,48 +148,28 @@
   </div>
 </div>
 <script type="text/javascript"><!--
-function filter() {
-	url = 'index.php?route=catalog/product&token=<?php echo $token; ?>';
-	
-	var filter_name = $('input[name=\'filter_name\']').attr('value');
-	
-	if (filter_name) {
-		url += '&filter_name=' + encodeURIComponent(filter_name);
-	}
-	
-	var filter_model = $('input[name=\'filter_model\']').attr('value');
-	
-	if (filter_model) {
-		url += '&filter_model=' + encodeURIComponent(filter_model);
-	}
-	
-	var filter_price = $('input[name=\'filter_price\']').attr('value');
-	
-	if (filter_price) {
-		url += '&filter_price=' + encodeURIComponent(filter_price);
-	}
-	
-	var filter_quantity = $('input[name=\'filter_quantity\']').attr('value');
-	
-	if (filter_quantity) {
-		url += '&filter_quantity=' + encodeURIComponent(filter_quantity);
-	}
-	
-	var filter_status = $('select[name=\'filter_status\']').attr('value');
-	
-	if (filter_status != '*') {
-		url += '&filter_status=' + encodeURIComponent(filter_status);
-	}	
+$(document).ready(function() {
+    $('.date').datepicker({dateFormat: 'yy-mm-dd'});
+    $("#filter_status_id\\[\\]").multiselect({
+        noneSelectedText: "-- No filter --",
+        selectedList: 3
+    });
 
-//	if (filter_manufacturer != '*') {
-//		url += '&filter_manufacturer=' + encodeURIComponent(filter_manufacturer);
-//	}
-	
-//	if (filter_supplier != '*') {
-//		url += '&filter_supplier=' + encodeURIComponent(filter_supplier);
-//	}
-	
-	location = url;
+    $('[name="filterSupplierId[]"]')
+            .multiselect({
+                noneSelectedText: "-- No filter --",
+                selectedList: 1
+            })
+            .multiselectfilter();
+    $('button.ui-multiselect').css('width', '110px');
+});
+
+function filter()
+{
+    $('#form')
+            .attr('action', 'index.php?route=catalog/product&token=<?= $token ?>')
+            .submit();
+    return;
 }
 //--></script> 
 <script type="text/javascript"><!--

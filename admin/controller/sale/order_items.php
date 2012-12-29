@@ -593,7 +593,7 @@ class ControllerSaleOrderItems extends Controller {
         $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
         $this->parameters['sort'] = empty($_REQUEST['sort']) ? null : $_REQUEST['sort'];
         $this->parameters['token'] = $this->session->data['token'];
-        $this->log->write(print_r($this->parameters, true));
+//        $this->log->write(print_r($this->parameters, true));
     }
 
     private function initStatuses()

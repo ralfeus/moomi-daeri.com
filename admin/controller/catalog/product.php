@@ -14,6 +14,16 @@ class ControllerCatalogProduct extends Controller {
   	public function index() {
 	    $this->getList();
   	}
+
+    protected function initParameters()
+    {
+        $this->parameters['filterSupplierId'] = empty($_REQUEST['filterSupplierId']) || !is_array($_REQUEST['filterSupplierId']) ?
+            array() :
+            $_REQUEST['filterSupplierId'];
+        $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
+        $this->parameters['sort'] = empty($_REQUEST['sort']) ? null : $_REQUEST['sort'];
+        $this->parameters['token'] = $this->session->data['token'];
+    }
   
   	public function insert() {
     	$this->load->language('catalog/product');
@@ -258,12 +268,6 @@ class ControllerCatalogProduct extends Controller {
 			$filter_manufacturer = null;
 		}
 		
-		if (isset($this->request->get['filter_supplier'])) {
-			$filter_supplier = $this->request->get['filter_supplier'];
-		} else {
-			$filter_supplier = null;
-		}
-		
 		if (isset($this->request->get['sort'])) {
 			$sort = $this->request->get['sort'];
 		} else {
@@ -324,20 +328,6 @@ class ControllerCatalogProduct extends Controller {
 			$url .= '&page=' . $this->request->get['page'];
 		}
 
-  		$this->data['breadcrumbs'] = array();
-
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
-      		'separator' => false
-   		);
-
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('heading_title'),
-			'href'      => $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'),       		
-      		'separator' => ' :: '
-   		);
-		
 		$this->data['insert'] = $this->url->link('catalog/product/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		$this->data['copy'] = $this->url->link('catalog/product/copy', 'token=' . $this->session->data['token'] . $url, 'SSL');	
 		$this->data['delete'] = $this->url->link('catalog/product/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
@@ -345,21 +335,18 @@ class ControllerCatalogProduct extends Controller {
         $this->data['disable'] = $this->url->link('catalog/product/disable', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
 		$this->data['products'] = array();
+        $data = $this->parameters;
+        $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
+        $data['limit']           = $this->config->get('config_admin_limit');
+		$data['filter_name']	  = $filter_name;
+		$data[	'filter_model']	  = $filter_model;
+		$data[	'filter_price']	  = $filter_price;
+		$data[	'filter_quantity'] = $filter_quantity;
+		$data[	'filter_status']   = $filter_status;
+		$data[	'filter_manufacturer']= $filter_manufacturer;
+		$data[	'sort']            = $sort;
+		$data[	'order']           = $order;
 
-		$data = array(
-			'filter_name'	  => $filter_name, 
-			'filter_model'	  => $filter_model,
-			'filter_price'	  => $filter_price,
-			'filter_quantity' => $filter_quantity,
-			'filter_status'   => $filter_status,
-			'filter_manufacturer'=> $filter_manufacturer,
-			'filter_supplier'   => $filter_supplier,
-			'sort'            => $sort,
-			'order'           => $order,
-			'start'           => ($page - 1) * $this->config->get('config_admin_limit'),
-			'limit'           => $this->config->get('config_admin_limit')
-		);
-		
 		$this->load->model('tool/image');
 		$this->load->model('catalog/supplier');
 		$this->load->model('catalog/manufacturer');
@@ -367,6 +354,7 @@ class ControllerCatalogProduct extends Controller {
 		$product_total = $this->model_catalog_product->getTotalProducts($data);
 			
 		$results = $this->model_catalog_product->getProducts($data);
+        $this->data['suppliers'] = $this->getSuppliers();
 				    	
 		foreach ($results as $result) {
 			$action = array();
@@ -548,11 +536,10 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['filter_quantity'] = $filter_quantity;
 		$this->data['filter_status'] = $filter_status;
 		$this->data['filter_manufacturer'] = $filter_manufacturer;
-		$this->data['filter_supplier'] = $filter_supplier;
-		
 		$this->data['sort'] = $sort;
 		$this->data['order'] = $order;
-
+        $this->data = array_merge($this->data, $this->parameters);
+        $this->setBreadcrumbs();
 		$this->template = 'catalog/product_list.tpl';
 		$this->children = array(
 			'common/header',
@@ -1198,8 +1185,28 @@ class ControllerCatalogProduct extends Controller {
 		);
 				
 		$this->response->setOutput($this->render());
-  	} 
-	
+  	}
+
+    private function getSuppliers()
+    {
+        foreach ($this->parameters as $key => $value)
+        {
+            if (strpos($key, 'filter') === false)
+                continue;
+            $data[$key] = $value;
+        }
+        unset($data['filterSupplierId']);
+        $result = array(); $tmpResult = array();
+        foreach ($this->modelCatalogProduct->getProducts($data) as $product)
+        {
+//            $this->log->write(print_r($product, true));
+            if (!in_array($product['supplier_id'], $tmpResult))
+                $tmpResult[$product['supplier_id']] = $product['supplier_name'];
+        }
+        natcasesort($tmpResult);
+        return $tmpResult;
+    }
+
   	private function validateForm() { 
     	if (!$this->user->hasPermission('modify', 'catalog/product')) {
       		$this->error['warning'] = $this->language->get('error_permission');
@@ -1459,6 +1466,23 @@ class ControllerCatalogProduct extends Controller {
             $this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
         }
         $this->getList();
+    }
+
+    private function setBreadcrumbs()
+    {
+        $this->data['breadcrumbs'] = array();
+
+        $this->data['breadcrumbs'][] = array(
+            'text'      => $this->language->get('text_home'),
+            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+            'separator' => false
+        );
+
+        $this->data['breadcrumbs'][] = array(
+            'text'      => $this->language->get('heading_title'),
+            'href'      => $this->url->link('catalog/product', 'token=' . $this->session->data['token'], 'SSL'),
+            'separator' => ' :: '
+        );
     }
 }
 ?>
