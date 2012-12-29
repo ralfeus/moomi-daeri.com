@@ -64,6 +64,7 @@
                 <?php } else { ?>
                 <a href="<?php echo $sort_supplier; ?>"><?php echo $columnSupplier; ?></a>
                 <?php } ?></td>
+              <td style="width: 1px"><?= $textDateAdded ?></td>
               <td class="right"><?php echo $column_action; ?></td>
             </tr>
           </thead>
@@ -97,6 +98,10 @@
                       <?php endforeach; ?>
                   </select>
 			  </td>
+              <td>
+                  <input name="filterDateAddedFrom" class="date" value="<?= $filterDateAddedFrom ?>" />
+                  <input name="filterDateAddedTo" class="date" value="<?= $filterDateAddedTo ?>" />
+              </td>
               <td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td>
             </tr>
             <?php if ($products) { ?>
@@ -130,6 +135,7 @@
 				<?php echo $product['manufacturer']; } ?>
 				</td>
 			  <td class="right"><?php echo $product['supplier']; ?></td>
+              <td><?= $product['dateAdded'] ?></td>
               <td class="right"><?php foreach ($product['action'] as $action) { ?>
                 [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]
                 <?php } ?></td>

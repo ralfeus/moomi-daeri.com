@@ -17,6 +17,8 @@ class ControllerCatalogProduct extends Controller {
 
     protected function initParameters()
     {
+        $this->parameters['filterDateAddedFrom'] = empty($_REQUEST['filterDateAddedFrom']) ? '2000-01-01' : $_REQUEST['filterDateAddedFrom'];
+        $this->parameters['filterDateAddedTo'] = empty($_REQUEST['filterDateAddedTo']) ? '2100-01-01' : $_REQUEST['filterDateAddedTo'];
         $this->parameters['filterSupplierId'] = empty($_REQUEST['filterSupplierId']) || !is_array($_REQUEST['filterSupplierId']) ?
             array() :
             $_REQUEST['filterSupplierId'];
@@ -392,6 +394,7 @@ class ControllerCatalogProduct extends Controller {
 			
       		$this->data['products'][] = array(
 				'product_id' => $result['product_id'],
+                'dateAdded' => date('Y-m-d', strtotime($result['date_added'])),
 				'name'       => $result['name'],
 				'model'      => $result['model'],
 				'price'      => $result['price'],
@@ -423,6 +426,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['column_status'] = $this->language->get('column_status');
 		$this->data['columnManufacturer'] = $this->language->get('COLUMN_MANUFACTURER');
 		$this->data['columnSupplier'] = $this->language->get('COLUMN_SUPPLIER');
+        $this->data['textDateAdded'] = $this->language->get('DATE_ADDED');
 		$this->data['column_action'] = $this->language->get('column_action');		
 				
 		$this->data['button_copy'] = $this->language->get('button_copy');		

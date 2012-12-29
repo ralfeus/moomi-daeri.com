@@ -129,6 +129,10 @@ class ModelCatalogProduct extends Model {
     private function buildFilterString($data = array())
     {
         $filter = "pd.language_id = '" . (int)$this->config->get('config_language_id') . "'";
+        if (!empty($data['filterDateAddedFrom']))
+            $filter .= ($filter ? " AND" : "") . " date_added > '" . $this->db->escape($data['filterDateAddedFrom']) . "'";
+        if (!empty($data['filterDateAddedTo']))
+            $filter .= ($filter ? " AND" : "") . " date_added < '" . date('Y-m-d', strtotime($data['filterDateAddedFrom']) + 86400) . "'";
         if (!empty($data['filterSupplierId']))
             $filter .= ($filter ? " AND" : "") . " s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
         if (!empty($data['filter_name']))
