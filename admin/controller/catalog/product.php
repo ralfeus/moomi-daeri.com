@@ -1200,8 +1200,9 @@ class ControllerCatalogProduct extends Controller {
         }
         unset($data['filterSupplierId']);
         $result = array(); $tmpResult = array();
-        $this->log->write(print_r($data, true));
-        foreach ($this->modelCatalogProduct->getProducts($data) as $product)
+        $products = $this->modelCatalogProduct->getProducts($data);
+        $this->log->write(sizeof($products));
+        foreach ($products as $product)
         {
 //            $this->log->write(print_r($product, true));
             if (!in_array($product['supplier_id'], $tmpResult))
