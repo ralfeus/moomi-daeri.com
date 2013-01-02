@@ -32,11 +32,11 @@ final class MySQL {
 				while ($result = mysql_fetch_assoc($resource)) {
 					$data[$i] = $result;
 					$i++;
-                    if ($log) $log->write($i);
 				}
+                if ($log) $log->write($i);
 
 				mysql_free_result($resource);
-				
+				if ($log) $log->write("Resource is freed up");
 				$query = new stdClass();
 				$query->row = isset($data[0]) ? $data[0] : array();
 				$query->rows = $data;
