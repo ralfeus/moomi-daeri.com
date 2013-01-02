@@ -24,7 +24,7 @@ final class MySQL {
               $log->write($sql);
           }
 		$resource = mysql_query($sql, $this->connection);
-        if ($log) $log->write(mysql_error($this->connection));
+        if ($log) $log->write(print_r($resource, true));
 		if ($resource) {
 			if (is_resource($resource)) {
 				$i = 0;
