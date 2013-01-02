@@ -1207,6 +1207,7 @@ class ControllerCatalogProduct extends Controller {
                 $tmpResult[$product['supplier_id']] = $product['supplier_name'];
         }
         natcasesort($tmpResult);
+        $this->log->write(sizeof($tmpResult));
         return $tmpResult;
     }
 
