@@ -20,6 +20,7 @@ class ControllerCatalogProduct extends Controller {
         $this->parameters['filterDateAddedFrom'] = empty($_REQUEST['filterDateAddedFrom']) ? '2012-01-01' : $_REQUEST['filterDateAddedFrom'];
         $this->parameters['filterDateAddedTo'] = empty($_REQUEST['filterDateAddedTo']) ? '2014-01-01' : $_REQUEST['filterDateAddedTo'];
         $this->parameters['filterModel'] = empty($_REQUEST['filterModel']) ? null : $_REQUEST['filterModel'];
+        $this->parameters['filterName'] = empty($_REQUEST['filterName']) ? null : $_REQUEST['filterName'];
         $this->parameters['filterSupplierId'] = empty($_REQUEST['filterSupplierId']) || !is_array($_REQUEST['filterSupplierId']) ?
             array() :
             $_REQUEST['filterSupplierId'];
@@ -235,12 +236,6 @@ class ControllerCatalogProduct extends Controller {
   	}
 	
   	private function getList() {				
-		if (isset($this->request->get['filter_name'])) {
-			$filter_name = $this->request->get['filter_name'];
-		} else {
-			$filter_name = null;
-		}
-
 		if (isset($this->request->get['filter_price'])) {
 			$filter_price = $this->request->get['filter_price'];
 		} else {
@@ -277,12 +272,6 @@ class ControllerCatalogProduct extends Controller {
 			$order = 'ASC';
 		}
 		
-		if (isset($this->request->get['page'])) {
-			$page = $this->request->get['page'];
-		} else {
-			$page = 1;
-		}
-						
 		$url = '';
 						
 		if (isset($this->request->get['filter_name'])) {
@@ -335,7 +324,6 @@ class ControllerCatalogProduct extends Controller {
         $data = $this->parameters;
         $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
         $data['limit']           = $this->config->get('config_admin_limit');
-		$data['filter_name']	  = $filter_name;
 		$data[	'filter_price']	  = $filter_price;
 		$data[	'filter_quantity'] = $filter_quantity;
 		$data[	'filter_status']   = $filter_status;
@@ -354,7 +342,6 @@ class ControllerCatalogProduct extends Controller {
 
 		foreach ($results as $result) {
 			$action = array();
-			
 			$action[] = array(
 				'text' => $this->language->get('text_edit'),
 				'href' => $this->url->link('catalog/product/update', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, 'SSL')
@@ -367,25 +354,22 @@ class ControllerCatalogProduct extends Controller {
 			}
 	
 			$special = false;
-			
 			$product_specials = $this->model_catalog_product->getProductSpecials($result['product_id']);
 			
 			foreach ($product_specials  as $product_special) {
 				if (($product_special['date_start'] == '0000-00-00' || $product_special['date_start'] > date('Y-m-d')) && ($product_special['date_end'] == '0000-00-00' || $product_special['date_end'] < date('Y-m-d'))) {
 					$special = $product_special['price'];
-			
 					break;
 				}					
 			}
 			$suppliers = $this->model_catalog_supplier->getSupplier($result['supplier_id']);
-			if (empty($suppliers)) {
+			if (empty($suppliers))
 				$suppliers['name'] = "";
-			}
-			$manufacturers = $this->model_catalog_manufacturer->getManufacturer($result['manufacturer_id']);
-			if (empty($manufacturers)) {
+
+            $manufacturers = $this->model_catalog_manufacturer->getManufacturer($result['manufacturer_id']);
+			if (empty($manufacturers))
 				$manufacturers['name'] = "";
-			}
-			
+
       		$this->data['products'][] = array(
 				'product_id' => $result['product_id'],
                 'dateAdded' => date('Y-m-d', strtotime($result['date_added'])),
@@ -431,8 +415,7 @@ class ControllerCatalogProduct extends Controller {
         $this->data['button_enable'] = $this->language->get('ENABLE');
         $this->data['button_disable'] = $this->language->get('DISABLE');
 
-          $this->data['token'] = $this->session->data['token'];
-		
+
  		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
 		} else {
@@ -487,47 +470,16 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['manufacturer'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.manufacturer' . $url, 'SSL');
 		$this->data['supplier'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.supplier' . $url, 'SSL');
 		$this->data['sort_order'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.sort_order' . $url, 'SSL');
-		
-		$url = '';
 
-		if (isset($this->request->get['filter_name'])) {
-			$url .= '&filter_name=' . $this->request->get['filter_name'];
-		}
-		
-		if (isset($this->request->get['filter_model'])) {
-			$url .= '&filter_model=' . $this->request->get['filter_model'];
-		}
-		
-		if (isset($this->request->get['filter_price'])) {
-			$url .= '&filter_price=' . $this->request->get['filter_price'];
-		}
-		
-		if (isset($this->request->get['filter_quantity'])) {
-			$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
-		}
-
-		if (isset($this->request->get['filter_status'])) {
-			$url .= '&filter_status=' . $this->request->get['filter_status'];
-		}
-
-		if (isset($this->request->get['sort'])) {
-			$url .= '&sort=' . $this->request->get['sort'];
-		}
-												
-		if (isset($this->request->get['order'])) {
-			$url .= '&order=' . $this->request->get['order'];
-		}
-				
 		$pagination = new Pagination();
 		$pagination->total = $product_total;
-		$pagination->page = $page;
+		$pagination->page = $this->parameters['page'];
 		$pagination->limit = $this->config->get('config_admin_limit');
 		$pagination->text = $this->language->get('text_pagination');
-		$pagination->url = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url . '&page={page}', 'SSL');
-			
+        unset($this->parameters['page']);
+		$pagination->url = $this->url->link('catalog/product', $this->buildUrlParameterString($this->parameters) . '&page={page}', 'SSL');
 		$this->data['pagination'] = $pagination->render();
 	
-		$this->data['filter_name'] = $filter_name;
 		$this->data['filter_price'] = $filter_price;
 		$this->data['filter_quantity'] = $filter_quantity;
 		$this->data['filter_status'] = $filter_status;

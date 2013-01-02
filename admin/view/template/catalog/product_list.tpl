@@ -72,7 +72,7 @@
             <tr class="filter">
               <td></td>
               <td></td>
-              <td><input type="text" name="filter_name" value="<?php echo $filter_name; ?>" /></td>
+              <td><input name="filterName" value="<?= $filterName ?>" /></td>
               <td><input name="filterModel" value="<?= $filterModel ?>" /></td>
               <td align="left"><input type="text" name="filter_price" value="<?php echo $filter_price; ?>" size="8"/></td>
               <td align="right"><input type="text" name="filter_quantity" value="<?php echo $filter_quantity; ?>" style="text-align: right;" /></td>
