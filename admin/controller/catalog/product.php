@@ -1192,6 +1192,7 @@ class ControllerCatalogProduct extends Controller {
 
     private function getSuppliers()
     {
+        return array();
         foreach ($this->parameters as $key => $value)
         {
             if (strpos($key, 'filter') === false)
