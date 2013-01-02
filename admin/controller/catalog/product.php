@@ -1198,8 +1198,8 @@ class ControllerCatalogProduct extends Controller {
             $data[$key] = $value;
         }
         unset($data['filterSupplierId']);
-        $result = array(); $tmpResult = array();
-        $products = $this->modelCatalogProduct->getProducts($data);
+        $tmpResult = array();
+        $products = $this->modelCatalogProduct->getProductSuppliers($data);
         $this->log->write(sizeof($products));
         foreach ($products as $product)
         {

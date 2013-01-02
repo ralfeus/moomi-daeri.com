@@ -128,11 +128,13 @@ class ModelCatalogProduct extends Model {
 
     private function buildFilterString($data = array())
     {
-        $filter = "pd.language_id = '" . (int)$this->config->get('config_language_id') . "'";
+        $filter = "";
         if (!empty($data['filterDateAddedFrom']))
             $filter .= ($filter ? " AND" : "") . " date_added > '" . $this->db->escape($data['filterDateAddedFrom']) . "'";
         if (!empty($data['filterDateAddedTo']))
             $filter .= ($filter ? " AND" : "") . " date_added < '" . date('Y-m-d', strtotime($data['filterDateAddedTo']) + 86400) . "'";
+        if (!empty($data['filterLanguageId']))
+            $filter .= ($filter ? " AND" : '') . " pd.language_id = " . (int)$data['filterLanguageId'];
         if (!empty($data['filterSupplierId']))
             $filter .= ($filter ? " AND" : "") . " s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
         if (!empty($data['filter_name']))
@@ -391,6 +393,7 @@ class ModelCatalogProduct extends Model {
             $productData = $this->cache->get('product.' . (int)$this->config->get('config_language_id'));
         if (empty($productData))
         {
+            $data['filterLanguageId'] = $this->config->get('config_language_id');
 			$sql = "
 			    SELECT *, s.name AS supplier_name
 			    FROM
@@ -599,6 +602,22 @@ class ModelCatalogProduct extends Model {
 		
 		return $product_store_data;
 	}
+
+    public function getProductSuppliers($data = array())
+    {
+        $filter = $this->buildFilterString($data);
+        $sql = "
+            SELECT DISTINCT s.supplier_id AS supplier_id, s.name AS supplier_name
+            FROM
+                " . DB_PREFIX . "product AS p
+                LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id" .
+                (!empty($data['filter_category_id']) ? " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)" : '') .
+            (!empty($filter) ? " WHERE $filter" : '') .
+            " GROUP BY p.product_id
+        ";
+        $this->log->write($sql);
+        return $this->db->query($sql)->rows;
+    }
 
 	public function getProductLayouts($product_id) {
 		$product_layout_data = array();
