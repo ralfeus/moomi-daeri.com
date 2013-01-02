@@ -32,9 +32,9 @@ final class MySQL {
 				while ($result = mysql_fetch_assoc($resource)) {
 					$data[$i] = $result;
 					$i++;
+                    if ($log) $log->write($i);
 				}
-                if ($log) $log->write(print_r($result, true));
-				
+
 				mysql_free_result($resource);
 				
 				$query = new stdClass();
