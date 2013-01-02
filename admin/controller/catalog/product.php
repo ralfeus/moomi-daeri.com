@@ -409,6 +409,7 @@ class ControllerCatalogProduct extends Controller {
 				'manufacturer_page_url' => empty($result['manufacturer_page_url']) ? '' : $result['manufacturer_page_url']
 			);
     	}
+        $this->log->write("Here");
 		$this->data['heading_title'] = $this->language->get('heading_title');
 				
 		$this->data['text_enabled'] = $this->language->get('text_enabled');		
