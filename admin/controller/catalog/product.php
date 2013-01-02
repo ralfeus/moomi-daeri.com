@@ -354,7 +354,6 @@ class ControllerCatalogProduct extends Controller {
 		$this->load->model('catalog/manufacturer');
 
 		$product_total = $this->model_catalog_product->getTotalProducts($data);
-          $this->log->write(__LINE__);
 
 		$results = $this->model_catalog_product->getProducts($data);
         $this->data['suppliers'] = $this->getSuppliers();
