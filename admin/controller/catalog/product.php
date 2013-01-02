@@ -1200,6 +1200,7 @@ class ControllerCatalogProduct extends Controller {
         }
         unset($data['filterSupplierId']);
         $result = array(); $tmpResult = array();
+        $this->log->write(print_r($data, true));
         foreach ($this->modelCatalogProduct->getProducts($data) as $product)
         {
 //            $this->log->write(print_r($product, true));
