@@ -20,6 +20,8 @@ class ControllerCatalogProduct extends Controller {
         $this->log->write(print_r($_REQUEST, true));
         $this->parameters['filterDateAddedFrom'] = empty($_REQUEST['filterDateAddedFrom']) ? '2012-01-01' : $_REQUEST['filterDateAddedFrom'];
         $this->parameters['filterDateAddedTo'] = empty($_REQUEST['filterDateAddedTo']) ? '2014-01-01' : $_REQUEST['filterDateAddedTo'];
+        $this->parameters['filterManufacturerId'] = empty($_REQUEST['filterManufacturerId']) || !is_array($_REQUEST['filterManufacturerId']) ?
+            array() :  $_REQUEST['filterManufacturerId'];
         $this->parameters['filterModel'] = empty($_REQUEST['filterModel']) ? null : $_REQUEST['filterModel'];
         $this->parameters['filterName'] = empty($_REQUEST['filterName']) ? null : $_REQUEST['filterName'];
         $this->parameters['filterStatus'] = isset($_REQUEST['filterStatus']) && is_numeric($_REQUEST['filterStatus']) ?
@@ -247,18 +249,6 @@ class ControllerCatalogProduct extends Controller {
 			$filter_quantity = null;
 		}
 
-		if (isset($this->request->get['filter_status'])) {
-			$filter_status = $this->request->get['filter_status'];
-		} else {
-			$filter_status = null;
-		}
-
-		if (isset($this->request->get['filter_manufacturer'])) {
-			$filter_manufacturer = $this->request->get['filter_manufacturer'];
-		} else {
-			$filter_manufacturer = null;
-		}
-		
 		if (isset($this->request->get['sort'])) {
 			$sort = $this->request->get['sort'];
 		} else {
@@ -325,8 +315,6 @@ class ControllerCatalogProduct extends Controller {
         $data['limit']           = $this->config->get('config_admin_limit');
 		$data[	'filter_price']	  = $filter_price;
 		$data[	'filter_quantity'] = $filter_quantity;
-		$data[	'filter_status']   = $filter_status;
-		$data[	'filter_manufacturer']= $filter_manufacturer;
 		$data[	'sort']            = $sort;
 		$data[	'order']           = $order;
 
@@ -338,6 +326,7 @@ class ControllerCatalogProduct extends Controller {
 
 		$results = $this->model_catalog_product->getProducts($data);
         $this->data['suppliers'] = $this->getSuppliers();
+        $this->data['manufacturers'] = $this->getManufacturers();
 
 		foreach ($results as $result) {
 			$action = array();
@@ -481,8 +470,6 @@ class ControllerCatalogProduct extends Controller {
 	
 		$this->data['filter_price'] = $filter_price;
 		$this->data['filter_quantity'] = $filter_quantity;
-		$this->data['filter_status'] = $filter_status;
-		$this->data['filter_manufacturer'] = $filter_manufacturer;
 		$this->data['sort'] = $sort;
 		$this->data['order'] = $order;
         $this->data = array_merge($this->data, $this->parameters);
@@ -1132,6 +1119,27 @@ class ControllerCatalogProduct extends Controller {
 				
 		$this->response->setOutput($this->render());
   	}
+
+    private function getManufacturers()
+    {
+        foreach ($this->parameters as $key => $value)
+        {
+            if (strpos($key, 'filter') === false)
+                continue;
+            $data[$key] = $value;
+        }
+        unset($data['filterManufacturerId']);
+        $tmpResult = array();
+        $products = $this->modelCatalogProduct->getProductManufacturers($data);
+        foreach ($products as $product)
+        {
+//            $this->log->write(print_r($product, true));
+            if (!in_array($product['manufacturer_id'], $tmpResult))
+                $tmpResult[$product['manufacturer_id']] = $product['manufacturer_name'];
+        }
+        natcasesort($tmpResult);
+        return $tmpResult;
+    }
 
     private function getSuppliers()
     {

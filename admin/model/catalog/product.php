@@ -135,6 +135,19 @@ class ModelCatalogProduct extends Model {
             $filter .= ($filter ? " AND" : "") . " date_added < '" . date('Y-m-d', strtotime($data['filterDateAddedTo']) + 86400) . "'";
         if (!empty($data['filterLanguageId']))
             $filter .= ($filter ? " AND" : '') . " pd.language_id = " . (int)$data['filterLanguageId'];
+        if (!empty($data['filterManufacturerId']) && is_array($data['filterManufacturerId']) && sizeof($data['filterManufacturerId']))
+        {
+            $iDSet = array();
+            $filterManufacturer = array();
+            foreach ($data['filterManufacturerId'] as $manufacturerId)
+                if ($manufacturerId)
+                    $iDSet[] = $manufacturerId;
+                else
+                    $filterManufacturer['null'] = "m.manufacturer_id IS NULL";
+            if (sizeof($iDSet))
+                $filterManufacturer['ids'] = "m.manufacturer_id IN (" . implode(', ', $iDSet) . ")";
+            $filter .= ($filter ? " AND" : "") . ' (' . implode(' OR ', $filterManufacturer) . ')';
+        }
         if (!empty($data['filterModel']))
             $filter .= ($filter ? " AND" : "") . " LCASE(p.model) LIKE '" . $this->db->escape(utf8_strtolower($data['filterModel'])) . "%'";
         if (!empty($data['filterName']))
@@ -399,7 +412,8 @@ class ModelCatalogProduct extends Model {
 			    FROM
 			        " . DB_PREFIX . "product AS p
 			        LEFT JOIN " . DB_PREFIX . "product_description AS pd ON (p.product_id = pd.product_id)
-			        LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id";
+			        LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
+                    LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id";
 			
 			if (!empty($data['filter_category_id']))
 				$sql .= " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)";			
@@ -496,6 +510,24 @@ class ModelCatalogProduct extends Model {
 		
 		return $product_attribute_data;
 	}
+
+    public function getProductManufacturers($data = array())
+    {
+        $filter = $this->buildFilterString($data);
+        $sql = "
+            SELECT DISTINCT m.manufacturer_id AS manufacturer_id, m.name AS manufacturer_name
+            FROM
+                " . DB_PREFIX . "product AS p
+                LEFT JOIN " . DB_PREFIX . "product_description AS pd ON (p.product_id = pd.product_id)
+                LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
+                LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id" .
+            (!empty($data['filter_category_id']) ? " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)" : '') .
+            (!empty($filter) ? " WHERE $filter" : '') .
+            " GROUP BY p.product_id
+        ";
+        $this->log->write($sql);
+        return $this->db->query($sql)->rows;
+    }
 	
 	public function getProductOptions($product_id) {
 		$product_option_data = array();
@@ -610,7 +642,8 @@ class ModelCatalogProduct extends Model {
             FROM
                 " . DB_PREFIX . "product AS p
                 LEFT JOIN " . DB_PREFIX . "product_description AS pd ON (p.product_id = pd.product_id)
-                LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id" .
+                LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
+                LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id" .
                 (!empty($data['filter_category_id']) ? " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)" : '') .
             (!empty($filter) ? " WHERE $filter" : '') .
             " GROUP BY p.product_id
@@ -686,6 +719,7 @@ class ModelCatalogProduct extends Model {
 		    SELECT COUNT(DISTINCT p.product_id) AS total
 		    FROM
 		        " . DB_PREFIX . "product p
+		        LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
 		        LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id)
 		        LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id" .
                 (!empty($data['filter_category_id']) ? " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)" : '') .

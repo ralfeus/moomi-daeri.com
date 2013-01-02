@@ -83,7 +83,14 @@
                       <option value="1" <?= $filterStatus === "1" ? "selected" : "" ?>>Enabled</option>
                   </select>
               </td>
-			  <td align="right"><input type="text" name="filter_manufacturer" value="<?php echo $filter_manufacturer; ?>" style="text-align: right;" /></td>
+			  <td>
+                  <select name="filterManufacturerId[]" multiple="true">
+                      <?php foreach ($manufacturers as $key => $value):
+                      $selected = in_array($key, $filterManufacturerId) ? 'selected' : ''; ?>
+                      <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
+                      <?php endforeach; ?>
+                  </select>
+              </td>
 			  <td>
                   <select name="filterSupplierId[]" multiple="true">
                       <?php foreach ($suppliers as $key => $value):
@@ -150,10 +157,12 @@
 <script type="text/javascript"><!--
 $(document).ready(function() {
     $('.date').datepicker({dateFormat: 'yy-mm-dd'});
-    $("#filter_status_id\\[\\]").multiselect({
-        noneSelectedText: "-- No filter --",
-        selectedList: 3
-    });
+    $('[name="filterManufacturerId[]"]')
+            .multiselect({
+                noneSelectedText: "-- No filter --",
+                selectedList: 1
+            })
+            .multiselectfilter();
     $('[name=filterStatus]').multiselect({
         multiple: false,
         noneSelectedText: "-- No filter --",
