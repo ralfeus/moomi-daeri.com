@@ -548,7 +548,6 @@ class ControllerCatalogProduct extends Controller {
 			'common/header',
 			'common/footer'
 		);
-		$this->log->write(print_r($this->data, true));
 		$this->response->setOutput($this->render());
   	}
 
@@ -1192,7 +1191,6 @@ class ControllerCatalogProduct extends Controller {
 
     private function getSuppliers()
     {
-        return array();
         foreach ($this->parameters as $key => $value)
         {
             if (strpos($key, 'filter') === false)
