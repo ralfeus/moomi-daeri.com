@@ -17,8 +17,8 @@ class ControllerCatalogProduct extends Controller {
 
     protected function initParameters()
     {
-        $this->parameters['filterDateAddedFrom'] = empty($_REQUEST['filterDateAddedFrom']) ? '2000-01-01' : $_REQUEST['filterDateAddedFrom'];
-        $this->parameters['filterDateAddedTo'] = empty($_REQUEST['filterDateAddedTo']) ? '2100-01-01' : $_REQUEST['filterDateAddedTo'];
+        $this->parameters['filterDateAddedFrom'] = empty($_REQUEST['filterDateAddedFrom']) ? '2012-01-01' : $_REQUEST['filterDateAddedFrom'];
+        $this->parameters['filterDateAddedTo'] = empty($_REQUEST['filterDateAddedTo']) ? '2014-01-01' : $_REQUEST['filterDateAddedTo'];
         $this->parameters['filterSupplierId'] = empty($_REQUEST['filterSupplierId']) || !is_array($_REQUEST['filterSupplierId']) ?
             array() :
             $_REQUEST['filterSupplierId'];
@@ -408,10 +408,8 @@ class ControllerCatalogProduct extends Controller {
 				'action'     => $action,
 				'manufacturer_page_url' => empty($result['manufacturer_page_url']) ? '' : $result['manufacturer_page_url']
 			);
-			
     	}
-		
-		$this->data['heading_title'] = $this->language->get('heading_title');		
+		$this->data['heading_title'] = $this->language->get('heading_title');
 				
 		$this->data['text_enabled'] = $this->language->get('text_enabled');		
 		$this->data['text_disabled'] = $this->language->get('text_disabled');		

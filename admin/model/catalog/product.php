@@ -132,7 +132,7 @@ class ModelCatalogProduct extends Model {
         if (!empty($data['filterDateAddedFrom']))
             $filter .= ($filter ? " AND" : "") . " date_added > '" . $this->db->escape($data['filterDateAddedFrom']) . "'";
         if (!empty($data['filterDateAddedTo']))
-            $filter .= ($filter ? " AND" : "") . " date_added < '" . date('Y-m-d', strtotime($data['filterDateAddedFrom']) + 86400) . "'";
+            $filter .= ($filter ? " AND" : "") . " date_added < '" . date('Y-m-d', strtotime($data['filterDateAddedTo']) + 86400) . "'";
         if (!empty($data['filterSupplierId']))
             $filter .= ($filter ? " AND" : "") . " s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
         if (!empty($data['filter_name']))
@@ -436,7 +436,7 @@ class ModelCatalogProduct extends Model {
 			
 				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 			}	
-			
+			$this->log->write($sql);
 			$query = $this->db->query($sql);
             $productData = $query->rows;
             if (empty($data))
