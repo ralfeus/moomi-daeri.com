@@ -135,12 +135,12 @@ class ModelCatalogProduct extends Model {
             $filter .= ($filter ? " AND" : "") . " date_added < '" . date('Y-m-d', strtotime($data['filterDateAddedTo']) + 86400) . "'";
         if (!empty($data['filterLanguageId']))
             $filter .= ($filter ? " AND" : '') . " pd.language_id = " . (int)$data['filterLanguageId'];
+        if (!empty($data['filterModel']))
+            $filter .= ($filter ? " AND" : "") . " LCASE(p.model) LIKE '" . $this->db->escape(utf8_strtolower($data['filterModel'])) . "%'";
         if (!empty($data['filterSupplierId']))
             $filter .= ($filter ? " AND" : "") . " s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
         if (!empty($data['filter_name']))
             $filter .= ($filter ? " AND" : "") . " LCASE(pd.name) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%'";
-        if (!empty($data['filter_model']))
-            $filter .= ($filter ? " AND" : "") . " LCASE(p.model) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_model'])) . "%'";
         if (!empty($data['filter_price']))
             $filter .= ($filter ? " AND" : "") . " p.price LIKE '" . $this->db->escape($data['filter_price']) . "%'";
         if (isset($data['filter_quantity']) && !is_null($data['filter_quantity']))

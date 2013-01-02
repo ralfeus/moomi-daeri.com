@@ -19,6 +19,7 @@ class ControllerCatalogProduct extends Controller {
     {
         $this->parameters['filterDateAddedFrom'] = empty($_REQUEST['filterDateAddedFrom']) ? '2012-01-01' : $_REQUEST['filterDateAddedFrom'];
         $this->parameters['filterDateAddedTo'] = empty($_REQUEST['filterDateAddedTo']) ? '2014-01-01' : $_REQUEST['filterDateAddedTo'];
+        $this->parameters['filterModel'] = empty($_REQUEST['filterModel']) ? null : $_REQUEST['filterModel'];
         $this->parameters['filterSupplierId'] = empty($_REQUEST['filterSupplierId']) || !is_array($_REQUEST['filterSupplierId']) ?
             array() :
             $_REQUEST['filterSupplierId'];
@@ -240,12 +241,6 @@ class ControllerCatalogProduct extends Controller {
 			$filter_name = null;
 		}
 
-		if (isset($this->request->get['filter_model'])) {
-			$filter_model = $this->request->get['filter_model'];
-		} else {
-			$filter_model = null;
-		}
-		
 		if (isset($this->request->get['filter_price'])) {
 			$filter_price = $this->request->get['filter_price'];
 		} else {
@@ -295,7 +290,7 @@ class ControllerCatalogProduct extends Controller {
 		}
 		
 		if (isset($this->request->get['filter_model'])) {
-			$url .= '&filter_model=' . $this->request->get['filter_model'];
+			$url .= '&filterModel=' . $this->request->get['filterModel'];
 		}
 		
 		if (isset($this->request->get['filter_price'])) {
@@ -341,7 +336,6 @@ class ControllerCatalogProduct extends Controller {
         $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
         $data['limit']           = $this->config->get('config_admin_limit');
 		$data['filter_name']	  = $filter_name;
-		$data[	'filter_model']	  = $filter_model;
 		$data[	'filter_price']	  = $filter_price;
 		$data[	'filter_quantity'] = $filter_quantity;
 		$data[	'filter_status']   = $filter_status;
@@ -534,7 +528,6 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['pagination'] = $pagination->render();
 	
 		$this->data['filter_name'] = $filter_name;
-		$this->data['filter_model'] = $filter_model;
 		$this->data['filter_price'] = $filter_price;
 		$this->data['filter_quantity'] = $filter_quantity;
 		$this->data['filter_status'] = $filter_status;
