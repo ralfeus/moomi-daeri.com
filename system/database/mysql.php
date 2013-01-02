@@ -17,9 +17,12 @@ final class MySQL {
 		mysql_query("SET SQL_MODE = ''", $this->connection);
   	}
 		
-  	public function query($sql) {
-          $log = new Log('error.log');
-          $log->write($sql);
+  	public function query($sql, $log = false) {
+          if ($log)
+          {
+              $log = new Log('error.log');
+              $log->write($sql);
+          }
 		$resource = mysql_query($sql, $this->connection);
 
 		if ($resource) {

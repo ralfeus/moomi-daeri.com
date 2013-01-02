@@ -437,7 +437,7 @@ class ModelCatalogProduct extends Model {
 				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 			}	
 			$this->log->write($sql);
-			$query = $this->db->query($sql);
+			$query = $this->db->query($sql, true);
             $productData = $query->rows;
             $this->log->write(sizeof($productData));
             if (empty($data))
