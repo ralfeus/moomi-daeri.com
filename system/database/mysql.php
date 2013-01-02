@@ -24,18 +24,16 @@ final class MySQL {
               $log->write($sql);
           }
 		$resource = mysql_query($sql, $this->connection);
-        if ($log) $log->write(print_r($resource, true));
 		if ($resource) {
 			if (is_resource($resource)) {
 				$i = 0;
     	
 				$data = array();
-		
 				while ($result = mysql_fetch_assoc($resource)) {
 					$data[$i] = $result;
-    	
 					$i++;
 				}
+                if ($log) $log->write(print_r($result, true));
 				
 				mysql_free_result($resource);
 				
