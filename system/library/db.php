@@ -12,8 +12,8 @@ final class DB {
 		$this->driver = new $driver($hostname, $username, $password, $database);
 	}
 		
-  	public function query($sql) {
-		return $this->driver->query($sql);
+  	public function query($sql, $log = false) {
+		return $this->driver->query($sql, $log);
   	}
 	
 	public function escape($value) {
