@@ -19,7 +19,7 @@ final class MySQL {
 		
   	public function query($sql) {
           $log = new Log('error.log');
-          $log->write($sql);
+          //$log->write($sql);
 		$resource = mysql_query($sql, $this->connection);
 
 		if ($resource) {
