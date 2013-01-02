@@ -352,7 +352,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->load->model('tool/image');
 		$this->load->model('catalog/supplier');
 		$this->load->model('catalog/manufacturer');
-		
+		$this->log->write(__LINE__);
 		$product_total = $this->model_catalog_product->getTotalProducts($data);
 			
 		$results = $this->model_catalog_product->getProducts($data);
