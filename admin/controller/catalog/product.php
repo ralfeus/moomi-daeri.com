@@ -547,7 +547,7 @@ class ControllerCatalogProduct extends Controller {
 			'common/header',
 			'common/footer'
 		);
-				
+		$this->log->write(print_r($this->data, true));
 		$this->response->setOutput($this->render());
   	}
 
