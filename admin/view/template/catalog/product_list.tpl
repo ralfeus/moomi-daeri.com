@@ -76,19 +76,13 @@
               <td><input name="filterModel" value="<?= $filterModel ?>" /></td>
               <td align="left"><input type="text" name="filter_price" value="<?php echo $filter_price; ?>" size="8"/></td>
               <td align="right"><input type="text" name="filter_quantity" value="<?php echo $filter_quantity; ?>" style="text-align: right;" /></td>
-              <td><select name="filter_status">
-                  <option value="*"></option>
-                  <?php if ($filter_status) { ?>
-                  <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
-                  <?php } else { ?>
-                  <option value="1"><?php echo $text_enabled; ?></option>
-                  <?php } ?>
-                  <?php if (!is_null($filter_status) && !$filter_status) { ?>
-                  <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
-                  <?php } else { ?>
-                  <option value="0"><?php echo $text_disabled; ?></option>
-                  <?php } ?>
-                </select></td>
+              <td>
+                  <select name="filterStatus" multiple="true">
+                      <option>-- No filter --</option>
+                      <option value="0" <?= $filterStatus === "0" ? "selected" : "" ?>>Disabled</option>
+                      <option value="1" <?= $filterStatus === "1" ? "selected" : "" ?>>Enabled</option>
+                  </select>
+              </td>
 			  <td align="right"><input type="text" name="filter_manufacturer" value="<?php echo $filter_manufacturer; ?>" style="text-align: right;" /></td>
 			  <td>
                   <select name="filterSupplierId[]" multiple="true">
@@ -160,7 +154,11 @@ $(document).ready(function() {
         noneSelectedText: "-- No filter --",
         selectedList: 3
     });
-
+    $('[name=filterStatus]').multiselect({
+        multiple: false,
+        noneSelectedText: "-- No filter --",
+        selectedList: 1
+    }).multiselectfilter();
     $('[name="filterSupplierId[]"]')
             .multiselect({
                 noneSelectedText: "-- No filter --",
@@ -182,53 +180,6 @@ function filter()
 $('#form input').keydown(function(e) {
 	if (e.keyCode == 13) {
 		filter();
-	}
-});
-//--></script> 
-<script type="text/javascript"><!--
-$('input[name=\'filter_name\']').autocomplete({
-	delay: 0,
-	source: function(request, response) {
-		$.ajax({
-			url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_name=' +  encodeURIComponent(request.term),
-			dataType: 'json',
-			success: function(json) {		
-				response($.map(json, function(item) {
-					return {
-						label: item.name,
-						value: item.product_id
-					}
-				}));
-			}
-		});
-	}, 
-	select: function(event, ui) {
-		$('input[name=\'filter_name\']').val(ui.item.label);
-						
-		return false;
-	}
-});
-
-$('input[name=\'filter_model\']').autocomplete({
-	delay: 0,
-	source: function(request, response) {
-		$.ajax({
-			url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_model=' +  encodeURIComponent(request.term),
-			dataType: 'json',
-			success: function(json) {		
-				response($.map(json, function(item) {
-					return {
-						label: item.model,
-						value: item.product_id
-					}
-				}));
-			}
-		});
-	}, 
-	select: function(event, ui) {
-		$('input[name=\'filter_model\']').val(ui.item.label);
-						
-		return false;
 	}
 });
 //--></script> 

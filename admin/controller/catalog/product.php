@@ -17,16 +17,19 @@ class ControllerCatalogProduct extends Controller {
 
     protected function initParameters()
     {
+        $this->log->write(print_r($_REQUEST, true));
         $this->parameters['filterDateAddedFrom'] = empty($_REQUEST['filterDateAddedFrom']) ? '2012-01-01' : $_REQUEST['filterDateAddedFrom'];
         $this->parameters['filterDateAddedTo'] = empty($_REQUEST['filterDateAddedTo']) ? '2014-01-01' : $_REQUEST['filterDateAddedTo'];
         $this->parameters['filterModel'] = empty($_REQUEST['filterModel']) ? null : $_REQUEST['filterModel'];
         $this->parameters['filterName'] = empty($_REQUEST['filterName']) ? null : $_REQUEST['filterName'];
+        $this->parameters['filterStatus'] = isset($_REQUEST['filterStatus']) && is_numeric($_REQUEST['filterStatus']) ?
+            $_REQUEST['filterStatus'] : null;
         $this->parameters['filterSupplierId'] = empty($_REQUEST['filterSupplierId']) || !is_array($_REQUEST['filterSupplierId']) ?
-            array() :
-            $_REQUEST['filterSupplierId'];
+            array() :  $_REQUEST['filterSupplierId'];
         $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
         $this->parameters['sort'] = empty($_REQUEST['sort']) ? null : $_REQUEST['sort'];
         $this->parameters['token'] = $this->session->data['token'];
+        $this->log->write(print_r($this->parameters, true));
     }
   
   	public function insert() {
@@ -159,10 +162,6 @@ class ControllerCatalogProduct extends Controller {
 				$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
 			}	
 		
-			if (isset($this->request->get['filter_status'])) {
-				$url .= '&filter_status=' . $this->request->get['filter_status'];
-			}
-					
 			if (isset($this->request->get['sort'])) {
 				$url .= '&sort=' . $this->request->get['sort'];
 			}

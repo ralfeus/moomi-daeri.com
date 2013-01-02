@@ -139,14 +139,14 @@ class ModelCatalogProduct extends Model {
             $filter .= ($filter ? " AND" : "") . " LCASE(p.model) LIKE '" . $this->db->escape(utf8_strtolower($data['filterModel'])) . "%'";
         if (!empty($data['filterName']))
             $filter .= ($filter ? " AND" : "") . " LCASE(pd.name) LIKE '%" . $this->db->escape(utf8_strtolower($data['filterName'])) . "%'";
+        if (isset($data['filterStatus']))
+            $filter .= ($filter ? " AND" : "") . " p.status = '" . (int)$data['filterStatus'] . "'";
         if (!empty($data['filterSupplierId']))
             $filter .= ($filter ? " AND" : "") . " s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
         if (!empty($data['filter_price']))
             $filter .= ($filter ? " AND" : "") . " p.price LIKE '" . $this->db->escape($data['filter_price']) . "%'";
         if (isset($data['filter_quantity']) && !is_null($data['filter_quantity']))
             $filter .= ($filter ? " AND" : "") . " p.quantity = '" . $this->db->escape($data['filter_quantity']) . "'";
-        if (isset($data['filter_status']) && !is_null($data['filter_status']))
-            $filter .= ($filter ? " AND" : "") . " p.status = '" . (int)$data['filter_status'] . "'";
         if (!empty($data['filter_category_id']))
             if (!empty($data['filter_sub_category']))
             {
