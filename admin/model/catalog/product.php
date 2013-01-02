@@ -438,8 +438,8 @@ class ModelCatalogProduct extends Model {
 			}	
 			$this->log->write($sql);
 			$query = $this->db->query($sql);
+            $this->log->write(sizeof($query->rows));
             $productData = $query->rows;
-            $this->log->write(sizeof($productData));
             if (empty($data))
                 $this->cache->set('product.' . (int)$this->config->get('config_language_id'), $productData);
         }
