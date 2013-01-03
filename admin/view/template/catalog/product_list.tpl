@@ -64,7 +64,7 @@
                 <?php } else { ?>
                 <a href="<?php echo $sort_supplier; ?>"><?php echo $columnSupplier; ?></a>
                 <?php } ?></td>
-              <td style="width: 1px"><?= $textDateAdded ?></td>
+              <td style="width: 1px; white-space: nowrap;"><?= $textDateAdded ?></td>
               <td class="right"><?php echo $column_action; ?></td>
             </tr>
           </thead>
@@ -75,7 +75,7 @@
               <td><input name="filterName" value="<?= $filterName ?>" /></td>
               <td><input name="filterModel" value="<?= $filterModel ?>" /></td>
               <td align="left"><input type="text" name="filter_price" value="<?php echo $filter_price; ?>" size="8"/></td>
-              <td align="right"><input type="text" name="filter_quantity" value="<?php echo $filter_quantity; ?>" style="text-align: right;" /></td>
+              <td><input name="filterQuantity" value="<?= $filterQuantity ?>" /></td>
               <td>
                   <select name="filterStatus" multiple="true">
                       <option>-- No filter --</option>
@@ -103,7 +103,10 @@
                   <input name="filterDateAddedFrom" class="date" value="<?= $filterDateAddedFrom ?>" />
                   <input name="filterDateAddedTo" class="date" value="<?= $filterDateAddedTo ?>" />
               </td>
-              <td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td>
+              <td align="right">
+                  <a onclick="filter();" class="button"><?php echo $button_filter; ?></a>
+                  <a onclick="resetFilter();" class="button"><?= $textResetFilter ?></a>
+              </td>
             </tr>
             <?php if ($products) { ?>
             <?php foreach ($products as $product) { ?>
@@ -183,6 +186,13 @@ function filter()
             .attr('action', 'index.php?route=catalog/product&token=<?= $token ?>')
             .submit();
     return;
+}
+
+function resetFilter()
+{
+    $('#form')
+            .attr('action', 'index.php?route=catalog/product&token=<?= $token ?>&resetFilter=1')
+            .submit();
 }
 //--></script> 
 <script type="text/javascript"><!--
