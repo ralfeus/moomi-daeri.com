@@ -74,7 +74,7 @@
               <td></td>
               <td><input name="filterName" value="<?= $filterName ?>" /></td>
               <td><input name="filterModel" value="<?= $filterModel ?>" /></td>
-              <td align="left"><input type="text" name="filter_price" value="<?php echo $filter_price; ?>" size="8"/></td>
+              <td><input name="filterPrice" value="<?= $filterPrice ?>" /></td>
               <td><input name="filterQuantity" value="<?= $filterQuantity ?>" /></td>
               <td>
                   <select name="filterStatus" multiple="true">

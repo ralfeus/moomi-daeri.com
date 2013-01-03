@@ -152,14 +152,14 @@ class ModelCatalogProduct extends Model {
             $filter .= ($filter ? " AND" : "") . " LCASE(p.model) LIKE '" . $this->db->escape(utf8_strtolower($data['filterModel'])) . "%'";
         if (!empty($data['filterName']))
             $filter .= ($filter ? " AND" : "") . " LCASE(pd.name) LIKE '%" . $this->db->escape(utf8_strtolower($data['filterName'])) . "%'";
+        if (!empty($data['filterPrice']) && is_numeric($data['filterPrice']))
+            $filter .= ($filter ? " AND" : "") . " p.price LIKE '" . $this->db->escape($data['filterPrice']) . "%'";
         if (isset($data['filterQuantity']) && is_numeric($data['filterQuantity']))
             $filter .= ($filter ? " AND" : "") . " p.quantity = '" . $this->db->escape($data['filterQuantity']) . "'";
         if (isset($data['filterStatus']))
             $filter .= ($filter ? " AND" : "") . " p.status = '" . (int)$data['filterStatus'] . "'";
         if (!empty($data['filterSupplierId']))
             $filter .= ($filter ? " AND" : "") . " s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
-        if (!empty($data['filter_price']))
-            $filter .= ($filter ? " AND" : "") . " p.price LIKE '" . $this->db->escape($data['filter_price']) . "%'";
         if (!empty($data['filter_category_id']))
             if (!empty($data['filter_sub_category']))
             {
@@ -593,9 +593,14 @@ class ModelCatalogProduct extends Model {
 	}
 	
 	public function getProductSpecials($product_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "' ORDER BY priority, price");
-		
-		return $query->rows;
+		$query = "
+		    SELECT *
+		    FROM " . DB_PREFIX . "product_special AS p
+		    WHERE product_id = '" . (int)$product_id . "'
+		    ORDER BY priority, price
+        ";
+//		$this->log->write($query);
+		return $this->db->query($query)->rows;
 	}
 	
 	public function getProductRewards($product_id) {

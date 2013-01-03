@@ -39,6 +39,8 @@ class ControllerCatalogProduct extends Controller {
             $this->session->data['parameters']['catalog/product']['filterModel'] = null;
         if (empty($this->session->data['parameters']['catalog/product']['filterName']))
             $this->session->data['parameters']['catalog/product']['filterName'] = null;
+        if (!isset($this->session->data['parameters']['catalog/product']['filterPrice']) || !is_numeric($this->session->data['parameters']['catalog/product']['filterPrice']))
+            $this->session->data['parameters']['catalog/product']['filterPrice'] = null;
         if (!isset($this->session->data['parameters']['catalog/product']['filterQuantity']) || !is_numeric($this->session->data['parameters']['catalog/product']['filterQuantity']))
             $this->session->data['parameters']['catalog/product']['filterQuantity'] = null;
         if (!isset($this->session->data['parameters']['catalog/product']['filterStatus']) || !is_numeric($this->session->data['parameters']['catalog/product']['filterStatus']))
