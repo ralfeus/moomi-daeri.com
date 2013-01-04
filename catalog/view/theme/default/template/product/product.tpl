@@ -423,11 +423,11 @@ $('#button-review').bind('click', function() {
         beforeSend: function() {
             $('.success, .warning').remove();
             $('#button-review').attr('disabled', true);
-            $('#review-title').after('<div class="error"><img src="catalog/view/theme/default/image/loading.gif" alt="" /> <?php echo $text_wait; ?></div>');
+            $('#review-title').after('<div class="warning"><img src="catalog/view/theme/default/image/loading.gif" alt="" /> <?php echo $text_wait; ?></div>');
         },
         complete: function() {
             $('#button-review').attr('disabled', false);
-            $('.attention').remove();
+            $('.warning').remove();
         },
         success: function(data) {
             if (data.error) {

@@ -62,18 +62,7 @@ class ControllerSaleOrderItems extends Controller {
         $urlParameters = $urlFilterParameters .
             '&page=' . $this->parameters['page'];
 
-  		$this->data['breadcrumbs'] = array();
-
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
-      		'separator' => false
-   		);
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('heading_title'),
-			'href'      => $this->url->link('sale/order_items', 'token=' . $this->session->data['token'], 'SSL'),
-      		'separator' => ' :: '
-   		);
+        $this->setBreadcrumbs();
 		//print_r($url);print_r($this->url);exit();
         $this->data['invoice'] = $this->url->link('sale/invoice/showForm', $urlParameters, 'SSL');
         $this->data['print'] = $this->url->link('sale/order_items/print_page', $urlParameters, 'SSL');
@@ -96,6 +85,16 @@ class ControllerSaleOrderItems extends Controller {
         {
             foreach ($orderItems as $orderItem)
             {
+                if ($orderItem['product_id'] == REPURCHASE_ORDER_PRODUCT_ID)
+                {
+                    $productOptions = $this->modelSaleOrderItem->getOrderItemOptions($orderItem['order_product_id']);
+                    if (!empty($productOptions[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]))
+                    {
+                        $orderItem['image_path'] = $productOptions[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'];
+//                        $this->log->write($productOptions[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value']);
+                    }
+                }
+//                $this->log->write($orderItem['product_id'] . ' ' . $orderItem['image_path']);
                 if ($orderItem['image_path'] && file_exists(DIR_IMAGE . $orderItem['image_path'])):
                     $image = $this->model_tool_image->resize($orderItem['image_path'], 100, 100);
                 else:
@@ -895,6 +894,22 @@ class ControllerSaleOrderItems extends Controller {
         else
             $this->modelSaleOrderItem->setOrderItemQuantity($orderItemId, $quantity);
         $this->response->setOutput('');
+    }
+
+    private function setBreadcrumbs()
+    {
+        $this->data['breadcrumbs'] = array();
+
+        $this->data['breadcrumbs'][] = array(
+            'text'      => $this->language->get('text_home'),
+            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+            'separator' => false
+        );
+        $this->data['breadcrumbs'][] = array(
+            'text'      => $this->language->get('heading_title'),
+            'href'      => $this->url->link('sale/order_items', 'token=' . $this->session->data['token'], 'SSL'),
+            'separator' => ' :: '
+        );
     }
 }
 ?>
