@@ -2,7 +2,7 @@
 <div id="content"><?php echo $content_top; ?>
 <div class="breadcrumb">
     <?php foreach ($breadcrumbs as $breadcrumb) { ?>
-    <?php echo $breadcrumb['separator']; ?><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a>
+    <?php echo $breadcrumb['separator']; ?><a href="<?= $breadcrumb['href'] ?>"><?= $breadcrumb['text'] ?></a>
     <?php } ?>
 </div>
 <h1><?php echo $heading_title; ?>
@@ -235,7 +235,7 @@
     <br />
     <b><?php echo $entry_review; ?></b>
     <textarea name="text" cols="40" rows="8" style="width: 98%;"></textarea>
-    <span style="font-size: 11px;"><?php echo $text_note; ?></span><br />
+    <span style="font-size: 11px;"><?= $text_note ?></span><br />
     <br />
     <table>
         <thead>
@@ -273,12 +273,12 @@
     <input type="radio" name="rating" value="3" />&nbsp;
     <input type="radio" name="rating" value="4" />&nbsp;
     <input type="radio" name="rating" value="5" />&nbsp;
-    <span><?php echo $entry_good; ?></span><br />
+    <span><?php echo $entry_good; ?></span><?php /*<br />
     <br />
     <b><?php echo $entry_captcha; ?></b><br />
     <input type="text" name="captcha" value="" />
     <br />
-    <img src="index.php?route=product/product/captcha" alt="" id="captcha" /><br />
+    <img src="index.php?route=product/product/captcha" alt="" id="captcha" /><br /> */ ?>
     <br />
     <div class="buttons">
         <div class="right"><a id="button-review" class="button"><span><?php echo $button_continue; ?></span></a></div>
@@ -396,9 +396,7 @@ new AjaxUpload('#button-option-<?php echo $option['product_option_id']; ?>', {
 <script type="text/javascript"><!--
 $('#review .pagination a').live('click', function() {
     $('#review').slideUp('slow');
-
     $('#review').load(this.href);
-
     $('#review').slideDown('slow');
 
     return false;

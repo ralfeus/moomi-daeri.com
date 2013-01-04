@@ -504,28 +504,28 @@ class ControllerProductProduct extends Controller {
 	}
 	
 	public function write() {
-        $this->log->write(print_r($_REQUEST, true));
+//        $this->log->write(print_r($_REQUEST, true));
 		$this->language->load('product/product');
 		
 		$this->load->model('catalog/review');
 		
 		$json = array();
 		
-		if ((utf8_strlen($this->request->post['name']) < 3) || (utf8_strlen($this->request->post['name']) > 25)) {
-			$json['error'] = $this->language->get('error_name');
-		}
-		
-		if ((utf8_strlen($this->request->post['text']) < 25) || (utf8_strlen($this->request->post['text']) > 1000)) {
-			$json['error'] = $this->language->get('error_text');
-		}
+//		if ((utf8_strlen($this->request->post['name']) < 3) || (utf8_strlen($this->request->post['name']) > 25)) {
+//			$json['error'] = $this->language->get('error_name');
+//		}
+//
+//		if ((utf8_strlen($this->request->post['text']) < 25) || (utf8_strlen($this->request->post['text']) > 1000)) {
+//			$json['error'] = $this->language->get('error_text');
+//		}
 
 		if (!$this->request->post['rating']) {
 			$json['error'] = $this->language->get('error_rating');
 		}
 
-		if (!isset($this->session->data['captcha']) || ($this->session->data['captcha'] != $this->request->post['captcha'])) {
-			$json['error'] = $this->language->get('error_captcha');
-		}
+//		if (!isset($this->session->data['captcha']) || ($this->session->data['captcha'] != $this->request->post['captcha'])) {
+//			$json['error'] = $this->language->get('error_captcha');
+//		}
         $this->request->post = array_merge($this->request->post, $this->parameters);
 				
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && !isset($json['error'])) {
