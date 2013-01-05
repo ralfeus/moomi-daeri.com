@@ -79,12 +79,13 @@ $_['error_upload_7']        = '警告：ファイルをディスクに書き込�
 $_['error_upload_8']        = '警告：アップロード拡張子でファイルを停止しました！';
 $_['error_upload_999']      = '警告：ご利用いただけませんエラーコード！';
 
-
+$_['ACTION'] = 'アクション';
 $_['ACCEPT'] = '同意する';
 $_['ACCOUNT_DETAILS'] = "アカウントの詳細";
 $_['ADD_CREDIT'] = "クレジット追加";
 $_['BASE_CURRENCY'] = 'ベース通貨';
 $_['BILLING_DETAILS'] = '支払明細';
+$_['CANCEL'] = '取り消す';
 $_['CONFIRM'] = "確認";
 $_['CURRENCY'] = '通貨';
 $_['GALLERY'] = '画廊';

@@ -302,11 +302,10 @@ class ControllerAccountOrder extends Controller {
 						);						
 					}
         		}
-                  if ($product['image_path'] && file_exists(DIR_IMAGE . $product['image_path'])):
+                  if ($product['image_path'] && file_exists(DIR_IMAGE . $product['image_path']))
                       $image = $this->modelToolImage->resize($product['image_path'], 100, 100);
-                  else:
+                  else
                       $image = $this->modelToolImage->resize('no_image.jpg', 100, 100);
-                  endif;
         		$this->data['products'][] = array(
 					'order_product_id' => $product['order_product_id'],
                     'actions' => $actions,

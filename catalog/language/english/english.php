@@ -82,11 +82,13 @@ $_['error_upload_8']        = 'Warning: File upload stopped by extension!';
 $_['error_upload_999']      = 'Warning: No error code available!';
 
 $_['ACCEPT'] = 'Accept';
+$_['ACTION'] = 'Action';
 $_['ACCOUNT_DETAILS'] = "Account details";
 $_['ADD'] = 'Add';
 $_['ADD_CREDIT'] = "Add credit";
 $_['BASE_CURRENCY'] = 'Base currency';
 $_['BILLING_DETAILS'] = 'Billing details';
+$_['CANCEL'] = 'Cancel';
 $_['COMMENT'] = 'Comment';
 $_['CONFIRM'] = "Confirm";
 $_['COLOR'] = 'Color';
