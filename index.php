@@ -108,14 +108,14 @@ function error_handler($errno, $errstr, $errfile, $errline) {
 
 	return true;
 }
-	
+
 // Error Handler
 set_error_handler('error_handler');
 
 // Request
 $request = new Request();
 $registry->set('request', $request);
- 
+
 // Response
 $response = new Response();
 $response->addHeader('Content-Type: text/html; charset=utf-8');
@@ -199,7 +199,6 @@ $registry->set('affiliate', $affiliate);
 if (isset($request->get['tracking']) && !isset($request->cookie['tracking'])) {
 	setcookie('tracking', $request->get['tracking'], time() + 3600 * 24 * 1000, '/');
 }
-		
 // Currency
 $registry->set('currency', new Currency($registry));
 

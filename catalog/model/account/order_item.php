@@ -208,8 +208,9 @@ class ModelAccountOrderItem extends Model
 
     public function setOrderItemStatus($order_item_id, $order_item_status_id)
     {
-        //print_r($this->getOrderItem($order_item_id));exit();
+        $this->log->write($order_item_status_id);
         $order_item = $this->getOrderItem($order_item_id);
+        $this->log->write($order_item['status']);
         if ($order_item['status'] != $order_item_status_id)
         {
             $query = "

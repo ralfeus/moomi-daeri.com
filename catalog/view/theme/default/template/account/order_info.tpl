@@ -61,6 +61,7 @@
           <td class="right"><?php echo $column_total; ?></td>
           <td class="right"><?php echo $column_status; ?></td>
           <td class="right"><?= $textComment ?></td>
+          <td class="right"><?= $textAction ?></td>
         </tr>
       </thead>
       <tbody>
@@ -84,6 +85,11 @@
           <td class="right"><?php echo $product['total']; ?></td>
           <td class="right"><?php echo $product['item_status']; ?></td>
             <td class="right"><?= $product['comment'] ?></td>
+          <td class="right">
+<?php foreach ($product['actions'] as $action): ?>
+              <a class="button" href="<?= $action['href'] ?>"><span><?= $action['text'] ?></span></a>
+<?php endforeach; ?>
+          </td>
         </tr>
         <?php } ?>
       </tbody>

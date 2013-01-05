@@ -7,12 +7,14 @@ final class Request {
 	public $server = array();
 	
   	public function __construct() {
-		$_GET = $this->clean($_GET);
-		$_POST = $this->clean($_POST);
-		$_REQUEST = $this->clean($_REQUEST);
+        /// 05.01.2013
+        /// It doesn't seem for me to be a good idea to replace some symbols in URL as it would be HTML
+//		$_GET = $this->clean($_GET);
+//		$_POST = $this->clean($_POST);
+//		$_REQUEST = $this->clean($_REQUEST);
 		$_COOKIE = $this->clean($_COOKIE);
 		$_FILES = $this->clean($_FILES);
-		$_SERVER = $this->clean($_SERVER);
+//		$_SERVER = $this->clean($_SERVER);
 		
 		$this->get = $_GET;
 		$this->post = $_POST;

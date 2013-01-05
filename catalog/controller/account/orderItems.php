@@ -19,7 +19,20 @@ class ControllerAccountOrderItems extends Controller {
         $this->load->model('tool/image');
     }
 
-  	public function index()
+    public function cancel()
+    {
+        $orderItem = $this->modelAccountOrderItem->getOrderItem($this->parameters['orderItemId']);
+//        $this->log->write(print_r($orderItem, true));
+        $cancelledStatus =
+            $orderItem['status'] // take original status
+            & 0xFFFF0000 // clean up status value but keep group
+            | (ORDER_ITEM_STATUS_CANCELLED & 0x0000FFFF); // set cancelled status
+        $this->log->write($cancelledStatus);
+        $this->modelAccountOrderItem->setOrderItemStatus($this->parameters['orderItemId'], $cancelledStatus);
+        $this->redirect($this->parameters['returnUrl']);
+    }
+
+    public function index()
     {
     	$this->getList();
   	}
@@ -168,6 +181,7 @@ class ControllerAccountOrderItems extends Controller {
 
     protected function initParameters()
     {
+        $this->log->write(print_r($_REQUEST, true));
         $this->parameters['comment'] = empty($_REQUEST['comment']) ? null : $_REQUEST['comment'];
         $this->parameters['filter_status_id'] = empty($_REQUEST['filter_status_id']) ? array() : $_REQUEST['filter_status_id'];
         $this->parameters['filterItem'] = empty($_REQUEST['filterItem']) ? null : $_REQUEST['filterItem'];
@@ -178,6 +192,7 @@ class ControllerAccountOrderItems extends Controller {
         $this->parameters['orderItemId'] = empty($_REQUEST['orderItemId']) ? null : $_REQUEST['orderItemId'];
         $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
         $this->parameters['private'] = empty($_REQUEST['private']) ? false : $_REQUEST['private'];
+        $this->parameters['returnUrl'] = empty($_REQUEST['returnUrl']) ? null : urldecode($_REQUEST['returnUrl']);
         $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
         $this->parameters['sort'] = empty($_REQUEST['sort']) ? null : $_REQUEST['sort'];
 //        $this->log->write(print_r($this->parameters, true));

@@ -23,11 +23,13 @@ class Status extends LibraryClass
         $fieldName = $isPublic ? "public_name" : "name";
         while (true)
         {
-            $query = Status::$instance->db->query("
+            $sql = "
                 SELECT $fieldName
                 FROM " . DB_PREFIX . "statuses
                 WHERE group_id << 16 | status_id = " . (int)$statusId . " AND language_id = " . (int)$languageId
-            );
+            ;
+//            Status::$instance->log->write(print_r($sql, true));
+            $query = Status::$instance->db->query($sql);
             if ($query->num_rows)
                 return $query->row[$fieldName];
             elseif ($languageId != 2)
