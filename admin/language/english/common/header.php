@@ -29,6 +29,8 @@ $_['text_front']                       = 'Store Front';
 $_['text_geo_zone']                    = 'Geo Zones';
 $_['text_help']                        = 'Help';
 $_['text_information']                 = 'Information';
+$_['text_admin_gallery'] 							 = 'Gallery';
+$_['text_admin_gallery_admin']				 = 'Admin';
 $_['text_invoices'] = 'Invoices';
 $_['text_language']                    = 'Languages';
 $_['text_layout']                      = 'Layouts';
@@ -84,4 +86,5 @@ $_['text_voucher_theme']               = 'Voucher Themes';
 $_['text_weight_class']                = 'Weight Classes';
 $_['text_length_class']                = 'Length Classes';
 $_['text_zone']                        = 'Zones';
+
 ?>

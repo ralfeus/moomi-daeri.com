@@ -101,6 +101,11 @@ $(document).ready(function(){
           <li><a href="<?php echo $information; ?>"><?php echo $text_information; ?></a></li>
         </ul>
       </li>
+      <li id="gallery"><a class="top"><?php echo $text_admin_gallery; ?></a>
+        <ul>
+          <li><a href="<?php echo $gallery; ?>"><?php echo $text_admin_gallery_admin; ?></a></li>
+        </ul>
+      </li>
       <li id="extension"><a class="top"><?php echo $text_extension; ?></a>
         <ul>
           <li><a href="<?php echo $module; ?>"><?php echo $text_module; ?></a></li>

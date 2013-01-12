@@ -29,6 +29,7 @@ $_['text_home']               = 'Home';
 
 // Button
 $_['button_insert']           = 'Insert';
+$_['button_approve']          = 'Approve';
 $_['button_delete']           = 'Delete';
 $_['button_save']             = 'Save';
 $_['button_cancel']           = 'Cancel';

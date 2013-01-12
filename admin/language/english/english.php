@@ -50,6 +50,7 @@ $_['textWeight'] = 'Weight';
 // Button
 $_['button_insert']           = 'Insert';
 $_['button_delete']           = 'Delete';
+$_['button_approve']          = 'Approve';
 $_['buttonSupplier']	      = 'Supplier';
 $_['buttonManufacturer']	      = 'Manufacturer';
 $_['button_save']             = 'Save';

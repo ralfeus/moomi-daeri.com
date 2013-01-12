@@ -48,6 +48,8 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_dashboard'] = $this->language->get('text_dashboard');
 		$this->data['text_help'] = $this->language->get('text_help');
 		$this->data['text_information'] = $this->language->get('text_information');
+		$this->data['text_admin_gallery'] = $this->language->get('text_admin_gallery');
+		$this->data['text_admin_gallery_admin'] = $this->language->get('text_admin_gallery_admin');
 		$this->data['text_language'] = $this->language->get('text_language');
 		$this->data['text_layout'] = $this->language->get('text_layout');
 		$this->data['text_localisation'] = $this->language->get('text_localisation');
@@ -134,6 +136,7 @@ class ControllerCommonHeader extends Controller {
 			$this->data['feed'] = $this->url->link('extension/feed', 'token=' . $this->session->data['token'], 'SSL');			
 			$this->data['geo_zone'] = $this->url->link('localisation/geo_zone', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['information'] = $this->url->link('catalog/information', 'token=' . $this->session->data['token'], 'SSL');
+			$this->data['gallery'] = $this->url->link('gallery/admin', 'token=' . $this->session->data['token'], 'SSL');
             $this->data['invoices'] = $this->url->link('sale/invoice', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['language'] = $this->url->link('localisation/language', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['layout'] = $this->url->link('design/layout', 'token=' . $this->session->data['token'], 'SSL');
