@@ -11,7 +11,7 @@
     			<h1><?= $heading_title ?></h1>
     		</td>
     		<td align="right">
-    			<a class="button" href="/moomidaeri/index.php?route=gallery/photo/addPhoto"><span><?= $gallery_add_photo ?></span></a>
+    			<a class="button" href="<?= $this->url->link('gallery/photo/addPhoto') ?>"><span><?= $gallery_add_photo ?></span></a>
     		</td>
     	</tr>
     </table>
