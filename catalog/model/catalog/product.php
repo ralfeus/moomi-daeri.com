@@ -95,7 +95,7 @@ class ModelCatalogProduct extends Model {
 		}
 	}
 
-	public function getProducts($data = array()) {
+	public function getProducts($data = array()) { //print_r($this->customer); die();
 		if ($this->customer->isLogged()) {
 			$customer_group_id = $this->customer->getCustomerGroupId();
 		} else {

@@ -111,3 +111,6 @@ $_['TRANSACTION'] = 'Transaction';
 $_['TRANSACTION_ID'] = 'Transaction ID';
 $_['VIEW'] = 'View';
 $_['WEIGHT'] = 'Weight';
+
+$_['heading_title']  = 'Gallery';
+$_['gallery_add_photo'] = 'Add photo';

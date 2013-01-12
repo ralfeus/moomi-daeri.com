@@ -1672,3 +1672,14 @@ a.button-disabled span {
 .banner div img {
 	margin-bottom: 20px;
 }
+.width300 {
+	width: 300px;
+}
+
+.red {
+	color: red;
+}
+
+.font14 {
+	font-size: 14px;
+}

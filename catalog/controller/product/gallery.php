@@ -9,11 +9,32 @@
 class ControllerProductGallery extends Controller
 {
     private function getData()
-    {
-        $this->data['files'] = array();
+    {//print_r(glob(DIR_IMAGE . 'reviews/*')); die();
+        $this->data['files'] = array(); //print_r($this->language); die();
+        $this->data['heading_title'] = $this->language->get('heading_title');
+        $this->data['gallery_add_photo'] = $this->language->get('gallery_add_photo');
         $this->log->write(print_r(glob(DIR_IMAGE . 'reviews/*'), true));
-        foreach (glob(DIR_IMAGE . 'reviews/*') as $file)
-            $this->data['images'][] = HTTP_IMAGE . 'reviews/' . basename($file);
+        
+        $query = "SELECT * FROM gallery_photo WHERE approved_at IS NOT NULL AND approved_at != '0000-00-00' ORDER BY uploaded_at DESC";
+        $result = $this->db->query($query);
+
+        foreach ($result->rows as $row) {
+           $this->data['images'][] = HTTP_IMAGE . $row['path'];
+        }
+            
+
+        $query = "SELECT review.*, review_images.image_path FROM review JOIN review_images USING(review_id)";
+        $result = $this->db->query($query);
+        
+        foreach ($result->rows as $row) {
+            $row['image_path'] = substr($row['image_path'], 1);
+            $filePath = DIR_IMAGE . $row['image_path'];
+            //print_r($filePath); die();
+            if(!is_dir($filePath) && file_exists($filePath)) {//print_r($filePath); die();
+                $this->data['images'][] = HTTP_IMAGE . 'reviews/' . basename($filePath);
+            }
+        }
+
     }
 
     public function index()

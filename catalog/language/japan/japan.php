@@ -105,3 +105,6 @@ $_['VIEW'] = 'ビュー';
 $_['WEIGHT'] = '重量';
 
 $_['WARNING_HTML_PAGE_PROVIDED'] = "代わりに画像のHTMLページのアドレスが提供されました";
+
+$_['heading_title']  = 'Gallery';
+$_['gallery_add_photo'] = 'Add photo';

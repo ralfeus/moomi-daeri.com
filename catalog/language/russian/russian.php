@@ -109,3 +109,6 @@ $_['VIEW'] = 'Просмотр';
 $_['WEIGHT'] = 'Вес';
 
 $_['WARNING_HTML_PAGE_PROVIDED'] = "Вместо изображения был указан адрес HTML страницы";
+
+$_['heading_title']  = 'Галерея';
+$_['gallery_add_photo'] = 'Добавить фото';
