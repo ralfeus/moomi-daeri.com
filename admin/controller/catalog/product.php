@@ -8,6 +8,7 @@ class ControllerCatalogProduct extends Controller {
         parent::__construct($registry);
         $this->load->language('catalog/product');
         $this->document->setTitle($this->language->get('heading_title'));
+        $this->data['heading_title'] = $this->language->get('heading_title');
         $this->modelCatalogProduct = $this->load->model('catalog/product');
     }
 
@@ -55,15 +56,9 @@ class ControllerCatalogProduct extends Controller {
     }
   
   	public function insert() {
-    	$this->load->language('catalog/product');
-
-    	$this->document->setTitle($this->language->get('heading_title')); 
-		
-		$this->load->model('catalog/product');
-		
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_catalog_product->addProduct($this->request->post);
-	  		
+            Audit::getInstance($this->registry)->addAdminEntry(AUDIT_ADMIN_PRODUCT_CREATE, $_REQUEST);
 			$this->session->data['success'] = $this->language->get('text_success');
 	  
 			$url = '';
@@ -109,7 +104,7 @@ class ControllerCatalogProduct extends Controller {
   	public function update() {
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);
-			
+			Audit::getInstance($this->registry)->addAdminEntry(AUDIT_ADMIN_PRODUCT_UPDATE, $_REQUEST);
 			$this->session->data['success'] = $this->language->get('text_success');
 			
 			$url = '';
@@ -153,15 +148,10 @@ class ControllerCatalogProduct extends Controller {
   	}
 
   	public function delete() {
-    	$this->load->language('catalog/product');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/product');
-		
 		if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $product_id) {
 				$this->model_catalog_product->deleteProduct($product_id);
+                Audit::getInstance($this->registry)->addAdminEntry(AUDIT_ADMIN_PRODUCT_DELETE, $_REQUEST);
 	  		}
 
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -203,12 +193,6 @@ class ControllerCatalogProduct extends Controller {
   	}
 
   	public function copy() {
-    	$this->load->language('catalog/product');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/product');
-		
 		if (isset($this->request->post['selected']) && $this->validateCopy()) {
 			foreach ($this->request->post['selected'] as $product_id) {
 				$this->model_catalog_product->copyProduct($product_id);
@@ -395,10 +379,7 @@ class ControllerCatalogProduct extends Controller {
 				'manufacturer_page_url' => empty($result['manufacturer_page_url']) ? '' : $result['manufacturer_page_url']
 			);
     	}
-        $this->log->write("Here");
-		$this->data['heading_title'] = $this->language->get('heading_title');
-				
-		$this->data['text_enabled'] = $this->language->get('text_enabled');		
+		$this->data['text_enabled'] = $this->language->get('text_enabled');
 		$this->data['text_disabled'] = $this->language->get('text_disabled');		
 		$this->data['text_no_results'] = $this->language->get('text_no_results');		
 		$this->data['text_image_manager'] = $this->language->get('text_image_manager');		
@@ -504,8 +485,6 @@ class ControllerCatalogProduct extends Controller {
   	}
 
   	private function getForm() {
-    	$this->data['heading_title'] = $this->language->get('heading_title');
- 
     	$this->data['text_enabled'] = $this->language->get('text_enabled');
     	$this->data['text_disabled'] = $this->language->get('text_disabled');
     	$this->data['text_none'] = $this->language->get('text_none');
@@ -1389,19 +1368,15 @@ class ControllerCatalogProduct extends Controller {
 
     public function enable() {
         $this->changeStatusProducts(1);
+        Audit::getInstance($this->registry)->addAdminEntry(AUDIT_ADMIN_PRODUCT_ENABLE, $_REQUEST);
     }
 
     public function disable() {
         $this->changeStatusProducts(0);
+        Audit::getInstance($this->registry)->addAdminEntry(AUDIT_ADMIN_PRODUCT_DISABLE, $_REQUEST);
     }
 
     private function changeStatusProducts($status) {
-        $this->load->language('catalog/product');
-
-        $this->document->setTitle($this->language->get('heading_title'));
-
-        $this->load->model('catalog/product');
-
         if (isset($this->request->post['selected']) && $this->validateChange()) {
             $this->model_catalog_product->changeStatusProducts($this->request->post['selected'], $status);
 

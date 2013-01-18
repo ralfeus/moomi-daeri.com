@@ -26,7 +26,8 @@ abstract class Controller extends OpenCartBase
         $this->session = $this->registry->get('session');
         $this->initParameters();
         $this->data['notifications'] = array();
-	}
+        $this->load->library('audit');
+    }
 
     protected function buildUrlParameterString($parameters)
     {
@@ -35,13 +36,11 @@ abstract class Controller extends OpenCartBase
         {
             if (empty($value))
                 continue;
-            $result .= is_array($value)
-                ? '&' . $key . '[]=' . implode('&' . $key . '[]=', $value)
-                : "&$key=$value";
+            $result .= $this->getParamString($key, $value);
         }
         return $result;
     }
-	
+
 	protected function forward($route, $args = array()) {
 		return new Action($route, $args);
 	}
@@ -71,6 +70,19 @@ abstract class Controller extends OpenCartBase
 			exit();					
 		}		
 	}
+
+    protected function getParamString($paramKey, $paramValue, $prefix = '')
+    {
+        if ($prefix)
+            $paramKey = $prefix . '[' . $paramKey . ']';
+        $result = '';
+        if (is_array($paramValue))
+            foreach ($paramValue as $key => $value)
+                $result .= '&' . $this->getParamString($key, $value, $paramKey);
+        else
+            $result = "$paramKey=$paramValue";
+        return $result;
+    }
 
     protected function initParameters()
     {
@@ -107,8 +119,9 @@ abstract class Controller extends OpenCartBase
         if (!empty($_REQUEST))
         {
             $this->selfUrl .= '?';
+//            $this->log->write(print_r($_REQUEST, true));
             foreach ($_REQUEST as $key => $value)
-                $this->selfUrl .= "$key=$value&";
+                $this->selfUrl .= $this->getParamString($key, $value) . "&";
             $this->selfUrl = substr($this->selfUrl, 0, strlen($this->selfUrl) - 1);
         }
         $this->selfRoute = $route;

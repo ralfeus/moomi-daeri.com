@@ -13,3 +13,7 @@
 ///    || --- component code
 ///    --- user category code ('admin', 'user')
 define('AUDIT_ADMIN_PRODUCT_CREATE', 0x01010100);
+define('AUDIT_ADMIN_PRODUCT_UPDATE', 0x01010200);
+define('AUDIT_ADMIN_PRODUCT_DELETE', 0x01010300);
+define('AUDIT_ADMIN_PRODUCT_ENABLE', 0x01010400);
+define('AUDIT_ADMIN_PRODUCT_DISABLE', 0x01010500);
