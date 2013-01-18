@@ -180,7 +180,7 @@ class ControllerCommonFileManager extends Controller {
 
     private function getImageFileName($fileName)
     {
-        $this->log->write(image_type_to_extension(@exif_imagetype($fileName)));
+//        $this->log->write(image_type_to_extension(@exif_imagetype($fileName)));
         if (@exif_imagetype($fileName))
             return time() . image_type_to_extension(exif_imagetype($fileName));
         else
