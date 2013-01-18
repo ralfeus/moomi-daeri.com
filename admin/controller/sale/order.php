@@ -9,6 +9,7 @@ class ControllerSaleOrder extends Controller {
 		$this->load->language('sale/order');
 		$this->modelSaleOrder = $this->load->model('sale/order');
 		$this->document->setTitle($this->language->get('heading_title'));
+        $this->data['heading_title'] = $this->language->get('heading_title');
 	}
 
   	public function index() {
@@ -293,9 +294,7 @@ class ControllerSaleOrder extends Controller {
 		);
 
 		$order_total = $this->model_sale_order->getTotalOrders($data);
-
 		$results = $this->model_sale_order->getOrders($data);
-        $this->log->write(sizeof($results));
 
     	foreach ($results as $result) {
 			$this->model_sale_order->updateOrderTotals($result['order_id']);
@@ -325,8 +324,7 @@ class ControllerSaleOrder extends Controller {
 				'action'        => $action
 			);
 		}
-
-		$this->data['heading_title'] = $this->language->get('heading_title');
+        $this->log->write(sizeof($this->data['orders']));
 
 		$this->data['text_no_results'] = $this->language->get('text_no_results');
 		$this->data['text_abandoned_orders'] = $this->language->get('text_abandoned_orders');
