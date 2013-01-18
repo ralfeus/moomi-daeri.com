@@ -307,7 +307,7 @@ class ControllerCheckoutCart extends Controller {
         $this->parameters['selected'] = empty($_REQUEST['selected']) ? false : $_REQUEST['selected'];
         $this->parameters['itemPrice'] = empty($_REQUEST['itemPrice']) || !is_numeric($_REQUEST['itemPrice']) ? 0 : $_REQUEST['itemPrice'];
         $this->session->data['selectedCartItems'] = count($this->parameters['selected']) ? $this->parameters['selected'] : null;
-        $this->log->write(print_r($this->parameters, true));
+//        $this->log->write(print_r($this->parameters, true));
     }
 
     public function removeItem()
