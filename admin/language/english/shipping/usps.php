@@ -1,6 +1,7 @@
 <?php
 // Heading
-$_['heading_title']         = 'United States Postal Service';
+$_['headingTitle']         = 'United States Postal Service';
+$_['heading_title'] = $_['headingTitle'];
 
 // Text
 $_['text_shipping']         = 'Shipping';

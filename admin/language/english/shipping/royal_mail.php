@@ -1,6 +1,7 @@
 <?php
 // Heading 
-$_['heading_title']                          = 'Royal Mail';
+$_['headingTitle']                          = 'Royal Mail';
+$_['heading_title'] = $_['headingTitle'];
 
 // Text
 $_['text_shipping']                          = 'Shipping';

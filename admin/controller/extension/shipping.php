@@ -60,6 +60,7 @@ class ControllerExtensionShipping extends Controller {
 		$this->data['extensions'] = array();
 		
 		$files = glob(DIR_APPLICATION . 'controller/shipping/*.php');
+//        $this->log->write(print_r($files, true));
 		
 		if ($files) {
 			foreach ($files as $file) {
@@ -93,6 +94,7 @@ class ControllerExtensionShipping extends Controller {
 					'action'     => $action
 				);
 			}
+//            $this->log->write(print_r($this->data['extensions'], true));
 		}
 
 		$this->template = 'extension/shipping.tpl';

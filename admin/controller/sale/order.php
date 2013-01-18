@@ -295,6 +295,7 @@ class ControllerSaleOrder extends Controller {
 		$order_total = $this->model_sale_order->getTotalOrders($data);
 
 		$results = $this->model_sale_order->getOrders($data);
+        $this->log->write(sizeof($results));
 
     	foreach ($results as $result) {
 			$this->model_sale_order->updateOrderTotals($result['order_id']);
