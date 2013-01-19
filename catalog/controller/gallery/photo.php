@@ -25,6 +25,12 @@ class ControllerGalleryPhoto extends Controller {
 	}
 
 	public function addPhoto() {
+
+    if (!$this->customer->isLogged()) {
+      $this->session->data['redirect'] = $this->url->link('account/account', '', 'SSL');
+  
+      $this->redirect($this->url->link('account/login', '', 'SSL'));
+    }
 		
 		$this->language->load('gallery/general');
 
@@ -49,6 +55,11 @@ class ControllerGalleryPhoto extends Controller {
   }
 
   public function uploadPhoto() {
+    if (!$this->customer->isLogged()) {
+      $this->session->data['redirect'] = $this->url->link('account/account', '', 'SSL');
+  
+      $this->redirect($this->url->link('account/login', '', 'SSL'));
+    }
 
   	$allowedExtension = array('jpeg', 'jpg', 'png', 'gif');
 
@@ -153,7 +164,7 @@ class ControllerGalleryPhoto extends Controller {
       $modelData['name'] = $photoName;
       $modelData['description'] = $photoDescription;
       $modelData['path'] = "gallery/" . $uniqFileName;
-      $modelData['date'] = date("Y-m-d");
+      $modelData['date'] = date("Y-m-d H:i:s");
 
       $this->load->model('gallery/photo');
       $this->model_gallery_photo->addPhoto($modelData);
@@ -218,6 +229,82 @@ class ControllerGalleryPhoto extends Controller {
     $data['galery_photo_upload_success'] = $this->language->get('galery_photo_upload_success');
 
 		return $data;
+  }
+
+  public function showLargePhoto() {
+    
+    $photo_id = isset($_GET['photo_id']) ? $_GET['photo_id'] : '';
+    $photo_type = isset($_GET['photo_type']) ? $_GET['photo_type'] : '';
+
+    $this->data['photo_type'] = $photo_type;
+
+    if($photo_type == 'gallery_photo') {
+      $query = "SELECT * FROM gallery_photo WHERE photo_id = '" . $photo_id . "'";
+      $result = $this->db->query($query);
+
+      foreach ($result->rows as $row) {
+        $this->data['image'] = HTTP_IMAGE . $row['path'];
+        $this->data['photo_id'] = $row['photo_id'];
+        list($width, $height, $type, $attr) = getimagesize(DIR_IMAGE . $row['path']);
+      }
+    }
+    elseif($photo_type == 'review_image') {
+      $query = "SELECT image_path AS path, review_image_id FROM review_images WHERE review_image_id = '" . $photo_id . "'";
+
+      $result = $this->db->query($query);
+
+      foreach ($result->rows as $row) {
+        $this->data['image'] = HTTP_IMAGE . substr($row['path'], 1);
+        $this->data['photo_id'] = $row['review_image_id'];
+        list($width, $height, $type, $attr) = getimagesize(DIR_IMAGE . substr($row['path'], 1));
+      }
+    }
+
+    if($width >= $height) {
+      $this->data['image_width'] = 640;
+      $this->data['image_height'] = 480;
+    }
+    else {
+      $this->data['image_width'] = 480;
+      $this->data['image_height'] = 640;
+    }
+
+    $this->template = 'default/template/gallery/iframeVote.tpl';
+    $this->language->load('gallery/general');
+    $this->data['message_vote_success'] = $this->language->get('galery_message_vote_success');
+
+    $this->response->setOutput($this->render());
+    /*else {
+      //Error
+      //.....................
+      //.....................
+      //.....................
+    }*/
+
+  }
+
+  public function addVote() {
+    $modelData['photoID'] = isset($_POST['photoID']) ? $_POST['photoID'] : '';
+    $modelData['photoType'] = isset($_POST['photoType']) ? $_POST['photoType'] : ''; 
+    $modelData['stars'] = isset($_POST['stars']) ? $_POST['stars'] : '0';
+    $modelData['comment'] = isset($_POST['comment']) ? $_POST['comment'] : '';
+    $modelData['date'] = date('Y-m-d H:i:s');
+
+    $this->language->load('gallery/general');
+
+    $this->load->model('gallery/photo');
+    $result = $this->model_gallery_photo->addVote($modelData);
+
+    $response = array();
+    if($result) {
+      $response['success'] = true;
+      $response['photo_id'] = $_POST['photoID'];
+      $response['photo_type'] = $_POST['photoType'];
+      $response['message'] = $this->language->get('galery_message_vote_success');
+    }
+
+    print_r(json_encode($response));
+
   }
 }
 ?>

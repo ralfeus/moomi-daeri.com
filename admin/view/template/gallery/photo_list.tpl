@@ -81,6 +81,9 @@
               <td class="left" width="200">
                 <?php echo $column_photo; ?>
               </td>
+              <td class="left" width="200">
+                <?php echo $column_user_nickname; ?>
+              </td>
               <td class="left">
                 <?php echo $column_photo_name; ?>
               </td>
@@ -93,6 +96,7 @@
                 echo "<tr>";
                 echo '<td><input type="checkbox" class="checkboxPhoto" value="' . $photo["photo_id"] . '" /></td>';
                 echo '<td><img src="' . HTTP_IMAGE . $photo["path"] . '" width="200" height="150"/></td>';
+                echo '<td>' . $photo["nickname"] . '</td>';
                 echo '<td>' . $photo["name"] . '</td>';
                 echo '<td>' . $photo["description"] . '</td>';
                 echo "</tr>";

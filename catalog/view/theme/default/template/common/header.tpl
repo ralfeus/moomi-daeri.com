@@ -28,6 +28,8 @@
 <link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
 <script type="text/javascript" src="catalog/view/javascript/jquery/jquery.multiselect.js"></script>
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/jquery.multiselect.css" />
+<script type="text/javascript" src="catalog/view/javascript/jquery/nailthumb/jquery.nailthumb.1.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/nailthumb/jquery.nailthumb.1.1.min.css" />
 <!--[if IE]>
 <script type="text/javascript" src="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4-iefix.js"></script>
 <![endif]--> 

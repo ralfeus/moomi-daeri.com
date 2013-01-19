@@ -103,7 +103,8 @@ $(document).ready(function(){
       </li>
       <li id="gallery"><a class="top"><?php echo $text_admin_gallery; ?></a>
         <ul>
-          <li><a href="<?php echo $gallery; ?>"><?php echo $text_admin_gallery_admin; ?></a></li>
+          <li><a href="<?php echo $gallery; ?>"><?php echo $text_admin_gallery_approving; ?></a></li>
+          <li><a href="<?php echo $gallery_voting; ?>"><?php echo $text_admin_gallery_voting; ?></a></li>
         </ul>
       </li>
       <li id="extension"><a class="top"><?php echo $text_extension; ?></a>
