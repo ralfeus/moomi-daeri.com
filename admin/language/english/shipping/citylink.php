@@ -1,6 +1,6 @@
 <?php
 // Heading
-$_['heading_title']    = 'Citylink';
+$_['headingTitle']    = 'Citylink';
 
 // Text
 $_['text_shipping']    = 'Shipping';

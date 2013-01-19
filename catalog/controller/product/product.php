@@ -483,7 +483,7 @@ class ControllerProductProduct extends Controller {
                 'images' => $this->model_catalog_review->getReviewImages($result['review_id'])
         	);
       	}
-        $this->log->write(print_r($this->data, true));
+//        $this->log->write(print_r($this->data, true));
 			
 		$pagination = new Pagination();
 		$pagination->total = $review_total;

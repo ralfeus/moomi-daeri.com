@@ -571,13 +571,11 @@ class ModelCatalogProduct extends Model {
 		
 	public function getTotalProducts($data = array()) {
         /// Cache implementation
-        if (!array_key_exists('productsCountCache', $this->session->data))
-            $this->session->data['productsCountCache'] = array();
-//        $this->log->write(print_r($productsCountCache, true));
         $dataHash = base64_encode(serialize($data));
-        if (array_key_exists($dataHash, $this->session->data['productsCountCache']))
-            return $this->session->data['productsCountCache'][$dataHash];
-
+        $result = $this->cache->get("productsCount.$dataHash");
+        if (isset($result))
+            return $result;
+//        $this->log->write("Go to DB");
 		$sql = "
 		    SELECT COUNT(DISTINCT p.product_id) AS total
             FROM
@@ -668,7 +666,7 @@ class ModelCatalogProduct extends Model {
         //print_r($sql);exit();
 		
 		$query = $this->db->query($sql);
-        $this->session->data['productsCountCache'][$dataHash] = $query->row['total'];
+        $this->cache->set("productsCount.$dataHash", $query->row['total']);
 		return $query->row['total'];
 	}
 			
@@ -701,7 +699,7 @@ class ModelCatalogProduct extends Model {
 		}
 	}	
 	public function getProductsM($data = array()) {
-        $this->log->write(print_r($data, true));
+//        $this->log->write(print_r($data, true));
 		if ($this->customer->isLogged()) {
 			$customer_group_id = $this->customer->getCustomerGroupId();
 		} else {

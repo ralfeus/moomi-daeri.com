@@ -1,6 +1,7 @@
 <?php
 // Heading
-$_['heading_title']    = 'Weight Based Shipping';
+$_['headingTitle']    = 'Weight Based Shipping';
+$_['heading_title'] = $_['headingTitle'];
 
 // Text
 $_['text_shipping']    = 'Shipping';
