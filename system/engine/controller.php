@@ -36,9 +36,10 @@ abstract class Controller extends OpenCartBase
         {
             if (empty($value))
                 continue;
-            $result .= $this->getParamString($key, $value);
+            $result .= '&' . $this->getParamString($key, $value);
+//            $this->log->write($result);
         }
-        return $result;
+        return substr($result, 1);
     }
 
 	protected function forward($route, $args = array()) {
@@ -77,8 +78,11 @@ abstract class Controller extends OpenCartBase
             $paramKey = $prefix . '[' . $paramKey . ']';
         $result = '';
         if (is_array($paramValue))
+        {
             foreach ($paramValue as $key => $value)
                 $result .= '&' . $this->getParamString($key, $value, $paramKey);
+            $result = substr($result, 1);
+        }
         else
             $result = "$paramKey=$paramValue";
         return $result;
@@ -119,10 +123,9 @@ abstract class Controller extends OpenCartBase
         if (!empty($_REQUEST))
         {
             $this->selfUrl .= '?';
-//            $this->log->write(print_r($_REQUEST, true));
             foreach ($_REQUEST as $key => $value)
-                $this->selfUrl .= $this->getParamString($key, $value) . "&";
-            $this->selfUrl = substr($this->selfUrl, 0, strlen($this->selfUrl) - 1);
+                $this->selfUrl .= '&' . $this->getParamString($key, $value);
+            $this->selfUrl = substr($this->selfUrl, 1);
         }
         $this->selfRoute = $route;
     }
