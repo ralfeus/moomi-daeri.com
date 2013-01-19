@@ -297,7 +297,7 @@ class ControllerSaleOrder extends Controller {
 		$results = $this->model_sale_order->getOrders($data);
 
     	foreach ($results as $result) {
-			$this->model_sale_order->updateOrderTotals($result['order_id']);
+//			$this->model_sale_order->updateOrderTotals($result['order_id']);
 			$action = array();
 						
 			$action[] = array(
