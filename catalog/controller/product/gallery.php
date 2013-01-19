@@ -64,7 +64,7 @@ class ControllerProductGallery extends Controller
 
       $this->data['total_photos'] = count($sortedPhotos);
       
-      $page = isset($_POST['page']) ? $_POST['page'] : 1;
+      $page = isset($_GET['page']) ? $_GET['page'] : 1;
       
       $this->data['images'] = array_slice($sortedPhotos, ($page-1)*GALLERY_PAGE_SIZE, GALLERY_PAGE_SIZE);
     }
@@ -93,9 +93,9 @@ class ControllerProductGallery extends Controller
       $pagination = new Pagination();
       $pagination->total = $this->data['total_photos'];
       $pagination->page = isset($_GET['page']) ? $_GET['page'] : 1;
-      $pagination->limit = 20; 
+      $pagination->limit = GALLERY_PAGE_SIZE; 
       $pagination->text = $this->language->get('text_pagination');
-      $pagination->url = $this->url->link('product/gallery?', 'page={page}');
+      $pagination->url = $this->url->link('product/gallery&', 'page={page}');
 
       $this->data['pagination'] = $pagination->render();
 
