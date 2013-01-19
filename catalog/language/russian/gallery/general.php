@@ -10,4 +10,8 @@ $_['galery_photo_file_empty'] = 'Пожалуйста выберите фото 
 $_['galery_photo_error_not_alloed'] = 'Разрешено загружать фото только в формате .jpg, .png, .gif';
 $_['galery_photo_upload_success'] = 'Спасибо! Ваше фото отправлено на модерацию. После проверки администратором оно появится в галерее';
 
+$_['galery_comment'] = 'Коментарий';
+$_['galery_button_sent_comment'] = 'Оценить';
+$_['galery_message_vote_success'] = 'Спасибо за Вашу оценку!';
+
 ?>

@@ -10,4 +10,8 @@ $_['galery_photo_file_empty'] = ' select a photo to download, please';
 $_['galery_photo_error_not_alloed'] = 'Allowed to upload photos only format.jpg, .png, .gif';
 $_['galery_photo_upload_success'] = 'Thank you! Your photo was sent for moderation. After validation, it will appear in the gallery';
 
+$_['galery_comment'] = 'Comment';
+$_['galery_button_sent_comment'] = 'Vote';
+$_['galery_message_vote_success'] = 'Thank you for voting!';
+
 ?>
