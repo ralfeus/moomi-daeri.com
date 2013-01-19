@@ -92,10 +92,10 @@ class ControllerProductGallery extends Controller
 
       $pagination = new Pagination();
       $pagination->total = $this->data['total_photos'];
-      $pagination->page = 1;
+      $pagination->page = isset($_GET['page']) ? $_GET['page'] : 1;
       $pagination->limit = 20; 
       $pagination->text = $this->language->get('text_pagination');
-      $pagination->url = $this->url->link('product/galery', 'page={page}');
+      $pagination->url = $this->url->link('product/gallery?', 'page={page}');
 
       $this->data['pagination'] = $pagination->render();
 
