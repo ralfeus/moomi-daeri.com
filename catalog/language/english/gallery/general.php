@@ -14,4 +14,8 @@ $_['galery_comment'] = 'Comment';
 $_['galery_button_sent_comment'] = 'Vote';
 $_['galery_message_vote_success'] = 'Thank you for voting!';
 
+
+$_['galery_text_photo_name'] = 'Name';
+$_['galery_text_photo_description'] = 'Description';
+
 ?>

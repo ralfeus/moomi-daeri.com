@@ -88,14 +88,14 @@ class ControllerProductGallery extends Controller
           'common/header'
       );
 
-      $this->load->model('gallery/photo');
+      //$this->load->model('gallery/photo');
 
       $pagination = new Pagination();
       $pagination->total = $this->data['total_photos'];
       $pagination->page = isset($_GET['page']) ? $_GET['page'] : 1;
       $pagination->limit = GALLERY_PAGE_SIZE; 
       $pagination->text = $this->language->get('text_pagination');
-      $pagination->url = $this->url->link('product/gallery&', 'page={page}');
+      $pagination->url = $this->url->link('product/gallery', 'page={page}');
 
       $this->data['pagination'] = $pagination->render();
 

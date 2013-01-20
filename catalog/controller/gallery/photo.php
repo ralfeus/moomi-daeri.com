@@ -245,6 +245,8 @@ class ControllerGalleryPhoto extends Controller {
       foreach ($result->rows as $row) {
         $this->data['image'] = HTTP_IMAGE . $row['path'];
         $this->data['photo_id'] = $row['photo_id'];
+        $this->data['photo_name'] = isset($row['name']) ? $row['name'] : '';
+        $this->data['photo_description'] = isset($row['description']) ? $row['description'] : '';
         list($width, $height, $type, $attr) = getimagesize(DIR_IMAGE . $row['path']);
       }
     }
@@ -259,6 +261,10 @@ class ControllerGalleryPhoto extends Controller {
         list($width, $height, $type, $attr) = getimagesize(DIR_IMAGE . substr($row['path'], 1));
       }
     }
+
+    $this->load->language('gallery/general');
+    $this->data['text_photo_name'] = $this->language->get('galery_text_photo_name');
+    $this->data['text_photo_description'] = $this->language->get('galery_text_photo_description');
 
     if($width >= $height) {
       $this->data['image_width'] = 640;

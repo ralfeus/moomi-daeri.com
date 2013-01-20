@@ -6,11 +6,15 @@ class ControllerCommonColumnLeft extends Controller {
 		$this->load->model('catalog/product');
 		$this->load->model('catalog/information');
 		
+		//print_r($photos);
+		
 		if (isset($this->request->get['route'])) {
 			$route = $this->request->get['route'];
 		} else {
 			$route = 'common/home';
 		}
+
+		$this->data['route'] = $route;
 		
 		$layout_id = 0;
 		

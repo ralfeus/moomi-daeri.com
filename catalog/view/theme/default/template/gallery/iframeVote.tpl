@@ -61,6 +61,14 @@
 				<img src="<?= $image ?>" width="<?= $image_width ?>" height="<?= $image_height ?>" />
 		</td>
 		<td style="width: 200px; padding: 5px">
+			<?php
+				if($photo_name != '') {
+					echo $text_photo_name.": " . $photo_name."<br /><br />";
+				}
+				if($photo_description != '') {
+					echo $text_photo_description.": " . $photo_description."<br /><br />";
+				}
+			?>
 			<form id="f1"> 
 				<span id="stars1"></span><br />
 				<input type="hidden" id="t1" name="stars" />

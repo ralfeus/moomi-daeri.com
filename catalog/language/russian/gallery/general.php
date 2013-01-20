@@ -14,4 +14,7 @@ $_['galery_comment'] = 'Коментарий';
 $_['galery_button_sent_comment'] = 'Оценить';
 $_['galery_message_vote_success'] = 'Спасибо за Вашу оценку!';
 
+$_['galery_text_photo_name'] = 'Название';
+$_['galery_text_photo_description'] = 'Описание';
+
 ?>
