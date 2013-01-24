@@ -1,5 +1,7 @@
 <?php
+$_['CONTENT_MANAGEMENT'] = 'Content management';
 $_['CREDIT_MANAGEMENT'] = "Deposit management";
+$_['ORDER_CONFIRMATION'] = 'Checkout confirmation';
 $_['REPURCHASE_ORDERS'] = "Agent orders";
 // Heading
 $_['heading_title']                    = 'Administration';
