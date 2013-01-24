@@ -6,10 +6,10 @@ error_reporting(E_ALL);
 
 // Version
 define('VERSION', '1.5.1.3');
-/// Constants
-require_once('system/engine/constants.php');
 // Config
 require_once('config.php');
+/// Constants
+require_once(DIR_SYSTEM . 'engine/constants.php');
 
 // Install 
 if (!defined('DIR_APPLICATION')) {

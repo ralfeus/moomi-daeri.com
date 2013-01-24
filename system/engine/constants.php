@@ -51,3 +51,5 @@ define("REPURCHASE_ORDER_SIZE_OPTION_ID", 14971); // ID of the product option re
 define("REPURCHASE_ORDER_WHO_BUYS_OPTION_ID", 18518); // ID of the product option representing buying side
 define('REPURCHASE_ORDER_CUSTOMER_BUYS_OPTION_VALUE_ID', 35883); // ID of the product option value representing customer buying
 define('REPURCHASE_ORDER_SHOP_BUYS_OPTION_VALUE_ID', 35882); // ID of the product option value representing shop buying
+
+define('CMS_ORDER_CONFIRMATION', 0x00070001);

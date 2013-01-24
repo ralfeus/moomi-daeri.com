@@ -34,17 +34,24 @@ final class Loader extends OpenCartBase
 		    $appRoot = DIR_APPLICATION;
         elseif ($scope == 'admin')
             $appRoot = substr(DIR_APPLICATION, 0, strrpos(DIR_APPLICATION, '/', -2)) . '/admin/';
+        elseif ($scope == 'global')
+            $appRoot = substr(DIR_APPLICATION, 0, strrpos(DIR_APPLICATION, '/', -2));
         else
             $appRoot = substr(DIR_APPLICATION, 0, strrpos(DIR_APPLICATION, '/', -2)) . '/catalog/';
-        $file  = $appRoot . 'model/' . $model . '.php';
+        $file  = $appRoot . '/model/' . $model . '.php';
 		$class = 'Model' . preg_replace('/[^a-zA-Z0-9]/', '', $model);
 		
-		if (file_exists($file)) {
+		if (file_exists($file))
+        {
 			require_once($file);
 			$instance = new $class($this->registry);
 			$this->registry->set($modelName, $instance);
 			return $instance;
-		} else {
+        }
+        elseif ($scope != 'global')
+            return $this->model($model, 'global');
+		else
+        {
 			trigger_error('Error: Could not load model ' . $model . '!');
 			exit();					
 		}
