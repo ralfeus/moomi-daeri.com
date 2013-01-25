@@ -68,6 +68,7 @@ class ControllerCommonContentBottom extends Controller {
 		
 		$this->data['modules'] = array();
 		
+		$module_data = array_reverse($module_data);
 		foreach ($module_data as $module) {
 			$module = $this->getChild('module/' . $module['code'], $module['setting']);
 			
@@ -81,7 +82,9 @@ class ControllerCommonContentBottom extends Controller {
 		} else {
 			$this->template = 'default/template/common/content_bottom.tpl';
 		}
-								
+		
+		//print_r($module_data); die();
+
 		$this->render();
 	}
 }

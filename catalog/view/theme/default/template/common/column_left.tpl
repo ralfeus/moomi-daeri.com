@@ -12,7 +12,6 @@ if($route == 'common/home') {
 ?>
 <script type="text/javascript">
 $(document).ready(function() {
-  //alert($('#mycarousel').jcarousel());
 	$('#mycarousel').jcarousel({
 		start: 0,
 		scroll: 1,
