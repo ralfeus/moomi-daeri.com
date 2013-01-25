@@ -677,15 +677,15 @@ a.button-disabled span {
 /* box products */
 .box-product {
 	width: 100%;
-	overflow: auto;
+	overflow: hidden;
 }
 .box-product > div {
 	width: 130px;
 	display: inline-block;
 	vertical-align: top;
-    text-align: center;
+  text-align: center;
 	margin-right: 20px;
-	margin-bottom: 20px;	
+	margin-bottom: 20px;
 }
 #column-left + #column-right + #content .box-product > div {
 	width: 119px;
