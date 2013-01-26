@@ -95,7 +95,7 @@ class ModelCatalogProduct extends Model {
 		}
 	}
 
-	public function getProducts($data = array()) { //print_r($this->customer); die();
+	public function getProducts($data = array()) { 
 		if ($this->customer->isLogged()) {
 			$customer_group_id = $this->customer->getCustomerGroupId();
 		} else {
@@ -199,7 +199,7 @@ class ModelCatalogProduct extends Model {
 								
 					$sql .= " AND (" . implode(' OR ', $implode_data) . ")";			
 				} else {
-					$sql .= " AND p2c.category_id = '" . (int)$data['filter_category_id'] . "'";
+					$sql .= " AND p2c.category_id IN (" . $data['filter_category_id'] . ")";
 				}
 			}		
 					
