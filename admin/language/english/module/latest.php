@@ -16,6 +16,7 @@ $_['entry_image']         = 'Image (W x H):';
 $_['entry_layout']        = 'Layout:';
 $_['entry_position']      = 'Position:';
 $_['entry_status']        = 'Status:';
+$_['entry_category']      = 'Category:';
 $_['entry_sort_order']    = 'Sort Order:';
 
 // Error
