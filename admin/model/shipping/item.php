@@ -1,6 +1,6 @@
 <?php
 require_once("ShippingMethodModel.php");
-class ModelShippingItem extends Model implements ShippingMethodModel
+class ModelShippingItem extends ShippingMethodModel
 {
   	public function getCost($destination, $orderItems, $ext = null)
     {
@@ -20,8 +20,8 @@ class ModelShippingItem extends Model implements ShippingMethodModel
         } else {
             $status = false;
         }
-        $this->log->write($this->config->get('item_cost'));
-        $this->log->write(print_r($orderItems, true));
+//        $this->log->write($this->config->get('item_cost'));
+//        $this->log->write(print_r($orderItems, true));
         $cost = 0;
 //        if ($status)
             foreach ($orderItems as $orderItem)
@@ -29,4 +29,9 @@ class ModelShippingItem extends Model implements ShippingMethodModel
 
         return $cost;
   	}
+
+    public function getName($languageResource = null)
+    {
+        return parent::getName('shipping/item');
+    }
 }

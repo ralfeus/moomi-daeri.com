@@ -1,9 +1,10 @@
 <?php
 require_once("ShippingMethodModel.php");
-class ModelShippingEMS extends Model implements ShippingMethodModel
+class ModelShippingEMS extends ShippingMethodModel
 {
   	public function getCost($destination, $orderItems, $ext = array())
     {
+        $this->log->write(print_r($orderItems, true));
         $cost = 0;
         $rates = explode(',', $this->config->get($destination . '_rate'));
         if (empty($ext['weight']))
@@ -30,4 +31,9 @@ class ModelShippingEMS extends Model implements ShippingMethodModel
         }
 		return $cost;
   	}
+
+    public function getName($languageResource = null)
+    {
+        return parent::getName('shipping/ems');
+    }
 }

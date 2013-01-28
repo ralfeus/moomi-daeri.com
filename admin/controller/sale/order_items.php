@@ -551,11 +551,11 @@ class ControllerSaleOrderItems extends Controller {
         return "";
     }
 
-    private function getShippingCost($weight, $shipping_method)
+    private function getShippingCost($shipping_method, $orderItems, $ext)
     {
         $shipping_method = explode(".", $shipping_method);
         $this->load->model("shipping/" . $shipping_method[0]);
-        return $this->{'model_shipping_' . $shipping_method[0]}->getCost($shipping_method[1], $weight);
+        return $this->{'model_shipping_' . $shipping_method[0]}->getCost($shipping_method[1], $orderItems, $ext);
     }
 
     private function getSuppliers()

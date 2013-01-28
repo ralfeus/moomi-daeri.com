@@ -1,6 +1,6 @@
 <?php
 require_once("ShippingMethodModel.php");
-class ModelShippingWeight extends Model implements ShippingMethodModel
+class ModelShippingWeight extends ShippingMethodModel
 {
   	public function getCost($destination, $orderItems, $ext = array())
     {
@@ -30,4 +30,9 @@ class ModelShippingWeight extends Model implements ShippingMethodModel
         }
 		return $cost;
   	}
+
+    public function getName($languageResource = null)
+    {
+        return parent::getName('shipping/weight');
+    }
 }

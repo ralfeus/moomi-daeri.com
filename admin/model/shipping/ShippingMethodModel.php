@@ -6,7 +6,12 @@
  * Time: 22:37
  * To change this template use File | Settings | File Templates.
  */
-interface ShippingMethodModel
+abstract class ShippingMethodModel extends Model
 {
-    function getCost($destination, $orderItems, $ext = null);
+    abstract function getCost($destination, $orderItems, $ext = null);
+    protected function getName($languageResource = null)
+    {
+        $this->load->language($languageResource);
+        return $this->language->get('headingTitle');
+    }
 }
