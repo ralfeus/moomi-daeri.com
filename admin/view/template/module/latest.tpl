@@ -23,6 +23,7 @@
             <td class="left"><?php echo $entry_layout; ?></td>
             <td class="left"><?php echo $entry_position; ?></td>
             <td class="left"><?php echo $entry_status; ?></td>
+            <td class="left"><?php echo $entry_category; ?></td>
             <td class="right"><?php echo $entry_sort_order; ?></td>
             <td></td>
           </tr>
@@ -77,6 +78,7 @@
                 <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
                 <?php } ?>
               </select></td>
+            <td class="right"><input type="text" name="latest_module[<?php echo $module_row; ?>][category_ids]" value="<?php echo $module['category_ids']; ?>" size="3" /></td>
             <td class="right"><input type="text" name="latest_module[<?php echo $module_row; ?>][sort_order]" value="<?php echo $module['sort_order']; ?>" size="3" /></td>
             <td class="left"><a onclick="$('#module-row<?php echo $module_row; ?>').remove();" class="button"><?php echo $button_remove; ?></a></td>
           </tr>

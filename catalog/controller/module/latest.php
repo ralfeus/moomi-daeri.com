@@ -23,10 +23,10 @@ class ControllerModuleLatest extends Controller {
 			'order' => 'DESC',
 			'start' => ($page - 1) * $setting['limit'],
 			'limit' => $setting['limit'],
-            'nocache'   => 1
-//			'limit' => 20
+			'filter_category_id' => $setting['category_ids'],
+      'nocache'   => 1
 		);
-        //print_r($data);exit();
+
 
 		$results = $this->model_catalog_product->getProducts($data);
         //print_r($results);exit();

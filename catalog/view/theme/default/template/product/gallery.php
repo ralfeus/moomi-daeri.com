@@ -31,7 +31,7 @@
           if(mRight == 0) {
             $('#fancybox-right').css('margin-right', marginRight + 'px');
           }
-        },
+        }
       });
     });
   });

@@ -57,12 +57,14 @@ class ControllerCommonContentBottom extends Controller {
 				}
 			}
 		}
+
+		//print_r($modules); die();
 		
 		$sort_order = array(); 
 	  
 		foreach ($module_data as $key => $value) {
-      		$sort_order[$key] = $value['sort_order'];
-    	}
+    	$sort_order[$key] = $value['sort_order'];
+    }
 		
 		array_multisort($sort_order, SORT_ASC, $module_data);
 		
