@@ -13,7 +13,7 @@ class ControllerAccountInvoice extends Controller
         parent::__construct($registry);
         $this->load->language('account/invoice');
         $this->load->library('Transaction');
-        $this->load->model('reference/Address');
+        $this->load->model('reference/address');
         $this->load->model('account/invoice');
         $this->load->model('account/order');
         $this->load->model('account/order_item');
@@ -155,7 +155,7 @@ class ControllerAccountInvoice extends Controller
 
         $modelInvoice = $this->load->model('account/invoice');
         $modelOrderItem = $this->load->model('account/order_item');
-        $modelReferenceAddress = $this->load->model('reference/Address');
+        $modelReferenceAddress = $this->load->model('reference/address');
         $invoice = $modelInvoice->getInvoice($this->request->request['invoiceId']);
 
         /// Initialize interface values
