@@ -144,8 +144,8 @@ class ModelSaleOrderItem extends Model
                     OR LCASE(op.name) LIKE '%" . $this->db->escape(utf8_strtolower($data['filterItem'])) . "%'";
             if (!empty($data['filter_model']))
                 $filter .= ($filter ? " AND " : "") . "LCASE(op.model) LIKE '%" . $this->db->escape(utf8_strtolower($data['filter_model'])) . "%'";
-			if (!empty($data['filter_status_id']))
-				$filter .= ($filter ? " AND " : "") . "op.status_id IN (" . implode(', ', $data['filter_status_id']) . ")";
+			if (!empty($data['filterStatusId']))
+				$filter .= ($filter ? " AND " : "") . "op.status_id IN (" . implode(', ', $data['filterStatusId']) . ")";
             if (!empty($data['filterSupplierId']))
                 $filter .= ($filter ? " AND " : "") . "s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
 //            if (!empty($data['filter_supplier_group']))
