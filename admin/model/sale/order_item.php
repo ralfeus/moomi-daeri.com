@@ -137,25 +137,28 @@ class ModelSaleOrderItem extends Model
         else
         {
             if (!empty($data['filterCustomerId']))
-                $filter .= ($filter ? " AND" : "") . " c.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
+                $filter .= ($filter ? " AND " : "") . "c.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
             if (!empty($data['filterItem']))
-                $filter .= ($filter ? " AND" : "") . "
+                $filter .= ($filter ? " AND " : "") . "
                     LCASE(op.model) LIKE '%" . $this->db->escape(utf8_strtolower($data['filterItem'])) . "%'
                     OR LCASE(op.name) LIKE '%" . $this->db->escape(utf8_strtolower($data['filterItem'])) . "%'";
             if (!empty($data['filter_model']))
-                $filter .= ($filter ? " AND" : "") . " LCASE(op.model) LIKE '%" . $this->db->escape(utf8_strtolower($data['filter_model'])) . "%'";
+                $filter .= ($filter ? " AND " : "") . "LCASE(op.model) LIKE '%" . $this->db->escape(utf8_strtolower($data['filter_model'])) . "%'";
 			if (!empty($data['filter_status_id']))
-				$filter .= ($filter ? " AND" : "") . " op.status_id IN (" . implode(', ', $data['filter_status_id']) . ")";
+				$filter .= ($filter ? " AND " : "") . "op.status_id IN (" . implode(', ', $data['filter_status_id']) . ")";
             if (!empty($data['filterSupplierId']))
-                $filter .= ($filter ? " AND" : "") . " s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
+                $filter .= ($filter ? " AND " : "") . "s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
 //            if (!empty($data['filter_supplier_group']))
 //                $filter .= ($filter ? " AND" : "") . " s.supplier_group_id = " . (int)$data['filter_supplier_group'];
             if (!empty($data['filterOrderId']))
-                $filter .= ($filter ? " AND" : "") . " op.order_id = " . (int)$data['filterOrderId'];
+                $filter .= ($filter ? " AND " : "") . "op.order_id = " . (int)$data['filterOrderId'];
             if (!empty($data['filterOrderItemId']))
-                $filter .= ($filter ? " AND" : "") . " op.order_product_id = " . (int)$data['filterOrderItemId'];
+                if (is_array($data['filterOrderItemId']))
+                    $filter .= ($filter ? " AND " : "") . "op.order_product_id IN (" . implode(', ', $data['filterOrderItemId']) . ")";
+                else
+                    $filter .= ($filter ? " AND " : "") . "op.order_product_id = " . (int)$data['filterOrderItemId'];
             if (!empty($data['filterProductId']))
-                $filter .= ($filter ? " AND" : "") . "op.product_id IN (" . implode(', ', $data['filterProductId']) . ")";
+                $filter .= ($filter ? " AND " : "") . "op.product_id IN (" . implode(', ', $data['filterProductId']) . ")";
         }
 
 		return $filter;

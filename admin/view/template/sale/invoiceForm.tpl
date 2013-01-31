@@ -28,7 +28,17 @@
                                         <a id="buttonRecalculate" class="button" onclick="recalculateShipping()"><?= $buttonRecalculateShippingCost ?></a>
                                 </td></tr>
                                 <tr><td><?= $textShippingMethod ?></td></tr>
-                                <tr><td><input name="shippingMethod" value="<?= $shippingMethod ?>" disabled="true" /></td></tr>
+                                <tr><td>
+                                    <select name="shippingMethod" onchange="recalculateShipping()" <?= $readOnly ?>>
+<?php foreach ($shippingMethods as $possibleShippingMethod): ?>
+                                        <option
+                                                value="<?= $possibleShippingMethod['code'] ?>"
+                                                <?= $possibleShippingMethod['code'] == $shippingMethod ? "selected" : '' ?>>
+                                            <?= $possibleShippingMethod['shippingMethodName'] ?>
+                                        </option>
+<?php endforeach; ?>
+                                    </select>
+                                </td></tr>
                                 <tr><td><?= $textShippingCost ?></td></tr>
                                 <tr><td>
                                     <input id="shippingCost" name="shippingCost" value="<?= $shippingCost ?>" disabled="true" />
@@ -149,12 +159,12 @@ function formatCurrency(value)
 function recalculateShipping()
 {
     $.ajax({
-        url: '<?= $shippingMethodCostRoute ?>&token=<?= $this ->session->data["token"] ?>',
+        url: '<?= $shippingCostRoute ?>',
         type: 'post',
         dataType: 'json',
         data: {
             weight: $('#totalWeight').val(),
-            method: '<?= $shippingMethodCode ?>'
+            method: $('[name=shippingMethod]').val()
         },
         beforeSend: function() {
             $('#buttonRecalculate').attr('disabled', true);

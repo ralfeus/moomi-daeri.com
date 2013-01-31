@@ -3,6 +3,7 @@ $_['CONTENT_MANAGEMENT'] = 'Content management';
 $_['CREDIT_MANAGEMENT'] = "Deposit management";
 $_['ORDER_CONFIRMATION'] = 'Checkout confirmation';
 $_['REPURCHASE_ORDERS'] = "Agent orders";
+$_['SITE_GUIDE'] = 'Site guide';
 // Heading
 $_['heading_title']                    = 'Administration';
 

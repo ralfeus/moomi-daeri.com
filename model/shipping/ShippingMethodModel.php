@@ -8,10 +8,19 @@
  */
 abstract class ShippingMethodModel extends Model
 {
+    protected $log;
+
+    public function __construct($registry)
+    {
+        parent::__construct($registry);
+        $this->log = new Log('shippingModel.log');
+    }
     abstract function getCost($destination, $orderItems, $ext = null);
+    abstract public function getMethodData($address);
     protected function getName($languageResource = null)
     {
         $this->load->language($languageResource);
         return $this->language->get('headingTitle');
     }
+    abstract function getQuote($address);
 }

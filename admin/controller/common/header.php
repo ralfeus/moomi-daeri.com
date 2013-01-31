@@ -110,6 +110,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_zone'] = $this->language->get('text_zone');
         $this->data['textContentManagement'] = $this->language->get('CONTENT_MANAGEMENT');
         $this->data['textCreditManagement'] = $this->language->get('CREDIT_MANAGEMENT');
+        $this->data['textSiteGuide'] = $this->language->get('SITE_GUIDE');
         $this->data['textOrderConfirmation'] = $this->language->get('ORDER_CONFIRMATION');
         $this->data['textRepurchaseOrders'] = $this->language->get('REPURCHASE_ORDERS');
 
@@ -191,6 +192,9 @@ class ControllerCommonHeader extends Controller {
             $this->data['urlOrderConfirmationText'] = $this->url->link(
                 'cms/text/edit',
                 'contentId=' . CMS_ORDER_CONFIRMATION . '&token=' . $this->session->data['token'], 'SSL');
+            $this->data['urlSiteGuideText'] = $this->url->link(
+                'cms/text/edit',
+                'contentId=' . CMS_SITE_GUIDE . '&token=' . $this->session->data['token'], 'SSL');
 			
 			$this->data['stores'] = array();
 			

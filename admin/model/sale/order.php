@@ -428,7 +428,7 @@ class ModelSaleOrder extends Model {
         );
         if ($query->num_rows) // there is such order
         {
-            $addressModel = $this->load->model('Reference/Address');
+            $addressModel = $this->load->model('reference/Address');
             $customerModel = $this->load->model('sale/customer');
             if ($query->row['shipping_address_id']) // order already has address ID
                 $orderAddressId = $query->row['shipping_address_id'];
@@ -460,8 +460,8 @@ class ModelSaleOrder extends Model {
                         $order['shipping_company'],
                         $order['shipping_address_1'], $order['shipping_address_2'],
                         $order['shipping_city'], $order['shipping_postcode'],
-                        $order['shipping_zone_id'],
                         $order['shipping_country_id'],
+                        $order['shipping_zone_id'],
                         $order['customer_id']
                     );
                 }

@@ -8,8 +8,10 @@
  */
 class ControllerSaleInvoice extends Controller
 {
+    private $modelReferenceAddress;
     private $modelSaleCustomer;
     private $modelSaleInvoice;
+    private $modelSaleOrder;
     private $modelSaleOrderItem;
 
     public function __construct($registry)
@@ -17,10 +19,10 @@ class ControllerSaleInvoice extends Controller
         parent::__construct($registry);
         $this->load->language('sale/invoice');
         $this->load->library("Transaction");
-        $this->load->model('Reference/Address');
+        $this->modelReferenceAddress = $this->load->model('reference/address');
         $this->modelSaleCustomer = $this->load->model('sale/customer');
         $this->modelSaleInvoice = $this->load->model('sale/invoice');
-        $this->load->model('sale/order');
+        $this->modelSaleOrder = $this->load->model('sale/order');
         $this->modelSaleOrderItem = $this->load->model('sale/order_item');
         $this->load->model('tool/image');
 
@@ -36,9 +38,9 @@ class ControllerSaleInvoice extends Controller
         {
             $order = $this->registry->get('model_sale_order')->getOrder($orderItem['order_id']);
             if (!$firstAddress)
-                $firstAddress = $this->getOrderAddress($order);
+                $firstAddress = $this->getOrderAddressString($order);
             else
-                if ($this->getOrderAddress($order) != $firstAddress)
+                if ($this->getOrderAddressString($order) != $firstAddress)
                     return false;
         }
         return true;
@@ -74,6 +76,7 @@ class ControllerSaleInvoice extends Controller
         $newInvoiceId = $this->modelSaleInvoice->addInvoice(
             $orderItems[0]['order_id'],
             $orderItems,
+            $this->parameters['shippingMethod'],
             $totalWeight,
             $discount,
             $comment,
@@ -182,19 +185,28 @@ class ControllerSaleInvoice extends Controller
 
     private function getOrderAddress($order)
     {
-        $modelReferenceAddress = $this->registry->get('model_Reference_Address');
+//        $this->log->write(print_r($order, true));
         if (isset($order['address_id']))
-            return $modelReferenceAddress->toString($order['address_id']);
+            return $this->modelReferenceAddress->getAddress($order['address_id']);
         else
             return
-                $modelReferenceAddress->toString(
-                    $order['shipping_lastname'], $order['shipping_firstname'],
-                    $order['shipping_company'],
-                    $order['shipping_address_1'], $order['shipping_address_2'],
-                    $order['shipping_city'], $order['shipping_postcode'],
-                    $order['shipping_zone_id'],
-                    $order['shipping_country_id']
+                array(
+                    'lastname' => $order['shipping_lastname'],
+                    'firstname' => $order['shipping_firstname'],
+                    'company' => $order['shipping_company'],
+                    'address_1' => $order['shipping_address_1'],
+                    'address_2' => $order['shipping_address_2'],
+                    'city' => $order['shipping_city'],
+                    'postcode' => $order['shipping_postcode'],
+                    'zone_id' => $order['shipping_zone_id'],
+                    'country_id' => $order['shipping_country_id']
                 );
+    }
+
+    private function getOrderAddressString($order)
+    {
+//        $this->log->write(print_r($order, true));
+        return $this->modelReferenceAddress->toString($this->getOrderAddress($order));
     }
 
     private function getOrderItemsHavingInvoice($orderItems)
@@ -213,6 +225,22 @@ class ControllerSaleInvoice extends Controller
             }
         }
         return rtrim($result, "\n");
+    }
+
+    public function getShippingCost()
+    {
+//        $this->log->write(print_r($this->parameters, true));
+        $orderItems = $this->modelSaleOrderItem->getOrderItems(array('filterOrderItemId' => $this->parameters['orderItemId']));
+        $cost = Shipping::getCost(
+            $orderItems,
+            $this->parameters['method'],
+            array('weight' => $this->parameters['weight']),
+            $this->registry
+        );
+        $json = array(
+            'cost' => $cost
+        );
+        $this->response->setOutput(json_encode($json));
     }
 
     private function handleCredit($invoiceId)
@@ -292,8 +320,12 @@ class ControllerSaleInvoice extends Controller
         $this->parameters['data'] = empty($_REQUEST['data']) ? null : $_REQUEST['data'];
         $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
         $this->parameters['invoiceId'] = empty($_REQUEST['invoiceId']) ? null : $_REQUEST['invoiceId'];
+        $this->parameters['method'] = empty($_REQUEST['method']) ? null : $_REQUEST['method'];
+        $this->parameters['orderItemId'] = empty($_REQUEST['orderItemId']) || !is_array($_REQUEST['orderItemId']) ? array() : $_REQUEST['orderItemId'];
         $this->parameters['param'] = empty($_REQUEST['param']) ? null : $_REQUEST['param'];
+        $this->parameters['shippingMethod'] = empty($_REQUEST['shippingMethod']) ? null : $_REQUEST['shippingMethod'];
         $this->parameters['token'] = $this->session->data['token'];
+        $this->parameters['weight'] = empty($_REQUEST['weight']) ? null : $_REQUEST['weight'];
     }
 
     public function printInvoice()
@@ -376,6 +408,7 @@ class ControllerSaleInvoice extends Controller
         /// Prepare list
         $totalWeight = 0;
         $total = 0;
+        $orderItemIdParam = '';
         foreach ($orderItems as $orderItem)
         {
             $this->data['orderItems'][] = array(
@@ -396,24 +429,30 @@ class ControllerSaleInvoice extends Controller
                     $orderItem['weight_class_id'],
                     $this->config->get('config_weight_class_id')) * $orderItem['quantity'];
             $total += $orderItem['total']; //$orderItem['price'] * $orderItem['quantity'];
+            $orderItemIdParam .= '&orderItemId[]=' . $orderItem['order_product_id'];
         }
         /// Set invoice data
-        $firstItemOrder = $this->registry->get('model_sale_order')->getOrder($orderItems[0]['order_id']);
+        $firstItemOrder = $this->modelSaleOrder->getOrder($orderItems[0]['order_id']);
+//        $this->log->write(print_r($firstItemOrder, true));
         $customer = $this->modelSaleCustomer->getCustomer($firstItemOrder['customer_id']);
         $this->data['comment'] = '';
         $this->data['discount'] = 0;
         $this->data['invoiceId'] = 0;
-        $this->data['shippingAddress'] = nl2br($this->getOrderAddress($firstItemOrder));
+        $this->data['packageNumber'] = '';
+        $this->data['shippingAddress'] = nl2br($this->getOrderAddressString($firstItemOrder));
         $this->data['shippingCost'] =
             $this->currency->format(
                 Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry),
                 $this->config->get('config_currency'));
-        $this->data['shippingMethod'] = Shipping::getName($firstItemOrder['shipping_method'], $this->registry);
-        $this->data['shippingMethodCode'] = $firstItemOrder['shipping_method'];
-        $this->data['shippingMethodCostRoute'] =
+        $this->data['shippingCostRoute'] =
             $this->url->link(
-                'shipping/' . substr($firstItemOrder['shipping_method'], 0, strpos($firstItemOrder['shipping_method'], '.')) . '/getCost',
-                '', 'SSL');
+                'sale/invoice/getShippingCost',
+                'token=' . $this->parameters['token'] . $orderItemIdParam,
+                'SSL'
+            );
+        $this->data['shippingMethod'] = $firstItemOrder['shipping_method'];
+        $this->data['shippingMethodCode'] = $firstItemOrder['shipping_method'];
+
         $this->data['total'] = $this->currency->format($total, $this->config->get('config_currency'));
         $this->data['totalRaw'] = $total;
         $this->data['totalWeight'] = $totalWeight;
@@ -428,6 +467,8 @@ class ControllerSaleInvoice extends Controller
                 array('weight' => $totalWeight),
                 $this->registry),
             $customer['base_currency_code']);
+        $this->data['shippingMethods'] = Shipping::getShippingMethods(
+            $this->getOrderAddress($firstItemOrder), $this->registry);
 
         $this->template = 'sale/invoiceForm.tpl';
         $this->children = array(
@@ -443,15 +484,17 @@ class ControllerSaleInvoice extends Controller
             return;
 
         $this->setBreadcrumbs();
-        $modelReferenceAddress = $this->load->model('Reference/Address');
         $invoice = $this->modelSaleInvoice->getInvoice($this->request->request['invoiceId']);
 
         /// Initialize interface values
         $this->data['button_action'] = $this->language->get('button_close');
         $this->data['readOnly'] = "disabled";
+        $this->data['shippingMethods'] = Shipping::getShippingMethods(
+            $this->modelReferenceAddress->getAddress($invoice['shipping_address_id']), $this->registry);
 
         /// Prepare list
         //$this->log->write(print_r($modelSaleInvoice->getInvoiceItems($invoice['invoice_id']), true));
+        $orderItemIdParam = '';
         foreach ($this->modelSaleInvoice->getInvoiceItems($invoice['invoice_id']) as $invoiceItem)
         {
             $orderItem = $this->modelSaleOrderItem->getOrderItem($invoiceItem['order_item_id']);
@@ -468,6 +511,7 @@ class ControllerSaleInvoice extends Controller
                 'quantity' => $orderItem['quantity'],
                 'subtotal' => $this->currency->format($orderItem['price'] * $orderItem['quantity'], $this->config->get('config_currency'))
             );
+            $orderItemIdParam .= '&orderItemId[]=' . $invoiceItem['order_item_id'];
         }
         /// Set invoice data
         $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
@@ -475,10 +519,16 @@ class ControllerSaleInvoice extends Controller
         $this->data['discount'] = $invoice['discount'];
         $this->data['invoiceId'] = $invoice['invoice_id'];
         $this->data['packageNumber'] = $invoice['package_number'];
-        $this->data['shippingAddress'] = nl2br($modelReferenceAddress->toString($invoice['shipping_address_id']));
+        $this->data['shippingAddress'] = nl2br($this->modelReferenceAddress->toString($invoice['shipping_address_id']));
         $this->data['shippingCost'] = $this->currency->format($invoice['shipping_cost'], $this->config->get('config_currency'));
         $this->data['shippingCostRaw'] = $invoice['shipping_cost'];
-        $this->data['shippingMethod'] = Shipping::getName($invoice['shipping_method'], $this->registry);
+        $this->data['shippingCostRoute'] =
+            $this->url->link(
+                'sale/invoice/getShippingCost',
+                'token=' . $this->parameters['token'] . $orderItemIdParam,
+                'SSL'
+            );
+        $this->data['shippingMethod'] = $invoice['shipping_method'] ;//Shipping::getName($invoice['shipping_method'], $this->registry);
         $this->data['total'] = $this->currency->format($invoice['subtotal'], $this->config->get('config_currency'));
         $this->data['totalRaw'] = $invoice['subtotal'];
         $this->data['totalCustomerCurrency'] = $this->currency->format($invoice['total'], $customer['base_currency_code']);
@@ -487,6 +537,7 @@ class ControllerSaleInvoice extends Controller
             $this->currency->format(
                 $invoice['total'],
                 $this->config->get('config_currency'));
+//        $this->log->write(print_r($this->data, true));
 
         $this->template = 'sale/invoiceForm.tpl';
         $this->children = array(
@@ -498,7 +549,7 @@ class ControllerSaleInvoice extends Controller
 
     public function showForm()
     {
-        $this->log->write(print_r($this->request->request, true));
+//        $this->log->write(print_r($this->request->request, true));
         /// Set common interface values
         $this->data['buttonRecalculateShippingCost'] = $this->language->get('RECALCULATE_SHIPPING_COST');
         $this->data['textDiscount'] = $this->language->get('DISCOUNT');
@@ -516,6 +567,7 @@ class ControllerSaleInvoice extends Controller
         $this->data['textShippingMethod'] = $this->language->get('textShippingMethod');
         $this->data['textSubtotal'] = $this->language->get('textSubtotal');
         $this->data['textTotal'] = $this->language->get('textTotal');
+
         $this->data['textTotalCustomerCurrency'] = $this->language->get('TOTAL_CUSTOMER_CURRENCY');
         $this->data['textWeight'] = $this->language->get('textWeight');
 

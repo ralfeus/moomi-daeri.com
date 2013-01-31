@@ -1,5 +1,18 @@
 <?php
 class ModelSettingExtension extends Model {
+    function getExtensions($type, $installedOnly = true, $enabledOnly = false)
+    {
+        $result = array();
+        if ($installedOnly)
+        {
+            $query = $this->db->query("SELECT code FROM " . DB_PREFIX . "extension WHERE `type` = '" . $this->db->escape($type) . "'");
+            foreach ($query->rows as $extension)
+                if (!$enabledOnly || $this->config->get($extension['code'] . '_status'))
+                    $result[] = $extension['code'];
+            return $result;
+        }
+    }
+
 	public function getInstalled($type) {
 		$extension_data = array();
 		

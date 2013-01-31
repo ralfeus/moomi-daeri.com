@@ -24,4 +24,28 @@ class Shipping
         $shippingName = $language->get('headingTitle');
         return $shippingName;
     }
+
+    public static function getShippingMethods($address, $registry = null)
+    {
+        $logging = new Log('shipping.log');
+        $result = array();
+        if (!$registry)
+            return $result;
+
+//        $logging->write(print_r($address, true));
+        $modelSettingExtension = $registry->get('load')->model('setting/extension');
+        $shippingExtensions = $modelSettingExtension->getExtensions('shipping', true, true);
+        foreach ($shippingExtensions as $shippingExtension)
+        {
+            $methodData = $registry->get('load')->model("shipping/$shippingExtension")->getMethodData($address);
+            if (is_array($methodData))
+            {
+                $result[] = $methodData;
+                $name[] = $methodData['shippingMethodName'];
+            }
+        }
+        array_multisort($name, $result);
+//        $logging->write(print_r($result, true));
+        return $result;
+    }
 }
