@@ -145,6 +145,7 @@ $_['DATE_ADDED'] = 'Date added';
 $_['DISABLE'] = 'Disable';
 $_['ENABLE'] = 'Enable';
 $_['DELETE'] = "Delete";
+$_['FILTERS'] = 'Filters';
 $_['INVOICE'] = "Invoice";
 $_['INVOICE_ID'] = "Invoice ID";
 $_['ITEM_IMAGE'] = "Item image";

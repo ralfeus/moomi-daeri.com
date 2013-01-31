@@ -14,6 +14,21 @@
 		<div class="heading">
 		  <h1><img src="view/image/order.png" alt="" /> <?php echo $heading_title; ?></h1>
 		</div>
+<?php if (!empty($filters)): ?>
+        <div class="content">
+            <div class="heading">
+                <h3><?= $textFilters ?></h3>
+            </div>
+            <table class="list" style="width: 1px">
+    <?php foreach ($filters as $filterName => $filterValue): ?>
+                <tr>
+                    <td><?= $filterName ?></td>
+                    <td><?= $filterValue ?></td>
+                </tr>
+    <?php endforeach; ?>
+            </table>
+        </div>
+<?php endif; ?>
 		<div class="content">
 		  <form action="" method="post" enctype="multipart/form-data" id="form">
 			<table class="list">

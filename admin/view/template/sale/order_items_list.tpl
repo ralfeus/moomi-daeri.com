@@ -86,10 +86,10 @@
                 </td>
                 <td /><td /><td />
                 <td>
-                    <select name="filter_status_id[]" id="filter_status_id[]" multiple="true">
+                    <select name="filterStatusId[]" id="filterStatusId[]" multiple="true">
                         <optgroup label="Product orders">
                             <?php foreach ($statuses[GROUP_ORDER_ITEM_STATUS] as $status): ?>
-                            <?php if (in_array($status['id'], $filter_status_id))
+                            <?php if (in_array($status['id'], $filterStatusId))
                                     $selected = "selected=\"selected\"";
                                 else
                                     $selected = ""; ?>
@@ -98,7 +98,7 @@
                         </optgroup>
                         <optgroup label="Agent orders">
                             <?php foreach ($statuses[GROUP_REPURCHASE_ORDER_ITEM_STATUS] as $status): ?>
-                            <?php if (in_array($status['id'], $filter_status_id))
+                            <?php if (in_array($status['id'], $filterStatusId))
                                     $selected = "selected=\"selected\"";
                                 else
                                     $selected = ""; ?>
@@ -182,7 +182,7 @@
 <script type="text/javascript"><!--
 $(document).ready(function() {
 	$('.date').datepicker({dateFormat: 'yy-mm-dd'});
-    $("#filter_status_id\\[\\]").multiselect({
+    $("#filterStatusId\\[\\]").multiselect({
         noneSelectedText: "-- No filter --",
         selectedList: 3
     });

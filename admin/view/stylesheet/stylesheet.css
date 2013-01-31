@@ -253,7 +253,7 @@ body > #container {
 	border-left: 1px solid #CCCCCC;
 	border-right: 1px solid #CCCCCC;
 	border-bottom: 1px solid #CCCCCC;
-	min-height: 300px;
+	/*min-height: 300px;*/
 	overflow: auto;
 }
 a.button, .list a.button {
