@@ -8,6 +8,7 @@ final class Loader extends OpenCartBase
     {
         $this->registry = new Registry();
         $this->registry = $registry;
+        $this->log = new Log('Loader.log');
     }
 
 	public function library($library) {
@@ -40,7 +41,7 @@ final class Loader extends OpenCartBase
             $appRoot = substr(DIR_APPLICATION, 0, strrpos(DIR_APPLICATION, '/', -2)) . '/catalog/';
         $file  = $appRoot . '/model/' . $model . '.php';
 		$class = 'Model' . preg_replace('/[^a-zA-Z0-9]/', '', $model);
-		
+
 		if (file_exists($file))
         {
 			require_once($file);
@@ -52,6 +53,7 @@ final class Loader extends OpenCartBase
             return $this->model($model, 'global');
 		else
         {
+            $this->log->write($file);
 			trigger_error('Error: Could not load model ' . $model . '!');
 			exit();					
 		}
