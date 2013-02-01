@@ -197,7 +197,7 @@ final class Cart extends OpenCartBase
 					$customer_group_id = $this->config->get('config_customer_group_id');
 				}
 				
-				$price = $cartItem->price ? $cartItem->price : $product_query->row['price'];
+				$price = !empty($cartItem->price) ? $cartItem->price : $product_query->row['price'];
 				
 				// Product Discounts
 				$discount_quantity = 0;
