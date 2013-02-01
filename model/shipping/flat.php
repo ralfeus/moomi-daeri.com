@@ -26,7 +26,7 @@ class ModelShippingFlat extends ShippingMethodModel
             {
                 $query->row['code'] = 'flat.flat';
                 $query->row['shippingMethodName'] = 'Flat Shipping';
-                return $query->row;
+                return array ($query->row);
             }
             else
                 return null;

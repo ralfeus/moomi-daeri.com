@@ -29,9 +29,14 @@ class ModelShippingEMSDiscounted extends ModelShippingEMS
 //        $this->log->write(print_r($query->row, true));
         if ($query->row)
         {
-            $query->row['code'] = 'emsDiscounted.ems_' . $query->row['geo_zone_id'];
-            $query->row['shippingMethodName'] = 'EMS Shipping Discounted';
-            return $query->row;
+            $result = array();
+            foreach ($query->rows as $row)
+            {
+                $row['code'] = 'emsDiscounted.ems_' . $query->row['geo_zone_id'];
+                $row['shippingMethodName'] = 'EMS Shipping Discounted ' . $row['name'];
+                $result[] = $row;
+            }
+            return $result;
         }
         else
             return null;

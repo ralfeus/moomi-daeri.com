@@ -26,7 +26,7 @@ class ModelShippingPickup extends ShippingMethodModel
             {
                 $query->row['code'] = 'pickup.pickup';
                 $query->row['shippingMethodName'] = 'Pickup from the store';
-                return $query->row;
+                return array($query->row);
             }
             else
                 return null;

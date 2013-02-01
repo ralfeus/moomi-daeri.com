@@ -48,12 +48,16 @@ class ModelShippingEMS extends ShippingMethodModel
         ";
         $this->log->write($sql);
         $query = $this->db->query($sql);
-        $this->log->write(print_r($query->row, true));
         if ($query->row)
         {
-            $query->row['code'] = 'ems.ems_' . $query->row['geo_zone_id'];
-            $query->row['shippingMethodName'] = 'EMS Shipping';
-            return $query->row;
+            $result = array();
+            foreach ($query->rows as $row)
+            {
+                $row['code'] = 'ems.ems_' . $row['geo_zone_id'];
+                $row['shippingMethodName'] = 'EMS Shipping ' . $row['name'];
+                $result[] = $row;
+            }
+            return $result;
         }
         else
             return null;

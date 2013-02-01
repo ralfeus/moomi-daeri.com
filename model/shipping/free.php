@@ -26,7 +26,7 @@ class ModelShippingFree extends ShippingMethodModel
             {
                 $query->row['code'] = 'free.free';
                 $query->row['shippingMethodName'] = 'Free shipping';
-                return $query->row;
+                return array($query->row);
             }
             else
                 return null;

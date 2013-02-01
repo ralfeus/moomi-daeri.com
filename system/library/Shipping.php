@@ -38,14 +38,16 @@ class Shipping
         foreach ($shippingExtensions as $shippingExtension)
         {
             $methodData = $registry->get('load')->model("shipping/$shippingExtension")->getMethodData($address);
+//            $logging->write(print_r($methodData, true));
             if (is_array($methodData))
-            {
-                $result[] = $methodData;
-                $name[] = $methodData['shippingMethodName'];
-            }
+                foreach ($methodData as $methodDataEntry)
+                {
+                    $result[] = $methodDataEntry;
+                    $name[] = $methodDataEntry['shippingMethodName'];
+                }
         }
         array_multisort($name, $result);
-        $logging->write(print_r($result, true));
+//        $logging->write(print_r($result, true));
         return $result;
     }
 }

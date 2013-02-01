@@ -30,7 +30,7 @@ class ModelShippingItem extends ShippingMethodModel
             {
                 $query->row['code'] = 'item.item';
                 $query->row['shippingMethodName'] = 'Per item';
-                return $query->row;
+                return array($query->row);
             }
             else
                 return null;

@@ -46,9 +46,14 @@ class ModelShippingWeight extends ShippingMethodModel
         $query = $this->db->query($sql);
         if ($query->row)
         {
-            $query->row['code'] = 'weight.weight_' . $query->row['geo_zone_id'];
-            $query->row['shippingMethodName'] = 'Weight based shipping';
-            return $query->row;
+            $result = array();
+            foreach ($query->rows as $row)
+            {
+                $row['code'] = 'weight.weight_' . $query->row['geo_zone_id'];
+                $row['shippingMethodName'] = 'Weight based shipping ' . $row['name'];
+                $result[] = $row;
+            }
+            return $result;
         }
         else
             return null;
