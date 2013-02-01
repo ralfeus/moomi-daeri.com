@@ -132,7 +132,7 @@ $(document).ready(function() {
         $('#buttonSaveDiscount').remove();
 });
 
-function formatCurrency(value)
+function formatCurrencies(value)
 {
     var result;
     $.ajax({
@@ -172,7 +172,7 @@ function recalculateShipping()
         },
         success: function(data) {
             $('#shippingCostRaw').val(data['cost']);
-            $('#shippingCost').val(formatCurrency(data['cost']));
+            $('#shippingCost').val(formatCurrencies(data['cost'])['system']);
             recalculateTotal();
             $('#buttonRecalculate').attr('disabled', false);
             $('.wait').remove();
@@ -187,7 +187,10 @@ function recalculateShipping()
 
 function recalculateTotal()
 {
-    $('#grandTotal').val(formatCurrency(<?= $totalRaw ?> + Number($('#shippingCostRaw').val()) - Number($('[name=discount]').val())));
+    var totalCost = <?= $totalRaw ?> + Number($('#shippingCostRaw').val()) - Number($('[name=discount]').val());
+    var currencyStrings = formatCurrencies(totalCost);
+    $('#grandTotal').val(currencyStrings['system']);
+    $('[name=totalCustomerCurrency]').val(currencyStrings['customer']);
 }
 
 function resetValue(element)

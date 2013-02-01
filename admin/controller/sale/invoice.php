@@ -469,7 +469,7 @@ class ControllerSaleInvoice extends Controller
             $customer['base_currency_code']);
         $this->data['shippingMethods'] = Shipping::getShippingMethods(
             $this->getOrderAddress($firstItemOrder), $this->registry);
-
+        $this->log->write(print_r($this->data, true));
         $this->template = 'sale/invoiceForm.tpl';
         $this->children = array(
             'common/header',

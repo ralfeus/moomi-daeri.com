@@ -98,10 +98,8 @@ class ControllerLocalisationCurrency extends Controller {
     {
 //        $this->log->write(print_r($this->request->request, true));
         $json = array();
-        if (!is_numeric($this->request->request['value']))
-            $json['error'] = $this->language->get('ERROR_INVALID_ARGUMENT');
-        else
-            $json['result'] = $this->currency->format($this->request->request['value'], $this->config->get('config_currency'));
+        $json['result']['system'] = $this->currency->format($this->parameters['value'], $this->config->get('config_currency'));
+        $json['result']['customer'] = $this->currency->format($this->parameters['value']);
 
         $this->response->setOutput(json_encode($json));
     }
@@ -404,6 +402,11 @@ class ControllerLocalisationCurrency extends Controller {
 				
 		$this->response->setOutput($this->render());
 	}
+
+    protected function initParameters()
+    {
+        $this->parameters['value'] = empty($_REQUEST['value']) ? 0 : $_REQUEST['value'];
+    }
 	
 	private function validateForm() { 
 		if (!$this->user->hasPermission('modify', 'localisation/currency')) { 
