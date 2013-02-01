@@ -46,6 +46,7 @@ class ModelShippingEMS extends ShippingMethodModel
                 ztgz.country_id = " . (int)$address['country_id'] . "
                 AND ztgz.zone_id IN (" . (int)$address['zone_id'] . ", 0)
         ";
+        $this->log->write($sql);
         $query = $this->db->query($sql);
         $this->log->write(print_r($query->row, true));
         if ($query->row)
