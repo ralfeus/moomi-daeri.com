@@ -45,7 +45,7 @@ class Shipping
             }
         }
         array_multisort($name, $result);
-//        $logging->write(print_r($result, true));
+        $logging->write(print_r($result, true));
         return $result;
     }
 }
