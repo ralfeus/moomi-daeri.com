@@ -8,8 +8,8 @@ class ModelShippingEMSDiscounted extends ModelShippingEMS
         $fullCost = parent::getCost(str_replace('Discounted', '', $destination), $orderItems, $ext);
         $this->log->write($fullCost);
         $discountedCost = $fullCost * (100 - $this->config->get('emsDiscounted_discountAmount')) / 100;
-        return $discountedCost;
         $this->log->write($discountedCost);
+        return $discountedCost;
   	}
 
     public function getMethodData($address)
