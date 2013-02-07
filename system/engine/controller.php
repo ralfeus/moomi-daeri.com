@@ -119,7 +119,7 @@ abstract class Controller extends OpenCartBase
     private function setSelfRoutes()
     {
         $route = empty($_REQUEST['route']) ? 'common/home' : $_REQUEST['route'];
-        $this->selfUrl = $_SERVER["PHP_SELF"];
+        $this->selfUrl = '/'. $_SERVER["PHP_SELF"];
         if (!empty($_REQUEST))
         {
             $this->selfUrl .= '?';
@@ -128,6 +128,7 @@ abstract class Controller extends OpenCartBase
             $this->selfUrl = substr($this->selfUrl, 1);
         }
         $this->selfRoute = $route;
+//        $this->log->write(print_r($this->selfUrl, true));
     }
 
     protected function takeSessionVariables()
