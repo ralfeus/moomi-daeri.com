@@ -80,7 +80,8 @@ abstract class Controller extends OpenCartBase
         if (is_array($paramValue))
         {
             foreach ($paramValue as $key => $value)
-                $result .= '&' . $this->getParamString($key, $value, $paramKey);
+                if (!empty($value) || is_numeric($value))
+                    $result .= '&' . $this->getParamString($key, $value, $paramKey);
             $result = substr($result, 1);
         }
         else
@@ -124,11 +125,13 @@ abstract class Controller extends OpenCartBase
         {
             $this->selfUrl .= '?';
             foreach ($_REQUEST as $key => $value)
-                $this->selfUrl .= '&' . $this->getParamString($key, $value);
+                if (!empty($value) || is_numeric($value))
+                    $this->selfUrl .= '&' . $this->getParamString($key, $value);
             $this->selfUrl = substr($this->selfUrl, 1);
         }
         $this->selfRoute = $route;
-//        $this->log->write(print_r($this->selfUrl, true));
+        $this->log->write(print_r($_REQUEST, true));
+        $this->log->write(print_r($this->selfUrl, true));
     }
 
     protected function takeSessionVariables()

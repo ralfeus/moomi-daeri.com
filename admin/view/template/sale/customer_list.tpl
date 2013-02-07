@@ -70,7 +70,7 @@
               </td>
               <td><input type="text" name="filter_email" value="<?php echo $filter_email; ?>" /></td>
               <td><select name="filter_customer_group_id">
-                  <option value="*"></option>
+                  <option />
                   <?php foreach ($customer_groups as $customer_group) { ?>
                   <?php if ($customer_group['customer_group_id'] == $filter_customer_group_id) { ?>
                   <option value="<?php echo $customer_group['customer_group_id']; ?>" selected="selected"><?php echo $customer_group['name']; ?></option>
@@ -80,7 +80,7 @@
                   <?php } ?>
                 </select></td>
               <td><select name="filter_status">
-                  <option value="*"></option>
+                  <option />
                   <?php if ($filter_status) { ?>
                   <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
                   <?php } else { ?>
@@ -93,7 +93,7 @@
                   <?php } ?>
                 </select></td>
               <td><select name="filter_approved">
-                  <option value="*"></option>
+                  <option />
                   <?php if ($filter_approved) { ?>
                   <option value="1" selected="selected"><?php echo $text_yes; ?></option>
                   <?php } else { ?>
