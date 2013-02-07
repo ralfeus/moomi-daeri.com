@@ -37,23 +37,23 @@ class ModelSaleCustomer extends Model {
         else
         {
             if (!empty($data['filterCustomerId']))
-                $filter .= ($filter ? " AND" : "") . "c.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
+                $filter .= ($filter ? " AND " : "") . "c.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
             if (!empty($data['filter_name']))
-                $filter .= ($filter ? " AND" : "") . "LCASE(CONCAT(c.firstname, ' ', c.lastname)) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%'";
+                $filter .= ($filter ? " AND " : "") . "LCASE(CONCAT(c.firstname, ' ', c.lastname)) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%'";
             if (!empty($data['filter_nickname']))
-                $filter .= ($filter ? " AND" : "") . "LCASE(nickname) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_nickname'])) . "%'";
+                $filter .= ($filter ? " AND " : "") . "LCASE(nickname) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_nickname'])) . "%'";
             if (!empty($data['filter_email']))
-                $filter .= ($filter ? " AND" : "") . "LCASE(c.email) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_email'])) . "%'";
+                $filter .= ($filter ? " AND " : "") . "LCASE(c.email) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_email'])) . "%'";
             if (!empty($data['filter_customer_group_id']))
-                $filter .= ($filter ? " AND" : "") . "cg.customer_group_id = '" . $this->db->escape($data['filter_customer_group_id']) . "'";
+                $filter .= ($filter ? " AND " : "") . "cg.customer_group_id = '" . $this->db->escape($data['filter_customer_group_id']) . "'";
             if (isset($data['filter_status']) && !is_null($data['filter_status']))
-                $filter .= ($filter ? " AND" : "") . "c.status = '" . (int)$data['filter_status'] . "'";
+                $filter .= ($filter ? " AND " : "") . "c.status = '" . (int)$data['filter_status'] . "'";
             if (isset($data['filter_approved']) && !is_null($data['filter_approved']))
-                $filter .= ($filter ? " AND" : "") . "c.approved = '" . (int)$data['filter_approved'] . "'";
+                $filter .= ($filter ? " AND " : "") . "c.approved = '" . (int)$data['filter_approved'] . "'";
             if (!empty($data['filter_ip']))
-                $filter .= ($filter ? " AND" : "") . "c.customer_id IN (SELECT customer_id FROM " . DB_PREFIX . "customer_ip WHERE ip = '" . $this->db->escape($data['filter_ip']) . "')";
+                $filter .= ($filter ? " AND " : "") . "c.customer_id IN (SELECT customer_id FROM " . DB_PREFIX . "customer_ip WHERE ip = '" . $this->db->escape($data['filter_ip']) . "')";
             if (!empty($data['filter_date_added']))
-                $filter .= ($filter ? " AND" : "") . "DATE(c.date_added) = DATE('" . $this->db->escape($data['filter_date_added']) . "')";
+                $filter .= ($filter ? " AND " : "") . "DATE(c.date_added) = DATE('" . $this->db->escape($data['filter_date_added']) . "')";
         }
         return $filter;
     }
