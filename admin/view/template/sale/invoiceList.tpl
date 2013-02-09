@@ -18,7 +18,7 @@
                     <thead>
                         <tr>
                             <td class="right"><?= $textInvoiceId ?></td>
-                            <td class="right"><?= $textCustomer ?></td>
+                            <td class="left"><?= $textCustomer ?></td>
                             <td class="right"><?= $textShippingMethod ?></td>
                             <td class="right"><?= $textWeight ?></td>
                             <td class="right"><?= $textSubtotal ?></td>
@@ -47,7 +47,7 @@
                             foreach ($invoices as $invoice): ?>
                                 <tr>
                                     <td class="right"><?= $invoice['invoiceId']; ?></td>
-                                    <td class="right">
+                                    <td>
                                         <a href="index.php?route=sale/customer/update&token=<?= $this->session->data['token'] ?>&customer_id=<?= $invoice['customerId'] ?>">
                                             <?= $invoice['customer'] ?>
                                         </a>
@@ -82,7 +82,7 @@
 $(document).ready(function() {
     $('[name=filterCustomerId\\[\\]]')
         .multiselect({
-            noneSelectedText: "-- No filter --",
+            noneSelectedText: "No filter",
             selectedList: 1
         })
         .multiselectfilter();
