@@ -48,6 +48,8 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_dashboard'] = $this->language->get('text_dashboard');
 		$this->data['text_help'] = $this->language->get('text_help');
 		$this->data['text_information'] = $this->language->get('text_information');
+		$this->data['text_admin_shop'] = $this->language->get('text_admin_shop');
+		$this->data['text_admin_shop_holiday'] = $this->language->get('text_admin_shop_holiday');
 		$this->data['text_admin_gallery'] = $this->language->get('text_admin_gallery');
 		$this->data['text_admin_gallery_approving'] = $this->language->get('text_admin_gallery_approving');
 		$this->data['text_admin_gallery_voting'] = $this->language->get('text_admin_gallery_voting');
@@ -156,6 +158,7 @@ class ControllerCommonHeader extends Controller {
 			$this->data['payment'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['product'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['report_sale_order'] = $this->url->link('report/sale_order', 'token=' . $this->session->data['token'], 'SSL');
+			$this->data['report_shop_holiday'] = $this->url->link('shop/admin/showHoliday', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['report_sale_tax'] = $this->url->link('report/sale_tax', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['report_sale_shipping'] = $this->url->link('report/sale_shipping', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['report_sale_return'] = $this->url->link('report/sale_return', 'token=' . $this->session->data['token'], 'SSL');
