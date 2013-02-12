@@ -12,7 +12,7 @@ body {
 	padding: 0px;
 }
 body, td, th, input, textarea, select, a {
-	font-size: 15px;
+	font-size: 12px;
 }
 h1, .welcome {
 	color: #636E75;
@@ -25,7 +25,7 @@ h1, .welcome {
 }
 h2 {
 	color: #000000;
-	font-size: 12px;
+	font-size: 16px;
 	margin-top: 0px;
 	margin-bottom: 5px;
 }
