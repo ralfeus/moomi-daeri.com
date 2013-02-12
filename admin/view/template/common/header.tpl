@@ -225,6 +225,13 @@ $(document).ready(function(){
           </li>
         </ul>
       </li>
+      <li id="shop"><a class="top"><?php echo $text_admin_shop; ?></a>
+        <ul>
+          <li>
+            <a href="<?php echo $report_shop_holiday; ?>"><?php echo $text_admin_shop_holiday; ?></a>
+          </li>
+        </ul>
+      </li>
     </ul>
     <ul class="right">
       <li id="store"><a onClick="window.open('<?php echo $store; ?>');" class="top"><?php echo $text_front; ?></a>

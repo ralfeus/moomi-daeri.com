@@ -1,7 +1,7 @@
 <?php
 class ModelCatalogProduct extends Model {
 	public function addProduct($data) {
-		$this->db->query("INSERT INTO " . DB_PREFIX . "product SET model = '" . $this->db->escape($data['model']) . "', sku = '" . $this->db->escape($data['sku']) . "', upc = '" . $this->db->escape($data['upc']) . "', location = '" . $this->db->escape($data['location']) . "', quantity = '" . (int)$data['quantity'] . "', minimum = '" . (int)$data['minimum'] . "', subtract = '" . (int)$data['subtract'] . "', stock_status_id = '" . (int)$data['stock_status_id'] . "', date_available = '" . $this->db->escape($data['date_available']) . "', manufacturer_id = '" . (int)$data['manufacturer_id'] . "', supplier_id = '" . (int)$data['supplier_id'] . "', shipping = '" . (int)$data['shipping'] . "', price = '" . (float)$data['price'] . "', points = '" . (int)$data['points'] . "', weight = '" . (float)$data['weight'] . "', weight_class_id = '" . (int)$data['weight_class_id'] . "', length = '" . (float)$data['length'] . "', width = '" . (float)$data['width'] . "', height = '" . (float)$data['height'] . "', length_class_id = '" . (int)$data['length_class_id'] . "', status = '" . (int)$data['status'] . "', tax_class_id = '" . $this->db->escape($data['tax_class_id']) . "', sort_order = '" . (int)$data['sort_order'] . "', date_added = NOW()");
+		$this->db->query("INSERT INTO " . DB_PREFIX . "product SET model = '" . $this->db->escape($data['model']) . "', user_id = '" . (int)$data['user_id'] . "', sku = '" . $this->db->escape($data['sku']) . "', upc = '" . $this->db->escape($data['upc']) . "', location = '" . $this->db->escape($data['location']) . "', quantity = '" . (int)$data['quantity'] . "', minimum = '" . (int)$data['minimum'] . "', subtract = '" . (int)$data['subtract'] . "', stock_status_id = '" . (int)$data['stock_status_id'] . "', date_available = '" . $this->db->escape($data['date_available']) . "', manufacturer_id = '" . (int)$data['manufacturer_id'] . "', supplier_id = '" . (int)$data['supplier_id'] . "', shipping = '" . (int)$data['shipping'] . "', price = '" . (float)$data['price'] . "', points = '" . (int)$data['points'] . "', weight = '" . (float)$data['weight'] . "', weight_class_id = '" . (int)$data['weight_class_id'] . "', length = '" . (float)$data['length'] . "', width = '" . (float)$data['width'] . "', height = '" . (float)$data['height'] . "', length_class_id = '" . (int)$data['length_class_id'] . "', status = '" . (int)$data['status'] . "', tax_class_id = '" . $this->db->escape($data['tax_class_id']) . "', sort_order = '" . (int)$data['sort_order'] . "', date_added = NOW()");
 		
 		$product_id = $this->db->getLastId();
 		
@@ -130,9 +130,9 @@ class ModelCatalogProduct extends Model {
     {
         $filter = "";
         if (!empty($data['filterDateAddedFrom']))
-            $filter .= ($filter ? " AND" : "") . " date_added > '" . $this->db->escape($data['filterDateAddedFrom']) . "'";
+            $filter .= ($filter ? " AND" : "") . " p.date_added > '" . $this->db->escape($data['filterDateAddedFrom']) . "'";
         if (!empty($data['filterDateAddedTo']))
-            $filter .= ($filter ? " AND" : "") . " date_added < '" . date('Y-m-d', strtotime($data['filterDateAddedTo']) + 86400) . "'";
+            $filter .= ($filter ? " AND" : "") . " p.date_added < '" . date('Y-m-d', strtotime($data['filterDateAddedTo']) + 86400) . "'";
         if (!empty($data['filterLanguageId']))
             $filter .= ($filter ? " AND" : '') . " pd.language_id = " . (int)$data['filterLanguageId'];
         if (!empty($data['filterManufacturerId']) && is_array($data['filterManufacturerId']) && sizeof($data['filterManufacturerId']))
@@ -148,14 +148,27 @@ class ModelCatalogProduct extends Model {
                 $filterManufacturer['ids'] = "m.manufacturer_id IN (" . implode(', ', $iDSet) . ")";
             $filter .= ($filter ? " AND" : "") . ' (' . implode(' OR ', $filterManufacturer) . ')';
         }
+        if (!empty($data['filterUserNameId']) && is_array($data['filterUserNameId']) && sizeof($data['filterUserNameId']))
+        {
+            $iDSet = array();
+            $filterUserName = array();
+            foreach ($data['filterUserNameId'] as $usernameId)
+                if ($usernameId)
+                    $iDSet[] = $usernameId;
+                else
+                    $filterUserName['null'] = "u.user_id IS NULL";
+            if (sizeof($iDSet))
+                $filterUserName['ids'] = "u.user_id IN (" . implode(', ', $iDSet) . ")";
+            $filter .= ($filter ? " AND" : "") . ' (' . implode(' OR ', $filterUserName) . ')';
+        }
         if (!empty($data['filterModel']))
             $filter .= ($filter ? " AND" : "") . " LCASE(p.model) LIKE '" . $this->db->escape(utf8_strtolower($data['filterModel'])) . "%'";
         if (!empty($data['filterName']))
             $filter .= ($filter ? " AND" : "") . " LCASE(pd.name) LIKE '%" . $this->db->escape(utf8_strtolower($data['filterName'])) . "%'";
         if (!empty($data['filterPrice']) && is_numeric($data['filterPrice']))
             $filter .= ($filter ? " AND" : "") . " p.price LIKE '" . $this->db->escape($data['filterPrice']) . "%'";
-        if (isset($data['filterQuantity']) && is_numeric($data['filterQuantity']))
-            $filter .= ($filter ? " AND" : "") . " p.quantity = '" . $this->db->escape($data['filterQuantity']) . "'";
+        if (!empty($data['filterKoreanName'])) 
+            $filter .= ($filter ? " AND" : "") . " a.text LIKE '%" . $this->db->escape(utf8_strtolower($data['filterKoreanName'])) . "%'";
         if (isset($data['filterStatus']))
             $filter .= ($filter ? " AND" : "") . " p.status = '" . (int)$data['filterStatus'] . "'";
         if (!empty($data['filterSupplierId']))
@@ -408,19 +421,22 @@ class ModelCatalogProduct extends Model {
         {
             $data['filterLanguageId'] = $this->config->get('config_language_id');
 			$sql = "
-			    SELECT p.*, pd.*
+			    SELECT p.*, pd.*, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
 			    FROM
 			        " . DB_PREFIX . "product AS p
 			        LEFT JOIN " . DB_PREFIX . "product_description AS pd ON (p.product_id = pd.product_id)
 			        LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
-                    LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id";
+                    LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
+                    LEFT JOIN " . DB_PREFIX . "product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)
+                    LEFT JOIN " . DB_PREFIX . "product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
+                    LEFT JOIN " . DB_PREFIX . "user AS u ON p.user_id = u.user_id";
 			
 			if (!empty($data['filter_category_id']))
 				$sql .= " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)";			
 
 			$sql .= " WHERE " . $this->buildFilterString($data);
 			$sql .= " GROUP BY p.product_id";
-						
+//print_r($sql); die();						
 			$sort_data = array(
 				'pd.name',
 				'p.model',
@@ -453,7 +469,7 @@ class ModelCatalogProduct extends Model {
 			
 				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 			}	
-//			$this->log->write($sql);
+
 			$query = $this->db->query($sql);
             $productData = $query->rows;
             if (empty($data))
@@ -511,23 +527,48 @@ class ModelCatalogProduct extends Model {
 		return $product_attribute_data;
 	}
 
-    public function getProductManufacturers($data = array())
-    {
-        $filter = $this->buildFilterString($data);
-        $sql = "
-            SELECT DISTINCT m.manufacturer_id AS manufacturer_id, m.name AS manufacturer_name
-            FROM
-                " . DB_PREFIX . "product AS p
-                LEFT JOIN " . DB_PREFIX . "product_description AS pd ON (p.product_id = pd.product_id)
-                LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
-                LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id" .
-            (!empty($data['filter_category_id']) ? " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)" : '') .
-            (!empty($filter) ? " WHERE $filter" : '') .
-            " GROUP BY p.product_id
-        ";
-        $this->log->write($sql);
-        return $this->db->query($sql)->rows;
-    }
+	public function getProductUserNames($data = array())
+  {
+  	$filter = $this->buildFilterString($data);
+    $sql = "
+        SELECT DISTINCT m.manufacturer_id AS manufacturer_id, p.product_id, m.name AS manufacturer_name, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
+        FROM
+            " . DB_PREFIX . "product AS p
+            LEFT JOIN " . DB_PREFIX . "product_description AS pd ON (p.product_id = pd.product_id)
+            LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
+            LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
+            LEFT JOIN " . DB_PREFIX . "product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)
+            LEFT JOIN " . DB_PREFIX . "product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
+            JOIN " . DB_PREFIX . "user AS u ON p.user_id = u.user_id" .
+        (!empty($data['filter_category_id']) ? " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)" : '') .
+        (!empty($filter) ? " WHERE $filter" : '') .
+        " GROUP BY p.product_id
+    ";
+
+    $this->log->write($sql);
+    return $this->db->query($sql)->rows;
+  }
+
+  public function getProductManufacturers($data = array())
+  {
+    $filter = $this->buildFilterString($data);
+    $sql = "
+        SELECT DISTINCT m.manufacturer_id AS manufacturer_id, p.product_id, m.name AS manufacturer_name, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
+        FROM
+            " . DB_PREFIX . "product AS p
+            LEFT JOIN " . DB_PREFIX . "product_description AS pd ON (p.product_id = pd.product_id)
+            LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
+            LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
+            LEFT JOIN " . DB_PREFIX . "product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)
+            LEFT JOIN " . DB_PREFIX . "product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
+            LEFT JOIN " . DB_PREFIX . "user AS u ON p.user_id = u.user_id" .
+        (!empty($data['filter_category_id']) ? " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)" : '') .
+        (!empty($filter) ? " WHERE $filter" : '') .
+        " GROUP BY p.product_id
+    ";
+    $this->log->write($sql);
+    return $this->db->query($sql)->rows;
+  }
 	
 	public function getProductOptions($product_id) {
 		$product_option_data = array();
@@ -643,12 +684,15 @@ class ModelCatalogProduct extends Model {
     {
         $filter = $this->buildFilterString($data);
         $sql = "
-            SELECT DISTINCT s.supplier_id AS supplier_id, s.name AS supplier_name
+            SELECT DISTINCT s.supplier_id AS supplier_id, s.name AS supplier_name, p.product_id, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
             FROM
                 " . DB_PREFIX . "product AS p
                 LEFT JOIN " . DB_PREFIX . "product_description AS pd ON (p.product_id = pd.product_id)
                 LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
-                LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id" .
+                LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
+                LEFT JOIN " . DB_PREFIX . "product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)
+                    LEFT JOIN " . DB_PREFIX . "product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
+                    LEFT JOIN " . DB_PREFIX . "user AS u ON p.user_id = u.user_id" .
                 (!empty($data['filter_category_id']) ? " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)" : '') .
             (!empty($filter) ? " WHERE $filter" : '') .
             " GROUP BY p.product_id
@@ -721,12 +765,15 @@ class ModelCatalogProduct extends Model {
         $data['filterLanguageId'] = $this->config->get('config_language_id');
         $filter = $this->buildFilterString($data);
 		$sql = "
-		    SELECT COUNT(DISTINCT p.product_id) AS total
+		    SELECT COUNT(DISTINCT p.product_id) AS total, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
 		    FROM
 		        " . DB_PREFIX . "product p
 		        LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
 		        LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id)
-		        LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id" .
+		        LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
+		        LEFT JOIN " . DB_PREFIX . "product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)
+            LEFT JOIN " . DB_PREFIX . "product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
+            LEFT JOIN " . DB_PREFIX . "user AS u ON p.user_id = u.user_id" . 
                 (!empty($data['filter_category_id']) ? " LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)" : '') .
             (!empty($filter) ? " WHERE $filter" : '');
 		 			
