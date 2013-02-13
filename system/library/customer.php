@@ -11,7 +11,7 @@ final class Customer {
 	private $address_id;
     private $baseCurrency;
     private $balance;
-	
+
   	public function __construct($registry) {
 		$this->config = $registry->get('config');
 		$this->db = $registry->get('db');
@@ -34,6 +34,17 @@ final class Customer {
 				$this->address_id = $customer_query->row['address_id'];
                 $this->balance = $customer_query->row['balance'];
                 $this->baseCurrency->set($customer_query->row['base_currency_code']);
+                $purgeCart = empty($customer_query->row['purge_cart']) ? 0 : $customer_query->row['purge_cart'];
+
+                if ($purgeCart)
+                {
+                    $this->session->data['cart'] = null;
+                    $this->db->query("
+                        UPDATE " . DB_PREFIX . "customer
+                        SET cart = NULL, purge_cart = 0
+                        WHERE customer_id = " . (int)$this->session->data['customer_id']
+                    );
+                }
 
       			$this->db->query("UPDATE " . DB_PREFIX . "customer SET cart = '" . $this->db->escape(isset($this->session->data['cart']) ? serialize($this->session->data['cart']) : '') . "', wishlist = '" . $this->db->escape(isset($this->session->data['wishlist']) ? serialize($this->session->data['wishlist']) : '') . "', ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "' WHERE customer_id = '" . (int)$this->session->data['customer_id'] . "'");
 			

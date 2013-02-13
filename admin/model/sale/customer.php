@@ -588,6 +588,15 @@ class ModelSaleCustomer extends Model {
 		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "customer_ip WHERE ip = '" . $this->db->escape($ip) . "'");
 
 		return $query->row['total'];
-	}				
+	}
+
+    public function purgeCart($customerId)
+    {
+        $this->db->query("
+            UPDATE " . DB_PREFIX . "customer
+            SET purge_cart = 1
+            WHERE customer_id = " . (int)$customerId
+        );
+    }
 }
 ?>

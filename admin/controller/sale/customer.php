@@ -39,6 +39,8 @@ class ControllerSaleCustomer extends Controller {
     protected function initParameters()
     {
         $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
+        $this->parameters['customerId'] = empty($_REQUEST['customerId']) ? array() : $_REQUEST['customerId'];
+        $this->parameters['token'] = $this->session->data['token'];
     }
   
   	public function insert() {
@@ -434,6 +436,10 @@ class ControllerSaleCustomer extends Controller {
 				'text' => $this->language->get('text_edit'),
 				'href' => $this->url->link('sale/customer/update', 'token=' . $this->session->data['token'] . '&customer_id=' . $result['customer_id'] . $url, 'SSL')
 			);
+            $action[] = array(
+                'text' => $this->language->get('PURGE_CART'),
+                'onclick' => $this->url->link('sale/customer/purgeCart', 'token=' . $this->parameters['token'] . '&customerId=' . $result['customer_id'], 'SSL')
+            );
 			
 			$this->data['customers'][] = array(
 				'customer_id'    => $result['customer_id'],
@@ -1139,6 +1145,14 @@ class ControllerSaleCustomer extends Controller {
 			$this->response->setOutput($this->render());
 		}
 	}
+
+    public function purgeCart()
+    {
+        $this->modelSaleCustomer->purgeCart($this->parameters['customerId']);
+        $customer = $this->modelSaleCustomer->getCustomer($this->parameters['customerId']);
+        $json = array('message' => sprintf($this->language->get('SUCCESS_CART_PURGED'), $customer['nickname']));
+        $this->response->setOutput(json_encode($json));
+    }
 		
 	public function zone() {
 		$output = '<option value="">' . $this->language->get('text_select') . '</option>'; 

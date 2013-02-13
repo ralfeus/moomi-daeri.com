@@ -135,9 +135,13 @@
                   <option value="<?php echo $store['store_id']; ?>"><?php echo $store['name']; ?></option>
                   <?php } ?>
                 </select></td>
-              <td class="right"><?php foreach ($customer['action'] as $action) { ?>
-                [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]
-                <?php } ?></td>
+              <td class="right">
+<?php foreach ($customer['action'] as $action): ?>
+                [&nbsp;<a
+                    <?= !empty($action['href']) ? 'href="' . $action['href'] . '"' : '' ?>
+                    <?= !empty($action['onclick']) ? 'onclick="ajaxAction(this, \'' . $action['onclick'] . '\')"' : '' ?>><?= str_replace(' ', '&nbsp;', $action['text']) ?></a>&nbsp;]
+<?php endforeach; ?>
+              </td>
             </tr>
             <?php } ?>
             <?php } else { ?>
@@ -216,6 +220,28 @@ function filter() {
 	}
 	
 	location = url;
+}
+
+function ajaxAction(sender, url)
+{
+    $.ajax({
+        url: url,
+        dataType: 'json',
+        beforeSend: function() {
+            $('.success, .warning').remove();
+            $(this).after('<span id="wait"><img src="view/image/loading.gif" alt="" /></span>');
+        },
+        done: function() {
+            $('#wait').remove();
+        },
+        success: function(json) {
+            $('.breadcrumb').after('<div class="success">' + json['message'] + '</div>');
+        },
+        error: function()
+        {
+            $('.breadcrumb').after('<div class="error">Error</div>');
+        }
+    });
 }
 //--></script>
 <?php echo $footer; ?>
