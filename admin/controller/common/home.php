@@ -432,7 +432,7 @@ class ControllerCommonHome extends Controller {
 			$action = array();
 			$action[] = array(
 				'text' => $this->language->get('text_edit'),
-				'href' => $this->url->link('catalog/product/update', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, 'SSL')
+				'href' => $this->url->link('catalog/product/update', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id']/* . $url*/, 'SSL')
 			);
 
 			$link = array();
@@ -453,8 +453,8 @@ class ControllerCommonHome extends Controller {
 				'name'       => $result['name'],
 				'model'      => $result['model'],
 				'price'      => $result['price'],
-				'special'    => $special,
-				'image'      => $image,
+				'special'    => null,//$special,
+				'image'      => null, //$image,
 				'user_name'  => $result['user_name'],
 				'status'     => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
 				'selected'   => isset($this->request->post['selected']) && in_array($result['product_id'], $this->request->post['selected']),
