@@ -130,8 +130,8 @@ abstract class Controller extends OpenCartBase
             $this->selfUrl = substr($this->selfUrl, 1);
         }
         $this->selfRoute = $route;
-        $this->log->write(print_r($_REQUEST, true));
-        $this->log->write(print_r($this->selfUrl, true));
+//        $this->log->write(print_r($_REQUEST, true));
+//        $this->log->write(print_r($this->selfUrl, true));
     }
 
     protected function takeSessionVariables()
