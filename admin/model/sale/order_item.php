@@ -9,6 +9,19 @@ class ModelSaleOrderItem extends Model
             return false;
 	}
 
+    public function getOrderItemHistory($orderItemId)
+    {
+        $sql = "
+            SELECT *
+            FROM order_item_history JOIN statuses ON order_item_status_id = group_id * 65536 + status_id
+            WHERE order_item_id = " . (int)$orderItemId . "
+            ORDER BY date_added
+        ";
+//        $this->log->write($sql);
+        $query = $this->db->query($sql);
+        return $query->rows;
+    }
+
 	private function fetchOrderItems($filter = "", $sort = "", $limit = "") {
 		$query = "
 			SELECT
