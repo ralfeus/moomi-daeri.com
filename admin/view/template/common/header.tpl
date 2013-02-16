@@ -149,6 +149,7 @@ $(document).ready(function(){
           <li><a class="parent"><?= $textContentManagement ?></a>
               <ul>
                   <li><a href="<?= $urlOrderConfirmationText ?>"><?= $textOrderConfirmation ?></a></li>
+                  <!--li><a href="<?= $urlSiteGuideText ?>"><?= $textSiteGuide ?></a></li-->
               </ul>
           </li>
           <li><a href="<?php echo $setting; ?>"><?php echo $text_setting; ?></a></li>

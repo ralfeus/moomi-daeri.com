@@ -137,6 +137,7 @@ class ControllerCheckoutAddress extends Controller {
 						
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
 			if (!$json) {
+                $this->log->write(print_r($_REQUEST, true));
 				if ($this->request->post['shipping_address'] == 'existing') {
 					if (!isset($this->request->post['address_id'])) {
 						$json['error']['warning'] = $this->language->get('error_address');
@@ -191,6 +192,7 @@ class ControllerCheckoutAddress extends Controller {
 					}
 				}
 			}
+            $this->log->write(print_r($json, true));
 		} else {
 			$this->data['text_address_existing'] = $this->language->get('text_address_existing');
 			$this->data['text_address_new'] = $this->language->get('text_address_new');
@@ -231,6 +233,7 @@ class ControllerCheckoutAddress extends Controller {
 			}
 					
 			$json['output'] = $this->render();
+//            $this->log->write(print_r($json, true));
 		}
 				
 		$this->response->setOutput(json_encode($json));
@@ -260,4 +263,3 @@ class ControllerCheckoutAddress extends Controller {
 		$this->response->setOutput($output);
   	}	
 }
-?>

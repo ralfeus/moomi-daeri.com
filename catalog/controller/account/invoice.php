@@ -13,7 +13,7 @@ class ControllerAccountInvoice extends Controller
         parent::__construct($registry);
         $this->load->language('account/invoice');
         $this->load->library('Transaction');
-        $this->load->model('Reference/Address');
+        $this->load->model('reference/address');
         $this->load->model('account/invoice');
         $this->load->model('account/order');
         $this->load->model('account/order_item');
@@ -52,14 +52,17 @@ class ControllerAccountInvoice extends Controller
             return $modelReferenceAddress->toString($order['address_id']);
         else
             return
-                $modelReferenceAddress->toString(
-                    $order['shipping_lastname'], $order['shipping_firstname'],
-                    $order['shipping_company'],
-                    $order['shipping_address_1'], $order['shipping_address_2'],
-                    $order['shipping_city'], $order['shipping_postcode'],
-                    $order['shipping_zone_id'],
-                    $order['shipping_country_id']
-                );
+                $modelReferenceAddress->toString(array(
+                    'lastname' => $order['shipping_lastname'],
+                    'firstname' => $order['shipping_firstname'],
+                    'company' => $order['shipping_company'],
+                    'address_1' => $order['shipping_address_1'],
+                    'address_2' => $order['shipping_address_2'],
+                    'city' => $order['shipping_city'],
+                    'postcode' => $order['shipping_postcode'],
+                    'zone_id' => $order['shipping_zone_id'],
+                    'country_id' => $order['shipping_country_id']
+                ));
     }
 
     public function index()
@@ -152,7 +155,7 @@ class ControllerAccountInvoice extends Controller
 
         $modelInvoice = $this->load->model('account/invoice');
         $modelOrderItem = $this->load->model('account/order_item');
-        $modelReferenceAddress = $this->load->model('Reference/Address');
+        $modelReferenceAddress = $this->load->model('reference/address');
         $invoice = $modelInvoice->getInvoice($this->request->request['invoiceId']);
 
         /// Initialize interface values

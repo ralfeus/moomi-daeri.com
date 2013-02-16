@@ -70,7 +70,7 @@
               </td>
               <td><input type="text" name="filter_email" value="<?php echo $filter_email; ?>" /></td>
               <td><select name="filter_customer_group_id">
-                  <option value="*"></option>
+                  <option />
                   <?php foreach ($customer_groups as $customer_group) { ?>
                   <?php if ($customer_group['customer_group_id'] == $filter_customer_group_id) { ?>
                   <option value="<?php echo $customer_group['customer_group_id']; ?>" selected="selected"><?php echo $customer_group['name']; ?></option>
@@ -80,7 +80,7 @@
                   <?php } ?>
                 </select></td>
               <td><select name="filter_status">
-                  <option value="*"></option>
+                  <option />
                   <?php if ($filter_status) { ?>
                   <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
                   <?php } else { ?>
@@ -93,7 +93,7 @@
                   <?php } ?>
                 </select></td>
               <td><select name="filter_approved">
-                  <option value="*"></option>
+                  <option />
                   <?php if ($filter_approved) { ?>
                   <option value="1" selected="selected"><?php echo $text_yes; ?></option>
                   <?php } else { ?>
@@ -135,9 +135,13 @@
                   <option value="<?php echo $store['store_id']; ?>"><?php echo $store['name']; ?></option>
                   <?php } ?>
                 </select></td>
-              <td class="right"><?php foreach ($customer['action'] as $action) { ?>
-                [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]
-                <?php } ?></td>
+              <td class="right">
+<?php foreach ($customer['action'] as $action): ?>
+                [&nbsp;<a
+                    <?= !empty($action['href']) ? 'href="' . $action['href'] . '"' : '' ?>
+                    <?= !empty($action['onclick']) ? 'onclick="ajaxAction(this, \'' . $action['onclick'] . '\')"' : '' ?>><?= str_replace(' ', '&nbsp;', $action['text']) ?></a>&nbsp;]
+<?php endforeach; ?>
+              </td>
             </tr>
             <?php } ?>
             <?php } else { ?>
@@ -216,6 +220,28 @@ function filter() {
 	}
 	
 	location = url;
+}
+
+function ajaxAction(sender, url)
+{
+    $.ajax({
+        url: url,
+        dataType: 'json',
+        beforeSend: function() {
+            $('.success, .warning').remove();
+            $(this).after('<span id="wait"><img src="view/image/loading.gif" alt="" /></span>');
+        },
+        done: function() {
+            $('#wait').remove();
+        },
+        success: function(json) {
+            $('.breadcrumb').after('<div class="success">' + json['message'] + '</div>');
+        },
+        error: function()
+        {
+            $('.breadcrumb').after('<div class="error">Error</div>');
+        }
+    });
 }
 //--></script>
 <?php echo $footer; ?>

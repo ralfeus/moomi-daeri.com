@@ -112,6 +112,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_zone'] = $this->language->get('text_zone');
         $this->data['textContentManagement'] = $this->language->get('CONTENT_MANAGEMENT');
         $this->data['textCreditManagement'] = $this->language->get('CREDIT_MANAGEMENT');
+        $this->data['textSiteGuide'] = $this->language->get('SITE_GUIDE');
         $this->data['textOrderConfirmation'] = $this->language->get('ORDER_CONFIRMATION');
         $this->data['textRepurchaseOrders'] = $this->language->get('REPURCHASE_ORDERS');
 
@@ -153,7 +154,7 @@ class ControllerCommonHeader extends Controller {
 			$this->data['option'] = $this->url->link('catalog/option', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['order'] = $this->url->link('sale/order', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['order_items'] = $this->url->link('sale/order_items', 'token=' . $this->session->data['token'], 'SSL');
-			$this->data['order_items_processing'] = $this->url->link('sale/order_items', 'filter_status_id[]=327682&filter_status_id[]=327685&token=' . $this->session->data['token'], 'SSL');
+			$this->data['order_items_processing'] = $this->url->link('sale/order_items', 'filterStatusId[]=327682&filterStatusId[]=327685&token=' . $this->session->data['token'], 'SSL');
             $this->data['order_status'] = $this->url->link('localisation/order_status', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['payment'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['product'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'], 'SSL');
@@ -194,6 +195,9 @@ class ControllerCommonHeader extends Controller {
             $this->data['urlOrderConfirmationText'] = $this->url->link(
                 'cms/text/edit',
                 'contentId=' . CMS_ORDER_CONFIRMATION . '&token=' . $this->session->data['token'], 'SSL');
+            $this->data['urlSiteGuideText'] = $this->url->link(
+                'cms/text/edit',
+                'contentId=' . CMS_SITE_GUIDE . '&token=' . $this->session->data['token'], 'SSL');
 			
 			$this->data['stores'] = array();
 			

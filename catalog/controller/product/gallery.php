@@ -13,7 +13,7 @@ class ControllerProductGallery extends Controller
       $this->data['files'] = array();
       $this->data['heading_title'] = $this->language->get('heading_title');
       $this->data['gallery_add_photo'] = $this->language->get('gallery_add_photo');
-      $this->log->write(print_r(glob(DIR_IMAGE . 'reviews/*'), true));
+//      $this->log->write(print_r(glob(DIR_IMAGE . 'reviews/*'), true));
       
       $query = "SELECT gallery_photo.*, vote.avg_vote FROM gallery_photo LEFT JOIN (SELECT photo_id, SUM(stars)/COUNT(*) AS avg_vote FROM gallery_photo_voting WHERE photo_id IS NOT NULL && photo_id != '' AND approved_at IS NOT NULL AND approved_at != '0000-00-00' GROUP BY photo_id) AS vote USING(photo_id) WHERE approved_at IS NOT NULL AND approved_at != '0000-00-00' ORDER BY uploaded_at DESC";
       $result = $this->db->query($query);

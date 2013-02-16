@@ -11,7 +11,7 @@ body {
 }
 body, td, th, input, select, textarea, option, optgroup {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 12px;
+	font-size: 16px;
 	color: #000000;
 }
 input[type='text'], input[type='password'] {
@@ -253,7 +253,7 @@ body > #container {
 	border-left: 1px solid #CCCCCC;
 	border-right: 1px solid #CCCCCC;
 	border-bottom: 1px solid #CCCCCC;
-	min-height: 300px;
+	/*min-height: 300px;*/
 	overflow: auto;
 }
 a.button, .list a.button {

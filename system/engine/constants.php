@@ -53,3 +53,4 @@ define('REPURCHASE_ORDER_CUSTOMER_BUYS_OPTION_VALUE_ID', 35883); // ID of the pr
 define('REPURCHASE_ORDER_SHOP_BUYS_OPTION_VALUE_ID', 35882); // ID of the product option value representing shop buying
 
 define('CMS_ORDER_CONFIRMATION', 0x00070001);
+define('CMS_SITE_GUIDE', 0x00070002);

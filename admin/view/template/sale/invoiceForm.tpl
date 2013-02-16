@@ -28,7 +28,17 @@
                                         <a id="buttonRecalculate" class="button" onclick="recalculateShipping()"><?= $buttonRecalculateShippingCost ?></a>
                                 </td></tr>
                                 <tr><td><?= $textShippingMethod ?></td></tr>
-                                <tr><td><input name="shippingMethod" value="<?= $shippingMethod ?>" disabled="true" /></td></tr>
+                                <tr><td>
+                                    <select name="shippingMethod" onchange="recalculateShipping()" <?= $readOnly ?>>
+<?php foreach ($shippingMethods as $possibleShippingMethod): ?>
+                                        <option
+                                                value="<?= $possibleShippingMethod['code'] ?>"
+                                                <?= $possibleShippingMethod['code'] == $shippingMethod ? "selected" : '' ?>>
+                                            <?= $possibleShippingMethod['shippingMethodName'] ?>
+                                        </option>
+<?php endforeach; ?>
+                                    </select>
+                                </td></tr>
                                 <tr><td><?= $textShippingCost ?></td></tr>
                                 <tr><td>
                                     <input id="shippingCost" name="shippingCost" value="<?= $shippingCost ?>" disabled="true" />
@@ -122,7 +132,7 @@ $(document).ready(function() {
         $('#buttonSaveDiscount').remove();
 });
 
-function formatCurrency(value)
+function formatCurrencies(value)
 {
     var result;
     $.ajax({
@@ -149,12 +159,12 @@ function formatCurrency(value)
 function recalculateShipping()
 {
     $.ajax({
-        url: '<?= $shippingMethodCostRoute ?>&token=<?= $this ->session->data["token"] ?>',
+        url: '<?= $shippingCostRoute ?>',
         type: 'post',
         dataType: 'json',
         data: {
             weight: $('#totalWeight').val(),
-            method: '<?= $shippingMethodCode ?>'
+            method: $('[name=shippingMethod]').val()
         },
         beforeSend: function() {
             $('#buttonRecalculate').attr('disabled', true);
@@ -162,7 +172,7 @@ function recalculateShipping()
         },
         success: function(data) {
             $('#shippingCostRaw').val(data['cost']);
-            $('#shippingCost').val(formatCurrency(data['cost']));
+            $('#shippingCost').val(formatCurrencies(data['cost'])['system']);
             recalculateTotal();
             $('#buttonRecalculate').attr('disabled', false);
             $('.wait').remove();
@@ -177,7 +187,10 @@ function recalculateShipping()
 
 function recalculateTotal()
 {
-    $('#grandTotal').val(formatCurrency(<?= $totalRaw ?> + Number($('#shippingCostRaw').val()) - Number($('[name=discount]').val())));
+    var totalCost = <?= $totalRaw ?> + Number($('#shippingCostRaw').val()) - Number($('[name=discount]').val());
+    var currencyStrings = formatCurrencies(totalCost);
+    $('#grandTotal').val(currencyStrings['system']);
+    $('[name=totalCustomerCurrency]').val(currencyStrings['customer']);
 }
 
 function resetValue(element)

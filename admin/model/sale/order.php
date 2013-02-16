@@ -428,7 +428,7 @@ class ModelSaleOrder extends Model {
         );
         if ($query->num_rows) // there is such order
         {
-            $addressModel = $this->load->model('Reference/Address');
+            $addressModel = $this->load->model('reference/address');
             $customerModel = $this->load->model('sale/customer');
             if ($query->row['shipping_address_id']) // order already has address ID
                 $orderAddressId = $query->row['shipping_address_id'];
@@ -460,8 +460,8 @@ class ModelSaleOrder extends Model {
                         $order['shipping_company'],
                         $order['shipping_address_1'], $order['shipping_address_2'],
                         $order['shipping_city'], $order['shipping_postcode'],
-                        $order['shipping_zone_id'],
                         $order['shipping_country_id'],
+                        $order['shipping_zone_id'],
                         $order['customer_id']
                     );
                 }
@@ -477,11 +477,11 @@ class ModelSaleOrder extends Model {
             return null;
     }
 
-	private function getShippingCost($weight, $shipping_method)
+	private function getShippingCost($shipping_method, $orderItems, $ext = array())
 	{
 		$shipping_method = explode(".", $shipping_method);
 		$this->load->model("shipping/" . $shipping_method[0]);
-		return $this->{'model_shipping_' . $shipping_method[0]}->getCost($shipping_method[1], $weight);
+		return $this->{'model_shipping_' . $shipping_method[0]}->getCost($shipping_method[1], $orderItems, $ext);
 	}
 
 	public function getTotalOrders($data = array()) {
@@ -663,7 +663,8 @@ class ModelSaleOrder extends Model {
 		$orderItemStatusModel = $this->load->model('localisation/order_item_status');
 		$total_price = 0;
 		$total_weight = 0;
-		foreach ($this->getOrderProducts($order_id) as $order_item)
+        $orderItems = $this->getOrderProducts($order_id);
+		foreach ($orderItems as $order_item)
 		{
 			$orderItemStatus = $orderItemStatusModel->getOrderItemStatus($order_item['status_id']);
 			//print_r($order_item);exit();
@@ -674,11 +675,14 @@ class ModelSaleOrder extends Model {
 				$total_weight += $this->weight->convert($orderItem['weight'], $orderItem['weight_class_id'], $this->config->get('config_weight_class_id')) * $order_item['quantity'];
 			}
 		}
-		$shipping_cost = $this->getShippingCost($total_weight, $order['shipping_method']);
-		$this->db->query("UPDATE " . DB_PREFIX . "order_total SET value = $total_price, text = '" . $this->currency->format($total_price). "' WHERE order_id = $order_id AND code = 'sub_total'");
-		$this->db->query("UPDATE " . DB_PREFIX . "order_total SET value = $shipping_cost, text = '" . $this->currency->format($shipping_cost). "' WHERE order_id = $order_id AND code = 'shipping'");
-		$this->db->query("UPDATE " . DB_PREFIX . "order_total SET value = " . ($total_price + $shipping_cost) . ", text = '" . $this->currency->format($total_price + $shipping_cost). "' WHERE order_id = $order_id AND code = 'total'");
-		$this->db->query("UPDATE `" . DB_PREFIX . "order` SET total = " . ($total_price + $shipping_cost) . " WHERE order_id = $order_id");
+		$shipping_cost = $this->getShippingCost($order['shipping_method'], $orderItems, array('weight' => $total_weight));
+        if ($order['total'] != $total_price + $shipping_cost)
+        {
+            $this->db->query("UPDATE " . DB_PREFIX . "order_total SET value = $total_price, text = '" . $this->currency->format($total_price). "' WHERE order_id = $order_id AND code = 'sub_total'");
+            $this->db->query("UPDATE " . DB_PREFIX . "order_total SET value = $shipping_cost, text = '" . $this->currency->format($shipping_cost). "' WHERE order_id = $order_id AND code = 'shipping'");
+            $this->db->query("UPDATE " . DB_PREFIX . "order_total SET value = " . ($total_price + $shipping_cost) . ", text = '" . $this->currency->format($total_price + $shipping_cost). "' WHERE order_id = $order_id AND code = 'total'");
+            $this->db->query("UPDATE `" . DB_PREFIX . "order` SET total = " . ($total_price + $shipping_cost) . " WHERE order_id = $order_id");
+        }
 	}
 }
 ?>

@@ -9,11 +9,11 @@
 class ModelReferenceAddress extends Model
 {
     public function addAddress(
-            $lastname, $firstname, $company,
-            $address1, $address2,
-            $city, $postcode,
-            $countryId, $zoneId,
-            $customerId = 0)
+        $lastname, $firstname, $company,
+        $address1, $address2,
+        $city, $postcode,
+        $countryId, $zoneId,
+        $customerId = 0)
     {
         $this->db->query("
             INSERT INTO " . DB_PREFIX  . "address
@@ -34,18 +34,22 @@ class ModelReferenceAddress extends Model
 
     public function getAddress($addressId)
     {
-        $query = $this->db->query("SELECT * FROM address WHERE address_id = " . (int)$addressId);
+        $query = $this->db->query("
+            SELECT *
+            FROM address
+            WHERE address_id = " . (int)$addressId
+        );
         if ($query->num_rows)
             return $query->row;
         else
             return null;
     }
 
-    public function toString()
+    public function toString($addressParam)
     {
         $countryModel = $this->load->model('localisation/country');
         $zoneModel = $this->load->model('localisation/zone');
-        if (func_num_args() == 1)
+        if (!is_array($addressParam))
         {
             /// In case of one argument it's call by address ID
             $addressId = func_get_arg(0);
@@ -62,23 +66,24 @@ class ModelReferenceAddress extends Model
                     $address['city'],
                     $address['postcode'],
                     isset($zone['name']) ? $zone['name'] : 'No zone specified' ,
-                    isset($country['name']) ? $country['name'] : "No country specified!" //TODO: implement smarter handling
+                    isset($country['name']) ? $country['name'] : "No country specified!" //TODO: implement smarter handling don
                 );
         }
-        elseif (func_num_args() == 9)
+        else
         {
             /// In case of 8 arguments these are separate address components
-            $zone = $zoneModel->getZone(func_get_arg(7));
-            $country = $countryModel->getCountry(func_get_arg(8));
+//            $this->log->write("Getting string from passed address data");
+            $zone = $zoneModel->getZone($addressParam['zone_id']);
+            $country = $countryModel->getCountry($addressParam['country_id']);
             return
                 sprintf(
                     "%s %s\n%s\n%s\n%s\n%s\n%s\n%s\n%s",
-                    func_get_arg(0), func_get_arg(1), // name and surname
-                    func_get_arg(2), // company
-                    func_get_arg(3), // address 1
-                    func_get_arg(4), // address 2
-                    func_get_arg(5), // city
-                    func_get_arg(6), // zip code
+                    $addressParam['lastname'], $addressParam['firstname'], // name and surname
+                    $addressParam['company'], // company
+                    $addressParam['address_1'], // address 1
+                    $addressParam['address_2'], // address 2
+                    $addressParam['city'], // city
+                    $addressParam['postcode'], // zip code
                     $zone['name'], // zone (region)
                     $country['name'] // country
                 );

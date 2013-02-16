@@ -8,7 +8,7 @@
  */
 class ModelSaleInvoice extends Model
 {
-    public function addInvoice($orderId, $order_items, $weight = 0, $discount = 0, $comment = "", $subtotal = 0)
+    public function addInvoice($orderId, $order_items, $shippingMethod = null, $weight = 0, $discount = 0, $comment = "", $subtotal = 0)
     {
         $orderModel = $this->load->model('sale/order');
         /// Get customer and shipping data from the primary order
@@ -31,7 +31,9 @@ class ModelSaleInvoice extends Model
         /// Get shipping cost according to destination and order items
         /// The shipping cost calculation can take different order items factors into account
         /// Therefore it's better to pass whole items and let shipping calculation classes use it
-        $shippingCost = Shipping::getCost($order_items, $order['shipping_method'], array('weight' => $weight) ,$this->registry);
+        if (empty($shippingMethod))
+            $shippingMethod = $order['shipping_method'];
+        $shippingCost = Shipping::getCost($order_items, $shippingMethod, array('weight' => $weight) ,$this->registry);
 
         /// Calculate total. Currently it's subtotal, shipping and discount. In the future it can be something else
         $total = $subtotal + $shippingCost - $discount;
@@ -44,7 +46,7 @@ class ModelSaleInvoice extends Model
                 comment = '" . $this->db->escape($comment) . "',
                 discount = " . (float)$discount . ",
                 shipping_address_id = " . $orderModel->getShippingAddressId($orderId) . ",
-                shipping_method = '" . $order['shipping_method'] . "',
+                shipping_method = '" . $shippingMethod . "',
                 shipping_cost = $shippingCost,
                 subtotal = $subtotal,
                 time_modified = NOW(),

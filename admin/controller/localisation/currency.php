@@ -2,23 +2,19 @@
 class ControllerLocalisationCurrency extends Controller {
 	private $error = array();
  
-	public function index() {
-		$this->load->language('localisation/currency');
+    public function __construct($registry)
+    {
+        parent::__construct($registry);
+        $this->load->language('localisation/currency');
+        $this->document->setTitle($this->language->get('heading_title'));
+        $this->load->model('localisation/currency');
+    }
 
-		$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('localisation/currency');
-		
+	public function index() {
 		$this->getList();
 	}
 
 	public function insert() {
-		$this->load->language('localisation/currency');
-
-		$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('localisation/currency');
-		
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_localisation_currency->addCurrency($this->request->post);
 			
@@ -45,12 +41,6 @@ class ControllerLocalisationCurrency extends Controller {
 	}
 
 	public function update() {
-		$this->load->language('localisation/currency');
-
-		$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('localisation/currency');
-		
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_localisation_currency->editCurrency($this->request->get['currency_id'], $this->request->post);
 			
@@ -77,12 +67,6 @@ class ControllerLocalisationCurrency extends Controller {
 	}
 
 	public function delete() {
-		$this->load->language('localisation/currency');
-
-		$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('localisation/currency');
-		
 		if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $currency_id) {
 				$this->model_localisation_currency->deleteCurrency($currency_id);
@@ -112,12 +96,10 @@ class ControllerLocalisationCurrency extends Controller {
 
     public function format()
     {
-        $this->log->write(print_r($this->request->request, true));
+//        $this->log->write(print_r($this->request->request, true));
         $json = array();
-        if (!is_numeric($this->request->request['value']))
-            $json['error'] = $this->language->get('ERROR_INVALID_ARGUMENT');
-        else
-            $json['result'] = $this->currency->format($this->request->request['value'], $this->config->get('config_currency'));
+        $json['result']['system'] = $this->currency->format($this->parameters['value'], $this->config->get('config_currency'));
+        $json['result']['customer'] = $this->currency->format($this->parameters['value']);
 
         $this->response->setOutput(json_encode($json));
     }
@@ -420,6 +402,11 @@ class ControllerLocalisationCurrency extends Controller {
 				
 		$this->response->setOutput($this->render());
 	}
+
+    protected function initParameters()
+    {
+        $this->parameters['value'] = empty($_REQUEST['value']) ? 0 : $_REQUEST['value'];
+    }
 	
 	private function validateForm() { 
 		if (!$this->user->hasPermission('modify', 'localisation/currency')) { 

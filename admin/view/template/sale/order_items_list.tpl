@@ -55,9 +55,11 @@
                     <a href="<?php echo $sort_supplier; ?>"><?php echo $column_supplier; ?></a>
                     <?php endif; ?>
                 </td>
-                <td class="right"><?php echo $column_price; ?></td>
-                <td class="right"><?php echo $column_quantity; ?></td>
-		        <td class="right"><?php echo $columnWeight; ?></td>
+                <td class="right">
+                    <?= $column_price ?>&nbsp;/
+                    <?= $column_quantity ?>&nbsp;/
+                    <?= $columnWeight ?>
+                </td>
                 <td class="left"><?php echo $column_status; ?></td>
               <td class="left">Comment</td>
 			  <td class="left">Action</td>
@@ -84,12 +86,12 @@
                         <?php endforeach; ?>
                     </select>
                 </td>
-                <td /><td /><td />
+                <td />
                 <td>
-                    <select name="filter_status_id[]" id="filter_status_id[]" multiple="true">
+                    <select name="filterStatusId[]" id="filterStatusId[]" multiple="true">
                         <optgroup label="Product orders">
                             <?php foreach ($statuses[GROUP_ORDER_ITEM_STATUS] as $status): ?>
-                            <?php if (in_array($status['id'], $filter_status_id))
+                            <?php if (in_array($status['id'], $filterStatusId))
                                     $selected = "selected=\"selected\"";
                                 else
                                     $selected = ""; ?>
@@ -98,7 +100,7 @@
                         </optgroup>
                         <optgroup label="Agent orders">
                             <?php foreach ($statuses[GROUP_REPURCHASE_ORDER_ITEM_STATUS] as $status): ?>
-                            <?php if (in_array($status['id'], $filter_status_id))
+                            <?php if (in_array($status['id'], $filterStatusId))
                                     $selected = "selected=\"selected\"";
                                 else
                                     $selected = ""; ?>
@@ -130,16 +132,16 @@
                             </table>
                         </td>
 					    <td class="left"><?php echo $order_item['supplier_name']; ?></td>
-                        <td class="right"><?php echo $order_item['price']; ?></td>
                         <td class="right">
+                            <?= $order_item['price'] ?>
                             <input
                                 alt="<?= $order_item['quantity'] ?>"
                                 onblur="saveQuantity(<?= $order_item['id'] ?>, this)"
                                 onkeydown="if (event.keyCode == 13) saveQuantity(<?= $order_item['id'] ?>, this)"
                                 size="2"
                                 value="<?= $order_item['quantity'] ?>" />
+                            <?= $order_item['weight'] ?>
                         </td>
-			            <td class="right"><?php echo $order_item['weight']; ?></td>
                         <td class="left"><?php echo $order_item['status']; ?></td>
                         <td class="left">
                             Private<br />
@@ -182,19 +184,19 @@
 <script type="text/javascript"><!--
 $(document).ready(function() {
 	$('.date').datepicker({dateFormat: 'yy-mm-dd'});
-    $("#filter_status_id\\[\\]").multiselect({
-        noneSelectedText: "-- No filter --",
+    $("#filterStatusId\\[\\]").multiselect({
+        noneSelectedText: "No filter",
         selectedList: 3
     });
     $('[name=filterCustomerId\\[\\]]')
             .multiselect({
-                noneSelectedText: "-- No filter --",
+                noneSelectedText: "No filter",
                 selectedList: 1
             })
             .multiselectfilter();
     $('[name=filterSupplierId\\[\\]]')
             .multiselect({
-                noneSelectedText: "-- No filter --",
+                noneSelectedText: "No filter",
                 selectedList: 1
             })
             .multiselectfilter();

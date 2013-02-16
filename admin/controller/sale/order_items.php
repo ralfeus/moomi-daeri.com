@@ -46,6 +46,44 @@ class ControllerSaleOrderItems extends Controller {
         return $tmpResult;
     }
 
+    private function getFilterStrings()
+    {
+        $result = array();
+        foreach ($this->parameters as $key => $value)
+        {
+            if ((strpos($key, 'filter') === false) || empty($value))
+                continue;
+            if ($key == 'filterCustomerId')
+            {
+                $customers = $this->getCustomers();
+                $filterCustomerString = '';
+                foreach ($value as $customerId)
+                    $filterCustomerString .= ',' . $customers[$customerId];
+                $result['CustomerId'] = substr($filterCustomerString, 1);
+            }
+            elseif ($key == 'filterStatusId')
+            {
+                $filterStatusString = '';
+                foreach ($value as $statusId)
+                    $filterStatusString .= ',' . Status::getStatus($statusId, $this->config->get('config_language_id'));
+                $result['StatusId'] = substr($filterStatusString, 1);
+            }
+            elseif ($key == 'filterSupplierId')
+            {
+                $suppliers = $this->getSuppliers();
+                $filterSupplierString = '';
+                foreach ($value as $supplierId)
+                    $filterSupplierString .= ',' . $suppliers[$supplierId];
+                $result['SupplierId'] = substr($filterSupplierString, 1);
+            }
+            elseif (is_array($value))
+                $result[substr($key, 6)] = implode(', ', $value);
+            else
+                $result[substr($key, 6)] = $value;
+        }
+        return $result;
+    }
+
     private function getList() 	{
 //		$this->log->write(print_r($this->request,true));
         $order = '';
@@ -244,10 +282,10 @@ class ControllerSaleOrderItems extends Controller {
         else
             $filter_customer = null;
 
-        if (isset($_REQUEST['filter_status_id']))
-            $filter_status_id = $_REQUEST['filter_status_id'];
+        if (isset($_REQUEST['filterStatusId']))
+            $filterStatusId = $_REQUEST['filterStatusId'];
         else
-            $filter_status_id = array();
+            $filterStatusId = array();
         if (isset($_REQUEST['filter_supplier']))
             $filter_supplier = $_REQUEST['filter_supplier'];
         else
@@ -274,9 +312,9 @@ class ControllerSaleOrderItems extends Controller {
         if (isset($_REQUEST['filter_customer'])) {
             $url .= '&filter_customer=' . urlencode(html_entity_decode($_REQUEST['filter_customer'], ENT_QUOTES, 'UTF-8'));
         }
-        if (isset($_REQUEST['filter_status_id']))
-            foreach ($_REQUEST['filter_status_id'] as $status_id_to_filter)
-                $url .= '&filter_status_id[]=' . urlencode(html_entity_decode($status_id_to_filter, ENT_QUOTES, 'UTF-8'));
+        if (isset($_REQUEST['filterStatusId']))
+            foreach ($_REQUEST['filterStatusId'] as $status_id_to_filter)
+                $url .= '&filterStatusId[]=' . urlencode(html_entity_decode($status_id_to_filter, ENT_QUOTES, 'UTF-8'));
         if (isset($_REQUEST['filter_supplier'])) {
             $url .= '&filter_supplier=' . urlencode(html_entity_decode($_REQUEST['filter_supplier'], ENT_QUOTES, 'UTF-8'));
         }
@@ -314,7 +352,7 @@ class ControllerSaleOrderItems extends Controller {
 
         $data = array(
             'filter_customer' => $filter_customer,
-            'filter_status_id'=> $filter_status_id,
+            'filterStatusId'=> $filterStatusId,
             'filter_supplier' => $filter_supplier,
             'filter_supplier_group' => $filter_supplier_group,
             'sort'            => $sort,
@@ -456,9 +494,9 @@ class ControllerSaleOrderItems extends Controller {
         if (isset($_REQUEST['filter_customer'])) {
             $url .= '&filter_customer=' . urlencode(html_entity_decode($_REQUEST['filter_customer'], ENT_QUOTES, 'UTF-8'));
         }
-        if (isset($_REQUEST['filter_status_id']))
-            foreach ($_REQUEST['filter_status_id'] as $status_id_to_filter)
-                $url .= '&filter_status_id[]=' . urlencode(html_entity_decode($status_id_to_filter, ENT_QUOTES, 'UTF-8'));
+        if (isset($_REQUEST['filterStatusId']))
+            foreach ($_REQUEST['filterStatusId'] as $status_id_to_filter)
+                $url .= '&filterStatusId[]=' . urlencode(html_entity_decode($status_id_to_filter, ENT_QUOTES, 'UTF-8'));
         if (isset($_REQUEST['filter_supplier'])) {
             $url .= '&filter_supplier=' . urlencode(html_entity_decode($_REQUEST['filter_supplier'], ENT_QUOTES, 'UTF-8'));
         }
@@ -493,9 +531,9 @@ class ControllerSaleOrderItems extends Controller {
         if (isset($_REQUEST['filter_customer'])) {
             $url .= '&filter_customer=' . urlencode(html_entity_decode($_REQUEST['filter_customer'], ENT_QUOTES, 'UTF-8'));
         }
-        if (isset($_REQUEST['filter_status_id']))
-            foreach ($_REQUEST['filter_status_id'] as $status_id_to_filter)
-                $url .= '&filter_status_id[]=' . urlencode(html_entity_decode($status_id_to_filter, ENT_QUOTES, 'UTF-8'));
+        if (isset($_REQUEST['filterStatusId']))
+            foreach ($_REQUEST['filterStatusId'] as $status_id_to_filter)
+                $url .= '&filterStatusId[]=' . urlencode(html_entity_decode($status_id_to_filter, ENT_QUOTES, 'UTF-8'));
 
         if (isset($_REQUEST['filter_supplier'])) {
             $url .= '&filter_supplier=' . urlencode(html_entity_decode($_REQUEST['filter_supplier'], ENT_QUOTES, 'UTF-8'));
@@ -521,7 +559,7 @@ class ControllerSaleOrderItems extends Controller {
         $this->data['pagination'] = $pagination->render();
 
         $this->data['filter_customer'] = $filter_customer;
-        $this->data['filter_status_id'] = $filter_status_id;
+        $this->data['filterStatusId'] = $filterStatusId;
         $this->data['filter_supplier'] = $filter_supplier;
 
         $this->load->model('localisation/order_status');
@@ -551,13 +589,6 @@ class ControllerSaleOrderItems extends Controller {
         return "";
     }
 
-    private function getShippingCost($weight, $shipping_method)
-    {
-        $shipping_method = explode(".", $shipping_method);
-        $this->load->model("shipping/" . $shipping_method[0]);
-        return $this->{'model_shipping_' . $shipping_method[0]}->getCost($shipping_method[1], $weight);
-    }
-
     private function getSuppliers()
     {
         foreach ($this->parameters as $key => $value)
@@ -578,7 +609,7 @@ class ControllerSaleOrderItems extends Controller {
     protected function initParameters()
     {
         $this->parameters['comment'] = empty($_REQUEST['comment']) ? null : $_REQUEST['comment'];
-        $this->parameters['filter_status_id'] = empty($_REQUEST['filter_status_id']) ? array() : $_REQUEST['filter_status_id'];
+        $this->parameters['filterStatusId'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
         $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
         $this->parameters['filterItem'] = empty($_REQUEST['filterItem']) ? null : $_REQUEST['filterItem'];
 //        $this->parameters['filter_supplier_group'] = empty($_REQUEST['filter_supplier_group']) ? null : $_REQUEST['filter_supplier_group'];
@@ -677,6 +708,7 @@ class ControllerSaleOrderItems extends Controller {
 			);
 		}
 
+        $this->data['filters'] = $this->getFilterStrings();
 		$this->data['heading_title'] = $this->language->get('heading_title');
 
 		$this->data['text_no_results'] = $this->language->get('text_no_results');
@@ -693,6 +725,7 @@ class ControllerSaleOrderItems extends Controller {
 		$this->data['column_status'] = $this->language->get('column_status');
 		$this->data['column_price'] = $this->language->get('column_price');
 		$this->data['column_quantity'] = $this->language->get('column_quantity');
+        $this->data['textFilters'] = $this->language->get('FILTERS');
 
 		//$this->data['token'] = $this->session->data['token'];
 		

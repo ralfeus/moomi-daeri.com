@@ -49,9 +49,11 @@ class ControllerCheckoutShipping extends Controller {
 					$this->load->model('setting/extension');
 					
 					$results = $this->model_setting_extension->getExtensions('shipping');
+                    $this->log->write(print_r($results, true));
 
                     foreach ($results as $result) {
 						if ($this->config->get($result['code'] . '_status')) {
+                            $this->log->write("Trying to load shipping/" . $result['code']);
 							$this->load->model('shipping/' . $result['code']);
 							$quote = $this->{'model_shipping_' . $result['code']}->getQuote($shipping_address);
 //                            $this->log->write(print_r($quote, true));
