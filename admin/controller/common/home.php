@@ -1,11 +1,12 @@
 <?php   
 class ControllerCommonHome extends Controller {   
 	public function index() {
-    	$this->load->language('common/home');
+
+    $this->load->language('common/home');
 	 
 		$this->document->setTitle($this->language->get('heading_title'));
 		
-    	$this->data['heading_title'] = $this->language->get('heading_title');
+    $this->data['heading_title'] = $this->language->get('heading_title');
 		
 		$this->data['text_overview'] = $this->language->get('text_overview');
 		$this->data['text_statistics'] = $this->language->get('text_statistics');
@@ -36,7 +37,7 @@ class ControllerCommonHome extends Controller {
 		$this->data['entry_range'] = $this->language->get('entry_range');
 		
 		// Check install directory exists
- 		if (is_dir(dirname(DIR_APPLICATION) . '/install')) {
+ 		/*if (is_dir(dirname(DIR_APPLICATION) . '/install')) {
 			$this->data['error_install'] = $this->language->get('error_install');
 		} else {
 			$this->data['error_install'] = '';
@@ -125,7 +126,7 @@ class ControllerCommonHome extends Controller {
 			$this->data['error_logs'] = '';
 			
 			unlink($file);
-		}
+		}*/
 										
 		$this->data['breadcrumbs'] = array();
 
@@ -198,9 +199,12 @@ class ControllerCommonHome extends Controller {
 			'common/header',
 			'common/footer'
 		);
+
+		$this->data['products'] = $this->getProducts();
+
 				
 		$this->response->setOutput($this->render());
-  	}
+  }
 	
 	public function chart() {
 		$this->load->language('common/home');
@@ -413,6 +417,65 @@ class ControllerCommonHome extends Controller {
 				return $this->forward('error/permission');
 			}
 		}
+	}
+
+	public function getProducts($filter = array()) {
+		//$filter = array();
+		$this->load->model('catalog/product');
+		$results = $this->model_catalog_product->getProducts($filter);
+		$products = array();
+		$product_total = $this->model_catalog_product->getTotalProducts($filter);
+
+
+		foreach ($results as $result) {
+
+			$action = array();
+			$action[] = array(
+				'text' => $this->language->get('text_edit'),
+				'href' => $this->url->link('catalog/product/update', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, 'SSL')
+			);
+
+			$link = array();
+			$link[] = array(
+				'text' => 'click',
+				'href' => $result['link']
+			);
+
+			if ($result['image'] && file_exists(DIR_IMAGE . $result['image'])) {
+				//$image = $this->model_tool_image->resize($result['image'], 40, 40);
+			} else {
+				//$image = $this->model_tool_image->resize('no_image.jpg', 40, 40);
+			}
+
+			$this->data['products'][] = array(
+				'product_id' => $result['product_id'],
+        'dateAdded' => date('Y-m-d', strtotime($result['date_added'])),
+				'name'       => $result['name'],
+				'model'      => $result['model'],
+				'price'      => $result['price'],
+				'special'    => $special,
+				'image'      => $image,
+				'user_name'  => $result['user_name'],
+				'status'     => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
+				'selected'   => isset($this->request->post['selected']) && in_array($result['product_id'], $this->request->post['selected']),
+				'action'     => $action,
+				'link'     	 => $link,
+				'korean_name'=> $result['korean_name'],
+				'manufacturer_page_url' => empty($result['manufacturer_page_url']) ? '' : $result['manufacturer_page_url']
+			);
+		}
+
+		$pagination = new Pagination();
+		$pagination->total = $product_total;
+		$pagination->page = $this->parameters['page'];
+		$pagination->limit = $this->config->get('config_admin_limit');
+		$pagination->text = $this->language->get('text_pagination');
+    unset($this->parameters['page']);
+		$pagination->url = $this->url->link('common/home', 'page={page}', 'SSL');
+		$this->data['pagination'] = $pagination->render();
+
+		return $products;
+		
 	}	
 }
 ?>
