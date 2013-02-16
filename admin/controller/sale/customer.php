@@ -440,7 +440,10 @@ class ControllerSaleCustomer extends Controller {
                 'text' => $this->language->get('PURGE_CART'),
                 'onclick' => $this->url->link('sale/customer/purgeCart', 'token=' . $this->parameters['token'] . '&customerId=' . $result['customer_id'], 'SSL')
             );
-			
+            $action[] = array(
+                'text' => $this->language->get('ORDER_ITEMS_HISTORY'),
+                'onclick' => $this->url->link('sale/customer/orderItemsHistory', 'token=' . $this->parameters['token'] . '&customerId=' . $result['customer_id'], 'SSL')
+            );
 			$this->data['customers'][] = array(
 				'customer_id'    => $result['customer_id'],
 				'name'           => $result['name'],
@@ -1146,11 +1149,44 @@ class ControllerSaleCustomer extends Controller {
 		}
 	}
 
+    public function orderItemsHistory()
+    {
+        $modelSaleOrderItems = $this->load->model('sale/order_item');
+        $orderItems = $modelSaleOrderItems->getOrderItems(array(
+            'filterCustomerId' => array($this->parameters['customerId'])
+        ));
+//        $this->log->write(print_r($orderItems, true));
+        $this->data = array();
+        $this->data['events'] = array();
+        foreach ($orderItems as $orderItem)
+        {
+            $orderItemHistory = $modelSaleOrderItems->getOrderItemHistory($orderItem['order_product_id']);
+//            $this->log->write(print_r($orderItemHistory, true));
+            foreach ($orderItemHistory as $orderItemHistoryEntry)
+                $this->data['events'][] = array(
+                    'orderId' => $orderItem['order_id'],
+                    'orderItemId' => $orderItem['order_product_id'],
+                    'eventDate' => $orderItemHistoryEntry['date_added'],
+                    'statusName' => $orderItemHistoryEntry['name']
+                );
+        }
+
+        $this->data['textOrderId'] = $this->language->get('ORDER_ID');
+        $this->data['textOrderItemId'] = $this->language->get('ORDER_ITEM_ID');
+        $this->data['textEventDate'] = $this->language->get('DATE');
+        $this->data['textStatusName'] = $this->language->get('STATUS');
+        $this->template = 'sale/customerOrderItemsHistory.php';
+        $result = $this->render();
+        $json = array('content' => $result);
+//        $this->log->write(print_r($json, true));
+        $this->response->setOutput(json_encode($json));
+    }
+
     public function purgeCart()
     {
         $this->modelSaleCustomer->purgeCart($this->parameters['customerId']);
         $customer = $this->modelSaleCustomer->getCustomer($this->parameters['customerId']);
-        $json = array('message' => sprintf($this->language->get('SUCCESS_CART_PURGED'), $customer['nickname']));
+        $json = array('success' => sprintf($this->language->get('SUCCESS_CART_PURGED'), $customer['nickname']));
         $this->response->setOutput(json_encode($json));
     }
 		
