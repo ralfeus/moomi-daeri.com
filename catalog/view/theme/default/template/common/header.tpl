@@ -22,6 +22,7 @@
 <?php } ?>
 <script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.6.1.min.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
 <link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.16.custom.css" />
 <script type="text/javascript" src="catalog/view/javascript/jquery/ui/external/jquery.cookie.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
@@ -37,6 +38,7 @@
 <![endif]--> 
 <script type="text/javascript" src="catalog/view/javascript/jquery/tabs.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/common.js"></script>
+<link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/ui-lightness/jquery-ui-1.8.23.custom.css" />
 <?php foreach ($scripts as $script) { ?>
 <script type="text/javascript" src="<?php echo $script; ?>"></script>
 <?php } ?>
@@ -53,16 +55,70 @@ DD_belatedPNG.fix('#logo img');
 <?php echo $google_analytics; ?>
 <!-- BEGIN JIVOSITE CODE {literal} -->
 <script type="text/javascript">
-(function() {
-    var widget_id = '15225';
-    var s = document.createElement('script');
-    s.type = 'text/javascript';
-    s.async = true;
-    s.src = '//code.jivosite.com/script/widget/'+widget_id;
-    var ss = document.getElementsByTagName('script')[0];
-    ss.parentNode.insertBefore(s, ss);
-})();
+var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'Christmas Day']];
+    (function() {
+        var widget_id = '15225';
+        var s = document.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = '//code.jivosite.com/script/widget/'+widget_id;
+        var ss = document.getElementsByTagName('script')[0];
+        ss.parentNode.insertBefore(s, ss);
+    })();
+    
+    $(document).ready(function() {
+      var url = "<?php echo $this->url->link('shop/admin/getAllHolidaysForCalendar'); ?>";
+      $.post(url, function(response) {
+        response = $.parseJSON(response);
+        holiDays = response['holidays'];
+
+        $("#calendar").datepicker({
+          showOn: "calendar", 
+          beforeShowDay: setHoliDays
+        });
+        //$('.ui-datepicker-inline').css('width', '180px');
+        $('.ui-datepicker-inline').addClass('width180');
+      });
+    });
+
+    function setHoliDays(date) { //alert('assasddsa');
+       for (i = 0; i < holiDays.length; i++) {
+         if (date.getFullYear() == holiDays[i][0]
+            && date.getMonth() == holiDays[i][1] - 1
+              && date.getDate() == holiDays[i][2]) {
+            return [true, 'holiday', holiDays[i][3]];
+         }
+       }
+      return [true, ''];
+    }
+
 </script>
+<style type="text/css">
+  .width180 {
+    width: 180px;
+  }
+  .ui-datepicker td.holiday a, .ui-datepicker td.holiday a:hover {
+     background: none #FFEBAF;
+     border: 1px solid #BF5A0C;
+   }
+   .legendRect {
+      width: 10px;
+      height: 10px;
+      border: solid 1px;
+      float: left;
+      margin-right: 5px;
+      margin-left: 10px;
+      margin-top: 3px;
+    }
+    .work {
+      background: none #dfeffc;
+      border: 1px solid #c5dbec;
+    }
+    .free {
+      background: none #FFEBAF;
+      border: 1px solid #BF5A0C;
+    }
+</style>
 <!-- {/literal} END JIVOSITE CODE -->
 </head>
 <body>
