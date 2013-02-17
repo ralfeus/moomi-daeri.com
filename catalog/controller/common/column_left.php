@@ -5,6 +5,11 @@ class ControllerCommonColumnLeft extends Controller {
 		$this->load->model('catalog/category');
 		$this->load->model('catalog/product');
 		$this->load->model('catalog/information');
+
+		$this->language->load('common/calendar');
+		$this->data['text_our_holidays'] = $this->language->get('text_our_holidays');
+		$this->data['text_workday'] = $this->language->get('text_workday');
+		$this->data['text_holiday'] = $this->language->get('text_holiday');
 		
 		//print_r($photos);
 		
