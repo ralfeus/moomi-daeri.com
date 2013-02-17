@@ -545,7 +545,7 @@ class ModelCatalogProduct extends Model {
         " GROUP BY p.product_id
     ";
 
-    $this->log->write($sql);
+//    $this->log->write($sql);
     return $this->db->query($sql)->rows;
   }
 
@@ -566,7 +566,7 @@ class ModelCatalogProduct extends Model {
         (!empty($filter) ? " WHERE $filter" : '') .
         " GROUP BY p.product_id
     ";
-    $this->log->write($sql);
+//    $this->log->write($sql);
     return $this->db->query($sql)->rows;
   }
 	
@@ -697,7 +697,7 @@ class ModelCatalogProduct extends Model {
             (!empty($filter) ? " WHERE $filter" : '') .
             " GROUP BY p.product_id
         ";
-        $this->log->write($sql);
+//        $this->log->write($sql);
         return $this->db->query($sql)->rows;
     }
 
