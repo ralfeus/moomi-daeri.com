@@ -1,4 +1,48 @@
 <?php echo $header; ?>
+<script type="text/javascript"><!--
+$(document).ready(function() {
+    $('.date').datepicker({dateFormat: 'yy-mm-dd'});
+    $('[name="filterUserNameId[]"]')
+            .multiselect({
+                noneSelectedText: "-- No filter --",
+                selectedList: 1
+            })
+            .multiselectfilter();
+    $('[name="filterManufacturerId[]"]')
+            .multiselect({
+                noneSelectedText: "-- No filter --",
+                selectedList: 1
+            })
+            .multiselectfilter();
+    $('[name=filterStatus]').multiselect({
+        multiple: false,
+        noneSelectedText: "-- No filter --",
+        selectedList: 1
+    }).multiselectfilter();
+    $('[name="filterSupplierId[]"]')
+            .multiselect({
+                noneSelectedText: "-- No filter --",
+                selectedList: 1
+            })
+            .multiselectfilter();
+    $('button.ui-multiselect').css('width', '110px');
+});
+
+function filter()
+{
+    $('#form')
+            .attr('action', 'index.php?route=catalog/product&token=5e058e3be9584b442097be93e2edb2e1')
+            .submit();
+    return;
+}
+
+function resetFilter()
+{
+    $('#form')
+            .attr('action', 'index.php?route=catalog/product&token=5e058e3be9584b442097be93e2edb2e1&resetFilter=1')
+            .submit();
+}
+//--></script> 
 <div id="content">
   <div class="breadcrumb">
     <?php foreach ($breadcrumbs as $breadcrumb) { ?>
@@ -89,59 +133,12 @@
           <div class="content">
             <form action="<?php echo $delete; ?>" method="post" enctype="multipart/form-data" id="form">
               <table class="list">
-                <!--<thead>
-                  <tr>
-                    <td class="center"><?php echo $column_image; ?></td>
-                    <td class="left"><?php if ($sort == 'pd.name') { ?>
-                      <a href="<?php echo $sort_name; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_name; ?></a>
-                      <?php } else { ?>
-                      <a href="<?php echo $sort_name; ?>"><?php echo $column_name; ?></a>
-                      <?php } ?></td>
-                    <td class="left"><?php if ($sort == 'p.model') { ?>
-                      <a href="<?php echo $sort_model; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_model; ?></a>
-                      <?php } else { ?>
-                      <a href="<?php echo $sort_model; ?>"><?php echo $column_model; ?></a>
-                      <?php } ?></td>
-                    <td class="left"><?php if ($sort == 'p.price') { ?>
-                      <a href="<?php echo $sort_price; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_price; ?></a>
-                      <?php } else { ?>
-                      <a href="<?php echo $sort_price; ?>"><?php echo $column_price; ?></a>
-                      <?php } ?></td>
-                    <td class="right" style="width: 100px"><?php if ($sort == 'a.text') { ?>
-                      <a href="<?php echo $sort_korean_name; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_korean_name; ?></a>
-                      <?php } else { ?>
-                      <a href="<?php echo $sort_korean_name; ?>"><?php echo $column_korean_name; ?></a>
-                      <?php } ?></td>
-                    <td class="right"><?php if ($sort == 'u.username') { ?>
-                      <a href="<?php echo $sort_user_name; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_user_name; ?></a>
-                      <?php } else { ?>
-                      <a href="<?php echo $sort_user_name; ?>"><?php echo $column_user_name; ?></a>
-                      <?php } ?></td> 
-                    <td class="left"><?php if ($sort == 'p.status') { ?>
-                      <a href="<?php echo $sort_status; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_status; ?></a>
-                      <?php } else { ?>
-                      <a href="<?php echo $sort_status; ?>"><?php echo $column_status; ?></a>
-                      <?php } ?></td>
-                    <td class="right"><?php if ($sort == 'p.manufacturer') { ?>
-                      <a href="<?php echo $sort_manufacturer; ?>" class="<?php echo strtolower($order); ?>"><?php echo $columnManufacturer; ?></a>
-                      <?php } else { ?>
-                      <a href="<?php echo $sort_manufacturer; ?>"><?php echo $columnManufacturer; ?></a>
-                      <?php } ?></td> 
-              <td style="width: 1px" class="right"><?php if ($sort == 'p.supplier') { ?>
-                      <a href="<?php echo $sort_supplier; ?>" class="<?php echo strtolower($order); ?>"><?php echo $columnSupplier; ?></a>
-                      <?php } else { ?>
-                      <a href="<?php echo $sort_supplier; ?>"><?php echo $columnSupplier; ?></a>
-                      <?php } ?></td>
-                    <td style="width: 1px; white-space: nowrap;"><?= $textDateAdded ?></td>
-                    <td class="right"><?php echo $column_action; ?></td>
-                  </tr>
-                </thead>-->
                 <tbody>
                   <tr class="filter">
                     <td></td>
-                    <td><input name="filterName" value="<?= $filterName ?>" /></td>
-                    <td><input name="filterModel" value="<?= $filterModel ?>" /></td>
-                    <td><input name="filterPrice" value="<?= $filterPrice ?>" /></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td><input name="filterKoreanName" value="<?= $filterKoreanName ?>" /></td>
                     <td>
                         <select name="filterUserNameId[]" multiple="true">
@@ -152,29 +149,6 @@
                         </select>
                     </td>
                     <td>
-                        <select name="filterStatus" multiple="true">
-                            <option>-- No filter --</option>
-                            <option value="0" <?= $filterStatus === "0" ? "selected" : "" ?>>Disabled</option>
-                            <option value="1" <?= $filterStatus === "1" ? "selected" : "" ?>>Enabled</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select name="filterManufacturerId[]" multiple="true">
-                            <?php foreach ($manufacturers as $key => $value):
-                            $selected = in_array($key, $filterManufacturerId) ? 'selected' : ''; ?>
-                            <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </td>
-              <td>
-                        <select name="filterSupplierId[]" multiple="true">
-                            <?php foreach ($suppliers as $key => $value):
-                            $selected = in_array($key, $filterSupplierId) ? 'selected' : ''; ?>
-                            <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
-                            <?php endforeach; ?>
-                        </select>
-              </td>
-                    <td>
                         <input name="filterDateAddedFrom" class="date" value="<?= $filterDateAddedFrom ?>" />
                         <input name="filterDateAddedTo" class="date" value="<?= $filterDateAddedTo ?>" />
                     </td>
@@ -183,7 +157,7 @@
                         <a onclick="resetFilter();" class="button"><?= $textResetFilter ?></a>
                     </td>
                   </tr>
-                  <?php if ($products) { ?>
+                  <?php if (count($products) > 0) { ?>
                   <?php foreach ($products as $product) { ?>
                   <tr>
                     <td class="center"><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" style="padding: 1px; border: 1px solid #DDDDDD;" /></td>
@@ -203,13 +177,6 @@
                       <?php } else { ?>
                       <?php echo $product['user_name']; } ?>
                     </td>
-                    <td class="left"><?php echo $product['status']; ?></td>
-                    <td class="right"> <?php if(!empty($product['manufacturer_page_url'])) { ?>
-                      <a href="<?php echo $product['manufacturer_page_url']; ?>"><?php echo $product['manufacturer']; ?></a>
-                      <?php } else { ?>
-                      <?php echo $product['manufacturer']; } ?>
-                    </td>
-              <td class="right"><?php echo $product['supplier']; ?></td>
                     <td><?= $product['dateAdded'] ?></td>
                     <td class="right"><?php foreach ($product['action'] as $action) { ?>
                       [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]
