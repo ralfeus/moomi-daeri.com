@@ -45,7 +45,7 @@ class ModelSaleOrderItem extends Model
                    ) as oils on op.order_product_id = oils.order_item_id
             " . ($filter ? "WHERE $filter" : "") . /*"
         	" . ($sort ? "ORDER BY $sort" : "") . */"
-            ORDER BY supplier_name, op.model
+            ORDER BY supplier_name, op.model, op.order_product_id
 			" . ($limit ? "LIMIT $limit" : "");
 //		$this->log->write(print_r($query, true));
 		$order_item_query = $this->db->query($query);

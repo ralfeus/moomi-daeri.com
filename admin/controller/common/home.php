@@ -202,7 +202,6 @@ class ControllerCommonHome extends Controller {
 
 		$this->data['products'] = $this->getProducts();
 
-				
 		$this->response->setOutput($this->render());
   }
 	

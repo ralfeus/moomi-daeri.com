@@ -389,7 +389,7 @@ class ModelSaleOrder extends Model {
 
 			$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 		}
-        $this->log->write($sql);
+//        $this->log->write($sql);
 		$query = $this->db->query($sql);
 
 		return $query->rows;
