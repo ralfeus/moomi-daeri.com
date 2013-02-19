@@ -1,8 +1,17 @@
 <?php if ($modules) { ?>
 <div id="column-left">
-  <?php foreach ($modules as $module) { ?>
-  <?php echo $module; ?>
+  <?php for ($i=0; $i<count($modules); $i++) { ?>
+  <?php echo $modules[$i]; ?>
   <?php } ?>
+
+  <div style="height: 250px;">
+    <?php echo $text_our_holidays; ?>
+    <div id="calendar"></div>
+    <div>
+      <div class="legendRect work"></div> <?php echo $text_workday; ?> <br />
+      <div class="legendRect free"></div> <?php echo $text_holiday; ?> <br />
+    </div>
+  </div>
 
 <?php 
 if($route == 'common/home') {

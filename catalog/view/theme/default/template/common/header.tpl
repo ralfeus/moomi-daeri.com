@@ -55,6 +55,7 @@ DD_belatedPNG.fix('#logo img');
 <?php echo $google_analytics; ?>
 <!-- BEGIN JIVOSITE CODE {literal} -->
 <script type="text/javascript">
+
 var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'Christmas Day']];
     (function() {
         var widget_id = '15225';
@@ -74,8 +75,10 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
 
         $("#calendar").datepicker({
           showOn: "calendar", 
+          //$.datepicker.regional['ru'],
           beforeShowDay: setHoliDays
         });
+
         //$('.ui-datepicker-inline').css('width', '180px');
         $('.ui-datepicker-inline').addClass('width180');
       });

@@ -249,7 +249,7 @@ class ControllerCatalogProduct extends Controller {
     	$this->getList();
   	}
 	
-  	private function getList() {				
+  private function getList() {				
 		if (isset($this->request->get['filter_price'])) {
 			$filter_price = $this->request->get['filter_price'];
 		} else {
@@ -513,9 +513,9 @@ class ControllerCatalogProduct extends Controller {
 			'common/footer'
 		);
 		$this->response->setOutput($this->render());
-  	}
+  }
 
-  	private function getForm() {
+  private function getForm() {
     	$this->data['text_enabled'] = $this->language->get('text_enabled');
     	$this->data['text_disabled'] = $this->language->get('text_disabled');
     	$this->data['text_none'] = $this->language->get('text_none');
