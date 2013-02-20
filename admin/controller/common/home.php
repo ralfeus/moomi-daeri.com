@@ -36,97 +36,6 @@ class ControllerCommonHome extends Controller {
 		
 		$this->data['entry_range'] = $this->language->get('entry_range');
 		
-		// Check install directory exists
- 		/*if (is_dir(dirname(DIR_APPLICATION) . '/install')) {
-			$this->data['error_install'] = $this->language->get('error_install');
-		} else {
-			$this->data['error_install'] = '';
-		}
-
-		// Check image directory is writable
-		$file = DIR_IMAGE . 'test';
-		
-		$handle = fopen($file, 'a+'); 
-		
-		fwrite($handle, '');
-			
-		fclose($handle); 		
-		
-		if (!file_exists($file)) {
-			$this->data['error_image'] = sprintf($this->language->get('error_image'). DIR_IMAGE);
-		} else {
-			$this->data['error_image'] = '';
-			
-			unlink($file);
-		}
-		
-		// Check image cache directory is writable
-		$file = DIR_IMAGE . 'cache/test';
-		
-		$handle = fopen($file, 'a+'); 
-		
-		fwrite($handle, '');
-			
-		fclose($handle); 		
-		
-		if (!file_exists($file)) {
-			$this->data['error_image_cache'] = sprintf($this->language->get('error_image_cache'). DIR_IMAGE . 'cache/');
-		} else {
-			$this->data['error_image_cache'] = '';
-			
-			unlink($file);
-		}
-		
-		// Check cache directory is writable
-		$file = DIR_CACHE . 'test';
-		
-		$handle = fopen($file, 'a+'); 
-		
-		fwrite($handle, '');
-			
-		fclose($handle); 		
-		
-		if (!file_exists($file)) {
-			$this->data['error_cache'] = sprintf($this->language->get('error_image_cache'). DIR_CACHE);
-		} else {
-			$this->data['error_cache'] = '';
-			
-			unlink($file);
-		}
-		
-		// Check download directory is writable
-		$file = DIR_DOWNLOAD . 'test';
-		
-		$handle = fopen($file, 'a+'); 
-		
-		fwrite($handle, '');
-			
-		fclose($handle); 		
-		
-		if (!file_exists($file)) {
-			$this->data['error_download'] = sprintf($this->language->get('error_download'). DIR_DOWNLOAD);
-		} else {
-			$this->data['error_download'] = '';
-			
-			unlink($file);
-		}
-		
-		// Check logs directory is writable
-		$file = DIR_LOGS . 'test';
-		
-		$handle = fopen($file, 'a+'); 
-		
-		fwrite($handle, '');
-			
-		fclose($handle); 		
-		
-		if (!file_exists($file)) {
-			$this->data['errorlogs'] = sprintf($this->language->get('error_logs'). DIR_LOGS);
-		} else {
-			$this->data['error_logs'] = '';
-			
-			unlink($file);
-		}*/
 										
 		$this->data['breadcrumbs'] = array();
 
@@ -418,7 +327,7 @@ class ControllerCommonHome extends Controller {
 		}
 	}
 
-	public function getProducts($filter = array()) {
+	public function getProducts($filter = array()) { //print_r($this->parameters); die();
 
 		if (isset($this->request->get['filter_price'])) {
 			$filter_price = $this->request->get['filter_price'];
@@ -501,6 +410,29 @@ class ControllerCommonHome extends Controller {
 			$filter['start'] = 0;
 		}
 
+		$lastMonthStart  = mktime(0, 0, 0, date("m")-1, 1,   date("Y"));
+		$lastMonthEnd        = mktime(0, 0, 0, date("m"), 0, date("Y"));
+
+		if(isset($this->parameters['filterDateAddedFrom'])) {
+			$filter['filterDateAddedFrom'] = $this->parameters['filterDateAddedFrom'];
+			$this->data['filterDateAddedFrom'] = $this->parameters['filterDateAddedFrom'];
+		}
+		else {
+			$this->data['filterDateAddedFrom'] = date("Y-m-d", $lastMonthStart);
+		}
+
+		if(isset($this->parameters['filterDateAddedTo'])) {
+			$filter['filterDateAddedTo'] = $this->parameters['filterDateAddedTo'];
+			$this->data['filterDateAddedTo'] = $this->parameters['filterDateAddedTo'];
+		}
+		else {
+			$this->data['filterDateAddedTo'] = date("Y-m-d", $lastMonthEnd);
+		}
+
+		if(isset($this->parameters['filterUserNameId'])) {
+			$filter['filterUserNameId'] = $this->parameters['filterUserNameId'];
+		}
+
 		$this->load->model('catalog/product');
 		$results = $this->model_catalog_product->getProducts($filter);
 		$products = array();
@@ -547,6 +479,8 @@ class ControllerCommonHome extends Controller {
 
 		$this->data = array_merge($this->data, $this->parameters);
 
+		$this->data['usernames'] = $this->getUserNames();
+
 		$this->data['button_filter'] = $this->language->get('FILTER');
     $this->data['textResetFilter'] = $this->language->get('RESET_FILTER');
 
@@ -577,10 +511,14 @@ class ControllerCommonHome extends Controller {
       else
           $this->session->data['parameters']['catalog/product'] = array();
 
-      if (empty($this->session->data['parameters']['catalog/product']['filterDateAddedFrom']))
-          $this->session->data['parameters']['catalog/product']['filterDateAddedFrom'] = '2012-01-01';
-      if (empty($this->session->data['parameters']['catalog/product']['filterDateAddedTo']))
-          $this->session->data['parameters']['catalog/product']['filterDateAddedTo'] =  '2014-01-01';
+
+      $lastMonthStart  = mktime(0, 0, 0, date("m")-1, 1,   date("Y"));
+			$lastMonthEnd        = mktime(0, 0, 0, date("m"), 0, date("Y"));
+
+      if (empty($this->session->data['parameters']['common/home']['filterDateAddedFrom']))
+          $this->session->data['parameters']['common/home']['filterDateAddedFrom'] = date("Y-m-d", $lastMonthStart);
+      if (empty($this->session->data['parameters']['common/home']['filterDateAddedTo']))
+          $this->session->data['parameters']['common/home']['filterDateAddedTo'] =  date("Y-m-d", $lastMonthEnd);
       if (empty($this->session->data['parameters']['catalog/product']['filterManufacturerId']) || !is_array($this->session->data['parameters']['catalog/product']['filterManufacturerId']))
           $this->session->data['parameters']['catalog/product']['filterManufacturerId'] =  array();
       if (empty($this->session->data['parameters']['catalog/product']['filterModel']))
@@ -603,271 +541,25 @@ class ControllerCommonHome extends Controller {
       $this->parameters['token'] = $this->session->data['token'];
   }
 
-
-	private function getList() {				
-		if (isset($this->request->get['filter_price'])) {
-			$filter_price = $this->request->get['filter_price'];
-		} else {
-			$filter_price = null;
-		}
-
-		if (isset($this->request->get['filter_korean_name'])) {
-			$filter_korean_name = $this->request->get['filter_korean_name'];
-		} else {
-			$filter_korean_name = null;
-		}
-
-		if (isset($this->request->get['sort'])) {
-			$sort = $this->request->get['sort'];
-		} else {
-			$sort = 'pd.name';
-		}
-		
-		if (isset($this->request->get['order'])) {
-			$order = $this->request->get['order'];
-		} else {
-			$order = 'ASC';
-		}
-		
-		$url = '';
-						
-		if (isset($this->request->get['filter_name'])) {
-			$url .= '&filter_name=' . $this->request->get['filter_name'];
-		}
-		
-		if (isset($this->request->get['filter_model'])) {
-			$url .= '&filterModel=' . $this->request->get['filterModel'];
-		}
-		
-		if (isset($this->request->get['filter_price'])) {
-			$url .= '&filter_price=' . $this->request->get['filter_price'];
-		}
-		
-		if (isset($this->request->get['filter_korean_name'])) {
-			$url .= '&filter_korean_name=' . $this->request->get['filter_korean_name'];
-		}
-
-		if (isset($this->request->get['filter_user_name'])) {
-			$url .= '&filter_user_name=' . $this->request->get['filter_user_name'];
-		}			
-
-		if (isset($this->request->get['filter_status'])) {
-			$url .= '&filter_status=' . $this->request->get['filter_status'];
-		}
-		
-		if (isset($this->request->get['filter_manufacturer'])) {
-			$url .= '&filter_manufacturer=' . $this->request->get['filter_manufacturer'];
-		}
-		
-		if (isset($this->request->get['filter_supplier'])) {
-			$url .= '&filter_supplier=' . $this->request->get['filter_supplier'];
-		}
-						
-		if (isset($this->request->get['sort'])) {
-			$url .= '&sort=' . $this->request->get['sort'];
-		}
-
-		if (isset($this->request->get['order'])) {
-			$url .= '&order=' . $this->request->get['order'];
-		}
-		
-		if (isset($this->request->get['page'])) {
-			$url .= '&page=' . $this->request->get['page'];
-		}
-
-		$this->data['insert'] = $this->url->link('catalog/product/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
-		$this->data['copy'] = $this->url->link('catalog/product/copy', 'token=' . $this->session->data['token'] . $url, 'SSL');	
-		$this->data['delete'] = $this->url->link('catalog/product/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
-    $this->data['enable'] = $this->url->link('catalog/product/enable', 'token=' . $this->session->data['token'] . $url, 'SSL');
-    $this->data['disable'] = $this->url->link('catalog/product/disable', 'token=' . $this->session->data['token'] . $url, 'SSL');
-
-		$this->data['products'] = array();
-    $data = $this->parameters;
-
-    $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
-    $data['limit']           = $this->config->get('config_admin_limit');
-		$data['filter_price']	  = $filter_price;
-		$data['filter_korean_name'] = $filter_korean_name;
-		$data['sort']            = $sort;
-		$data['order']           = $order;
-
-		$this->load->model('tool/image');
-		$this->load->model('catalog/supplier');
-		$this->load->model('catalog/manufacturer');
-
-		$product_total = $this->model_catalog_product->getTotalProducts($data);
-
-		$results = $this->model_catalog_product->getProducts($data);
-    $this->data['suppliers'] = $this->getSuppliers();
-    $this->data['usernames'] = $this->getUserNames();
-    $this->data['manufacturers'] = $this->getManufacturers();
-
-    
-		foreach ($results as $result) {
-			$action = array();
-			$action[] = array(
-				'text' => $this->language->get('text_edit'),
-				'href' => $this->url->link('catalog/product/update', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, 'SSL')
-			);
-
-			$link = array();
-			$link[] = array(
-				'text' => 'click',
-				'href' => $result['link']
-
-			);
-			
-			if ($result['image'] && file_exists(DIR_IMAGE . $result['image'])) {
-				$image = $this->model_tool_image->resize($result['image'], 40, 40);
-			} else {
-				$image = $this->model_tool_image->resize('no_image.jpg', 40, 40);
-			}
-	
-			$special = false;
-			$product_specials = $this->model_catalog_product->getProductSpecials($result['product_id']);
-			
-			foreach ($product_specials  as $product_special) {
-				if (($product_special['date_start'] == '0000-00-00' || $product_special['date_start'] > date('Y-m-d')) && ($product_special['date_end'] == '0000-00-00' || $product_special['date_end'] < date('Y-m-d'))) {
-					$special = $product_special['price'];
-					break;
-				}					
-			}
-			$suppliers = $this->model_catalog_supplier->getSupplier($result['supplier_id']);
-			if (empty($suppliers))
-				$suppliers['name'] = "";
-
-            $manufacturers = $this->model_catalog_manufacturer->getManufacturer($result['manufacturer_id']);
-			if (empty($manufacturers))
-				$manufacturers['name'] = "";
-
-      $this->data['products'][] = array(
-				'product_id' => $result['product_id'],
-        'dateAdded' => date('Y-m-d', strtotime($result['date_added'])),
-				'name'       => $result['name'],
-				'model'      => $result['model'],
-				'price'      => $result['price'],
-				'special'    => $special,
-				'image'      => $image,
-				'user_name'  => $result['user_name'],
-				'status'     => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
-				'manufacturer'=> $manufacturers['name'],
-				'supplier'	 => $suppliers['name'],
-				'selected'   => isset($this->request->post['selected']) && in_array($result['product_id'], $this->request->post['selected']),
-				'action'     => $action,
-				'link'     	 => $link,
-				'korean_name'=> $result['korean_name'],
-				'manufacturer_page_url' => empty($result['manufacturer_page_url']) ? '' : $result['manufacturer_page_url']
-			);
-    }
-		$this->data['text_enabled'] = $this->language->get('text_enabled');
-		$this->data['text_disabled'] = $this->language->get('text_disabled');		
-		$this->data['text_no_results'] = $this->language->get('text_no_results');		
-		$this->data['text_image_manager'] = $this->language->get('text_image_manager');		
-			
-		$this->data['column_image'] = $this->language->get('column_image');		
-		$this->data['column_name'] = $this->language->get('column_name');		
-		$this->data['column_model'] = $this->language->get('column_model');		
-		$this->data['column_price'] = $this->language->get('column_price');		
-		$this->data['column_korean_name'] = $this->language->get('column_korean_name');
-		$this->data['column_user_name'] = $this->language->get('column_user_name');		
-		$this->data['column_status'] = $this->language->get('column_status');
-		$this->data['columnManufacturer'] = $this->language->get('COLUMN_MANUFACTURER');
-		$this->data['columnSupplier'] = $this->language->get('COLUMN_SUPPLIER');
-    $this->data['textDateAdded'] = $this->language->get('DATE_ADDED');
-		$this->data['column_action'] = $this->language->get('column_action');		
-				
-		$this->data['button_copy'] = $this->language->get('button_copy');		
-		$this->data['button_insert'] = $this->language->get('button_insert');		
-		$this->data['button_delete'] = $this->language->get('button_delete');		
-		$this->data['button_filter'] = $this->language->get('FILTER');
-    $this->data['textResetFilter'] = $this->language->get('RESET_FILTER');
-		$this->data['buttonManufacturer'] = $this->language->get('BUTTON_MANUFACTURER');
-    $this->data['buttonSupplier'] = $this->language->get('BUTTON_SUPPLIER');
-    $this->data['button_enable'] = $this->language->get('ENABLE');
-    $this->data['button_disable'] = $this->language->get('DISABLE');
-
-
- 		if (isset($this->error['warning'])) {
-			$this->data['error_warning'] = $this->error['warning'];
-		} else {
-			$this->data['error_warning'] = '';
-		}
-
-		if (isset($this->session->data['success'])) {
-			$this->data['success'] = $this->session->data['success'];
-		
-			unset($this->session->data['success']);
-		} else {
-			$this->data['success'] = '';
-		}
-
-		$url = '';
-
-		if (isset($this->request->get['filter_name'])) {
-			$url .= '&filter_name=' . $this->request->get['filter_name'];
-		}
-		
-		if (isset($this->request->get['filter_model'])) {
-			$url .= '&filter_model=' . $this->request->get['filter_model'];
-		}
-		
-		if (isset($this->request->get['filter_price'])) {
-			$url .= '&filter_price=' . $this->request->get['filter_price'];
-		}
-		
-		if (isset($this->request->get['filter_korean_name'])) {
-			$url .= '&filter_korean_name=' . $this->request->get['filter_korean_name'];
-		}
-
-		if (isset($this->request->get['filter_user_name'])) {
-			$url .= '&filter_user_name=' . $this->request->get['filter_user_name'];
-		}
-		
-		if (isset($this->request->get['filter_status'])) {
-			$url .= '&filter_status=' . $this->request->get['filter_status'];
-		}
-								
-		if ($order == 'ASC') {
-			$url .= '&order=DESC';
-		} else {
-			$url .= '&order=ASC';
-		}
-
-		if (isset($this->request->get['page'])) {
-			$url .= '&page=' . $this->request->get['page'];
-		}
-					
-		$this->data['sort_name'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=pd.name' . $url, 'SSL');
-		$this->data['sort_model'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.model' . $url, 'SSL');
-		$this->data['sort_price'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.price' . $url, 'SSL');
-		$this->data['sort_korean_name'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=a.text' . $url, 'SSL');
-		$this->data['sort_user_name'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=u.username' . $url, 'SSL');
-		$this->data['sort_status'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.status' . $url, 'SSL');
-		$this->data['manufacturer'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.manufacturer' . $url, 'SSL');
-		$this->data['supplier'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.supplier' . $url, 'SSL');
-		$this->data['sort_order'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.sort_order' . $url, 'SSL');
-
-		$pagination = new Pagination();
-		$pagination->total = $product_total;
-		$pagination->page = $this->parameters['page'];
-		$pagination->limit = $this->config->get('config_admin_limit');
-		$pagination->text = $this->language->get('text_pagination');
-        unset($this->parameters['page']);
-		$pagination->url = $this->url->link('catalog/product', $this->buildUrlParameterString($this->parameters) . '&page={page}', 'SSL');
-		$this->data['pagination'] = $pagination->render();
-	
-		$this->data['filter_price'] = $filter_price;
-		$this->data['filter_korean_name'] = $filter_korean_name;
-		$this->data['sort'] = $sort;
-		$this->data['order'] = $order;
-    $this->data = array_merge($this->data, $this->parameters);
-    $this->setBreadcrumbs();
-		$this->template = 'catalog/product_list.tpl';
-		$this->children = array(
-			'common/header',
-			'common/footer'
-		);
-		$this->response->setOutput($this->render());
+  private function getUserNames()
+  {
+      foreach ($this->parameters as $key => $value)
+      {
+          if (strpos($key, 'filter') === false)
+              continue;
+          $data[$key] = $value;
+      }
+      unset($data['filterUserNameId']);
+      $tmpResult = array();
+      $usernames = $this->model_catalog_product->getProductUserNames($data);
+      
+      foreach ($usernames as $username)
+      {
+          if (!in_array($username['user_id'], $tmpResult))
+              $tmpResult[$username['user_id']] = $username['user_name'];
+      }
+      natcasesort($tmpResult);
+      return $tmpResult;
   }
 
 

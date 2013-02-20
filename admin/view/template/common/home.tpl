@@ -131,15 +131,15 @@ function resetFilter()
             <h1><img src="view/image/product.png" alt="" /> <?php echo $heading_title; ?></h1>
           </div>
           <div class="content">
-            <form action="<?php echo $delete; ?>" method="post" enctype="multipart/form-data" id="form">
+            <form action="" method="post" enctype="multipart/form-data" id="form">
               <table class="list">
                 <tbody>
                   <tr class="filter">
+                    <!--<td></td>-->
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
-                    <td><input name="filterKoreanName" value="<?= $filterKoreanName ?>" /></td>
+                    <td><!--<input name="filterKoreanName" value="<?= $filterKoreanName ?>" />--></td>
                     <td>
                         <select name="filterUserNameId[]" multiple="true">
                             <?php foreach ($usernames as $key => $value):
@@ -160,7 +160,7 @@ function resetFilter()
                   <?php if (count($products) > 0) { ?>
                   <?php foreach ($products as $product) { ?>
                   <tr>
-                    <td class="center"><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" style="padding: 1px; border: 1px solid #DDDDDD;" /></td>
+                    <!--<td class="center"><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" style="padding: 1px; border: 1px solid #DDDDDD;" /></td>-->
                     <td class="left"><?php echo $product['name']; ?></td>
                     <td class="left"><?php echo $product['model']; ?></td>
                     <td class="left"><?php if ($product['special']) { ?>
