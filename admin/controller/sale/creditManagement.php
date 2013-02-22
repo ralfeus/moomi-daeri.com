@@ -86,6 +86,7 @@ class ControllerSaleCreditManagement extends Controller
     protected function initParameters()
     {
         $this->parameters['amount'] = empty($_REQUEST['amount']) ? null : $_REQUEST['amount'];
+        $this->parameters['comment'] = empty($_REQUEST['comment']) ? null : $_REQUEST['comment'];
         $this->parameters['requestId'] = empty($_REQUEST['requestId']) ? null : $_REQUEST['requestId'];
         $this->parameters['token'] = $this->session->data['token'];
     }
@@ -100,13 +101,21 @@ class ControllerSaleCreditManagement extends Controller
 
     public function saveAmount()
     {
-        $this->log->write(print_r($this->parameters, true));
+//        $this->log->write(print_r($this->parameters, true));
         if ($this->validateInput())
         {
             $request = Messaging::getSystemMessage($this->parameters['requestId']);
             $request['data']->amount = $this->parameters['amount'];
             Messaging::updateSystemMessage($request['messageId'], $request['data']);
         }
+    }
+
+    public function saveComment()
+    {
+//        $this->log->write(print_r($this->parameters, true));
+        $request = Messaging::getSystemMessage($this->parameters['requestId']);
+        $request['data']->comment = $this->parameters['comment'];
+        Messaging::updateSystemMessage($request['messageId'], $request['data']);
     }
 
     private function setBreadcrumps()
