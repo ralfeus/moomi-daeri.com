@@ -31,11 +31,11 @@
           <li><a href="<?= $orderItems ?>"><?= $textOrderItems ?></a></li>
           <li><a href="<?= $repurchaseOrders ?>"><?= $textRepurchaseOrders ?></a></li>
           <li><a href="<?= $invoice ?>"><?= $text_invoices ?></a></li>
-          <li><a href="<?php echo $download; ?>"><?php echo $text_download; ?></a></li>
+          <!--li><a href="<?php echo $download; ?>"><?php echo $text_download; ?></a></li-->
           <?php /*<li><a href="<?php echo $reward; ?>"><?php echo $text_reward; ?></a></li>*/ ?>
           <li><a href="<?php echo $transaction; ?>"><?php echo $text_transaction; ?></a></li>
           <li><a href="<?= $addCreditUrl ?>"><?= $textAddCredit ?></a></li>
-          <li><a href="<?= $creditHistoryUrl ?>"><?= $textCreditHistory ?></a></li>
+          <!--li><a href="<?= $creditHistoryUrl ?>"><?= $textCreditHistory ?></a></li-->
         </ul>
       </div>
   </div>
