@@ -41,14 +41,17 @@ class Messaging extends LibraryClass
             return null;
     }
 
-    public static function getSystemMessages($messageTypeId)
+    public static function getSystemMessages($messageTypeId, $senderId = null, $start = null, $limit = null)
     {
         $query = Messaging::$instance->db->query("
             SELECT *
             FROM " . DB_PREFIX . "messages
-            WHERE message_type_id = " . (int)$messageTypeId . "
-            ORDER BY time_added DESC
-        ");
+            WHERE
+                message_type_id = " . (int)$messageTypeId .
+                ($senderId ? " AND sender_id = " . (int)$senderId : '') . "
+            ORDER BY time_added DESC " .
+            (is_numeric($start) && is_numeric($limit) ? "LIMIT $start, $limit" : '')
+        );
         if ($query->num_rows)
         {
             $messages = array();
@@ -67,6 +70,18 @@ class Messaging extends LibraryClass
         }
         else
             return array();
+    }
+
+    public static function  getSystemMessagesCount($messageTypeId, $senderId = null)
+    {
+        $query = Messaging::$instance->db->query("
+            SELECT count(*) as quantity
+            FROM " . DB_PREFIX . "messages
+            WHERE
+                message_type_id = " . (int)$messageTypeId .
+                ($senderId ? " AND sender_id = " . (int)$senderId : '')
+        );
+        return $query->row['quantity'];
     }
 
     public static function submitSystemMessage($senderId, $recipientId, $messageTypeId, $data)

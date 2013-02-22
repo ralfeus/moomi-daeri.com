@@ -9,85 +9,134 @@ class ControllerAccountTransaction extends Controller {
         $this->data['heading_title'] = $this->language->get('headingTitle');
     }
 
+    public function getCreditRequests()
+    {
+        $this->load->library('Messaging');
+        $this->load->library('Status');
+        $addCreditRequests = Messaging::getSystemMessages(
+            SYS_MSG_ADD_CREDIT,
+            $this->customer->getId(),
+            ($this->parameters['creditRequestsPage'] - 1 ) * 10,
+            10
+        );
+//        $this->log->write(print_r($addCreditRequests, true));
+        foreach ($addCreditRequests as $addCreditRequest)
+        {
+            $this->data['requests'][] = array(
+                'requestId' => $addCreditRequest['messageId'],
+                'amount' => $addCreditRequest['data']->amount,
+                'comment' => $addCreditRequest['data']->comment,
+                'currency' => $addCreditRequest['data']->currency,
+                'status' => Status::getStatus($addCreditRequest['data']->status, $this->config->get('language_id'), true),
+                'statusId' => $addCreditRequest['data']->status,
+                'timeAdded' => $addCreditRequest['timeAdded']
+            );
+        }
+
+        /// Initialize interface
+        $this->data['textAmount'] = $this->language->get('AMOUNT');
+        $this->data['textComment'] = $this->language->get('COMMENT');
+        $this->data['textRequestId'] = $this->language->get('REQUEST_ID');
+        $this->data['textStatus'] = $this->language->get('STATUS');
+        $this->data['textTimeAdded'] = $this->language->get('TIME_ADDED');
+
+        $pagination = new Pagination();
+        $pagination->total = Messaging::getSystemMessagesCount(SYS_MSG_ADD_CREDIT, $this->customer->getId());
+        $pagination->page = $this->parameters['creditRequestsPage'];
+        $pagination->limit = 10;
+        $pagination->text = $this->language->get('text_pagination');
+        $pagination->url = $this->url->link(
+            'account/transaction',
+            'creditRequestsPage={page}&transactionsPage=' . $this->parameters['transactionsPage'], 'SSL');
+        $this->data['creditRequestsPagination'] = $pagination->render();
+    }
+
+    public function getTransactions()
+    {
+
+        $this->data['addCreditUrl'] = $this->url->link('account/addCredit', '', 'SSL');
+        $this->data['textTimeAdded'] = $this->language->get('TIME_ADDED');
+        $this->data['textComment'] = $this->language->get('COMMENT');
+        $this->data['textBalance'] = $this->language->get('BALANCE');
+        $this->data['textExpenseAmount'] = $this->language->get('EXPENSE_AMOUNT');
+        $this->data['textIncomeAmount'] = $this->language->get('INCOME_AMOUNT');
+        $this->data['textCurrency'] = $this->language->get('CURRENCY');
+        $this->data['text_total'] = $this->language->get('text_total');
+        $this->data['text_empty'] = $this->language->get('text_empty');
+        $this->data['textAddCredit'] = $this->language->get('ADD_CREDIT');
+        $this->data['textInvoiceId'] = $this->language->get('INVOICE_ID');
+        $this->data['textTransactionId'] = $this->language->get('TRANSACTION_ID');
+        $this->data['total'] = $this->currency->format($this->customer->getBalance(), $this->customer->getBaseCurrency()->getCode(), 1);
+
+        $data = array(
+            'sort'  => 'customer_transaction_id',
+            'order' => 'DESC',
+            'start' => ($this->parameters['transactionsPage'] - 1) * 10,
+            'limit' => 10
+        );
+
+        $transaction_total = $this->model_account_transaction->getTotalTransactions($data);
+        $transactions = $this->model_account_transaction->getTransactions($data);
+
+        $this->data['transactions'] = array();
+        foreach ($transactions as $transaction) {
+            $amount = -$transaction['amount'];
+            $amountString = $this->currency->format($amount, $transaction['currency_code'], 1);
+            $this->data['transactions'][] = array(
+                'balance' => $this->currency->format($transaction['balance'], $this->customer->getBaseCurrency()->getCode(), 1),
+                'expenseAmount'      => $amount < 0 ? $amountString : '',
+                'incomeAmount'      => $amount >= 0 ? $amountString : '',
+                'currency_code' => $transaction['currency_code'],
+                'date_added'  => $transaction['date_added'],
+                'description' => $transaction['description'],
+                'invoiceId' => $transaction['invoice_id'] ? $transaction['invoice_id'] : '',
+                'invoiceUrl' => $this->url->link('account/invoice/showForm', 'invoiceId=' . $transaction['invoice_id'], 'SSL'),
+                'transactionId' => $transaction['customer_transaction_id']
+            );
+        }
+
+        $pagination = new Pagination();
+        $pagination->total = $transaction_total;
+        $pagination->page = $this->parameters['transactionsPage'];
+        $pagination->limit = 10;
+        $pagination->text = $this->language->get('text_pagination');
+        $pagination->url = $this->url->link(
+            'account/transaction',
+            'transactionsPage={page}&creditRequestsPage=' . $this->parameters['creditRequestsPage'], 'SSL');
+        $this->data['transactionsPagination'] = $pagination->render();
+    }
+
 	public function index() {
 		if (!$this->customer->isLogged()) {
 			$this->session->data['redirect'] = $this->url->link('account/transaction', '', 'SSL');
 			
 	  		$this->redirect($this->url->link('account/login', '', 'SSL'));
     	}
-
+        $this->getCreditRequests();
+        $this->getTransactions();
         $this->setBreadcrumbs();
 
-        $this->data['addCreditUrl'] = $this->url->link('account/addCredit', '', 'SSL');
-        $this->data['column_date_added'] = $this->language->get('column_date_added');
-		$this->data['column_description'] = $this->language->get('column_description');
-		$this->data['column_amount'] = $this->language->get('column_amount');
-        $this->data['textCurrency'] = $this->language->get('CURRENCY');
-		$this->data['text_total'] = $this->language->get('text_total');
-		$this->data['text_empty'] = $this->language->get('text_empty');
-		$this->data['textAddCredit'] = $this->language->get('ADD_CREDIT');
-        $this->data['textInvoiceId'] = $this->language->get('INVOICE_ID');
-        $this->data['textTransactionId'] = $this->language->get('TRANSACTION_ID');
-        $this->data['total'] = $this->currency->format($this->customer->getBalance(), $this->customer->getBaseCurrency()->getCode(), 1);
-
-
-        if (isset($this->request->get['page'])) {
-			$page = $this->request->get['page'];
-		} else {
-			$page = 1;
-		}		
-		
-		$this->data['transactions'] = array();
-		
-		$data = array(				  
-			'sort'  => 'customer_transaction_id',
-			'order' => 'DESC',
-			'start' => ($page - 1) * 10,
-			'limit' => 10
-		);
-		
-		$transaction_total = $this->model_account_transaction->getTotalTransactions($data);
-	
-		$transactions = $this->model_account_transaction->getTransactions($data);
- 		
-    	foreach ($transactions as $transaction) {
-			$this->data['transactions'][] = array(
-				'amount'      => $this->currency->format($transaction['amount'], $transaction['currency_code'], 1),
-                'currency_code' => $transaction['currency_code'],
-                'date_added'  => $transaction['date_added'],
-				'description' => $transaction['description'],
-                'invoiceId' => $transaction['invoice_id'] ? $transaction['invoice_id'] : '',
-                'invoiceUrl' => $this->url->link('account/invoice/showForm', 'invoiceId=' . $transaction['invoice_id'], 'SSL'),
-                'transactionId' => $transaction['customer_transaction_id']
-			);
-		}	
-
-		$pagination = new Pagination();
-		$pagination->total = $transaction_total;
-		$pagination->page = $page;
-		$pagination->limit = 10; 
-		$pagination->text = $this->language->get('text_pagination');
-		$pagination->url = $this->url->link('account/transaction', 'page={page}', 'SSL');
-			
-		$this->data['pagination'] = $pagination->render();
-		
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/account/transaction.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/account/transaction.tpl';
-		} else {
-			$this->template = 'default/template/account/transaction.tpl';
-		}
-		
 		$this->children = array(
 			'common/column_left',
 			'common/column_right',
 			'common/content_top',
 			'common/content_bottom',
 			'common/footer',
-			'common/header'	
+			'common/header'
 		);
-						
-		$this->response->setOutput($this->render());		
+
+        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/account/transaction.tpl'))
+            $this->template = $this->config->get('config_template') . '/template/account/transaction.tpl';
+        else
+            $this->template = 'default/template/account/transaction.tpl';
+		$this->response->setOutput($this->render());
 	}
+
+    protected function initParameters()
+    {
+        $this->parameters['creditRequestsPage'] = empty($_REQUEST['creditRequestsPage']) ? 1 : $_REQUEST['creditRequestsPage'];
+        $this->parameters['transactionsPage'] = empty($_REQUEST['transactionsPage']) ? 1 : $_REQUEST['transactionsPage'];
+    }
 
     private function setBreadcrumbs()
     {

@@ -98,18 +98,47 @@ final class Currency extends OpenCartBase
     	return $string;
   	}
 	
-  	public function convert($value, $from, $to) {
-		if (isset($this->currencies[$from])) {
-			$fromValue = $this->currencies[$from]['value'];
-		} else {
-			$fromValue = 0;
-		}
-		
-		if (isset($this->currencies[$to])) {
-			$toValue = $this->currencies[$to]['value'];
-		} else {
-			$toValue = 0;
-		}		
+    public function convert($value, $from, $to, $date = null)
+    {
+        if ($date != null)
+        {
+            $query = $this->db->query("
+                SELECT ch.*, c.code
+                FROM
+                    " . DB_PREFIX . "currency_history AS ch
+                    JOIN " . DB_PREFIX . "currency AS c on c.currency_id = ch.currency_id
+                    JOIN
+                    (
+                        SELECT currency_id, max(date_added) AS last_date_added
+                        FROM " . DB_PREFIX . "currency_history AS ch1
+                        WHERE date_added <= '" . $this->db->escape($date) . "'
+                        GROUP BY currency_id
+                    ) AS lrm ON lrm.currency_id = ch.currency_id AND lrm.last_date_added = ch.date_added
+                WHERE c.code in ('" . $this->db->escape($from) . "', '" . $this->db->escape($to) . "')
+            ");
+            if ($query->rows[0]['code'] == $from)
+            {
+                $fromValue = $query->rows[0]['rate'];
+                $toValue = $query->rows[1]['rate'];
+            }
+            else
+            {
+                $fromValue = $query->rows[1]['rate'];
+                $toValue = $query->rows[0]['rate'];
+            }
+        }
+        else
+        {
+            if (isset($this->currencies[$from]))
+                $fromValue = $this->currencies[$from]['value'];
+            else
+                $fromValue = 0;
+
+            if (isset($this->currencies[$to]))
+                $toValue = $this->currencies[$to]['value'];
+            else
+                $toValue = 0;
+        }
 		
 		return round(
             $value * ($toValue / $fromValue),

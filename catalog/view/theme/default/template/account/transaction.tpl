@@ -10,15 +10,50 @@
     <div class="buttons">
         <div class="right"><a href="<?= $addCreditUrl ?>" class="button"><span><?= $textAddCredit ?></span></a></div>
     </div>
-  <table class="list">
+    <table class="list">
+        <thead>
+            <tr>
+                <td class="left"><?= $textRequestId ?></td>
+                <td><?= $textAmount ?></td>
+                <td><?= $textTimeAdded ?></td>
+                <td><?= $textStatus ?></td>
+                <td><?= $textComment ?></td>
+            </tr>
+        </thead>
+        <tbody>
+<?php foreach ($requests as $request): ?>
+            <tr>
+                <td><?= $request['requestId'] ?></td>
+                <td style="white-space: nowrap;">
+                    <input
+                            alt="<?= $request['amount'] ?>"
+                            onblur="saveAmount(<?= $request['requestId'] ?>, this)"
+                            onkeydown="if (event.keyCode == 13) saveAmount(<?= $request['requestId'] ?>, this)"
+                            size=3
+                            value="<?= $request['amount'] ?>"
+                    <?= $request['statusId'] != ADD_CREDIT_STATUS_PENDING ? "disabled" : "disabled" ?> />
+                    <?= $request['currency'] ?>
+                </td>
+                <td style="white-space: nowrap;"><?= $request['timeAdded'] ?></td>
+                <td id="status"><?= $request['status'] ?></td>
+                <td><?= $request['comment'] ?></td>
+            </tr>
+<?php endforeach; ?>
+        </tbody>
+    </table>
+    <div class="pagination"><?= $creditRequestsPagination; ?></div>
+
+    <table class="list">
     <thead>
       <tr>
         <td><?= $textTransactionId ?></td>
-        <td class="left"><?php echo $column_date_added; ?></td>
+        <td class="left"><?= $textTimeAdded ?></td>
         <td class="left"><?= $textInvoiceId ?></td>
-        <td class="left"><?php echo $column_description; ?></td>
-        <td class="right"><?php echo $column_amount; ?></td>
+        <td class="left"><?= $textComment ?></td>
+          <td><?= $textIncomeAmount ?></td>
+          <td><?= $textExpenseAmount ?></td>
         <td class="left"><?= $textCurrency ?></td>
+          <td><?= $textBalance ?></td>
       </tr>
     </thead>
     <tbody>
@@ -29,8 +64,10 @@
         <td class="left"><?php echo $transaction['date_added']; ?></td>
         <td class="left"><a href="<?= $transaction['invoiceUrl'] ?>"><?= $transaction['invoiceId'] ?></a></td>
         <td class="left"><?php echo $transaction['description']; ?></td>
-        <td class="right"><?php echo $transaction['amount']; ?></td>
+        <td class="right"><?php echo $transaction['incomeAmount']; ?></td>
+          <td><?= $transaction['expenseAmount'] ?></td>
         <td class="left"><?= $transaction['currency_code'] ?></td>
+          <td><?= $transaction['balance'] ?></td>
       </tr>
       <?php } ?>
       <?php } else { ?>
@@ -40,6 +77,6 @@
       <?php } ?>
     </tbody>
   </table>
-  <div class="pagination"><?php echo $pagination; ?></div>
+  <div class="pagination"><?= $transactionsPagination; ?></div>
   <?php echo $content_bottom; ?></div>
 <?php echo $footer; ?>

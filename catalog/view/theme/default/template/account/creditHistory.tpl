@@ -20,7 +20,7 @@
                 </tr>
             </thead>
             <tbody>
-            <?php foreach ($requests as $request): ?>
+<?php foreach ($requests as $request): ?>
             <tr>
                 <td><?= $request['requestId'] ?></td>
                 <td style="white-space: nowrap;">
@@ -37,7 +37,7 @@
                 <td id="status"><?= $request['status'] ?></td>
                 <td><?= $request['comment'] ?></td>
             </tr>
-            <?php endforeach; ?>
+<?php endforeach; ?>
         </table>
     </form>
 </div>
