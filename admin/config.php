@@ -29,3 +29,5 @@ define('DB_USERNAME', 'root');
 define('DB_PASSWORD', 'ujcdsex');
 define('DB_DATABASE', 'moomidae_db');
 define('DB_PREFIX', '');
+
+define('ADMIN_LIMIT_PRODUCTS', 20);
