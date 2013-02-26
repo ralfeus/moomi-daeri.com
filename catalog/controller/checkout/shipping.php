@@ -47,20 +47,26 @@ class ControllerCheckoutShipping extends Controller {
 					$quote_data = array();
 					
 					$this->load->model('setting/extension');
+					$this->load->model('localisation/description');
 					
 					$results = $this->model_setting_extension->getExtensions('shipping');
                     $this->log->write(print_r($results, true));
 
-                    foreach ($results as $result) {
+          foreach ($results as $result) {
 						if ($this->config->get($result['code'] . '_status')) {
                             $this->log->write("Trying to load shipping/" . $result['code']);
 							$this->load->model('shipping/' . $result['code']);
 							$quote = $this->{'model_shipping_' . $result['code']}->getQuote($shipping_address);
 //                            $this->log->write(print_r($quote, true));
-				
+							
 							if ($quote) {
+								//$res = $this->model_localisation_description->getDescription(null, $quote['quote'][$result['code']]['title']);
+								//$tempArr = reset($quote['quote']);
+								//$desc = '' . print_r($tempArr[@description], true);
+								//print_r($quote['quote']); die();
 								$quote_data[$result['code']] = array( 
 									'title'      => $quote['title'],
+									//'description'=> $desc, 
 									'quote'      => $quote['quote'], 
 									'sort_order' => $quote['sort_order'],
 									'error'      => $quote['error']
@@ -76,7 +82,7 @@ class ControllerCheckoutShipping extends Controller {
 					}
 			
 					array_multisort($sort_order, SORT_ASC, $quote_data);
-					
+					//print_r($quote_data); die();
 					$this->session->data['shipping_methods'] = $quote_data;
 				}
 			}

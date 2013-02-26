@@ -431,8 +431,8 @@ $('#shipping-address #button-address').live('click', function() {
                     $('#shipping-address input[name=\'email\']').after('<span class="error">' + json['error']['email'] + '</span>');
                 }
 
-                if (json['error']['telephone']) {
-                    $('#shipping-address input[name=\'telephone\']').after('<span class="error">' + json['error']['telephone'] + '</span>');
+                if (json['error']['phone']) {
+                    $('#shipping-address input[name=\'phone\']').after('<span class="error">' + json['error']['phone'] + '</span>');
                 }
 
                 if (json['error']['address_1']) {

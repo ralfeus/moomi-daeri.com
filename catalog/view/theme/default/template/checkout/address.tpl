@@ -32,6 +32,10 @@
       <td><input type="text" name="company" value="" class="large-field" /></td>
     </tr>
     <tr>
+      <td><span class="required">*</span> <?php echo $entry_phone; ?></td>
+      <td><input type="text" name="phone" value="" class="large-field" /></td>
+    </tr>
+    <tr>
       <td><span class="required">*</span> <?php echo $entry_address_1; ?></td>
       <td><input type="text" name="address_1" value="" class="large-field" /></td>
     </tr>

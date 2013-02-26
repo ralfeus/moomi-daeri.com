@@ -38,6 +38,10 @@ class ControllerCheckoutAddress extends Controller {
 					if ((utf8_strlen($this->request->post['lastname']) < 1) || (utf8_strlen($this->request->post['lastname']) > 32)) {
 						$json['error']['lastname'] = $this->language->get('error_lastname');
 					}
+
+					if ((utf8_strlen($this->request->post['phone']) < 5) || (utf8_strlen($this->request->post['phone']) > 32)) {
+						$json['error']['phone'] = $this->language->get('error_phone');
+					}
 			
 					if ((utf8_strlen($this->request->post['address_1']) < 3) || (utf8_strlen($this->request->post['address_1']) > 64)) {
 						$json['error']['address_1'] = $this->language->get('error_address_1');
@@ -159,6 +163,10 @@ class ControllerCheckoutAddress extends Controller {
 					if ((utf8_strlen($this->request->post['lastname']) < 1) || (utf8_strlen($this->request->post['lastname']) > 32)) {
 						$json['error']['lastname'] = $this->language->get('error_lastname');
 					}
+
+					if ((utf8_strlen($this->request->post['phone']) < 5) || (utf8_strlen($this->request->post['phone']) > 32)) {
+						$json['error']['phone'] = $this->language->get('error_phone');
+					}
 			
 					if ((utf8_strlen($this->request->post['address_1']) < 3) || (utf8_strlen($this->request->post['address_1']) > 64)) {
 						$json['error']['address_1'] = $this->language->get('error_address_1');
@@ -201,6 +209,7 @@ class ControllerCheckoutAddress extends Controller {
 			$this->data['entry_firstname'] = $this->language->get('entry_firstname');
 			$this->data['entry_lastname'] = $this->language->get('entry_lastname');
 			$this->data['entry_company'] = $this->language->get('entry_company');
+			$this->data['entry_phone'] = $this->language->get('entry_phone');
 			$this->data['entry_address_1'] = $this->language->get('entry_address_1');
 			$this->data['entry_address_2'] = $this->language->get('entry_address_2');
 			$this->data['entry_postcode'] = $this->language->get('entry_postcode');

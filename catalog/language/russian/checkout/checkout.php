@@ -49,6 +49,7 @@ $_['entry_lastname']                 = 'Фамилия:';
 $_['entry_telephone']                = 'Телефон:';
 $_['entry_fax']                      = 'Факс:';
 $_['entry_company']                  = 'Компания:';
+$_['entry_phone']                		 = 'Телефон:';
 $_['entry_address_1']                = 'Адрес:';
 $_['entry_address_2']                = 'Адрес (продолжение):';
 $_['entry_postcode']                 = 'Индекс:';

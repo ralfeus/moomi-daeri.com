@@ -50,7 +50,7 @@ class ControllerCheckoutCheckout extends Controller {
 			$this->template = $this->config->get('config_template') . $templateFileName;
 		else
 			$this->template = 'default' . $templateFileName;
-		
+		//print_r($this->template); die();
 		$this->children = array(
 			'common/column_left',
 			'common/column_right',
