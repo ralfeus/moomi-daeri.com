@@ -109,6 +109,7 @@ class ModelShippingEMS extends ShippingMethodModel
 				if ((string)$cost != '') {
 					$quote_data['ems_' . $result['geo_zone_id']] = array(
 						'code'         => 'ems.ems_' . $result['geo_zone_id'],
+                        'description'  => $result['description'],
 						'title'        => $result['name'] . '  (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->config->get('config_weight_class_id')) . ')',
 						'cost'         => $cost,
 						'tax_class_id' => $this->config->get('ems_tax_class_id'),
