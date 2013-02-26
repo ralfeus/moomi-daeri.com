@@ -41,6 +41,10 @@ class ControllerLocalisationGeoZone extends Controller {
 			$this->redirect($this->url->link('localisation/geo_zone', 'token=' . $this->session->data['token'] . $url, 'SSL'));
 		}
 
+		$this->load->model('localisation/language');
+
+		$this->data['languages'] = $this->model_localisation_language->getLanguages();
+
 		$this->getForm();
 	}
 
@@ -72,6 +76,10 @@ class ControllerLocalisationGeoZone extends Controller {
 			
 			$this->redirect($this->url->link('localisation/geo_zone', 'token=' . $this->session->data['token'] . $url, 'SSL'));
 		}
+
+		$this->load->model('localisation/language');
+
+		$this->data['languages'] = $this->model_localisation_language->getLanguages();
 
 		$this->getForm();
 	}
@@ -347,7 +355,8 @@ class ControllerLocalisationGeoZone extends Controller {
 		if (isset($this->request->post['description'])) {
 			$this->data['description'] = $this->request->post['description'];
 		} elseif (isset($geo_zone_info)) {
-			$this->data['description'] = $geo_zone_info['description'];
+			$this->data['description'] = $this->objectToArray(json_decode($geo_zone_info['description']));
+			//print_r($this->data['description']); die();
 		} else {
 			$this->data['description'] = '';
 		}
@@ -372,6 +381,19 @@ class ControllerLocalisationGeoZone extends Controller {
 				
 		$this->response->setOutput($this->render());
 	}
+
+	private function objectToArray($d) {
+		if (is_object($d)) {
+			$d = get_object_vars($d);
+		}
+ 
+		if (is_array($d)) {
+			return array_map($this->objectToArray, $d);
+		}
+		else {
+			return $d;
+		}
+	}
 	
 	private function validateForm() {
 		if (!$this->user->hasPermission('modify', 'localisation/geo_zone')) {
@@ -382,8 +404,10 @@ class ControllerLocalisationGeoZone extends Controller {
 			$this->error['name'] = $this->language->get('error_name');
 		}
 
-		if ((utf8_strlen($this->request->post['description']) < 3) || (utf8_strlen($this->request->post['description']) > 255)) {
-			$this->error['description'] = $this->language->get('error_description');
+		foreach ($this->request->post['description'] as $lang => $desc) {
+			if ((utf8_strlen($desc) < 3) || (utf8_strlen($desc) > 255)) {
+				$this->error['description'][$lang] = $this->language->get('error_description');
+			}
 		}
 
 		if (!$this->error) {

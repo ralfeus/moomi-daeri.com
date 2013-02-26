@@ -28,6 +28,7 @@ $_['text_date_modified']      = 'Date Modified:';
 $_['text_firstname']          = 'First Name:';
 $_['text_lastname']           = 'Last Name:';
 $_['text_company']            = 'Company:';
+$_['text_phone']          		= 'Phone:';
 $_['text_address_1']          = 'Address 1:';
 $_['text_address_2']          = 'Address 2:';
 $_['text_postcode']           = 'Postcode:';

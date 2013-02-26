@@ -1073,6 +1073,7 @@ class ControllerSaleOrder extends Controller {
 			$this->data['text_firstname'] = $this->language->get('text_firstname');
 			$this->data['text_lastname'] = $this->language->get('text_lastname');
 			$this->data['text_company'] = $this->language->get('text_company');
+			$this->data['text_phone'] = $this->language->get('text_phone');
 			$this->data['text_address_1'] = $this->language->get('text_address_1');
 			$this->data['text_address_2'] = $this->language->get('text_address_2');
 			$this->data['text_city'] = $this->language->get('text_city');
@@ -1263,6 +1264,7 @@ class ControllerSaleOrder extends Controller {
 			$this->data['payment_country'] = $order_info['payment_country'];			
 			$this->data['shipping_firstname'] = $order_info['shipping_firstname'];
 			$this->data['shipping_lastname'] = $order_info['shipping_lastname'];
+			$this->data['shipping_phone'] = $order_info['shipping_phone'];
 			$this->data['shipping_company'] = $order_info['shipping_company'];
 			$this->data['shipping_address_1'] = $order_info['shipping_address_1'];
 			$this->data['shipping_address_2'] = $order_info['shipping_address_2'];

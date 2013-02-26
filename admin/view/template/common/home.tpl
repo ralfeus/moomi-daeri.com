@@ -133,6 +133,17 @@ function resetFilter()
           <div class="content">
             <form action="" method="post" enctype="multipart/form-data" id="form">
               <table class="list">
+                <thead>
+                  <tr>
+                    <td> Product Name </td>
+                    <td> Model </td>
+                    <td> Price </td>
+                    <td> Korean Name </td>
+                    <td> Username </td>
+                    <td> Date added </td>
+                    <td> Action </td>
+                  </tr>
+                </thead>
                 <tbody>
                   <tr class="filter">
                     <!--<td></td>-->

@@ -199,6 +199,12 @@
             <td><?php echo $text_lastname; ?></td>
             <td><?php echo $shipping_lastname; ?></td>
           </tr>
+          <?php if ($shipping_phone) { ?>
+          <tr>
+            <td><?php echo $text_phone; ?></td>
+            <td><?php echo $shipping_phone; ?></td>
+          </tr>
+          <?php } ?>
           <?php if ($shipping_company) { ?>
           <tr>
             <td><?php echo $text_company; ?></td>

@@ -23,13 +23,15 @@
               <span class="error"><?php echo $error_name; ?></span>
               <?php } ?></td>
           </tr>
+          <?php foreach($languages as $language): ?>
           <tr>
-            <td><span class="required">*</span> <?php echo $entry_description; ?></td>
-            <td><input type="text" name="description" value="<?php echo $description; ?>" />
-              <?php if ($error_description) { ?>
-              <span class="error"><?php echo $error_description; ?></span>
+            <td><span class="required">*</span> <?php echo $entry_description; ?> (<?php echo $language['code']; ?>)</td>
+            <td><input type="text" name="description[<?php echo $language['code']; ?>]" value="<?= isset($description[$language['code']]) ? $description[$language['code']] : '' ?>" />
+              <?php if (isset($error_description[$language['code']])) { ?>
+              <span class="error"><?php echo $error_description[$language['code']]; ?></span>
               <?php } ?></td>
           </tr>
+        <?php endforeach ?>
         </table>
         <br />
         <table id="zone-to-geo-zone" class="list">
