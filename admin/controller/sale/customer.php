@@ -38,6 +38,7 @@ class ControllerSaleCustomer extends Controller {
 
     protected function initParameters()
     {
+        $this->parameters['baseCurrency'] = empty($_REQUEST['baseCurrency']) ? null : $_REQUEST['baseCurrency'];
         $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
         $this->parameters['customerId'] = empty($_REQUEST['customerId']) ? array() : $_REQUEST['customerId'];
         $this->parameters['token'] = $this->session->data['token'];
@@ -1227,6 +1228,7 @@ class ControllerSaleCustomer extends Controller {
                         Transaction::addCredit(
                             $this->request->get['customer_id'],
                             -$this->request->post['amount'],
+                            $customer['base_currency_code'],
                             $this->registry,
                             $this->request->post['description']);
                         $this->data['success'] = $this->language->get('SUCCESS_CREDIT_ADDED');
