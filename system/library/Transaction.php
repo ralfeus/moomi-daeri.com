@@ -18,14 +18,13 @@ class Transaction extends OpenCartBase implements ILibrary
         $this->modelTransaction = $this->load->model('sale/transaction', 'admin');
     }
 
-    public static function addCredit($customerId, $amount, $registry, $description = "")
+    public static function addCredit($customerId, $amount, $currency, $registry, $description = "")
     {
 //        Transaction::$instance->log->write("Starting");
         $modelCustomer = Transaction::$instance->load->model('sale/customer', 'admin');
         $customer = $modelCustomer->getCustomer($customerId);
 //        Transaction::$instance->log->write("Adding transaction");
-        Transaction::$instance->load->model('sale/transaction', 'admin')->addTransaction(
-            0, $customerId, -$amount, $customer['base_currency_code'], $description);
+        Transaction::$instance->addTransaction(0, $customerId, -$amount, $currency, $description);
 
         /// Try to pay all payment awaiting invoices
         $modelInvoice = Transaction::$instance->load->model('sale/invoice', 'admin');
@@ -54,11 +53,45 @@ class Transaction extends OpenCartBase implements ILibrary
             $modelInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
         else
         {
-            Transaction::$instance->load->model('sale/transaction', 'admin')->addTransaction(
-                $invoiceId, $customerId, $transactionAmount, $customer['base_currency_code'], $description
-            );
+//            Transaction::$instance->load->model('sale/transaction', 'admin')->addTransaction(
+//                $invoiceId, $customerId, $transactionAmount, $customer['base_currency_code'], $description
+//            );
+            Transaction::$instance->addTransaction($invoiceId, $customerId, $invoice['total'], $config->get('config_currency'), $description);
             $modelInvoice->setInvoiceStatus($invoiceId, IS_PAID);
         }
+    }
+
+    private function addTransaction($invoiceId, $customer, $amount, $currency_code, $description = '')
+    {
+        if (is_numeric($customer)) /// customer ID is passed. Need to get whole customer
+        {
+            $modelCustomer = Transaction::$instance->load->model('sale/customer', 'admin');
+            $customer = $modelCustomer->getCustomer($customer);
+        }
+
+        /// Now need to convert transaction amount to customer base currency
+        $currency = Transaction::$instance->registry->get('currency');
+        $amountInCustomerCurrency = (float)$currency->convert($amount, $currency_code, $customer['base_currency_code']);
+        $newCustomerBalance = $customer['balance'] - $amountInCustomerCurrency;
+        Transaction::$instance->db->query("
+            INSERT INTO " . DB_PREFIX . "customer_transaction
+            SET
+                customer_id = " . (int)$customer['customer_id'] . ",
+                invoice_id = " . (int)$invoiceId . ",
+                description = '" . $this->db->escape($description) . "',
+                amount = $amountInCustomerCurrency,
+                currency_code = '" . $customer['base_currency_code'] . "',
+                date_added = NOW(),
+                balance = $newCustomerBalance
+        ");
+        $transactionId = $this->db->getLastId();
+        /// Update customer's balance
+        $this->db->query("
+                UPDATE " . DB_PREFIX . "customer
+                SET
+                    balance = $newCustomerBalance
+                WHERE customer_id = " . $customer['customer_id']
+        );
     }
 
     public static function deleteTransaction($transactionId)

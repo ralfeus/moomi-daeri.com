@@ -261,30 +261,32 @@ class ControllerSaleInvoice extends Controller
             if ($customer['balance'] < $totalToPay)
                 if ($customer['allow_overdraft'])
                 {
-                    $modelTransaction->addTransaction(
-                        $invoiceId,
-                        $customer['customer_id'],
-                        $this->currency->convert(
-                            $invoice['total'],
-                            $this->config->get('config_currency'),
-                            $customer['base_currency_code']),
-                        $customer['base_currency_code']
-                    );
+//                    $modelTransaction->addTransaction(
+//                        $invoiceId,
+//                        $customer['customer_id'],
+//                        $this->currency->convert(
+//                            $invoice['total'],
+//                            $this->config->get('config_currency'),
+//                            $customer['base_currency_code']),
+//                        $customer['base_currency_code']
+//                    );
+                    Transaction::addPayment($customer['customer_id'], $invoiceId, $this->registry);
                     $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_PAID);
                 }
                 else
                     $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
             else
             {
-                $modelTransaction->addTransaction(
-                    $invoiceId,
-                    $customer['customer_id'],
-                    $this->currency->convert(
-                        $invoice['total'],
-                        $this->config->get('config_currency'),
-                        $customer['base_currency_code']),
-                    $customer['base_currency_code']
-                );
+//                $modelTransaction->addTransaction(
+//                    $invoiceId,
+//                    $customer['customer_id'],
+//                    $this->currency->convert(
+//                        $invoice['total'],
+//                        $this->config->get('config_currency'),
+//                        $customer['base_currency_code']),
+//                    $customer['base_currency_code']
+//                );
+                Transaction::addPayment($customer['customer_id'], $invoiceId, $this->registry);
                 $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_PAID);
             }
         }

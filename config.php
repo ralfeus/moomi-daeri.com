@@ -29,3 +29,7 @@ define('DB_USERNAME', 'root');
 define('DB_PASSWORD', 'ujcdsex');
 define('DB_DATABASE', 'moomidae_db');
 define('DB_PREFIX', '');
+
+define('GALLERY_PAGE_SIZE', 20);
+define('GALLERY_COLS', 5);
+define('GALLERY_ROWS', 4);

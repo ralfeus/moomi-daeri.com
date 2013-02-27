@@ -31,7 +31,7 @@ class AddCreditRequest extends SystemMessageBase
         if ($request['data']->status == ADD_CREDIT_STATUS_ACCEPTED)
         {
             $this->load->library("Transaction");
-            Transaction::addCredit($request['senderId'], $request['data']->amount, $this->registry, $request['data']->comment);
+            Transaction::addCredit($request['senderId'], $request['data']->amount, $request['data']->currency, $this->registry, $request['data']->comment);
         }
     }
 
