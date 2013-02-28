@@ -258,6 +258,33 @@
               </select></td>
             </tr>
             <tr>
+              <td><?php echo $entry_store; ?></td>
+              <td><div class="scrollbox">
+                  <?php $class = 'even'; ?>
+                  <div class="<?php echo $class; ?>">
+                    <?php if (in_array(0, $product_store)) { ?>
+                    <input type="checkbox" name="product_store[]" value="0" checked="checked" />
+                    <?php echo $text_default; ?>
+                    <?php } else { ?>
+                    <input type="checkbox" name="product_store[]" value="0" />
+                    <?php echo $text_default; ?>
+                    <?php } ?>
+                  </div>
+                  <?php foreach ($stores as $store) { ?>
+                  <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
+                  <div class="<?php echo $class; ?>">
+                    <?php if (in_array($store['store_id'], $product_store)) { ?>
+                    <input type="checkbox" name="product_store[]" value="<?php echo $store['store_id']; ?>" checked="checked" />
+                    <?php echo $store['name']; ?>
+                    <?php } else { ?>
+                    <input type="checkbox" name="product_store[]" value="<?php echo $store['store_id']; ?>" />
+                    <?php echo $store['name']; ?>
+                    <?php } ?>
+                  </div>
+                  <?php } ?>
+                </div></td>
+            </tr>
+            <tr>
               <td><?php echo $entry_category; ?></td>
                 <td>
                     <?php $num = count($categories); ?>
@@ -291,33 +318,6 @@
                     <a onclick="$(this).parent().find(':checkbox').attr('checked', true);"><?php echo $text_select_all; ?></a> / <a onclick="$(this).parent().find(':checkbox').attr('checked', false);"><?php echo $text_unselect_all; ?></a>
                 </td>
 
-            </tr>
-            <tr>
-              <td><?php echo $entry_store; ?></td>
-              <td><div class="scrollbox">
-                  <?php $class = 'even'; ?>
-                  <div class="<?php echo $class; ?>">
-                    <?php if (in_array(0, $product_store)) { ?>
-                    <input type="checkbox" name="product_store[]" value="0" checked="checked" />
-                    <?php echo $text_default; ?>
-                    <?php } else { ?>
-                    <input type="checkbox" name="product_store[]" value="0" />
-                    <?php echo $text_default; ?>
-                    <?php } ?>
-                  </div>
-                  <?php foreach ($stores as $store) { ?>
-                  <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
-                  <div class="<?php echo $class; ?>">
-                    <?php if (in_array($store['store_id'], $product_store)) { ?>
-                    <input type="checkbox" name="product_store[]" value="<?php echo $store['store_id']; ?>" checked="checked" />
-                    <?php echo $store['name']; ?>
-                    <?php } else { ?>
-                    <input type="checkbox" name="product_store[]" value="<?php echo $store['store_id']; ?>" />
-                    <?php echo $store['name']; ?>
-                    <?php } ?>
-                  </div>
-                  <?php } ?>
-                </div></td>
             </tr>
             <tr>
               <td><?php echo $entry_download; ?></td>
