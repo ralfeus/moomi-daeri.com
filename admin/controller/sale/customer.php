@@ -1235,7 +1235,7 @@ class ControllerSaleCustomer extends Controller {
                     }
                     elseif ($this->request->post['amount'] > 0)
                     {
-                        $this->load->model('sale/transaction')->addTransaction(
+                        Transaction::addTransaction(
                             0,
                             $this->request->get['customer_id'],
                             $this->request->post['amount'],
@@ -1258,7 +1258,7 @@ class ControllerSaleCustomer extends Controller {
                     }
                     else
                     {
-                        $modelSaleTransaction->deleteTransaction($this->request->post['transactionId']);
+                        Transaction::deleteTransaction($this->request->post['transactionId']);
                         $this->data['success'] = sprintf(
                             $this->language->get('SUCCESS_TRANSACTION_DELETED'), $this->request->post['transactionId']);
                     }

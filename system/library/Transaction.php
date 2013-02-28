@@ -24,7 +24,7 @@ class Transaction extends OpenCartBase implements ILibrary
         $modelCustomer = Transaction::$instance->load->model('sale/customer', 'admin');
         $customer = $modelCustomer->getCustomer($customerId);
 //        Transaction::$instance->log->write("Adding transaction");
-        Transaction::$instance->addTransaction(0, $customerId, -$amount, $currency, $description);
+        Transaction::addTransaction(0, $customerId, -$amount, $currency, $description);
 
         /// Try to pay all payment awaiting invoices
         $modelInvoice = Transaction::$instance->load->model('sale/invoice', 'admin');
@@ -53,15 +53,12 @@ class Transaction extends OpenCartBase implements ILibrary
             $modelInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
         else
         {
-//            Transaction::$instance->load->model('sale/transaction', 'admin')->addTransaction(
-//                $invoiceId, $customerId, $transactionAmount, $customer['base_currency_code'], $description
-//            );
-            Transaction::$instance->addTransaction($invoiceId, $customerId, $invoice['total'], $config->get('config_currency'), $description);
+            Transaction::addTransaction($invoiceId, $customerId, $invoice['total'], $config->get('config_currency'), $description);
             $modelInvoice->setInvoiceStatus($invoiceId, IS_PAID);
         }
     }
 
-    private function addTransaction($invoiceId, $customer, $amount, $currency_code, $description = '')
+    public static function addTransaction($invoiceId, $customer, $amount, $currency_code, $description = '')
     {
         if (is_numeric($customer)) /// customer ID is passed. Need to get whole customer
         {
@@ -78,15 +75,15 @@ class Transaction extends OpenCartBase implements ILibrary
             SET
                 customer_id = " . (int)$customer['customer_id'] . ",
                 invoice_id = " . (int)$invoiceId . ",
-                description = '" . $this->db->escape($description) . "',
+                description = '" . Transaction::$instance->db->escape($description) . "',
                 amount = $amountInCustomerCurrency,
                 currency_code = '" . $customer['base_currency_code'] . "',
                 date_added = NOW(),
                 balance = $newCustomerBalance
         ");
-        $transactionId = $this->db->getLastId();
+        $transactionId = Transaction::$instance->db->getLastId();
         /// Update customer's balance
-        $this->db->query("
+        Transaction::$instance->db->query("
                 UPDATE " . DB_PREFIX . "customer
                 SET
                     balance = $newCustomerBalance
