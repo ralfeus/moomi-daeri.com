@@ -14,10 +14,12 @@ class ControllerAccountTransaction extends Controller {
         $this->load->library('Messaging');
         $this->load->library('Status');
         $addCreditRequests = Messaging::getSystemMessages(
-            SYS_MSG_ADD_CREDIT,
-            $this->customer->getId(),
-            ($this->parameters['creditRequestsPage'] - 1 ) * 10,
-            10
+            array(
+                'systemMessageType' => SYS_MSG_ADD_CREDIT,
+                'filterCustomerId' => array($this->customer->getId()),
+                'start' => ($this->parameters['creditRequestsPage'] - 1 ) * 10,
+                'limit' => 10
+            )
         );
 //        $this->log->write(print_r($addCreditRequests, true));
         foreach ($addCreditRequests as $addCreditRequest)

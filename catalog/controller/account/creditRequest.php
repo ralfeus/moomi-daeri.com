@@ -23,12 +23,17 @@ class ControllerAccountCreditRequest extends Controller
 
     public function getList()
     {
-        $addCreditRequests = Messaging::getSystemMessages(SYS_MSG_ADD_CREDIT);
+        $addCreditRequests = Messaging::getSystemMessages(
+            array(
+                'systemMessageType' => SYS_MSG_ADD_CREDIT,
+                'filterCustomerId' => array($this->customer->getId())
+            )
+        );
 //        $this->log->write(print_r($addCreditRequests, true));
         foreach ($addCreditRequests as $addCreditRequest)
         {
-            if ($addCreditRequest['senderId'] != $this->customer->getId())
-                continue;
+//            if ($addCreditRequest['senderId'] != $this->customer->getId())
+//                continue;
             $this->data['requests'][] = array(
                 'requestId' => $addCreditRequest['messageId'],
                 'amount' => $addCreditRequest['data']->amount,
