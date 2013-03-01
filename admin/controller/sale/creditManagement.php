@@ -8,6 +8,8 @@
  */
 class ControllerSaleCreditManagement extends Controller
 {
+    private $modelSaleCustomer;
+
     public function __construct($registry)
     {
         parent::__construct($registry);
@@ -17,6 +19,7 @@ class ControllerSaleCreditManagement extends Controller
         $this->load->language('sale/creditManagement');
         $this->document->setTitle($this->language->get('HEADING_TITLE'));
         $this->data['headingTitle'] = $this->language->get('HEADING_TITLE');
+        $this->modelSaleCustomer = $this->load->model('sale/customer');
     }
 
     public function accept()
@@ -28,14 +31,35 @@ class ControllerSaleCreditManagement extends Controller
         Messaging::updateSystemMessage($request['messageId'], $request['data']);
     }
 
+    private function getCustomers()
+    {
+        foreach ($this->parameters as $key => $value)
+        {
+            if (strpos($key, 'filter') === false)
+                continue;
+            $data[$key] = $value;
+        }
+        unset($data['filterCustomerId']);
+        $tmpResult = array();
+        foreach ($this->modelSaleCustomer->getCustomers($data) as $customer)
+            if (!in_array($customer['customer_id'], $tmpResult))
+                $tmpResult[$customer['customer_id']] = $customer['name'] . ' / ' . $customer['nickname'];
+        natcasesort($tmpResult);
+        return $tmpResult;
+    }
+
     public function index()
     {
-        $modelSaleCustomer = $this->load->model('sale/customer');
-        $addCreditRequests = Messaging::getSystemMessages(SYS_MSG_ADD_CREDIT);
+        $data = array();
+        $data['systemMessageType'] = SYS_MSG_ADD_CREDIT;
+        $data = array_merge($data, $this->parameters);
+        $addCreditRequests = Messaging::getSystemMessages($data);
 //        $this->log->write(print_r($addCreditRequests, true));
+        $this->data['customersToFilterBy'] = $this->getCustomers();
+        $this->data['requests'] = array();
         foreach ($addCreditRequests as $addCreditRequest)
         {
-            $customer = $modelSaleCustomer->getCustomer($addCreditRequest['senderId']);
+            $customer = $this->modelSaleCustomer->getCustomer($addCreditRequest['senderId']);
             $actions = array();
             if ($addCreditRequest['data']->status == ADD_CREDIT_STATUS_PENDING)
             {
@@ -54,7 +78,7 @@ class ControllerSaleCreditManagement extends Controller
                 'amount' => $addCreditRequest['data']->amount,
                 'comment' => $addCreditRequest['data']->comment,
                 'currency' => $addCreditRequest['data']->currency,
-                'customerName' => $customer['lastname'] . ' ' . $customer['firstname'],
+                'customerName' => $customer['lastname'] . ' ' . $customer['firstname'] . ' / ' . $customer['nickname'],
                 'customerUrl' => $this->url->link(
                     'sale/customer/update',
                     'token=' . $this->session->data['token'] . '&customer_id=' . $addCreditRequest['senderId'],
@@ -72,9 +96,12 @@ class ControllerSaleCreditManagement extends Controller
         $this->data['textAmount'] = $this->language->get('AMOUNT');
         $this->data['textComment'] = $this->language->get('COMMENT');
         $this->data['textCustomer'] = $this->language->get('CUSTOMER');
+        $this->data['textFilter'] = $this->language->get('FILTER');
+        $this->data['textPaymentMethod'] = $this->language->get('PAYMENT_METHOD');
         $this->data['textRequestId'] = $this->language->get('REQUEST_ID');
         $this->data['textStatus'] = $this->language->get('STATUS');
         $this->data['textTimeAdded'] = $this->language->get('TIME_ADDED');
+        $this->data['urlSelf'] = $this->url->link($this->selfRoute, 'token=' . $this->parameters['token'], 'SSL');
         $this->template = 'sale/creditManagement.tpl';
         $this->children = array(
             'common/footer',
@@ -87,6 +114,7 @@ class ControllerSaleCreditManagement extends Controller
     {
         $this->parameters['amount'] = empty($_REQUEST['amount']) ? null : $_REQUEST['amount'];
         $this->parameters['comment'] = empty($_REQUEST['comment']) ? null : $_REQUEST['comment'];
+        $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
         $this->parameters['requestId'] = empty($_REQUEST['requestId']) ? null : $_REQUEST['requestId'];
         $this->parameters['token'] = $this->session->data['token'];
     }

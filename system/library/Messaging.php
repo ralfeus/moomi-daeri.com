@@ -21,11 +21,40 @@ class Messaging extends LibraryClass
         return Messaging::$instance;
     }
 
+    private function buildFilterString($data = array())
+    {
+//        $this->log->write(print_r($data, true));
+        $filter = "";
+        if (isset($data['selectedItems']) && count($data['selectedItems']))
+            $filter = "m.message_id in (" . implode(', ', $data['selectedItems']) . ")";
+        else
+        {
+            if (!empty($data['filterCustomerId']))
+                $filter .= ($filter ? " AND " : "") . "m.sender_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
+            if (!empty($data['filterTimeAdded']))
+                $filter .= ($filter ? " AND " : "") . "DATE(m.time_added) = DATE('" . $this->db->escape($data['filterTimeAdded']) . "')";
+            if (!empty($data['systemMessageType']))
+                $filter .= ($filter ? " AND " : "") . "m.message_type_id = " . (int)$data['systemMessageType'];
+        }
+        if ($filter)
+            $filter = "WHERE $filter";
+        return $filter;
+    }
+
+    private function buildLimitString($data = array())
+    {
+        $limit = "";
+        if (isset($data['start']) && is_numeric($data['start']) && isset($data['limit']) && is_numeric($data['limit']))
+            $limit = "LIMIT " . $data['start'] . ", " . $data['limit'];
+        return $limit;
+    }
+
+
     public static function getSystemMessage($messageId)
     {
         $query = Messaging::$instance->db->query("
             SELECT *
-            FROM " . DB_PREFIX . "messages
+            FROM " . DB_PREFIX . "messages AS m
             WHERE message_id = " . (int)$messageId
         );
         if ($query->num_rows)
@@ -41,17 +70,20 @@ class Messaging extends LibraryClass
             return null;
     }
 
-    public static function getSystemMessages($messageTypeId, $senderId = null, $start = null, $limit = null)
+//    public static function getSystemMessages($messageTypeId, $senderId = null, $start = null, $limit = null)
+    public static function getSystemMessages($data = array())
     {
-        $query = Messaging::$instance->db->query("
+        $filter = Messaging::$instance->buildFilterString($data);
+        $limit = Messaging::$instance->buildLimitString($data);
+        $sql = "
             SELECT *
-            FROM " . DB_PREFIX . "messages
-            WHERE
-                message_type_id = " . (int)$messageTypeId .
-                ($senderId ? " AND sender_id = " . (int)$senderId : '') . "
-            ORDER BY time_added DESC " .
-            (is_numeric($start) && is_numeric($limit) ? "LIMIT $start, $limit" : '')
-        );
+            FROM " . DB_PREFIX . "messages AS m
+            $filter
+            ORDER BY time_added DESC
+            $limit
+        ";
+        Messaging::$instance->log->write($sql);
+        $query = Messaging::$instance->db->query($sql);
         if ($query->num_rows)
         {
             $messages = array();
