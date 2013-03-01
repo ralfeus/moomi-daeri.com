@@ -1684,3 +1684,7 @@ a.button-disabled span {
 .font14 {
 	font-size: 14px;
 }
+
+.bottom5 {
+	margin-bottom: -5px;
+}

@@ -45,5 +45,18 @@ class ModelShopGeneral extends Model {
 
 		return json_encode($response);
 	}
+
+	public function isVip($customer_id) {
+		$today = date("Y-m-d");
+		$lastMonth = date("Y-m-d", mktime(0, 0, 0, date("m")-1, date("d"),   date("Y")));
+		$query = "SELECT * FROM `" . DB_PREFIX . "order` WHERE customer_id='" . $customer_id . "' AND date_added BETWEEN '" . $lastMonth . "' AND '" . $today . "'";
+		$result = $this->db->query($query);
+		if(count($result->rows) >= 1){
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
-?>  
+?>
