@@ -134,6 +134,7 @@ class ControllerSaleInvoice extends Controller
         $this->data['textShippingCost'] = $this->language->get('textShippingCost');
         $this->data['textShippingMethod'] = $this->language->get('textShippingMethod');
         $this->data['textStatus'] = $this->language->get('STATUS');
+        $this->data['textPackage'] = $this->language->get('textPackage');
         $this->data['textSubtotal'] = $this->language->get('textSubtotal');
         $this->data['textTotal'] = $this->language->get('textTotal');
         $this->data['textTotalCustomerCurrency'] = $this->language->get('TOTAL_CUSTOMER_CURRENCY');
@@ -176,7 +177,8 @@ class ControllerSaleInvoice extends Controller
                 'subtotal' => $this->currency->format($invoice['subtotal'], $this->config->get('config_currency')),
                 'total' => $this->currency->format($invoice['total'], $this->config->get('config_currency')),
                 'totalCustomerCurrency' => $this->currency->format($invoice['total'], $invoice['base_currency_code']),
-                'weight' => $invoice['weight']
+                'weight' => $invoice['weight'],
+                'package_number' => $invoice['package_number']
             );
         }
         $this->data = array_merge($this->data, $this->parameters);

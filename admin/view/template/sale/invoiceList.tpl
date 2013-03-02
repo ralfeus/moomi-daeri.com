@@ -25,7 +25,7 @@
                             <td class="right"><?= $textShippingCost ?></td>
                             <td class="right"><?= $textTotal ?></td>
                             <td class="right"><?= $textTotalCustomerCurrency ?></td>
-                            <td class="right"><?= $textStatus ?></td>
+                            <td class="right"><?= $textPackage ?></td>
                             <td class="right"><?= $textAction ?></td>
                         </tr>
                         <tr class="filter">
@@ -58,7 +58,7 @@
                                     <td class="right"><?= $invoice['shippingCost'] ?></td>
                                     <td class="right"><?= $invoice['total'] ?></td>
                                     <td class="right"><?= $invoice['totalCustomerCurrency'] ?></td>
-                                    <td class="right"><?= $invoice['status'] ?></td>
+                                    <td class="right"><?= $invoice['package_number'] ?></td>
                                     <td class="right">
                                         <?php foreach ($invoice['action'] as $action):
                                             $href = empty($action['href']) ? '' :  'href="' . $action['href'] . '"';
