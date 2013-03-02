@@ -23,6 +23,7 @@
                         <b><?= $textItemsCount ?></b> <?php echo $invoice['itemsCount']; ?></div>
                     <div><b><?= $textShippingMethod ?></b> <?php echo $invoice['shippingMethod']; ?><br />
                         <b><?php echo $textTotal; ?></b> <?php echo $invoice['total']; ?></div>
+                    <div> <b><?php echo $textPackage; ?></b> <?php echo $invoice['package_number']; ?> </div>
                     <div class="order-info"><a href="<?php echo $invoice['href']; ?>" class="button"><span><?php echo $buttonView; ?></span></a></div>
                 </div>
             </div>

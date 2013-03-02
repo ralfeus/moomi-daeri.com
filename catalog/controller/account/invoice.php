@@ -94,7 +94,8 @@ class ControllerAccountInvoice extends Controller
                     'subtotal' => $this->currency->format($invoice['subtotal']),
                     'total' => $this->currency->format($invoice['total']),
                     'transaction' => $invoice['invoice_status_id'] == IS_PAID ? Transaction::getTransactionByInvoiceId($invoice['invoice_id']) : null,
-                    'weight' => $invoice['weight']
+                    'weight' => $invoice['weight'],
+                    'package_number' => $invoice['package_number']
                 );
             }
         }
@@ -109,6 +110,9 @@ class ControllerAccountInvoice extends Controller
         $this->data['textShippingMethod'] = $this->language->get('textShippingMethod');
         $this->data['textTotal'] = $this->language->get('textTotal');
         $this->data['textTransaction'] = $this->language->get('TRANSACTION');
+
+        $this->load->language('account/invoice');
+        $this->data['textPackage'] = $this->language->get('textPackage');
 
         $templateName = '/template/account/invoiceList.tpl';
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateName))
