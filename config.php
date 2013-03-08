@@ -10,17 +10,17 @@ define('HTTPS_CATALOG', '/');
 define('HTTPS_IMAGE', '/image/');
 
 // DIR
-define('DIR_APPLICATION', 'C:\xampp\htdocs\moomidaeri/catalog/');
-define('DIR_SYSTEM', 'C:\xampp\htdocs\moomidaeri/system/');
-define('DIR_DATABASE', 'C:\xampp\htdocs\moomidaeri/system/database/');
-define('DIR_LANGUAGE', 'C:\xampp\htdocs\moomidaeri/catalog/language/');
-define('DIR_TEMPLATE', 'C:\xampp\htdocs\moomidaeri/catalog/view/theme/');
-define('DIR_CONFIG', 'C:\xampp\htdocs\moomidaeri/system/config/');
-define('DIR_IMAGE', 'C:\xampp\htdocs\moomidaeri/image/');
-define('DIR_CACHE', 'C:\xampp\htdocs\moomidaeri/system/cache/');
-define('DIR_DOWNLOAD', 'C:\xampp\htdocs\moomidaeri/download/');
-define('DIR_LOGS', 'C:\xampp\htdocs\moomidaeri/system/logs/');
-define('DIR_CATALOG', 'C:\xampp\htdocs\moomidaeri/catalog/');
+define('DIR_APPLICATION', '/Users/artemkaehm/Sites/localhost/moomidaeri/catalog/');
+define('DIR_SYSTEM', '/Users/artemkaehm/Sites/localhost/moomidaeri/system/');
+define('DIR_DATABASE', '/Users/artemkaehm/Sites/localhost/moomidaeri/system/database/');
+define('DIR_LANGUAGE', '/Users/artemkaehm/Sites/localhost/moomidaeri/catalog/language/');
+define('DIR_TEMPLATE', '/Users/artemkaehm/Sites/localhost/moomidaeri/catalog/view/theme/');
+define('DIR_CONFIG', '/Users/artemkaehm/Sites/localhost/moomidaeri/system/config/');
+define('DIR_IMAGE', '/Users/artemkaehm/Sites/localhost/moomidaeri/image/');
+define('DIR_CACHE', '/Users/artemkaehm/Sites/localhost/moomidaeri/system/cache/');
+define('DIR_DOWNLOAD', '/Users/artemkaehm/Sites/localhost/moomidaeri/download/');
+define('DIR_LOGS', '/Users/artemkaehm/Sites/localhost/moomidaeri/system/logs/');
+define('DIR_CATALOG', '/Users/artemkaehm/Sites/localhost/moomidaeri/catalog/');
 
 // DB
 define('DB_DRIVER', 'mysql');
