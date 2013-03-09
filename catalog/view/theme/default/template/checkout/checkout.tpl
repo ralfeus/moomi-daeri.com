@@ -43,7 +43,7 @@ $('.checkout-heading a').live('click', function() {
 
 $(document).ready(function() {
     $.ajax({
-        url: 'index.php?route=checkout/<?= $logged ? "options" : "login" ?>',
+        url: 'index.php?route=checkout/<?php echo $logged ? "options" : "login" ?>',
         dataType: 'json',
         success: function(json) {
             if (json['redirect']) {

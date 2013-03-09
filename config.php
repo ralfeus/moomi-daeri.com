@@ -5,9 +5,9 @@ define('HTTP_CATALOG', '/moomidaeri/');
 define('HTTP_IMAGE', '/moomidaeri/image/');
 
 // HTTPS
-define('HTTPS_SERVER', '/');
-define('HTTPS_CATALOG', '/');
-define('HTTPS_IMAGE', '/image/');
+define('HTTPS_SERVER', '/moomidaeri/');
+define('HTTPS_CATALOG', '/moomidaeri/');
+define('HTTPS_IMAGE', '/moomidaeri/image/');
 
 // DIR
 define('DIR_APPLICATION', '/Users/artemkaehm/Sites/localhost/moomidaeri/catalog/');
