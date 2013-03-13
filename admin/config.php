@@ -1,32 +1,32 @@
 <?php
 // HTTP
-define('HTTP_SERVER', '/moomi-daeri.com/admin/');
-define('HTTP_CATALOG', '/moomi-daeri.com/');
-define('HTTP_IMAGE', '/moomi-daeri.com/image/');
+define('HTTP_SERVER', '/moomidaeri/admin/');
+define('HTTP_CATALOG', '/moomidaeri/');
+define('HTTP_IMAGE', '/moomidaeri/image/');
 
 // HTTPS
-define('HTTPS_SERVER', '/moomi-daeri.com/admin/');
-define('HTTPS_CATALOG', '/moomi-daeri.com/');
-define('HTTPS_IMAGE', '/moomi-daeri.com/image/');
+define('HTTPS_SERVER', '/moomidaeri/admin/');
+define('HTTPS_CATALOG', '/moomidaeri/');
+define('HTTPS_IMAGE', '/moomidaeri/image/');
 
 // DIR
-define('DIR_APPLICATION', 'D:\projects\moomi-daeri.com/admin/');
-define('DIR_SYSTEM', 'D:\projects\moomi-daeri.com/system/');
-define('DIR_DATABASE', 'D:\projects\moomi-daeri.com/system/database/');
-define('DIR_LANGUAGE', 'D:\projects\moomi-daeri.com/admin/language/');
-define('DIR_TEMPLATE', 'D:\projects\moomi-daeri.com/admin/view/template/');
-define('DIR_CONFIG', 'D:\projects\moomi-daeri.com/system/config/');
-define('DIR_IMAGE', 'D:\projects\moomi-daeri.com/image/');
-define('DIR_CACHE', 'D:\projects\moomi-daeri.com/system/cache/');
-define('DIR_DOWNLOAD', 'D:\projects\moomi-daeri.com/download/');
-define('DIR_LOGS', 'D:\projects\moomi-daeri.com/system/logs/');
-define('DIR_CATALOG', 'D:\projects\moomi-daeri.com/catalog/');
+define('DIR_APPLICATION', '/Users/artemkaehm/Sites/localhost/moomidaeri/admin/');
+define('DIR_SYSTEM', '/Users/artemkaehm/Sites/localhost/moomidaeri/system/');
+define('DIR_DATABASE', '/Users/artemkaehm/Sites/localhost/moomidaeri/system/database/');
+define('DIR_LANGUAGE', '/Users/artemkaehm/Sites/localhost/moomidaeri/admin/language/');
+define('DIR_TEMPLATE', '/Users/artemkaehm/Sites/localhost/moomidaeri/admin/view/template/');
+define('DIR_CONFIG', '/Users/artemkaehm/Sites/localhost/moomidaeri/system/config/');
+define('DIR_IMAGE', '/Users/artemkaehm/Sites/localhost/moomidaeri/image/');
+define('DIR_CACHE', '/Users/artemkaehm/Sites/localhost/moomidaeri/system/cache/');
+define('DIR_DOWNLOAD', '/Users/artemkaehm/Sites/localhost/moomidaeri/download/');
+define('DIR_LOGS', '/Users/artemkaehm/Sites/localhost/moomidaeri/system/logs/');
+define('DIR_CATALOG', '/Users/artemkaehm/Sites/localhost/moomidaeri/catalog/');
 
 // DB
 define('DB_DRIVER', 'mysql');
 define('DB_HOSTNAME', 'localhost');
 define('DB_USERNAME', 'root');
-define('DB_PASSWORD', 'ujcdsex');
+define('DB_PASSWORD', '');
 define('DB_DATABASE', 'moomidae_db');
 define('DB_PREFIX', '');
 

@@ -35,7 +35,7 @@
 <script type="text/javascript" src="catalog/view/javascript/jquery.jcarousel.min.js"></script>
 <!--[if IE]>
 <script type="text/javascript" src="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4-iefix.js"></script>
-<![endif]--> 
+<![endif]-->
 <script type="text/javascript" src="catalog/view/javascript/jquery/tabs.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/common.js"></script>
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/ui-lightness/jquery-ui-1.8.23.custom.css" />
@@ -66,7 +66,7 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
         var ss = document.getElementsByTagName('script')[0];
         ss.parentNode.insertBefore(s, ss);
     })();
-    
+
     $(document).ready(function() {
       var url = "<?php echo $this->url->link('shop/admin/getAllHolidaysForCalendar'); ?>";
       $.post(url, function(response) {
@@ -74,7 +74,7 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
         holiDays = response['holidays'];
 
         $("#calendar").datepicker({
-          showOn: "calendar", 
+          showOn: "calendar",
           //$.datepicker.regional['ru'],
           beforeShowDay: setHoliDays
         });
@@ -128,7 +128,7 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
 <div id="container">
 <div id="header"
     <?php if ($logo): ?>
-    style="background: url('<?= $logo ?>')"
+    style="background: url('<?php echo $logo ?>')"
     <?php endif; ?>
     >
     <table style="width: 100%; height: 150px;">
@@ -145,10 +145,10 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
                                         <td style="text-align: center; vertical-align: middle;">
                                             <div class="language-selector">
                                                 <img
-                                                    src="image/flags/<?= $language['image'] ?>"
-                                                    alt="<?= $language['name'] ?>"
-                                                    title="<?= $language['name']; ?>"
-                                                    onclick="changeLanguage('<?= $language['code'] ?>')" />
+                                                    src="image/flags/<?php echo $language['image'] ?>"
+                                                    alt="<?php echo $language['name'] ?>"
+                                                    title="<?php echo $language['name']; ?>"
+                                                    onclick="changeLanguage('<?php echo $language['code'] ?>')" />
                                             </div>
                                         </td>
 <?php endforeach; ?>
@@ -176,7 +176,7 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
                             </table>
                             <input type="hidden" name="language_code" value="" />
                             <input type="hidden" name="currency_code" value="" />
-                            <input type="hidden" name="redirect" value="<?= $redirect ?>" />
+                            <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
                         </form>
                     </span>
                 </td>

@@ -19,20 +19,20 @@
       <?php } ?></td>
     <td>
       <label for="<?php echo $quote['code']; ?>">
-        <?php 
-          echo $quote['title']; 
+        <?php
+          echo $quote['title'];
           if(isset($quote['description'])){
             $lang = $this->language->get('code');
             $arrDesc = json_decode($quote['description']);
             $total = count((array)$arrDesc);
-            //print_r($arrDesc); die();
+
             if($total >= 3) {
               echo " - " . $arrDesc->{$lang};
             }
             else {
               echo " - " . $quote['description'];
             }
-          } 
+          }
         ?>
       </label>
     </td>
