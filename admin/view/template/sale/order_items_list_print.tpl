@@ -1,6 +1,11 @@
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="view/stylesheet/stylesheet.css" />
+    <style>
+        body, td, th, input, select, textarea, option, optgroup {
+            color: blue;
+        }
+    </style>
 </head>
 <body onLoad="Print()">
 	<div id="content">
