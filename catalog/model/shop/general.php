@@ -1,14 +1,14 @@
 <?php
 class ModelShopGeneral extends Model {
 	public function getHolidays($data) {
-		
+
 		$this->db->query("SELECT * FROM " . DB_PREFIX . "shop_holiday");
 
     $holiday = array();
     foreach ($query->rows as $row) {
-      
+
     }
-	
+
 	}
 
 	public function getAllHolidaysForCalendar() {
@@ -57,6 +57,26 @@ class ModelShopGeneral extends Model {
 		else {
 			return false;
 		}
+	}
+
+	public function getPage($page_id = null, $lang = 'en') {
+		$pages = array();
+		$children = array();
+		if($page_id == null) {
+			$query = "SELECT page_id, page_name_" . $lang . " AS page_title, page_content_" . $lang . " AS page_content FROM page WHERE parent_page_id IS NULL OR parent_page_id = 0";
+		}
+		else {
+			$query = "SELECT p.parent_page_id, page.page_name_" . $lang . " AS parent_page_title, p.page_name_" . $lang . " AS page_title, p.page_content_" . $lang . " AS page_content FROM page AS p LEFT JOIN page ON p.parent_page_id = page.page_id WHERE p.page_id = " . $page_id;
+		}
+
+		$pages = $this->db->query($query)->rows;
+
+		if($page_id != null) {
+			$query = "SELECT page_id, page_name_" . $lang . " AS page_title FROM page WHERE parent_page_id = " . $page_id;
+			$children = $this->db->query($query)->rows;
+		}
+
+		return $result = array('pages' => $pages, "children" => $children);
 	}
 }
 ?>

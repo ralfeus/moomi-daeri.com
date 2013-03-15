@@ -42,7 +42,7 @@ $(document).ready(function(){
             $(this).after('<span><a onclick="$(\'' + sbox + ' :checkbox\').attr(\'checked\', \'checked\');"><u><?php echo $text_select_all; ?></u></a> / <a onclick="$(\'' + sbox + ' :checkbox\').removeAttr(\'checked\');"><u><?php echo $text_unselect_all; ?></u></a></span>');
         }
     });
-	
+
     // Confirm Delete
     $('#form').submit(function(){
         if ($(this).attr('action').indexOf('delete',1) != -1) {
@@ -51,7 +51,7 @@ $(document).ready(function(){
             }
         }
     });
-    	
+
     // Confirm Uninstall
     $('a').click(function(){
         if ($(this).attr('href') != null && $(this).attr('href').indexOf('uninstall', 1) != -1) {
@@ -231,6 +231,7 @@ $(document).ready(function(){
           <li>
             <a href="<?php echo $report_shop_holiday; ?>"><?php echo $text_admin_shop_holiday; ?></a>
           </li>
+          <li><a href="<?php echo $page; ?>"><?php echo $text_page; ?></a></li>
         </ul>
       </li>
     </ul>
@@ -253,56 +254,56 @@ $(document).ready(function() {
 		animation	 : {height: 'show'},
 		speed		 : 'normal',
 		autoArrows   : false,
-		dropShadows  : false, 
+		dropShadows  : false,
 		disableHI	 : false, /* set to true to disable hoverIntent detection */
 		onInit		 : function(){},
 		onBeforeShow : function(){},
 		onShow		 : function(){},
 		onHide		 : function(){}
 	});
-	
+
 	$('#menu > ul').css('display', 'block');
 });
- 
+
 function getURLVar(urlVarName) {
 	var urlHalves = String(document.location).toLowerCase().split('?');
 	var urlVarValue = '';
-	
+
 	if (urlHalves[1]) {
 		var urlVars = urlHalves[1].split('&');
 
 		for (var i = 0; i <= (urlVars.length); i++) {
 			if (urlVars[i]) {
 				var urlVarPair = urlVars[i].split('=');
-				
+
 				if (urlVarPair[0] && urlVarPair[0] == urlVarName.toLowerCase()) {
 					urlVarValue = urlVarPair[1];
 				}
 			}
 		}
 	}
-	
+
 	return urlVarValue;
-} 
+}
 
 $(document).ready(function() {
 	route = getURLVar('route');
-	
+
 	if (!route) {
 		$('#dashboard').addClass('selected');
 	} else {
 		part = route.split('/');
-		
+
 		url = part[0];
-		
+
 		if (part[1]) {
 			url += '/' + part[1];
 		}
-		
+
 		$('a[href*=\'' + url + '\']').parents('li[id]').addClass('selected');
 	}
 });
-//--></script> 
+//--></script>
   </div>
   <?php } ?>
 </div>

@@ -36,7 +36,7 @@ $_['text_admin_shop']									 = 'Shop';
 $_['text_admin_shop_holiday']					 = 'Holiday';
 $_['text_admin_gallery'] 							 = 'Gallery';
 $_['text_admin_gallery_approving']		 = 'Approving';
-$_['text_admin_gallery_voting']				 = 'Voting';	
+$_['text_admin_gallery_voting']				 = 'Voting';
 $_['text_invoices'] 									 = 'Invoices';
 $_['text_language']                    = 'Languages';
 $_['text_layout']                      = 'Layouts';
@@ -92,5 +92,6 @@ $_['text_voucher_theme']               = 'Voucher Themes';
 $_['text_weight_class']                = 'Weight Classes';
 $_['text_length_class']                = 'Length Classes';
 $_['text_zone']                        = 'Zones';
+$_['text_admin_page']                  = 'Pages';
 
 ?>
