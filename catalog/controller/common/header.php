@@ -209,7 +209,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['categories'] = array();
 
 		$categories = $this->model_catalog_category->getCategories(0);
-        //$this->log->write(print_r($categories, true));
+
 
 		foreach ($categories as $category) {
 			if ($category['top']) {
