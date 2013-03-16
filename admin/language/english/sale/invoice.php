@@ -14,3 +14,5 @@ $_['errorOrderItemHasInvoice'] = 'Following order items are found in existing in
 
 $_['headingTitle'] = 'Invoice';
 $_['textPackage'] = 'Package Number';
+$_['textInvoceDate'] = 'Invoice Date';
+$_['textShippingDate'] = 'Shipping Date';

@@ -62,6 +62,11 @@
                                     <input name="packageNumber" value="<?= $packageNumber?>" alt="<?= $packageNumber ?>"/>
                                     <a id="buttonSavePackageNumber" onclick="saveTextField('packageNumber')"><img src="view/image/checkmark.png" /></a>
                                 </td></tr>
+                                <tr><td><?= $textShippingDate ?></td></tr>
+                                <tr><td>
+                                    <input name="shippingDate" value="<?= $shippingDate?>" alt="<?= $shippingDate ?>" class="date" eadonly="readonly" /><!-- r -->
+                                    <a id="buttonSaveShippingDate" onclick="saveTextField('shippingDate')"><img src="view/image/checkmark.png" /></a>
+                                </td></tr>
                                 <tr><td><?= $textComment ?></td></tr>
                                 <tr><td>
                                     <input name="comment" value="<?= $comment ?>" />
@@ -126,6 +131,7 @@
 </div>
 <script type="text/javascript"><!--
 $(document).ready(function() {
+    $('.date').datepicker({dateFormat: 'yy-mm-dd'});
     if ($('#totalWeight').disabled)
         $('#buttonRecalculate').remove();
     if ($('[name=discount]').disabled)

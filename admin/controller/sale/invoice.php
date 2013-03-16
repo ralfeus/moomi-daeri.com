@@ -48,7 +48,6 @@ class ControllerSaleInvoice extends Controller
 
     public function create()
     {
-//        $this->log->write(print_r($_REQUEST, true));
         $comment = isset($_REQUEST['comment']) ? $_REQUEST['comment'] : '';
         if (!is_numeric($_REQUEST['discount']))
         {
@@ -80,7 +79,8 @@ class ControllerSaleInvoice extends Controller
             $totalWeight,
             $discount,
             $comment,
-            $total
+            $total,
+            $_POST['shippingDate']
         );
         $this->handleCredit($newInvoiceId);
         $this->setOrderItemsStatusPacked($orderItems);
@@ -134,7 +134,9 @@ class ControllerSaleInvoice extends Controller
         $this->data['textShippingCost'] = $this->language->get('textShippingCost');
         $this->data['textShippingMethod'] = $this->language->get('textShippingMethod');
         $this->data['textStatus'] = $this->language->get('STATUS');
+        $this->data['textInvoceDate'] = $this->language->get('textInvoceDate');
         $this->data['textPackage'] = $this->language->get('textPackage');
+        $this->data['textShippingDate'] = $this->language->get('textShippingDate');
         $this->data['textSubtotal'] = $this->language->get('textSubtotal');
         $this->data['textTotal'] = $this->language->get('textTotal');
         $this->data['textTotalCustomerCurrency'] = $this->language->get('TOTAL_CUSTOMER_CURRENCY');
@@ -144,6 +146,7 @@ class ControllerSaleInvoice extends Controller
         $data = $this->parameters;
         foreach ($modelSaleInvoice->getInvoices($data) as $invoice)
         {
+
             $action = array();
             $action[] = array(
                 'text' => $this->language->get('VIEW'),
@@ -164,8 +167,8 @@ class ControllerSaleInvoice extends Controller
                         "')"
                 );
 
-            //$this->log->write(print_r($invoice, true));
-//            $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
+            $arrTemp = explode(" ", $invoice['time_modified']);
+            $invoiceDate = $arrTemp[0];
             $this->data['invoices'][] = array(
                 'invoiceId' => $invoice['invoice_id'],
                 'action' => $action,
@@ -178,7 +181,9 @@ class ControllerSaleInvoice extends Controller
                 'total' => $this->currency->format($invoice['total'], $this->config->get('config_currency')),
                 'totalCustomerCurrency' => $this->currency->format($invoice['total'], $invoice['base_currency_code']),
                 'weight' => $invoice['weight'],
-                'package_number' => $invoice['package_number']
+                'date' => $invoiceDate,
+                'package_number' => $invoice['package_number'],
+                'shipping_date' => $invoice['shipping_date']
             );
         }
         $this->data = array_merge($this->data, $this->parameters);
@@ -250,8 +255,7 @@ class ControllerSaleInvoice extends Controller
         $modelTransaction = $this->load->model('sale/transaction');
         $invoice = $this->modelSaleInvoice->getInvoice($invoiceId);
         $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
-//        $this->log->write(print_r($invoice, true));
-//        $this->log->write(print_r($customer, true));
+
         if ($customer['await_invoice_confirmation'])
             $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_CUSTOMER_CONFIRMATION);
         else
@@ -263,15 +267,6 @@ class ControllerSaleInvoice extends Controller
             if ($customer['balance'] < $totalToPay)
                 if ($customer['allow_overdraft'])
                 {
-//                    $modelTransaction->addTransaction(
-//                        $invoiceId,
-//                        $customer['customer_id'],
-//                        $this->currency->convert(
-//                            $invoice['total'],
-//                            $this->config->get('config_currency'),
-//                            $customer['base_currency_code']),
-//                        $customer['base_currency_code']
-//                    );
                     Transaction::addPayment($customer['customer_id'], $invoiceId, $this->registry);
                     $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_PAID);
                 }
@@ -279,15 +274,6 @@ class ControllerSaleInvoice extends Controller
                     $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
             else
             {
-//                $modelTransaction->addTransaction(
-//                    $invoiceId,
-//                    $customer['customer_id'],
-//                    $this->currency->convert(
-//                        $invoice['total'],
-//                        $this->config->get('config_currency'),
-//                        $customer['base_currency_code']),
-//                    $customer['base_currency_code']
-//                );
                 Transaction::addPayment($customer['customer_id'], $invoiceId, $this->registry);
                 $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_PAID);
             }
@@ -361,6 +347,8 @@ class ControllerSaleInvoice extends Controller
             $this->modelSaleInvoice->setComment($this->parameters['invoiceId'], $this->parameters['data']);
         else if ($this->parameters['param'] == 'packageNumber')
             $this->modelSaleInvoice->setPackageNumber($this->parameters['invoiceId'], $this->parameters['data']);
+        else if ($this->parameters['param'] == 'shippingDate')
+            $this->modelSaleInvoice->setShippingDate($this->parameters['invoiceId'], $this->parameters['data']);
         $this->response->setOutput('');
     }
 
@@ -496,8 +484,6 @@ class ControllerSaleInvoice extends Controller
         $this->data['shippingMethods'] = Shipping::getShippingMethods(
             $this->modelReferenceAddress->getAddress($invoice['shipping_address_id']), $this->registry);
 
-        /// Prepare list
-        //$this->log->write(print_r($modelSaleInvoice->getInvoiceItems($invoice['invoice_id']), true));
         $orderItemIdParam = '';
         foreach ($this->modelSaleInvoice->getInvoiceItems($invoice['invoice_id']) as $invoiceItem)
         {
@@ -532,7 +518,8 @@ class ControllerSaleInvoice extends Controller
                 'token=' . $this->parameters['token'] . $orderItemIdParam,
                 'SSL'
             );
-        $this->data['shippingMethod'] = $invoice['shipping_method'] ;//Shipping::getName($invoice['shipping_method'], $this->registry);
+        $this->data['shippingMethod'] = $invoice['shipping_method'];
+        $this->data['shippingDate'] = $invoice['shipping_date'];
         $this->data['total'] = $this->currency->format($invoice['subtotal'], $this->config->get('config_currency'));
         $this->data['totalRaw'] = $invoice['subtotal'];
         $this->data['totalCustomerCurrency'] = $this->currency->format($invoice['total'], $customer['base_currency_code']);
@@ -553,8 +540,6 @@ class ControllerSaleInvoice extends Controller
 
     public function showForm()
     {
-//        $this->log->write(print_r($this->request->request, true));
-        /// Set common interface values
         $this->data['buttonRecalculateShippingCost'] = $this->language->get('RECALCULATE_SHIPPING_COST');
         $this->data['textDiscount'] = $this->language->get('DISCOUNT');
         $this->data['textComment'] = $this->language->get('textComment');
@@ -569,6 +554,7 @@ class ControllerSaleInvoice extends Controller
         $this->data['textShippingCost'] = $this->language->get('textShippingCost');
         $this->data['textShippingAddress'] = $this->language->get('textShippingAddress');
         $this->data['textShippingMethod'] = $this->language->get('textShippingMethod');
+        $this->data['textShippingDate'] = $this->language->get('textShippingDate');
         $this->data['textSubtotal'] = $this->language->get('textSubtotal');
         $this->data['textTotal'] = $this->language->get('textTotal');
 

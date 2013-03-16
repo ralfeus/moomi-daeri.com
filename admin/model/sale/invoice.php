@@ -8,7 +8,7 @@
  */
 class ModelSaleInvoice extends Model
 {
-    public function addInvoice($orderId, $order_items, $shippingMethod = null, $weight = 0, $discount = 0, $comment = "", $subtotal = 0)
+    public function addInvoice($orderId, $order_items, $shippingMethod = null, $weight = 0, $discount = 0, $comment = "", $subtotal = 0, $shippingDate = '')
     {
         $orderModel = $this->load->model('sale/order');
         /// Get customer and shipping data from the primary order
@@ -47,6 +47,7 @@ class ModelSaleInvoice extends Model
                 discount = " . (float)$discount . ",
                 shipping_address_id = " . $orderModel->getShippingAddressId($orderId) . ",
                 shipping_method = '" . $shippingMethod . "',
+                shipping_date = '" . $shippingDate . "',
                 shipping_cost = $shippingCost,
                 subtotal = $subtotal,
                 time_modified = NOW(),
@@ -183,6 +184,12 @@ class ModelSaleInvoice extends Model
     public function setPackageNumber($invoiceId, $packageNumber)
     {
         $this->setTextField($invoiceId, 'package_number', $packageNumber);
+    }
+
+    public function setShippingDate($invoiceId, $shippingDate)
+    {
+        $query = "UPDATE " . DB_PREFIX . "invoices SET shipping_date = '" . $shippingDate . "' WHERE invoice_id = " . (int)$invoiceId;
+        $this->db->query($query);
     }
 
     private function setTextField($invoiceId, $field, $data)

@@ -25,7 +25,9 @@
                             <td class="right"><?= $textShippingCost ?></td>
                             <td class="right"><?= $textTotal ?></td>
                             <td class="right"><?= $textTotalCustomerCurrency ?></td>
+                            <td class="right" style="width: 100px;"><?= $textInvoceDate ?></td>
                             <td class="right"><?= $textPackage ?></td>
+                            <td class="right" style="width: 100px;"><?= $textShippingDate ?></td>
                             <td class="right"><?= $textAction ?></td>
                         </tr>
                         <tr class="filter">
@@ -38,7 +40,7 @@
                                     <?php endforeach; ?>
                                 </select>
                             </td>
-                            <td /><td /><td /><td /><td /><td /><td />
+                            <td /><td /><td /><td /><td /><td /><td /><td /><td />
                             <td align="right"><a onclick="filter();" class="button"><?= $textFilter ?></a></td>
                         </tr>
                     </thead>
@@ -58,7 +60,9 @@
                                     <td class="right"><?= $invoice['shippingCost'] ?></td>
                                     <td class="right"><?= $invoice['total'] ?></td>
                                     <td class="right"><?= $invoice['totalCustomerCurrency'] ?></td>
+                                    <td class="right"><?= $invoice['date'] ?></td>
                                     <td class="right"><?= $invoice['package_number'] ?></td>
+                                    <td class="right"><?= $invoice['shipping_date'] ?></td>
                                     <td class="right">
                                         <?php foreach ($invoice['action'] as $action):
                                             $href = empty($action['href']) ? '' :  'href="' . $action['href'] . '"';
