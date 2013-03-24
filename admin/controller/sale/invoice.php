@@ -431,7 +431,7 @@ class ControllerSaleInvoice extends Controller
         $this->data['discount'] = 0;
         $this->data['invoiceId'] = 0;
         $this->data['packageNumber'] = '';
-        $this->data['shippingAddress'] = nl2br($this->getOrderAddressString($firstItemOrder));
+        $this->data['shippingAddress'] = nl2br($this->getOrderAddressString($firstItemOrder)) . " (" . $firstItemOrder['shipping_phone'] . ")";
         $this->data['shippingCost'] =
             $this->currency->format(
                 Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry),
@@ -503,13 +503,16 @@ class ControllerSaleInvoice extends Controller
             );
             $orderItemIdParam .= '&orderItemId[]=' . $invoiceItem['order_item_id'];
         }
+
+        $add = $this->modelReferenceAddress->getAddress($invoice['shipping_address_id']);
+
         /// Set invoice data
         $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
         $this->data['comment'] = $invoice['comment'];
         $this->data['discount'] = $invoice['discount'];
         $this->data['invoiceId'] = $invoice['invoice_id'];
         $this->data['packageNumber'] = $invoice['package_number'];
-        $this->data['shippingAddress'] = nl2br($this->modelReferenceAddress->toString($invoice['shipping_address_id']));
+        $this->data['shippingAddress'] = nl2br($this->modelReferenceAddress->toString($invoice['shipping_address_id'])) . "<br />" . $add['phone'];
         $this->data['shippingCost'] = $this->currency->format($invoice['shipping_cost'], $this->config->get('config_currency'));
         $this->data['shippingCostRaw'] = $invoice['shipping_cost'];
         $this->data['shippingCostRoute'] =
