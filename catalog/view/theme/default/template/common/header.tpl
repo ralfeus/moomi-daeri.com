@@ -84,7 +84,7 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
       });
     });
 
-    function setHoliDays(date) { //alert('assasddsa');
+    function setHoliDays(date) {
        for (i = 0; i < holiDays.length; i++) {
          if (date.getFullYear() == holiDays[i][0]
             && date.getMonth() == holiDays[i][1] - 1

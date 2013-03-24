@@ -906,6 +906,11 @@ a.button-disabled span {
 	color: #333333;
 	font-size: 12px;
 }
+.product-list .checkbox {
+	float: right;
+	height: 50px;
+	margin-left: 8px;
+}
 .product-list .price-old {
 	color: #F00;
 	text-decoration: line-through;

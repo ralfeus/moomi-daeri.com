@@ -11,7 +11,10 @@ class ControllerModuleLatest extends Controller {
 
 	protected function index($setting) {
 		$this->data['button_cart'] = $this->language->get('button_cart');
-		$this->data['products'] = array();
+
+    $this->data['isSaler'] = $this->customer->getCustomerGroupId() == 6;
+
+    $this->data['products'] = array();
 
         if (isset($_REQUEST['latest_page']))
             $page = $_REQUEST['latest_page'];
@@ -37,19 +40,19 @@ class ControllerModuleLatest extends Controller {
 			} else {
 				$image = false;
 			}
-						
+
 			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
 				$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
 			} else {
 				$price = false;
 			}
-					
+
 			if ((float)$result['special']) {
 				$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
 			} else {
 				$special = false;
 			}
-			
+
 			if ($this->config->get('config_review_status')) {
 				$rating = $result['rating'];
 			} else {
@@ -58,7 +61,7 @@ class ControllerModuleLatest extends Controller {
 
             $date_added = getdate(strtotime($result['date_added']));
             $date_added = mktime(0, 0, 0, $date_added['mon'], $date_added['mday'], $date_added['year']);
-			
+
 			$this->data['products'][] = array(
 				'product_id' => $result['product_id'],
 				'thumb'   	 => $image,
