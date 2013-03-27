@@ -69,10 +69,11 @@
                 <td><input name="filterOrderItemId" value="<?= $filterOrderItemId ?>" onkeydown="filterKeyDown(event);" /></td>
                 <td><input name="filterOrderId" value="<?= $filterOrderId ?>" onkeydown="filterKeyDown(event);" /></td>
                 <td>
-                    <select name="filterCustomerId[]" multiple="true">
+                    <select id="customer" name="filterCustomerId[]" multiple="true">
                         <?php foreach ($customers as $key => $value):
-                            $selected = in_array($key, $filterCustomerId) ? 'selected' : ''; ?>
-                            <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
+                            $selected = in_array($key, $filterCustomerId) ? 'selected' : '';
+                        ?>
+                            <option value="<?= $key ?>" <?= $selected ?> ><?= $value['nickname_name'] ?></option>
                         <?php endforeach; ?>
                     </select>
                 </td>
@@ -121,7 +122,7 @@
                             <input type="checkbox" id="selectedItems[]" name="selectedItems[]" value="<?php echo $order_item['id']; ?>" />
                         </td>
                         <td class="right"><?php echo $order_item['id']; ?></td>
-						<td><a target="_blank" href="<?= $order_item['order_url'] ?>"><?= $order_item['order_id'] ?></a></td>
+						<td><a target="_blank" href="<?= $order_item['order_url'] ?>" <?php if($order_item['isOrderReady']) { echo 'class="boldRed"'; } ?>><?= $order_item['order_id'] ?></a></td>
                         <td class="left"><?php echo $order_item['customer_nick'] . "/<br />" . $order_item['customer_name']; ?></td>
                         <td class="right"><img src="<?php echo $order_item['image_path']; ?>" /></td>
                         <td class="left">
@@ -201,6 +202,19 @@ $(document).ready(function() {
             })
             .multiselectfilter();
     $('button.ui-multiselect').css('width', '110px');
+
+    var json = '<?php print(json_encode($customers)) ?>';
+    var customers = $.parseJSON(json);
+    for(var index in customers) {
+        var customer = customers[index];
+        if(customer['isCusmoterOrderReady'] == true) {
+            var input = $('[title="'+customer['nickname_name']+'"]');
+            $(input).next('span').css('background-color', 'red');
+        }
+    }
+    //var html = $('[name="multiselect_customer"]');
+    //$(html).next('span').css('background-color', 'red');
+    //alert (html);
 });
 
 function filter() {
@@ -285,5 +299,5 @@ function submitForm(action)
     else
         alert("<?= $text_no_selected_items ?>");
 }
-//--></script> 
+//--></script>
 <?php echo $footer; ?>

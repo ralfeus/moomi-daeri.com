@@ -28,8 +28,9 @@ class Status extends LibraryClass
                 FROM " . DB_PREFIX . "statuses
                 WHERE group_id << 16 | status_id = " . (int)$statusId . " AND language_id = " . (int)$languageId
             ;
-//            Status::$instance->log->write(print_r($sql, true));
+
             $query = Status::$instance->db->query($sql);
+
             if ($query->num_rows)
                 return $query->row[$fieldName];
             elseif ($languageId != 2)
@@ -43,12 +44,12 @@ class Status extends LibraryClass
     {
         while (true)
         {
-            $query = Status::$instance->db->query("
+            $sql = "
                 SELECT group_id << 16 | status_id as status_id, name
                 FROM " . DB_PREFIX . "statuses
-                WHERE group_id = " . (int)$statusGroupId . " AND language_id = " . (int)$languageId
-            );
-//            Status::$instance->log->write(print_r($query->rows, true));
+                WHERE group_id = " . (int)$statusGroupId . " AND language_id = " . (int)$languageId;
+            $query = Status::$instance->db->query($sql);
+
             if ($query->num_rows)
                 return $query->rows;
             elseif ($languageId != 2)

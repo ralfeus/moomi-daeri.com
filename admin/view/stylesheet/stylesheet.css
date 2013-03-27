@@ -209,7 +209,7 @@ body > #container {
 .image {
 	border: 1px solid #EEEEEE;
 	padding: 10px;
-	display: inline-block;	
+	display: inline-block;
 }
 .image img {
 	margin-bottom: 5px;
@@ -265,7 +265,7 @@ a.button, .list a.button {
 	-webkit-border-radius: 10px 10px 10px 10px;
 	-moz-border-radius: 10px 10px 10px 10px;
 	-khtml-border-radius: 10px 10px 10px 10px;
-	border-radius: 10px 10px 10px 10px;	
+	border-radius: 10px 10px 10px 10px;
 }
 
 .internal-layout table
@@ -413,7 +413,7 @@ table.form > tbody > tr > td {
 .htabs a {
 	border-top: 1px solid #DDDDDD;
 	border-left: 1px solid #DDDDDD;
-	border-right: 1px solid #DDDDDD; 
+	border-right: 1px solid #DDDDDD;
 	background: #FFFFFF url('../image/tab.png') repeat-x;
 	padding: 7px 15px 6px 15px;
 	float: left;
@@ -489,7 +489,7 @@ table.form > tbody > tr > td {
 .overview {
 	float: left;
 	width: 49%;
-	margin-bottom: 20px;	
+	margin-bottom: 20px;
 }
 .overview table {
 	width: 100%;
@@ -512,29 +512,34 @@ table.form > tbody > tr > td {
 	padding-right: 1px;
 }
 .range, .range select {
-	font-size: 11px;	
+	font-size: 11px;
 }
 .latest {
-	clear: both;	
+	clear: both;
 }
 .latest tbody td {
 	background: #FFF;
 }
 .dashboard-heading {
-	background: #547C96; 
-	color: #FFF; 
-	border-bottom: 1px solid #8EAEC3; 
-	padding: 5px; 
-	font-size: 14px; 
-	font-weight: bold;	
+	background: #547C96;
+	color: #FFF;
+	border-bottom: 1px solid #8EAEC3;
+	padding: 5px;
+	font-size: 14px;
+	font-weight: bold;
 }
 .dashboard-content {
-	background: #FCFCFC; 
-	border: 1px solid #8EAEC3; 
-	padding: 10px; 
-	min-height: 180px;	
+	background: #FCFCFC;
+	border: 1px solid #8EAEC3;
+	padding: 10px;
+	min-height: 180px;
 }
 
 .red {
-    background-color: red;
+  background-color: red;
+}
+
+a.boldRed {
+	color: red;
+	font-weight: bold;
 }

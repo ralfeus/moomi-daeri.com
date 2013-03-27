@@ -47,15 +47,15 @@ class ModelSaleOrderItem extends Model
         	" . ($sort ? "ORDER BY $sort" : "") . */"
             ORDER BY supplier_name, op.model, op.order_product_id
 			" . ($limit ? "LIMIT $limit" : "");
-//		$this->log->write(print_r($query, true));
+
 		$order_item_query = $this->db->query($query);
 
-		if ($order_item_query->num_rows) 
+		if ($order_item_query->num_rows)
 			return $order_item_query->rows;
 		else
 			return false;
 	}
-	
+
 	private function fetchOrderItemsCount($filter = "")	{
 		$query = "
 			SELECT COUNT(*) as total
@@ -75,12 +75,12 @@ class ModelSaleOrderItem extends Model
                     GROUP BY order_item_id) as oih1 on op.order_product_id = oih1.order_item_id
 			" . ($filter ? "WHERE $filter" : "");
 		$order_item_query = $this->db->query($query);
-		
+
 		return $order_item_query->row['total'];
 	}
-	
+
 	public function getOrderItems($data = array(), $filter = null) 	{
-        //print_r($data);exit();
+
 		$filter = empty($filter) ? $this->buildFilterString($data) : $filter;
 		$sort = "";
 		$limit = "";
@@ -142,7 +142,7 @@ class ModelSaleOrderItem extends Model
                 'weight' => $total_weight
             );
     }
-	
+
 	private function buildFilterString($data = array()) {
 		$filter = "";
         if (isset($data['selected_items']) && count($data['selected_items']))
@@ -197,8 +197,7 @@ class ModelSaleOrderItem extends Model
                 and (ovd.language_id = $languageId or ovd.language_id is null)"
         ;
         $result = $this->db->query($query);
-//        $this->log->write($query);
-//        $this->log->write(print_r($result->rows, true));
+
         $order_item_options = array();
         if ($result->num_rows)
             foreach ($result->rows as $order_option)
@@ -254,7 +253,7 @@ class ModelSaleOrderItem extends Model
                     order_item_status_id = " . (int) $order_item_status_id . ",
                     date_added = NOW()
             ";
-//            $this->log->write(print_r($query, true));
+
             $this->db->query($query);
             $this->db->query("
                 UPDATE " . DB_PREFIX . "order_product
