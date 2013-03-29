@@ -563,7 +563,8 @@ a.button {
     margin-left: 5px;
 }
 a.button span {
-	color: #FFFFFF;
+	/*color: #FFFFFF;*/
+	color: #FAD3CF;
 	line-height: 12px;
 	font-size: 12px;
 	font-weight: bold;
@@ -575,7 +576,8 @@ a.button:hover {
 	background: url('../image/button-left-active.png') top left no-repeat;
 }
 a.button:hover span {
-	color: #FFFFFF;
+	/*color: #FFFFFF;*/
+	color: #FAD3CF;
 	background: url('../image/button-right-active.png') top right no-repeat;
 }
 
@@ -1699,3 +1701,20 @@ a.button-disabled span {
 .bottom5 {
 	margin-bottom: -5px;
 }
+
+.clear {
+	clear: both;
+}
+
+.percent100Right {
+	width: 100%;
+	text-align: right;
+}
+
+.new_font .breadcrumb, .breadcrumb a, .box-category ul li a, .display a, .box-content ul li a, #content_page a {
+	font-size: 14px;
+}
+
+/*.sf-with-ul {
+	font-size: 13px;
+}*/

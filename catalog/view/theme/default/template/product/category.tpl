@@ -64,6 +64,14 @@
         <?php } ?>
       </select>
     </div>
+    <div class="clear"></div>
+    <?php if ($isSaler && $showDownload) { ?>
+    <div class="percent100Right">
+      <a class="button" onclick="downloadImages()">
+        <span><?php echo $text_button_download ?></span>
+      </a>
+    </div>
+    <?php } ?>
   </div>
   <div class="product-compare"><a href="<?php echo $compare; ?>" id="compare_total"><?php echo $text_compare; ?></a></div>
   <div class="product-list">
@@ -90,7 +98,7 @@
       </div>
       <?php } ?>
       <?php if ($product['isSaler']) { ?>
-        <div class="saler">
+        <div class="checkbox">
           <input type="checkbox" id="<?php echo $product['product_id'] ?>" class="latest_checkbox" />
         </div>
       <?php } ?>
@@ -112,6 +120,7 @@
   <?php echo $content_bottom; ?></div>
 <script type="text/javascript"><!--
 function display(view) {
+
 	if (view == 'list') {
 		$('.product-grid').attr('class', 'product-list');
 
@@ -134,7 +143,7 @@ function display(view) {
 				html += '<div class="price">' + price  + '</div>';
 			}
 
-      var saler = $(element).find('.saler').html();
+      var saler = $(element).find('.checkbox').html();
 
       if (saler != null) {
         html += '<div class="checkbox">' + saler  + '</div>';
@@ -179,14 +188,18 @@ function display(view) {
 				html += '<div class="price">' + price  + '</div>';
 			}
 
+      var saler = $(element).find('.checkbox').html();
+
+      if (saler != null) {
+        html += '<div class="checkbox">' + saler  + '</div>';
+      }
+
 			var rating = $(element).find('.rating').html();
 
 			if (rating != null) {
 				html += '<div class="rating">' + rating + '</div>';
 			}
-
-			//html += '<div class="cart">' + $(element).find('.cart').html() + '</div>';
-
+      //console.log(html);
 			$(element).html(html);
 		});
 
@@ -201,7 +214,7 @@ view = $.cookie('display');
 if (view) {
 	display(view);
 } else {
-	display('list');
+	display('grid');
 }
 //--></script>
 <?php echo $footer; ?>

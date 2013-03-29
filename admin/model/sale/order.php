@@ -414,6 +414,15 @@ class ModelSaleOrder extends Model {
 		return $query->rows;
 	}
 
+	public function getOrderByShippingAddressId($shipping_address_id) {
+		$query = $this->db->query("
+            SELECT *
+            FROM `" . DB_PREFIX . "order`
+            WHERE shipping_address_id = " . (int)$shipping_address_id
+        );
+		return $query->rows[0];
+	}
+
 	public function getOrderDownloads($order_id) {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_download WHERE order_id = '" . (int)$order_id . "' ORDER BY name");
 

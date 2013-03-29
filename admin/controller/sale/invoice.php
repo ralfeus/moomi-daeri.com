@@ -505,14 +505,16 @@ class ControllerSaleInvoice extends Controller
         }
 
         $add = $this->modelReferenceAddress->getAddress($invoice['shipping_address_id']);
-
+        $this->load->model('sale/order');
+        $order_info = $this->model_sale_order->getOrderByShippingAddressId($invoice['shipping_address_id']);
+//print_r($order_info); die();
         /// Set invoice data
         $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
         $this->data['comment'] = $invoice['comment'];
         $this->data['discount'] = $invoice['discount'];
         $this->data['invoiceId'] = $invoice['invoice_id'];
         $this->data['packageNumber'] = $invoice['package_number'];
-        $this->data['shippingAddress'] = nl2br($this->modelReferenceAddress->toString($invoice['shipping_address_id'])) . "<br />" . $add['phone'];
+        $this->data['shippingAddress'] = nl2br($this->modelReferenceAddress->toString($invoice['shipping_address_id'])) . "<br />" . $order_info['shipping_phone'];//$add['phone'];
         $this->data['shippingCost'] = $this->currency->format($invoice['shipping_cost'], $this->config->get('config_currency'));
         $this->data['shippingCostRaw'] = $invoice['shipping_cost'];
         $this->data['shippingCostRoute'] =

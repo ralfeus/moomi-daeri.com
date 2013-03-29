@@ -242,6 +242,10 @@ class ControllerCommonHeader extends Controller {
 			}
 		}
 
+		$this->load->language('shop/general');
+		$this->data['text_no_select_images'] = $this->language->get('text_no_select_images');
+		$this->data['text_button_download'] = $this->language->get('text_button_download');
+
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/header.tpl')) {
 			$this->template = $this->config->get('config_template') . '/template/common/header.tpl';
 		} else {

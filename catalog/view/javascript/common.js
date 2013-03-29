@@ -215,6 +215,10 @@ function downloadImages() {
 	$('.latest_checkbox:checked').each(function(i, val) {
 		products.push($(this).attr('id'));
   });
+  if(products.length == 0) {
+  	alert(warningMesssage);
+  	return false;
+  }
   $('#products').val(products);
   $('#downloadForm').submit();
 }

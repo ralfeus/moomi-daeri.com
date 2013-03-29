@@ -54,7 +54,7 @@ XML;
         $string = str_replace($search, $replace, $string);
         //print_r($string);
 				$xml = simplexml_load_string($string);
-        //var_dump($xml); die();
+        //var_dump($string); die();
 				$result1 = $xml->xpath('img');
 				$result2 = $xml->xpath('p/img');
 				$result = array_merge($result1, $result2);

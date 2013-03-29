@@ -363,6 +363,14 @@ class ControllerProductCategory extends Controller {
 				'common/header'
 			);
 
+			$this->load->language('shop/general');
+			$this->data['text_button_download'] = $this->language->get('text_button_download');
+			$this->data['isSaler'] = $this->customer->getCustomerGroupId() == 6;
+			$this->data['showDownload'] = false;
+			if($this->request->get['route'] == "product/category" || $this->request->get['route'] == "common/home") {
+				$this->data['showDownload'] = true;
+			}
+
 			$this->response->setOutput($this->render());
     	} else {
 			$url = '';
@@ -417,6 +425,14 @@ class ControllerProductCategory extends Controller {
 				'common/footer',
 				'common/header'
 			);
+			$this->load->language('shop/general');
+			$this->data['text_button_download'] = $this->language->get('text_button_download');
+			$this->data['isSaler'] = $this->customer->getCustomerGroupId() == 6;
+			$this->data['showDownload'] = false;
+			if($this->request->get['route'] == "product/category" || $this->request->get['route'] == "common/home") {
+				$this->data['showDownload'] = true;
+			}
+
 
 			$this->response->setOutput($this->render());
 		}

@@ -37,6 +37,9 @@
 <script type="text/javascript" src="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4-iefix.js"></script>
 <![endif]-->
 <script type="text/javascript" src="catalog/view/javascript/jquery/tabs.js"></script>
+<script type="text/javascript">
+  var warningMesssage = '<?php echo $text_no_select_images; ?>';
+</script>
 <script type="text/javascript" src="catalog/view/javascript/common.js"></script>
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/ui-lightness/jquery-ui-1.8.23.custom.css" />
 <?php foreach ($scripts as $script) { ?>
