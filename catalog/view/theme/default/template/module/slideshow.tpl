@@ -1,7 +1,7 @@
 <div class="slideshow">
-  <ul id="carousel-<?= $module ?>" class="jcarousel-skin-opencart">
+  <!--<ul id="carousel-<?= $module ?>" class="jcarousel-skin-opencart">
 
-  </ul>
+  </ul>-->
   <div id="slideshow<?php echo $module; ?>" class="nivoSlider" style="width: <?php echo $width; ?>px; height: <?php echo $height; ?>px;">
     <?php foreach ($banners as $banner) { ?>
     <?php if ($banner['link']) { ?>

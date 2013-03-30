@@ -561,7 +561,7 @@ a.button {
 	background: url('../image/button-left.png') top left no-repeat;
 	text-decoration: none;
 	cursor: pointer;
-    margin-left: 5px;
+  margin-left: 5px;
 }
 a.button span {
 	/*color: #FFFFFF;*/
@@ -1716,6 +1716,33 @@ a.button-disabled span {
 	font-size: 14px;
 }
 
-/*.sf-with-ul {
-	font-size: 13px;
-}*/
+.buttonPink {
+
+}
+
+a.buttonPink {
+	display: inline-block;
+	padding-left: 6px;
+	background: url('../image/p.button-left.png') top left no-repeat;
+	text-decoration: none;
+	cursor: pointer;
+  margin-left: 5px;
+}
+a.buttonPink span {
+	/*color: #FFFFFF;*/
+	color: #FAD3CF;
+	line-height: 12px;
+	font-size: 12px;
+	font-weight: bold;
+	display: inline-block;
+	padding: 6px 12px 8px 5px;
+	background: url('../image/p.button-right.png') top right no-repeat;
+}
+a.buttonPink:hover {
+	background: url('../image/p.button-left-active.png') top left no-repeat;
+}
+a.buttonPink:hover span {
+	/*color: #FFFFFF;*/
+	color: #FAD3CF;
+	background: url('../image/p.button-right-active.png') top right no-repeat;
+}

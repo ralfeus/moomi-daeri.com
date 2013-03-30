@@ -58,7 +58,7 @@ DD_belatedPNG.fix('#logo img');
 <?php echo $google_analytics; ?>
 <!-- BEGIN JIVOSITE CODE {literal} -->
 <script type="text/javascript">
-
+<!--
 var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'Christmas Day']];
     (function() {
         var widget_id = '15225';
@@ -97,7 +97,7 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
        }
       return [true, ''];
     }
-
+-->
 </script>
 <style type="text/css">
   .width180 {
@@ -142,13 +142,16 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
             <tr>
                 <td style="width: 100%;"></td>
                 <td style="vertical-align: bottom;">
-                    <span id="span-selectors">
+                    <div id="span-selectors">
                         <form id="selectors" action="<?php echo $action; ?>" method="post" enctype="multipart/form-data">
-                            <table style="border: 4px solid #A0FF56">
+                            <table style="border: 4px solid #40db4b">
                                 <tbody>
                                     <tr>
 <?php foreach ($languages as $language): ?>
                                         <td style="text-align: center; vertical-align: middle;">
+                                          <input type="hidden" name="language_code" value="" />
+                                          <input type="hidden" name="currency_code" value="" />
+                                          <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
                                             <div class="language-selector">
                                                 <img
                                                     src="image/flags/<?php echo $language['image'] ?>"
@@ -180,11 +183,11 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
                                     </tr>
                                 </tbody>
                             </table>
-                            <input type="hidden" name="language_code" value="" />
+                            <!--<input type="hidden" name="language_code" value="" />
                             <input type="hidden" name="currency_code" value="" />
-                            <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
+                            <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />-->
                         </form>
-                    </span>
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -217,7 +220,7 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
         <a class="button" href="<?php echo $account; ?>"><span><?php echo $text_account; ?></span></a>
         <a class="button" href="<?php echo $cart; ?>"><span><?php echo $text_cart; ?></span></a>
         <a class="button" href="<?php echo $checkout; ?>"><span><?php echo $text_checkout; ?></span></a>
-        <a class="button" href="<?php echo $repurchase_order; ?>"><span><?php echo $text_repurchase_order; ?></span></a><br >
+        <a class="button" href="<?php echo $repurchase_order; ?>"><span><?php echo $text_repurchase_order; ?></span></a><br />
         <a class="button" href="<?= $urlGallery ?>"><span><?= $textGallery ?></span></a>
         <a class="buttonPink" href="<?= $urlShoppingGuide ?>"><span><?= $textShoppingGuide ?></span></a>
     </div>

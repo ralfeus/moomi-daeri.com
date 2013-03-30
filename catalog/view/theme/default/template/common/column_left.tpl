@@ -13,7 +13,7 @@
     </div>
   </div>
 
-<?php 
+<?php
 if($route == 'common/home') {
   $this->load->model('gallery/photo');
 
@@ -38,44 +38,22 @@ function resizeItems() {
   $('.jcarousel-item-vertical').css('height', '140px');
 }
 </script>
-<div style="width: 185px: overflow: hidden;">
+<div style="">
   <ul id='mycarousel' class='jcarousel-skin-tango' style="width: 140px;">
-  	<?php 
+  	<?php
       foreach ($photos as $photo) {
         echo "
         <li>
-          <a class='gallerie1' rel='gallerie1' href='".$this->url->link('product/gallery')."' title=''>
-            <div class='nailthumb-container' >
-              <img src='".$photo['path']."' width='140' />
-            </div>
-          </a>
+          <div class='nailthumb-container'>
+            <a class='gallerie1' rel='gallerie1' href='".$this->url->link('product/gallery')."' title=''>
+              <img src='".$photo['path']."' width='140' alt='Gallery' />
+            </a>
+          </div>
         </li>";
       }
-      //print_r($photo); die();
     ?>
-    <!--<li>
-    	<a class='gallerie1' rel='gallerie1' href='http://localhost/moomidaeri/image/gallery/50f86af9a63ba_Hydrangeas.jpg' title=''>
-        <div class="nailthumb-container" style="margin-bottom: 5px; height: 140;">
-      	  <img src='http://localhost/moomidaeri/image/gallery/50f86af9a63ba_Hydrangeas.jpg' width='140' />
-        </div>
-      </a>
-    </li>
-    <li>
-      <a class='gallerie1' rel='gallerie1' href='http://localhost/moomidaeri/image/gallery/50f29a0e2554e_2012-04-28%2014.50.19.jpg' title=''>
-        <div class="nailthumb-container" style="margin-bottom: 5px;">
-      	  <img src='http://localhost/moomidaeri/image/gallery/50f29a0e2554e_2012-04-28%2014.50.19.jpg' width='140' />
-        </div>
-      </a>
-    </li>
-    <li>
-      <a class='gallerie1' rel='gallerie1' href='http://localhost/moomidaeri/image/gallery/50f86af9a63ba_Hydrangeas.jpg' title=''>
-        <div class="nailthumb-container" style="margin-bottom: 5px;">
-          <img src='http://localhost/moomidaeri/image/gallery/50f86af9a63ba_Hydrangeas.jpg' width='140' />
-        </div>
-      </a>
-    </li>-->
   </ul>
 </div>
-<?php } ?> 
-<?php } ?> 
+<?php } ?>
+<?php } ?>
 </div>
