@@ -38,7 +38,7 @@ function resizeItems() {
   $('.jcarousel-item-vertical').css('height', '140px');
 }
 </script>
-<div style="">
+<div style="margin-top: 20px; width: 185px: overflow: hidden;">
   <ul id='mycarousel' class='jcarousel-skin-tango' style="width: 140px;">
   	<?php
       foreach ($photos as $photo) {
