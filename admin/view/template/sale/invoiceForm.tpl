@@ -165,7 +165,7 @@ function formatCurrencies(value)
 function recalculateShipping()
 {
     $.ajax({
-        url: '<?= $shippingCostRoute ?>',
+        url: '<?= $shippingCostRoute ?>'.replace('&amp;', '&'),
         type: 'post',
         dataType: 'json',
         data: {

@@ -20,7 +20,6 @@ class Url {
 
 		if ($args) {
 			$url .= str_replace('&', '&amp;', '&' . ltrim($args, '&'));
-      //$url .= '&' . ltrim($args, '&');
 		}
 
 		return $this->rewrite($url);
