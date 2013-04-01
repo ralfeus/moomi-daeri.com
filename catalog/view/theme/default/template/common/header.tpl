@@ -55,7 +55,18 @@
 DD_belatedPNG.fix('#logo img');
 </script>
 <![endif]-->
-<?php echo $google_analytics; ?>
+<?php
+  echo $google_analytics;
+
+  function unset_query_string_var($varname,$query_string) {
+    $query_array = array();
+    parse_str($query_string,$query_array);
+    unset($query_array[$varname]);
+    $query_string = http_build_query($query_array);
+    return $query_string;
+  }
+
+?>
 <!-- BEGIN JIVOSITE CODE {literal} -->
 <script type="text/javascript">
 <!--
@@ -153,11 +164,12 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
                                           <input type="hidden" name="currency_code" value="" />
                                           <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
                                             <div class="language-selector">
+                                              <a href="index.php?<?php echo unset_query_string_var('language', $_SERVER['QUERY_STRING']); ?>&amp;language=<?php echo $language['code']; ?>">
                                                 <img
                                                     src="image/flags/<?php echo $language['image'] ?>"
                                                     alt="<?php echo $language['name'] ?>"
-                                                    title="<?php echo $language['name']; ?>"
-                                                    onclick="changeLanguage('<?php echo $language['code'] ?>')" />
+                                                    title="<?php echo $language['name']; ?>" />
+                                              </a>
                                             </div>
                                         </td>
 <?php endforeach; ?>
