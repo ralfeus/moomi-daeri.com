@@ -61,19 +61,19 @@ class ControllerProductProduct extends Controller {
 			$url = '';
 
 			if (isset($this->request->get['filter_name'])) {
-				$url .= '&amp;filter_name=' . $this->request->get['filter_name'];
+				$url .= '&filter_name=' . $this->request->get['filter_name'];
 			}
 
 			if (isset($this->request->get['filter_tag'])) {
-				$url .= '&amp;filter_tag=' . $this->request->get['filter_tag'];
+				$url .= '&filter_tag=' . $this->request->get['filter_tag'];
 			}
 
 			if (isset($this->request->get['filter_description'])) {
-				$url .= '&amp;filter_description=' . $this->request->get['filter_description'];
+				$url .= '&filter_description=' . $this->request->get['filter_description'];
 			}
 
 			if (isset($this->request->get['filter_category_id'])) {
-				$url .= '&amp;filter_category_id=' . $this->request->get['filter_category_id'];
+				$url .= '&filter_category_id=' . $this->request->get['filter_category_id'];
 			}
 
 			$this->data['breadcrumbs'][] = array(
@@ -99,32 +99,32 @@ class ControllerProductProduct extends Controller {
 			$url = '';
 
 			if (isset($this->request->get['path'])) {
-				$url .= '&amp;path=' . $this->request->get['path'];
+				$url .= '&path=' . $this->request->get['path'];
 			}
 
 			if (isset($this->request->get['manufacturer_id'])) {
-				$url .= '&amp;manufacturer_id=' . $this->request->get['manufacturer_id'];
+				$url .= '&manufacturer_id=' . $this->request->get['manufacturer_id'];
 			}
 
 			if (isset($this->request->get['filter_name'])) {
-				$url .= '&amp;filter_name=' . $this->request->get['filter_name'];
+				$url .= '&filter_name=' . $this->request->get['filter_name'];
 			}
 
 			if (isset($this->request->get['filter_tag'])) {
-				$url .= '&amp;filter_tag=' . $this->request->get['filter_tag'];
+				$url .= '&filter_tag=' . $this->request->get['filter_tag'];
 			}
 
 			if (isset($this->request->get['filter_description'])) {
-				$url .= '&amp;filter_description=' . $this->request->get['filter_description'];
+				$url .= '&filter_description=' . $this->request->get['filter_description'];
 			}
 
 			if (isset($this->request->get['filter_category_id'])) {
-				$url .= '&amp;filter_category_id=' . $this->request->get['filter_category_id'];
+				$url .= '&filter_category_id=' . $this->request->get['filter_category_id'];
 			}
 
 			$this->data['breadcrumbs'][] = array(
 				'text'      => $product_info['name'],
-				'href'      => $this->url->link('product/product', $url . '&amp;product_id=' . $this->request->get['product_id']),
+				'href'      => $this->url->link('product/product', $url . '&product_id=' . $this->request->get['product_id']),
 				'separator' => $this->language->get('text_separator')
 			);
 
@@ -389,32 +389,32 @@ class ControllerProductProduct extends Controller {
 			$url = '';
 
 			if (isset($this->request->get['path'])) {
-				$url .= '&amp;path=' . $this->request->get['path'];
+				$url .= '&path=' . $this->request->get['path'];
 			}
 
 			if (isset($this->request->get['manufacturer_id'])) {
-				$url .= '&amp;manufacturer_id=' . $this->request->get['manufacturer_id'];
+				$url .= '&manufacturer_id=' . $this->request->get['manufacturer_id'];
 			}
 
 			if (isset($this->request->get['filter_name'])) {
-				$url .= '&amp;filter_name=' . $this->request->get['filter_name'];
+				$url .= '&filter_name=' . $this->request->get['filter_name'];
 			}
 
 			if (isset($this->request->get['filter_tag'])) {
-				$url .= '&amp;filter_tag=' . $this->request->get['filter_tag'];
+				$url .= '&filter_tag=' . $this->request->get['filter_tag'];
 			}
 
 			if (isset($this->request->get['filter_description'])) {
-				$url .= '&amp;filter_description=' . $this->request->get['filter_description'];
+				$url .= '&filter_description=' . $this->request->get['filter_description'];
 			}
 
 			if (isset($this->request->get['filter_category_id'])) {
-				$url .= '&amp;filter_category_id=' . $this->request->get['filter_category_id'];
+				$url .= '&filter_category_id=' . $this->request->get['filter_category_id'];
 			}
 
       		$this->data['breadcrumbs'][] = array(
         		'text'      => $this->language->get('text_error'),
-						'href'      => $this->url->link('product/product', $url . '&amp;product_id=' . $product_id),
+				'href'      => $this->url->link('product/product', $url . '&product_id=' . $product_id),
         		'separator' => $this->language->get('text_separator')
       		);
 
@@ -490,7 +490,7 @@ class ControllerProductProduct extends Controller {
 		$pagination->page = $page;
 		$pagination->limit = 5;
 		$pagination->text = $this->language->get('text_pagination');
-		$pagination->url = $this->url->link('product/product/review', 'product_id=' . $this->request->get['product_id'] . '&amp;page={page}');
+		$pagination->url = $this->url->link('product/product/review', 'product_id=' . $this->request->get['product_id'] . '&page={page}');
 
 		$this->data['pagination'] = $pagination->render();
 

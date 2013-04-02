@@ -98,19 +98,20 @@ class ControllerModuleLatest extends Controller {
     private function modifyUrl($name, $value)
     {
         $queryString = '';
-
+//        $this->log->write(print_r($_REQUEST, true));
         foreach ($_REQUEST as $param => $paramValue)
         {
+//            $this->log->write("$param => $paramValue");
             if ($param == $name)
             {
-                $queryString .= "&amp;$param=$value";
+                $queryString .= "&$param=$value";
                 $paramExists = true;
             }
             else
-                $queryString .= "&amp;$param=$paramValue";
+                $queryString .= "&$param=$paramValue";
         }
         if (empty($paramExists))
-            $queryString .= "&amp;$name=$value";
+            $queryString .= "&$name=$value";
         return $_SERVER['PHP_SELF'] . '?' . substr($queryString, 1);
     }
 }
