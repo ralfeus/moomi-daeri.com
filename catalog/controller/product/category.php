@@ -61,7 +61,7 @@ class ControllerProductCategory extends Controller {
 				if ($category_info) {
 	       			$this->data['breadcrumbs'][] = array(
    	    				'text'      => $category_info['name'],
-						'href'      => $this->url->link('product/category', 'path=' . $path),
+								'href'      => $this->url->link('product/category', 'path=' . $path),
         				'separator' => $this->language->get('text_separator')
         			);
 				}
@@ -120,15 +120,15 @@ class ControllerProductCategory extends Controller {
 			$url = '';
 
 			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
+				$url .= '&amp;sort=' . $this->request->get['sort'];
 			}
 
 			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
+				$url .= '&amp;order=' . $this->request->get['order'];
 			}
 
 			if (isset($this->request->get['limit'])) {
-				$url .= '&limit=' . $this->request->get['limit'];
+				$url .= '&amp;limit=' . $this->request->get['limit'];
 			}
 
 			$this->data['categories'] = array();
@@ -209,7 +209,7 @@ class ControllerProductCategory extends Controller {
 					'tax'         => $tax,
 					'rating'      => $result['rating'],
 					'reviews'     => sprintf($this->language->get('text_reviews'), (int)$result['reviews']),
-					'href'        => $this->url->link('product/product', 'path=' . $this->request->get['path'] . '&product_id=' . $result['product_id']),
+					'href'        => $this->url->link('product/product', 'path=' . $this->request->get['path'] . '&amp;product_id=' . $result['product_id']),
 					'hot'           => $date_added + 86400 * $this->config->get('config_product_hotness_age') > time()
 				);
 			}
@@ -217,7 +217,7 @@ class ControllerProductCategory extends Controller {
 			$url = '';
 
 			if (isset($this->request->get['limit'])) {
-				$url .= '&limit=' . $this->request->get['limit'];
+				$url .= '&amp;limit=' . $this->request->get['limit'];
 			}
 
 			$this->data['sorts'] = array();
@@ -225,55 +225,55 @@ class ControllerProductCategory extends Controller {
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_default'),
 				'value' => 'p.sort_order-ASC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.sort_order&order=ASC' . $url)
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&amp;sort=p.sort_order&amp;order=ASC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_name_asc'),
 				'value' => 'pd.name-ASC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=pd.name&order=ASC' . $url)
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&amp;sort=pd.name&amp;order=ASC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_name_desc'),
 				'value' => 'pd.name-DESC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=pd.name&order=DESC' . $url)
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&amp;sort=pd.name&amp;order=DESC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_price_asc'),
 				'value' => 'p.price-ASC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.price&order=ASC' . $url)
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&amp;sort=p.price&amp;order=ASC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_price_desc'),
 				'value' => 'p.price-DESC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.price&order=DESC' . $url)
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&amp;sort=p.price&amp;order=DESC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_rating_desc'),
 				'value' => 'rating-DESC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=rating&order=DESC' . $url)
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&amp;sort=rating&amp;order=DESC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_rating_asc'),
 				'value' => 'rating-ASC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=rating&order=ASC' . $url)
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&amp;sort=rating&amp;order=ASC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_model_asc'),
 				'value' => 'p.model-ASC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.model&order=ASC' . $url)
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&amp;sort=p.model&amp;order=ASC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_model_desc'),
 				'value' => 'p.model-DESC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.model&order=DESC' . $url)
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&amp;sort=p.model&amp;order=DESC' . $url)
 			);
 
 			$url = '';
@@ -291,45 +291,45 @@ class ControllerProductCategory extends Controller {
 			$this->data['limits'][] = array(
 				'text'  => $this->config->get('config_catalog_limit'),
 				'value' => $this->config->get('config_catalog_limit'),
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=' . $this->config->get('config_catalog_limit'))
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&amp;limit=' . $this->config->get('config_catalog_limit'))
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 25,
 				'value' => 25,
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=25')
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&amp;limit=25')
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 50,
 				'value' => 50,
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=50')
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&amp;limit=50')
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 75,
 				'value' => 75,
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=75')
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&amp;limit=75')
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 100,
 				'value' => 100,
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=100')
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&amp;limit=100')
 			);
 
 			$url = '';
 
 			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
+				$url .= '&amp;sort=' . $this->request->get['sort'];
 			}
 
 			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
+				$url .= '&amp;order=' . $this->request->get['order'];
 			}
 
 			if (isset($this->request->get['limit'])) {
-				$url .= '&limit=' . $this->request->get['limit'];
+				$url .= '&amp;limit=' . $this->request->get['limit'];
 			}
 
 			$pagination = new Pagination();
@@ -337,7 +337,7 @@ class ControllerProductCategory extends Controller {
 			$pagination->page = $page;
 			$pagination->limit = $limit;
 			$pagination->text = $this->language->get('text_pagination');
-			$pagination->url = $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&page={page}');
+			$pagination->url = $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&amp;page={page}');
 
 			$this->data['pagination'] = $pagination->render();
 
@@ -376,23 +376,23 @@ class ControllerProductCategory extends Controller {
 			$url = '';
 
 			if (isset($this->request->get['path'])) {
-				$url .= '&path=' . $this->request->get['path'];
+				$url .= '&amp;path=' . $this->request->get['path'];
 			}
 
 			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
+				$url .= '&amp;sort=' . $this->request->get['sort'];
 			}
 
 			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
+				$url .= '&amp;order=' . $this->request->get['order'];
 			}
 
 			if (isset($this->request->get['page'])) {
-				$url .= '&page=' . $this->request->get['page'];
+				$url .= '&amp;page=' . $this->request->get['page'];
 			}
 
 			if (isset($this->request->get['limit'])) {
-				$url .= '&limit=' . $this->request->get['limit'];
+				$url .= '&amp;limit=' . $this->request->get['limit'];
 			}
 
 			$this->data['breadcrumbs'][] = array(
