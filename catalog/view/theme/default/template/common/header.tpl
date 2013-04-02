@@ -140,131 +140,131 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
 </head>
 <body>
 <div id="container">
-<div id="header"
-    <?php if ($logo): ?>
-    style="background: url('<?php echo $logo ?>')"
-    <?php endif; ?>
-    >
-    <table style="width: 100%; height: 150px;">
-        <tbody>
-            <!--<tr>
-              <td colspan="2" style=""></td>
-            </tr>-->
-            <tr>
-                <td style="width: 100%;"></td>
-                <td style="vertical-align: bottom;">
-                    <div id="span-selectors">
-                        <form id="selectors" action="<?php echo $action; ?>" method="post" enctype="multipart/form-data">
-                            <table style="border: 4px solid #40db4b">
-                                <tbody>
-                                    <tr>
-<?php foreach ($languages as $language): ?>
-                                        <td style="text-align: center; vertical-align: middle;">
-                                          <input type="hidden" name="language_code" value="" />
-                                          <input type="hidden" name="currency_code" value="" />
-                                          <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
-                                            <div class="language-selector">
-                                              <a href="index.php?<?php echo unset_query_string_var('language', $_SERVER['QUERY_STRING']); ?>&amp;language=<?php echo $language['code']; ?>">
-                                                <img
-                                                    src="image/flags/<?php echo $language['image'] ?>"
-                                                    alt="<?php echo $language['name'] ?>"
-                                                    title="<?php echo $language['name']; ?>" />
+  <div id="header"
+      <?php if ($logo): ?>
+      style="background: url('<?php echo $logo ?>')"
+      <?php endif; ?>
+      >
+      <table style="width: 100%; height: 150px;">
+          <tbody>
+              <!--<tr>
+                <td colspan="2" style=""></td>
+              </tr>-->
+              <tr>
+                  <td style="width: 100%;"></td>
+                  <td style="vertical-align: bottom;">
+                      <div id="span-selectors">
+                          <form id="selectors" action="<?php echo $action; ?>" method="post" enctype="multipart/form-data">
+                              <table style="border: 4px solid #40db4b">
+                                  <tbody>
+                                      <tr>
+  <?php foreach ($languages as $language): ?>
+                                          <td style="text-align: center; vertical-align: middle;">
+                                            <input type="hidden" name="language_code" value="" />
+                                            <input type="hidden" name="currency_code" value="" />
+                                            <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
+                                              <div class="language-selector">
+                                                <a href="index.php?<?php echo unset_query_string_var('language', $_SERVER['QUERY_STRING']); ?>&amp;language=<?php echo $language['code']; ?>">
+                                                  <img
+                                                      src="image/flags/<?php echo $language['image'] ?>"
+                                                      alt="<?php echo $language['name'] ?>"
+                                                      title="<?php echo $language['name']; ?>" />
+                                                </a>
+                                              </div>
+                                          </td>
+  <?php endforeach; ?>
+                                      </tr>
+                                      <tr>
+  <?php foreach ($currencies as $currency): ?>
+                                          <td class="currency-selector">
+      <?php
+      if ($currency['code'] == $currency_code):
+          $boldBegin = "<b>"; $boldEnd = "</b>";
+          $onClick = "";
+      else:
+          $boldBegin = ""; $boldEnd = "";
+          $onClick = 'onclick="changeCurrency(\'' . $currency['code'] . '\')"';
+      endif;
+      $symbol = $currency['symbol_left'] ? $currency['symbol_left'] : $currency['symbol_right'];
+      ?>
+                                              <a title="<?= $currency['title'] ?>" <?= $onClick ?>>
+                                                  <?= $boldBegin ?><?= $symbol ?> <?= $boldEnd ?>
                                               </a>
-                                            </div>
-                                        </td>
-<?php endforeach; ?>
-                                    </tr>
-                                    <tr>
-<?php foreach ($currencies as $currency): ?>
-                                        <td class="currency-selector">
-    <?php
-    if ($currency['code'] == $currency_code):
-        $boldBegin = "<b>"; $boldEnd = "</b>";
-        $onClick = "";
-    else:
-        $boldBegin = ""; $boldEnd = "";
-        $onClick = 'onclick="changeCurrency(\'' . $currency['code'] . '\')"';
-    endif;
-    $symbol = $currency['symbol_left'] ? $currency['symbol_left'] : $currency['symbol_right'];
-    ?>
-                                            <a title="<?= $currency['title'] ?>" <?= $onClick ?>>
-                                                <?= $boldBegin ?><?= $symbol ?> <?= $boldEnd ?>
-                                            </a>
-                                        </td>
-<?php endforeach; ?>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <!--<input type="hidden" name="language_code" value="" />
-                            <input type="hidden" name="currency_code" value="" />
-                            <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />-->
-                        </form>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <div id="cart">
-        <div class="heading">
-            <h4><?php echo $text_cart; ?></h4>
-            <a><span id="cart_total"><?php echo $text_items; ?></span></a>
-        </div>
-        <div class="content"></div>
-    </div>
-    <div id="search">
-        <div class="button-search"></div>
-        <?php if ($filter_name) { ?>
-        <input type="text" name="filter_name" value="<?php echo $filter_name; ?>" />
-        <?php } else { ?>
-        <input type="text" name="filter_name" value="<?php echo $text_search; ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
-        <?php } ?>
-    </div>
-    <div id="welcome">
-        <?php if (!$logged) { ?>
-        <?php echo $text_welcome; ?>
-        <?php } else { ?>
-        <?php echo $text_logged; ?>
-        <?php } ?>
-    </div>
-    <div class="links">
-        <a class="button" href="<?php echo $home; ?>"><span><?php echo $text_home; ?></span></a>
-        <a class="button" href="<?php echo $wishlist; ?>" id="wishlist_total"><span><?php echo $text_wishlist; ?></span></a>
-        <a class="button" href="<?php echo $account; ?>"><span><?php echo $text_account; ?></span></a>
-        <a class="button" href="<?php echo $cart; ?>"><span><?php echo $text_cart; ?></span></a>
-        <a class="button" href="<?php echo $checkout; ?>"><span><?php echo $text_checkout; ?></span></a>
-        <a class="button" href="<?php echo $repurchase_order; ?>"><span><?php echo $text_repurchase_order; ?></span></a><br />
-        <a class="button" href="<?= $urlGallery ?>"><span><?= $textGallery ?></span></a>
-        <a class="buttonPink" href="<?= $urlShoppingGuide ?>"><span><?= $textShoppingGuide ?></span></a>
-    </div>
-</div>
-<?php if ($categories) { ?>
-<div id="menu">
-  <ul>
-    <?php foreach ($categories as $category) { ?>
-    <li><?php if ($category['active']) { ?>
-	<a href="<?php echo $category['href']; ?>" class="active"><?php echo $category['name']; ?></a>
-	<?php } else { ?>
-	<a href="<?php echo $category['href']; ?>"><?php echo $category['name']; ?></a>
-	<?php } ?>
-
-      <?php if ($category['children']) { ?>
-      <div>
-        <?php for ($i = 0; $i < count($category['children']);) { ?>
-        <ul>
-          <?php $j = $i + ceil(count($category['children']) / $category['column']); ?>
-          <?php for (; $i < $j; $i++) { ?>
-          <?php if (isset($category['children'][$i])) { ?>
-          <li><a href="<?php echo $category['children'][$i]['href']; ?>"><?php echo $category['children'][$i]['name']; ?></a></li>
-          <?php } ?>
-          <?php } ?>
-        </ul>
-        <?php } ?>
+                                          </td>
+  <?php endforeach; ?>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                              <!--<input type="hidden" name="language_code" value="" />
+                              <input type="hidden" name="currency_code" value="" />
+                              <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />-->
+                          </form>
+                      </div>
+                  </td>
+              </tr>
+          </tbody>
+      </table>
+      <div id="cart">
+          <div class="heading">
+              <h4><?php echo $text_cart; ?></h4>
+              <a><span id="cart_total"><?php echo $text_items; ?></span></a>
+          </div>
+          <div class="content"></div>
       </div>
+      <div id="search">
+          <div class="button-search"></div>
+          <?php if ($filter_name) { ?>
+          <input type="text" name="filter_name" value="<?php echo $filter_name; ?>" />
+          <?php } else { ?>
+          <input type="text" name="filter_name" value="<?php echo $text_search; ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
+          <?php } ?>
+      </div>
+      <div id="welcome">
+          <?php if (!$logged) { ?>
+          <?php echo $text_welcome; ?>
+          <?php } else { ?>
+          <?php echo $text_logged; ?>
+          <?php } ?>
+      </div>
+      <div class="links">
+          <a class="button" href="<?php echo $home; ?>"><span><?php echo $text_home; ?></span></a>
+          <a class="button" href="<?php echo $wishlist; ?>" id="wishlist_total"><span><?php echo $text_wishlist; ?></span></a>
+          <a class="button" href="<?php echo $account; ?>"><span><?php echo $text_account; ?></span></a>
+          <a class="button" href="<?php echo $cart; ?>"><span><?php echo $text_cart; ?></span></a>
+          <a class="button" href="<?php echo $checkout; ?>"><span><?php echo $text_checkout; ?></span></a>
+          <a class="button" href="<?php echo $repurchase_order; ?>"><span><?php echo $text_repurchase_order; ?></span></a><br />
+          <a class="button" href="<?= $urlGallery ?>"><span><?= $textGallery ?></span></a>
+          <a class="buttonPink" href="<?= $urlShoppingGuide ?>"><span><?= $textShoppingGuide ?></span></a>
+      </div>
+  </div>
+<?php if ($categories) { ?>
+  <div id="menu">
+    <ul>
+      <?php foreach ($categories as $category) { ?>
+      <li><?php if ($category['active']) { ?>
+  	<a href="<?php echo $category['href']; ?>" class="active"><?php echo $category['name']; ?></a>
+  	<?php } else { ?>
+  	<a href="<?php echo $category['href']; ?>"><?php echo $category['name']; ?></a>
+  	<?php } ?>
+
+        <?php if ($category['children']) { ?>
+        <div>
+          <?php for ($i = 0; $i < count($category['children']);) { ?>
+          <ul>
+            <?php $j = $i + ceil(count($category['children']) / $category['column']); ?>
+            <?php for (; $i < $j; $i++) { ?>
+            <?php if (isset($category['children'][$i])) { ?>
+            <li><a href="<?php echo $category['children'][$i]['href']; ?>"><?php echo $category['children'][$i]['name']; ?></a></li>
+            <?php } ?>
+            <?php } ?>
+          </ul>
+          <?php } ?>
+        </div>
+        <?php } ?>
+      </li>
       <?php } ?>
-    </li>
-    <?php } ?>
-  </ul>
-</div>
+    </ul>
+  </div>
 <?php } ?>
 <div id="notification"></div>
 <script type="text/javascript">//<!--

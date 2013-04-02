@@ -245,26 +245,31 @@
             </td></tr>
         </thead>
         <tbody>
-            <tr><td>
+            <tr>
+              <td>
                 <input type="hidden" name="imageFilePath[]" />
-                <img />
-            </td></tr>
-            <tr><td>
+              </td>
+            </tr>
+            <tr>
+              <td>
                 <input type="hidden" name="imageFilePath[]" />
-                <img />
-            </td></tr>
-            <tr><td>
+              </td>
+            </tr>
+            <tr>
+              <td>
                 <input type="hidden" name="imageFilePath[]" />
-                <img />
-            </td></tr>
-            <tr><td>
+              </td>
+            </tr>
+            <tr>
+              <td>
                 <input type="hidden" name="imageFilePath[]" />
-                <img />
-            </td></tr>
-            <tr><td>
+              </td>
+            </tr>
+            <tr>
+              <td>
                 <input type="hidden" name="imageFilePath[]" />
-                <img />
-            </td></tr>
+              </td>
+            </tr>
         </tbody>
     </table>
     <b><?php echo $entry_rating; ?></b> <span><?php echo $entry_bad; ?></span>&nbsp;
