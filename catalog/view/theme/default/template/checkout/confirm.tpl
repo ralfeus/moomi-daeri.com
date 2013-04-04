@@ -53,7 +53,7 @@ function confirm()
 {
     $.ajax({
         type: 'get',
-        url: '<?= $urlConfirm ?>',
+        url: '<?= $urlConfirm ?>'.replace('&amp;', '&'),
         beforeSend: function() {
             $('#buttonConfirm').attr('disabled', true);
             $('#buttonConfirm').after('<span class="wait">&nbsp;<img src="catalog/view/theme/default/image/loading.gif" alt="" /></span>');

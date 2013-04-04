@@ -757,7 +757,7 @@ $('input[name=\'product\']').autocomplete({
 
 function addProduct() {
 	$.ajax({
-		url: '<?php echo $store_url; ?>index.php?route=checkout/cart/update&token=<?php echo $token; ?>',
+		url: '<?php echo $store_url; ?>index.php?route=checkout/cart/update&token=<?= $token; ?>',
 		type: 'post',
 		data: $('input[name=\'product_id\'], input[name=\'quantity\'], #option input[type=\'text\'], #option input[type=\'hidden\'], #option input[type=\'radio\']:checked, #option input[type=\'checkbox\']:checked, #option select, #option textarea'),
 		dataType: 'json',	

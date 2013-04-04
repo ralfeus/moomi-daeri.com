@@ -13,32 +13,32 @@
   <?php } ?>
   <div class="box">
     <div class="heading">
-      <h1><img src="view/image/order.png" alt="" /> <?php echo $headingTitle; ?></h1>
+      <h1><img src="catalog/view/theme/default/image/order.png" alt="" /> <?php echo $headingTitle; ?></h1>
 	</div>
     </div>
     <div class="content">
-      <form action="" method="post" enctype="multipart/form-data" id="form">
+      <form action="<?= $urlFormAction ?>" method="post" enctype="multipart/form-data" id="form">
         <table class="list">
           <thead>
             <tr>
-                <td style="text-align: center;"><input type="checkbox" onclick="selectAll(this);" /></td>
-                <td class="right" style="width: 40px;">
+                <td style="width: 1px;"><input type="checkbox" onclick="selectAll(this);" /></td>
+                <td style="width: 1px;">
                     <?php if ($sort == 'order_item_id')
                         $sort_class = 'class="' . strtolower($order) . '"';
                     else
                         $sort_class = ""; ?>
                     <a href="<?php echo $sort_order_item_id; ?>" <?php echo $sort_class; ?>><?php echo $textOrderItemId; ?></a>
                 </td>
-				<td style="width: 40px;">
+				<td style="width: 1px;">
 					<?php if ($sort == 'order_id')
 						$sort_class = 'class="' . strtolower($order) . '"';
 					else
 						$sort_class = ''; ?>
 					<a href="<?= $sort_order_id ?>" <?= $sort_class ?>><?= $textOrderId ?></a>
 				</td>
-                <td><?= $textItem ?></td>
-                <td><?= $textPrice ?> / <?= $textQuantity ?></td>
-                <td><?= $textStatus ?></td>
+                <td style="width: 300px;"><?= $textItem ?></td>
+                <td style="width: 1px;"><?= $textPrice ?> / <?= $textQuantity ?></td>
+                <td style="width: 1px;"><?= $textStatus ?></td>
                 <td>Comment</td>
 			    <td>Action</td>
             </tr>
@@ -49,10 +49,10 @@
                 <td><input name="filterItem" value="<?= $filterItem ?>" onkeydown="filterKeyDown(event)" /></td>
                 <td />
                 <td>
-                    <select name="filter_status_id[]" id="filter_status_id[]" multiple="true">
+                    <select name="filterStatusId[]" id="filterStatusId[]" multiple="true">
                         <optgroup label="Product orders">
                             <?php foreach ($statuses[GROUP_ORDER_ITEM_STATUS] as $status): ?>
-                            <?php if (in_array($status['id'], $filter_status_id))
+                            <?php if (in_array($status['id'], $filterStatusId))
                                     $selected = "selected=\"selected\"";
                                 else
                                     $selected = ""; ?>
@@ -61,7 +61,7 @@
                         </optgroup>
                         <optgroup label="Agent orders">
                             <?php foreach ($statuses[GROUP_REPURCHASE_ORDER_ITEM_STATUS] as $status): ?>
-                            <?php if (in_array($status['id'], $filter_status_id))
+                            <?php if (in_array($status['id'], $filterStatusId))
                                     $selected = "selected=\"selected\"";
                                 else
                                     $selected = ""; ?>
@@ -96,11 +96,13 @@
                         <td><?= $order_item['price'] ?> / <?= $order_item['quantity'] ?></td>
                         <td><?php echo $order_item['status']; ?></td>
                         <td>
-                            <input
-                                    alt="<?php echo $order_item['publicComment']; ?>"
+                            <textarea
+                                    alt="<?= $order_item['publicComment'] ?>"
                                     onblur="saveComment(<?= $order_item['id'] ?>, this, false);"
-                                    onkeydown="if (event.keyCode == 13) saveComment(<?= $order_item['id'] ?>, this, false);"
-                                    value="<?php echo $order_item['publicComment']; ?>"/>
+                                    style="width: 100%; height: 100%;">
+                                <?= $order_item['publicComment'] ?>
+                            </textarea>
+
 
                         </td>
                         <td>
@@ -129,7 +131,7 @@
 <script type="text/javascript"><!--
 $(document).ready(function() {
 	$('.date').datepicker({dateFormat: 'yy-mm-dd'});
-    $("#filter_status_id\\[\\]").multiselect({
+    $("#filterStatusId\\[\\]").multiselect({
         noneSelectedText: "-----------",
         selectedList: 1
     });
@@ -137,7 +139,6 @@ $(document).ready(function() {
 });
 
 function filter() {
-    $('#form').attr('action', 'index.php?route=account/orderItems');
     $('#form').submit();
     return;
 }

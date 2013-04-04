@@ -133,14 +133,16 @@ class ModelAccountOrderItem extends Model
             $filter = "op.order_product_id in (" . implode($data['selected_items'], ',') . ")";
         else
         {
-            if (!empty($data['filter_model']))
-                $filter .= " AND op.model LIKE '%" . $this->db->escape($data['filter_model']) . "%'";
-            if (!empty($data['filter_order']))
-                $filter .= " AND op.order_id = " . (int)$data['filter_order'];
             if (!empty($data['filter_supplier']))
                 $filter .= ($filter ? " AND" : "") . " LCASE(s.name) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_supplier'])) . "%'";
             if (!empty($data['filter_supplier_group']))
                 $filter .= ($filter ? " AND" : "") . " s.supplier_group_id = " . (int)$data['filter_supplier_group'];
+            if (!empty($data['filterItem']))
+                $filter .= " AND (
+                    op.model LIKE '%" . $this->db->escape($data['filterItem']) . "%'
+                    OR op.name LIKE '%" . $this->db->escape($data['filterItem']) . "%')";
+            if (!empty($data['filterOrderId']))
+                $filter .= " AND op.order_id = " . (int)$data['filterOrderId'];
             if (!empty($data['filterOrderItemId']))
                 $filter .= ($filter ? " AND" : "") . " op.order_product_id = " . (int)$data['filterOrderItemId'];
             if (!empty($data['filterProductId']))

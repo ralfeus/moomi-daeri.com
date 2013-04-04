@@ -91,7 +91,7 @@ class ControllerAccountOrderItems extends Controller {
                     'model'                     => $orderItem['model'],
                     'name_korean'	            => $this->getProductAttribute($orderItem['product_id'], "Name Korean"),
                     'order_id'					=> $orderItem['order_id'],
-					'order_url'					=> $this->url->link('sale/order/info', 'order_id=' . $orderItem['order_id'] . '&token=' . $this->session->data['token'], 'SSL'),
+					'order_url'					=> $this->url->link('sale/order/info', 'order_id=' . $orderItem['order_id'], 'SSL'),
                     'options'       => nl2br($this->modelAccountOrderItem->getOrderItemOptionsString($orderItem['order_product_id'])),
                     'publicComment'                   => $orderItem['public_comment'],
 					'status'       	=> $orderItem['status'] ? Status::getStatus($orderItem['status'], $this->config->get('language_id'), true) : "",
@@ -122,6 +122,7 @@ class ControllerAccountOrderItems extends Controller {
         $this->data['textQuantity'] = $this->language->get('QUANTITY');
         $this->data['textStatus'] = $this->language->get('STATUS');
         $this->data['textWeight'] = $this->language->get('COLUMN_WEIGHT');
+        $this->data['urlFormAction'] = $this->url->link($this->selfRoute, '', 'SSL');
 
 		if (isset($this->error['warning']))
 			$this->data['error_warning'] = $this->error['warning'];
@@ -150,11 +151,11 @@ class ControllerAccountOrderItems extends Controller {
         $this->data = array_merge($this->data, $this->parameters);
 
         $template_name = '/template/account/orderItemsList.tpl';
-        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $template_name)) {
+        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $template_name))
             $this->template = $this->config->get('config_template') . $template_name;
-        } else {
+        else
             $this->template = 'default' . $template_name;
-        }
+
         $this->children = array(
             'common/column_right',
             'common/column_left',
@@ -183,7 +184,7 @@ class ControllerAccountOrderItems extends Controller {
     {
         $this->log->write(print_r($_REQUEST, true));
         $this->parameters['comment'] = empty($_REQUEST['comment']) ? null : $_REQUEST['comment'];
-        $this->parameters['filter_status_id'] = empty($_REQUEST['filter_status_id']) ? array() : $_REQUEST['filter_status_id'];
+        $this->parameters['filterStatusId'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
         $this->parameters['filterItem'] = empty($_REQUEST['filterItem']) ? null : $_REQUEST['filterItem'];
 //        $this->parameters['filter_supplier_group'] = empty($_REQUEST['filter_supplier_group']) ? null : $_REQUEST['filter_supplier_group'];
         $this->parameters['filterOrderId'] = empty($_REQUEST['filterOrderId']) ? null : $_REQUEST['filterOrderId'];
@@ -226,12 +227,17 @@ class ControllerAccountOrderItems extends Controller {
 
         $this->data['breadcrumbs'][] = array(
             'text'      => $this->language->get('text_home'),
-            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+            'href'      => $this->url->link('common/home', '', 'SSL'),
             'separator' => false
         );
         $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('heading_title'),
-            'href'      => $this->url->link($this->route, 'token=' . $this->session->data['token'], 'SSL'),
+            'text'      => $this->language->get('ACCOUNT'),
+            'href'      => $this->url->link('account/account', '', 'SSL'),
+            'separator' => ' :: '
+        );
+        $this->data['breadcrumbs'][] = array(
+            'text'      => $this->language->get('HEADING_TITLE'),
+            'href'      => $this->url->link($this->route, '', 'SSL'),
             'separator' => ' :: '
         );
     }

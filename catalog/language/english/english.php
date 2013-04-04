@@ -82,8 +82,9 @@ $_['error_upload_8']        = 'Warning: File upload stopped by extension!';
 $_['error_upload_999']      = 'Warning: No error code available!';
 
 $_['ACCEPT'] = 'Accept';
-$_['ACTION'] = 'Action';
+$_['ACCOUNT'] = 'Account';
 $_['ACCOUNT_DETAILS'] = "Account details";
+$_['ACTION'] = 'Action';
 $_['ADD'] = 'Add';
 $_['ADD_CREDIT'] = "Add credit";
 $_['AMOUNT'] = 'Amount';
