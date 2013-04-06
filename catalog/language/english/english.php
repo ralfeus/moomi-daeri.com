@@ -120,3 +120,4 @@ $_['WEIGHT'] = 'Weight';
 
 $_['heading_title']  = 'Gallery';
 $_['gallery_add_photo'] = 'Add photo';
+$_['text_gifts_for_photos'] = 'For uploading the photos we provided gifts!';

@@ -1746,3 +1746,7 @@ a.buttonPink:hover span {
 	color: #FAD3CF;
 	background: url('../image/p.button-right-active.png') top right no-repeat;
 }
+
+.marginBottom20 {
+	margin-bottom: 20px;
+}

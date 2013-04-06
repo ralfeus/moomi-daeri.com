@@ -42,35 +42,46 @@
         <?= $breadcrumb['separator']; ?><a href="<?= $breadcrumb['href'] ?>"><?= $breadcrumb['text'] ?></a>
 <?php endforeach; ?>
     </div>
-    <table>
+    <table width="100%">
     	<tr>
-    		<td>
+    		<td width="300">
     			<h1><?= $heading_title ?></h1>
     		</td>
         <?php if ($this->customer->isLogged()) : ?>
+        <td>
+          <p class="marginBottom20">
+            <?php echo $text_gifts_for_photos; ?>
+          </p>
+        </td>
     		<td align="right">
-    			<a class="button" href="<?= $this->url->link('gallery/photo/addPhoto') ?>"><span><?= $gallery_add_photo ?></span></a>
+    			<p class="marginBottom20">
+            <a class="button" href="<?= $this->url->link('gallery/photo/addPhoto') ?>">
+              <span>
+                <?= $gallery_add_photo ?>
+              </span>
+            </a>
+          </p>
     		</td>
       <?php endif; ?>
     	</tr>
     </table>
     <div class="content">
 
-<?php 
+<?php
   if(isset($images) && count($images) >0) {
 ?>
     <table>
 <?php
     $imgRows = intval(count($images) / GALLERY_COLS);
-    for ($i = 0; $i <= $imgRows; $i++) { 
+    for ($i = 0; $i <= $imgRows; $i++) {
       if($i == $imgRows) {
         $endCol = count($images) - $imgRows * GALLERY_COLS;
       }
       else {
-        $endCol = GALLERY_COLS; 
+        $endCol = GALLERY_COLS;
       }
       echo '<tr>';
-      for ($j = 0; $j < $endCol; $j++) { 
+      for ($j = 0; $j < $endCol; $j++) {
         $currentIndex = $i*GALLERY_COLS + $j;
         $imagePath = $images[$currentIndex]['path'];
         $iframeType = $images[$currentIndex]['iframe_type'];
@@ -90,10 +101,10 @@
       echo '</tr>';
     }
 ?>
-        
+
     </table>
 <?php
-  }  
+  }
 ?>
       <div class="pagination"><?php echo $pagination; ?></div>
     </div>

@@ -114,3 +114,4 @@ $_['WARNING_HTML_PAGE_PROVIDED'] = "代わりに画像のHTMLページのアド�
 
 $_['heading_title']  = 'ギャラリー';
 $_['gallery_add_photo'] = '写真を追加する';
+$_['text_gifts_for_photos'] = 'For uploading the photos we provided gifts!';
