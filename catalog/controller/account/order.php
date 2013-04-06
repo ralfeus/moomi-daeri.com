@@ -272,7 +272,7 @@ class ControllerAccountOrder extends Controller {
 			$this->data['products'] = array();
 			
 			$products = $this->modelAccountOrderItem->getOrderItems(
-                array('filter_order' => $this->request->get['order_id'])
+                array('filterOrderId' => $this->request->get['order_id'])
             );
       		foreach ($products as $product) {
                 $actions = array();
