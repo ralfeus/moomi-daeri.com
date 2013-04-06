@@ -543,3 +543,15 @@ a.boldRed {
 	color: red;
 	font-weight: bold;
 }
+
+.flotedLeft {
+	float: left;
+}
+
+.marginLeft50 {
+	margin-left: 50%;
+}
+
+.marginTop10 {
+	margin-top: 10px;
+}

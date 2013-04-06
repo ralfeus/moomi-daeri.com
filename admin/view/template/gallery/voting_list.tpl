@@ -1,6 +1,6 @@
 <?php echo $header; ?>
 <script type="text/javascript">
-  
+
   var token = '<?php echo $token; ?>';
   function approveVotes() {
     var length = $("input[class^='checkboxVote']:checked").length;
@@ -14,7 +14,7 @@
       var postdata = {
         arr : JSON.stringify(vote_ids)
       }
-      
+
       $.post(url, postdata, function(response) {
         response = $.parseJSON(response);
         if(response['success']) {
@@ -42,7 +42,7 @@
 	      var postdata = {
 	        arr : JSON.stringify(vote_ids)
 	      }
-	      
+
 	      $.post(url, postdata, function(response) {
 	        response = $.parseJSON(response);
 	        if(response['success']) {

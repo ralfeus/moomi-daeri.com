@@ -34,5 +34,5 @@ $_['error_author']      = 'Author must be between 3 and 64 characters!';
 $_['error_text']        = 'Review Text must be at least 1 character!';
 $_['error_rating']      = 'Review rating required!';
 
-$_['text_gallery_transaction']  = 'for upload photo to gallery';
+$_['text_gallery_transaction']  = 'Премия за добавление фото в галерею';
 ?>

@@ -64,6 +64,7 @@ class Transaction extends OpenCartBase implements ILibrary
         {
             $modelCustomer = Transaction::$instance->load->model('sale/customer', 'admin');
             $customer = $modelCustomer->getCustomer($customer);
+
         }
 
         /// Now need to convert transaction amount to customer base currency

@@ -2,6 +2,7 @@
 <script type="text/javascript">
   var token = '<?php echo $token; ?>';
   function approvePhotos() {
+    var credits = $('#nuberOfCredits').val();
     var length = $("input[class^='checkboxPhoto']:checked").length;
     if(length > 0) {
       var photo_ids = new Array();
@@ -11,9 +12,10 @@
 
       var url = "<?php echo $this->url->link('gallery/admin/approvePhotos&token='. $token); ?>";
       var postdata = {
-        arr : JSON.stringify(photo_ids)
+        arr : JSON.stringify(photo_ids),
+        'credits' : credits
       }
-      
+
       $.post(url, postdata, function(response) {
         response = $.parseJSON(response);
         if(response['success']) {
@@ -41,7 +43,7 @@
       var postdata = {
         arr : JSON.stringify(photo_ids)
       }
-      
+
       $.post(url, postdata, function(response) {
         response = $.parseJSON(response);
         if(response['success']) {
@@ -65,6 +67,22 @@
   <div class="box">
     <div class="heading">
       <h1><img src="view/image/product.png" alt="" /> <?php echo $heading_title; ?></h1>
+      <div class="flotedLeft marginLeft50 marginTop10">
+        <?php echo $text_number_of_credits; ?>
+        <select id="nuberOfCredits">
+          <option value="0"> 0 </option>
+          <option value="20"> 20 </option>
+          <option value="40"> 40 </option>
+          <option value="60"> 60 </option>
+          <option value="80"> 80 </option>
+          <option value="100"> 100  </option>
+          <option value="120"> 120 </option>
+          <option value="140"> 140 </option>
+          <option value="160"> 160 </option>
+          <option value="180"> 180 </option>
+          <option value="200"> 200 </option>
+        </select>
+      </div>
       <div class="buttons">
           <a onclick="javascript:approvePhotos()" class="button"><?php echo $button_approve; ?></a>
           <a onclick="javascript:removePhotos();" class="button"><?php echo $button_delete; ?></a>
