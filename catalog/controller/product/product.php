@@ -136,7 +136,7 @@ class ControllerProductProduct extends Controller {
 
 			$this->document->setDescription($product_info['meta_description']);
 			$this->document->setKeywords($product_info['meta_keyword']);
-			$this->document->addLink($this->url->link('product/product', 'product_id=' . $this->request->get['product_id']), 'canonical');
+			//$this->document->addLink($this->url->link('product/product', 'product_id=' . $this->request->get['product_id']), 'canonical');
 
 			$this->data['seo_h1'] = $product_info['seo_h1'];
 
