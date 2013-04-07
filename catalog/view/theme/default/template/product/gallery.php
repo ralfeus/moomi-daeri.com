@@ -94,7 +94,7 @@
         echo '  </a>';
         if($avgVote != '') {
           $avgVote = round($avgVote);
-          echo '  <img src="' . HTTP_THEME_IMAGE . 'stars-' . $avgVote . '.png" />';
+          echo '  <img src="catalog/view/theme/default/image/stars-' . $avgVote . '.png" />';
         }
         echo '</td>';
       }

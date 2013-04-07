@@ -926,23 +926,62 @@ class ControllerSaleOrderItems extends Controller {
             $this->session->data['success'] = '';
             $this->load->model('sale/order_item');
             $this->load->model('localisation/order_item_status');
-//            $this->log->write("Setting status '$order_item_new_status' to items:\n" . print_r($order_items, true));
 
-            foreach ($order_items as $order_item_id)
-                if ($this->modelSaleOrderItem->setOrderItemStatus($order_item_id, $order_item_new_status))
-					$this->session->data['success'] .= sprintf(
-						$this->language->get("text_status_set"),
-						$order_item_id,
-						Status::getStatus($order_item_new_status, $this->config->get('language_id')));
-                else
-					$this->error['warning'] .= sprintf(
-						$this->language->get('error_status_already_set'),
-						$order_item_id,
-                        Status::getStatus($order_item_new_status, $this->config->get('language_id')));
+            foreach ($order_items as $order_item_id) {
+              if ($this->modelSaleOrderItem->setOrderItemStatus($order_item_id, $order_item_new_status)) {
+                $this->session->data['success'] .= sprintf(
+                  $this->language->get("text_status_set"),
+                  $order_item_id,
+                  Status::getStatus($order_item_new_status, $this->config->get('language_id')));
+              }
+              else {
+                $this->error['warning'] .= sprintf(
+                  $this->language->get('error_status_already_set'),
+                  $order_item_id,
+                  Status::getStatus($order_item_new_status, $this->config->get('language_id')));
+              }
+
+              $this->changeOrderStatus($order_item_id);
+
+            }
             $this->clearSelection();
         }
 
         $this->index();
+    }
+
+    public function changeOrderStatus($order_item_id) {
+      $this->load->model('sale/order');
+      $items = $this->model_sale_order->getAllItemsOfOrderByItem($order_item_id);
+
+      $isCompleted = true;
+      $isAllCancelled = false;
+      $flagFinish = false;
+      foreach ($items as $index => $item) {
+        if($item['status_id'] == 327684 || $item['status_id'] == 327780) {
+          $flagFinish = true;
+        }
+        else {
+          if($item['status_id'] == 327781) {
+            $isCompleted = $isCompleted & true;
+          }
+          else {
+            $isCompleted = $isCompleted & false;
+          }
+        }
+      }
+
+      $order_product = $this->model_sale_order->getOrderProduct($order_item_id);
+      if($flagFinish && $isCompleted) {
+        //$this->log->write(" -------------> " . print_r($order_product['order_id'], true));
+        $this->model_sale_order->setOrderStatus($order_product['order_id'], 5);
+      } elseif(!$flagFinish && $isCompleted) {
+        $this->model_sale_order->setOrderStatus($order_product['order_id'], 7);
+      } else {
+
+      }
+
+      //return $flagReady && $isCompleted;
     }
 
     public function save_comment() {

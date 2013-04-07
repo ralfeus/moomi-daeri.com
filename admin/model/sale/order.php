@@ -707,5 +707,25 @@ class ModelSaleOrder extends Model {
 		$result = $this->db->query($query);
 		return $result->rows;
 	}
+
+	public function getAllItemsOfOrderByItem($order_item_id) {
+		$query = "SELECT * FROM " . DB_PREFIX . "order_product WHERE order_id IN (SELECT order_id FROM " . DB_PREFIX . "order_product WHERE order_product_id = " . (int)$order_item_id . ")";
+		$result = $this->db->query($query);
+
+		return $result->rows;
+	}
+
+	public function getOrderProduct($order_item_id) {
+		$query = "SELECT * FROM " . DB_PREFIX . "order_product WHERE order_product_id = " . (int) $order_item_id;
+		$result = $this->db->query($query);
+
+		return $result->row;
+	}
+
+	public function setOrderStatus($order_id, $status_id) {
+		$query = "UPDATE `" . DB_PREFIX . "order` SET order_status_id = " . (int)$status_id . " WHERE order_id = " . (int)$order_id;
+		$result = $this->db->query($query);
+
+	}
 }
 ?>
