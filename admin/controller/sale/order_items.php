@@ -301,7 +301,7 @@ class ControllerSaleOrderItems extends Controller {
           $flagReady = true;
         }
         else {
-          if($item['status_id'] == 327684 || $item['status_id'] == 327686 || $item['status_id'] == 327780 || $item['status_id'] == 327781) {
+          if(($item['status_id'] == 327684 || $item['status_id'] == 327686 || $item['status_id'] == 327780 || $item['status_id'] == 327781) || ($item['status_id'] != 393219 && $item['status_id'] != 393223)) {
             $isReady = $isReady & true;
           }
           else {
