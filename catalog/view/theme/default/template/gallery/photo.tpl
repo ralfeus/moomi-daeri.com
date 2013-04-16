@@ -12,6 +12,9 @@
 	<form id="uploadFile" action="index.php?route=gallery/photo/uploadPhoto" enctype="multipart/form-data" method="post">
 		<table>
 			<tr>
+				<td colspan="2"> <strong> <?php echo $galery_text_max_photo_size; ?> </strong> </td>
+			</tr>
+			<tr>
 				<td><?php echo $galery_photo_name; ?><span class="red">*</span> </td>
 				<td> <input id="photoName" name="galery_photo_name" class="width300" type="text" value="<?= isset($galery_photo_post_name) ? $galery_photo_post_name : '' ?>" /> </td>
 			</tr>
@@ -50,7 +53,7 @@
 			else {
 				$('#error').html('');
 				$('#uploadFile').submit();
-			}	
+			}
 		}
 	}
 

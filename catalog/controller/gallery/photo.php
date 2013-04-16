@@ -1,17 +1,17 @@
-<?php  
+<?php
 class ControllerGalleryPhoto extends Controller {
 	public function index() {
 		$this->document->setTitle($this->config->get('config_title'));
 		$this->document->setDescription($this->config->get('config_meta_description'));
 
 		$this->data['heading_title'] = $this->config->get('config_title');
-		
+
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/home.tpl')) {
 			$this->template = $this->config->get('config_template') . '/template/common/home.tpl';
 		} else {
 			$this->template = 'default/template/common/home.tpl';
 		}
-		
+
 		$this->children = array(
 			'common/column_left',
 			'common/column_right',
@@ -28,20 +28,20 @@ class ControllerGalleryPhoto extends Controller {
 
     if (!$this->customer->isLogged()) {
       $this->session->data['redirect'] = $this->url->link('account/account', '', 'SSL');
-  
+
       $this->redirect($this->url->link('account/login', '', 'SSL'));
     }
-		
+
 		$this->language->load('gallery/general');
 
 		$this->data = $this->getGalleryGeneralData();
-		
+
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/gallery/photo.tpl')) {
 			$this->template = $this->config->get('config_template') . '/template/gallery/photo.tpl';
 		} else {
 			$this->template = 'default/template/gallery/photo.tpl';
 		}
-		
+
 		$this->children = array(
 			'common/column_left',
 			'common/column_right',
@@ -50,14 +50,16 @@ class ControllerGalleryPhoto extends Controller {
 			'common/footer',
 			'common/header'
 		);
-						
+
+    $this->data['galery_text_max_photo_size'] = $this->language->get('galery_text_max_photo_size');
+
 		$this->response->setOutput($this->render());
   }
 
   public function uploadPhoto() {
     if (!$this->customer->isLogged()) {
       $this->session->data['redirect'] = $this->url->link('account/account', '', 'SSL');
-  
+
       $this->redirect($this->url->link('account/login', '', 'SSL'));
     }
 
@@ -87,7 +89,7 @@ class ControllerGalleryPhoto extends Controller {
 		);
 
   	if(!in_array($pathInfo['extension'], $allowedExtension)){
-  		
+
   		$this->data = $this->getGalleryGeneralData();
 
   		$this->data['galery_photo_error'] = $this->language->get('galery_photo_error_not_alloed');
@@ -97,7 +99,7 @@ class ControllerGalleryPhoto extends Controller {
   		$this->template = $this->config->get('config_template') . '/template/gallery/photo.tpl';
 
   		unlink($tempFileName);
-  		
+
   		$this->response->setOutput($this->render());
   	}
   	else {
@@ -123,7 +125,7 @@ class ControllerGalleryPhoto extends Controller {
       	case 'jpg':
       		$image = imagecreatefromjpeg($tempFileName);
       		break;
-      	
+
       	case 'png':
       		$image = imagecreatefrompng($tempFileName);
       		break;
@@ -148,7 +150,7 @@ class ControllerGalleryPhoto extends Controller {
       	case 'jpg':
       		imagejpeg($resizedImage, $fileName, 75);
       		break;
-      	
+
       	case 'png':
       		imagepng($resizedImage, $fileName);
       		break;
@@ -172,13 +174,13 @@ class ControllerGalleryPhoto extends Controller {
       $this->language->load('gallery/general');
 
       $this->data = $this->getGalleryGeneralData();
-      
+
       if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/gallery/success.tpl')) {
         $this->template = $this->config->get('config_template') . '/template/gallery/success.tpl';
       } else {
         $this->template = 'default/template/gallery/success.tpl';
       }
-      
+
       $this->children = array(
         'common/column_left',
         'common/column_right',
@@ -204,7 +206,7 @@ class ControllerGalleryPhoto extends Controller {
   	$data['breadcrumbs'] = array();
 		$data['breadcrumbs'][] = array(
 			'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home'),			
+			'href'      => $this->url->link('common/home'),
 			'separator' => false
 		);
 
@@ -232,7 +234,7 @@ class ControllerGalleryPhoto extends Controller {
   }
 
   public function showLargePhoto() {
-    
+
     $photo_id = isset($_GET['photo_id']) ? $_GET['photo_id'] : '';
     $photo_type = isset($_GET['photo_type']) ? $_GET['photo_type'] : '';
 
@@ -291,7 +293,7 @@ class ControllerGalleryPhoto extends Controller {
 
   public function addVote() {
     $modelData['photoID'] = isset($_POST['photoID']) ? $_POST['photoID'] : '';
-    $modelData['photoType'] = isset($_POST['photoType']) ? $_POST['photoType'] : ''; 
+    $modelData['photoType'] = isset($_POST['photoType']) ? $_POST['photoType'] : '';
     $modelData['stars'] = isset($_POST['stars']) ? $_POST['stars'] : '0';
     $modelData['comment'] = isset($_POST['comment']) ? $_POST['comment'] : '';
     $modelData['date'] = date('Y-m-d H:i:s');
