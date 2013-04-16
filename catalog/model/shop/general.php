@@ -51,7 +51,7 @@ class ModelShopGeneral extends Model {
 		$lastMonth = date("Y-m-d", mktime(0, 0, 0, date("m")-1, date("d"),   date("Y")));
 		$query = "SELECT * FROM `" . DB_PREFIX . "order` WHERE customer_id='" . $customer_id . "' AND date_added BETWEEN '" . $lastMonth . "' AND '" . $today . "'";
 		$result = $this->db->query($query);
-		if(count($result->rows) >= 1){
+		if(count($result->rows) >= 2){
 			return true;
 		}
 		else {
