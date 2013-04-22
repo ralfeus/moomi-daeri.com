@@ -26,6 +26,7 @@
                     <tr>
                         <td style="width: 1px; text-align: center;"><input type="checkbox" onclick="selectAll(this);" /></td>
                         <td style="width: 1px"><?= $textOrderId ?></td>
+                        <td style="width: 1px;"><?= $textUnderlyingOrderId ?></td>
                         <td style="width: 1px"><?= $textItemImage ?></td>
                         <td style="width: 1px"><?= $textCustomer ?></td>
                         <td style="width: 1px"><?= $textSiteName ?></td>
@@ -38,7 +39,7 @@
                     <tr class="filter">
                         <td />
                         <td><input name="filterOrderId" value="<?= $filterOrderId ?>" size="3" onkeydown="filterKeyDown(event);" /></td>
-                        <td />
+                        <td /><td />
                         <td>
                             <select name="filterCustomerId[]" multiple="true">
                                 <?php foreach ($customers as $customer):
@@ -80,6 +81,7 @@
                                         <!--?= $order['selected'] ?-->
                             </td>
                             <td><?= $order['orderId'] ?></td>
+                            <td><?= $order['underlyingOrderId'] ?></td>
                             <td><a href="<?= $order['originalImagePath'] ?>" target="_blank">
                                 <img src="<?= $order['imagePath'] ?>" title="<?= $order['hint'] ?>"/>
                             </a></td>

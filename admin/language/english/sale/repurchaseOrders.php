@@ -13,3 +13,4 @@ $_['GOTO_ITEM'] = "Go to item page";
 $_['WHO_ORDERS'] = 'Who orders';
 
 $_['WARNING_HTML_PAGE_PROVIDED'] = 'No image was provided. Click on the placeholder to open provided URL';
+$_['UNDERLYING_ORDER_ID'] = 'Underlying order ID';

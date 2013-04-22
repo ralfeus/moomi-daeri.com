@@ -67,6 +67,7 @@ class ModelSaleRepurchaseOrder extends Model
                 if ($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value_id'] != $data['filterWhoOrders'])
                     continue;
             $items[] = array(
+                'orderId' => $repurchaseOrderItem['order_id'],
                 'orderItemId' => $repurchaseOrderItem['order_item_id'],
                 'comment' => $repurchaseOrderItem['comment'],
                 'customerId' => $repurchaseOrderItem['customer_id'],

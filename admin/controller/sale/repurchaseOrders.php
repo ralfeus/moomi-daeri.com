@@ -162,6 +162,7 @@ class ControllerSaleRepurchaseOrders extends Controller
             $this->data['orders'][] = array(
                 'comment'                   => $order_item['comment'],
                 'orderId'			            => $order_item['orderItemId'],
+                'underlyingOrderId' => $order_item['orderId'],
                 'hint' => $hint,
                 'imagePath'	            => $image,
                 'siteName'			 => $siteName,
@@ -257,6 +258,7 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->data['textFilter'] = $this->language->get('FILTER');
         $this->data['textItemImage'] = $this->language->get('ITEM_IMAGE');
         $this->data['textOrderId'] = $this->language->get('ORDER_ID');
+        $this->data['textUnderlyingOrderId'] = $this->language->get('UNDERLYING_ORDER_ID');
         $this->data['textCustomer'] = $this->language->get('CUSTOMER');
         $this->data['textStatus'] = $this->language->get('STATUS');
         $this->data['textQuantity'] = $this->language->get('QUANTITY');
