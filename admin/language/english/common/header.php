@@ -93,5 +93,6 @@ $_['text_weight_class']                = 'Weight Classes';
 $_['text_length_class']                = 'Length Classes';
 $_['text_zone']                        = 'Zones';
 $_['text_admin_page']                  = 'Pages';
+$_['text_admin_actions']               = 'Actions';
 
 ?>

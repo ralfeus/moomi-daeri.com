@@ -49,6 +49,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_help'] = $this->language->get('text_help');
 		$this->data['text_information'] = $this->language->get('text_information');
 		$this->data['text_page'] = $this->language->get('text_admin_page');
+		$this->data['text_actions'] = $this->language->get('text_admin_actions');
 		$this->data['text_admin_shop'] = $this->language->get('text_admin_shop');
 		$this->data['text_admin_shop_holiday'] = $this->language->get('text_admin_shop_holiday');
 		$this->data['text_admin_gallery'] = $this->language->get('text_admin_gallery');
@@ -194,6 +195,7 @@ class ControllerCommonHeader extends Controller {
 			$this->data['length_class'] = $this->url->link('localisation/length_class', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['zone'] = $this->url->link('localisation/zone', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['page'] = $this->url->link('shop/page', 'token=' . $this->session->data['token'], 'SSL');
+			$this->data['action'] = $this->url->link('shop/action', 'token=' . $this->session->data['token'], 'SSL');
             $this->data['urlOrderConfirmationText'] = $this->url->link(
                 'cms/text/edit',
                 'contentId=' . CMS_ORDER_CONFIRMATION . '&token=' . $this->session->data['token'], 'SSL');
