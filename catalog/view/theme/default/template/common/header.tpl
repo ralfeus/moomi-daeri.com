@@ -70,6 +70,7 @@ DD_belatedPNG.fix('#logo img');
 <!-- BEGIN JIVOSITE CODE {literal} -->
 <script type="text/javascript">
 <!--
+var actionCheckboxChecked = '';
 var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'Christmas Day']];
     (function() {
         var widget_id = '15225';
@@ -96,7 +97,75 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
         //$('.ui-datepicker-inline').css('width', '180px');
         $('.ui-datepicker-inline').addClass('width180');
       });
+      var currentUrl = "<?php echo $_GET['route']; ?>";
+      if(currentUrl == 'common/home') {
+        var action_url = "<?php echo $this->url->link('shop/admin/hasAction'); ?>";
+        $.post(action_url, function(response) {
+          response = $.parseJSON(response);
+          if(response['result'] == 1) {
+            var cookie =  getCookie('MooMiDae_action_show');
+            //console.log("--------");
+            //console.log(cookie);
+            if(cookie == null && !cookie) {
+              var fancy_url = "<?php echo $this->url->link('shop/admin/showAction'); ?>";
+              $.fancybox({
+                'width'             : 420,
+                'height'            : 455,
+                'autoScale'         : true,
+                'transitionIn'      : 'none',
+                'transitionOut'     : 'none',
+                'type'              : 'iframe',
+                'href'              : fancy_url,
+                'onClosed'          : onCloseAction
+              });
+            }
+          }
+        });
+      }
     });
+
+    function checkboxOnClick() {
+      actionCheckboxChecked = $('#action_checkbox', frames[0].document).attr('checked');
+      //alert(actionCheckboxChecked);
+    }
+
+    function onCloseAction() {
+      if(actionCheckboxChecked == 'checked') {
+        setCookie('MooMiDae_action_show', false, 1);
+      }
+      //alert(actionCheckboxChecked);
+    }
+
+    function getCookie(c_name) {
+      var c_value = document.cookie;
+      var c_start = c_value.indexOf(" " + c_name + "=");
+      if (c_start == -1)
+        {
+        c_start = c_value.indexOf(c_name + "=");
+        }
+      if (c_start == -1)
+        {
+        c_value = null;
+        }
+      else
+        {
+        c_start = c_value.indexOf("=", c_start) + 1;
+        var c_end = c_value.indexOf(";", c_start);
+        if (c_end == -1)
+        {
+      c_end = c_value.length;
+      }
+      c_value = unescape(c_value.substring(c_start,c_end));
+      }
+      return c_value;
+    }
+
+    function setCookie(c_name, value, exdays) {
+      var exdate=new Date();
+      exdate.setDate(exdate.getDate() + exdays);
+      var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+      document.cookie=c_name + "=" + c_value;
+    }
 
     function setHoliDays(date) {
        for (i = 0; i < holiDays.length; i++) {

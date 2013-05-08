@@ -27,27 +27,27 @@
                 <?php } else { ?>
                 <a href="<?php echo $sort_title; ?>"><?php echo $column_title; ?></a>
                 <?php } ?></td>
-              <td class="right"><?php if ($sort == 'i.sort_order') { ?>
+              <!--<td class="right"><?php if ($sort == 'i.sort_order') { ?>
                 <a href="<?php echo $sort_sort_order; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_sort_order; ?></a>
                 <?php } else { ?>
                 <a href="<?php echo $sort_sort_order; ?>"><?php echo $column_sort_order; ?></a>
-                <?php } ?></td>
+                <?php } ?></td>-->
               <td class="right"><?php echo $column_action; ?></td>
             </tr>
           </thead>
           <tbody>
-            <?php if ($pages) { ?>
-            <?php foreach ($pages as $information) { ?>
+            <?php if ($actions) { ?>
+            <?php foreach ($actions as $action) { ?>
             <tr>
               <td style="text-align: center;"><?php if ($information['selected']) { ?>
-                <input type="checkbox" name="selected[]" value="<?php echo $information['information_id']; ?>" checked="checked" />
+                <input type="checkbox" name="selected[]" value="<?php echo $action['id']; ?>" checked="checked" />
                 <?php } else { ?>
-                <input type="checkbox" name="selected[]" value="<?php echo $information['information_id']; ?>" />
+                <input type="checkbox" name="selected[]" value="<?php echo $action['id']; ?>" />
                 <?php } ?></td>
-              <td class="left"><?php echo $information['title']; ?></td>
-              <td class="right"><?php echo $information['sort_order']; ?></td>
-              <td class="right"><?php foreach ($information['action'] as $action) { ?>
-                [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]
+              <td class="left"><?php echo $action['name']; ?></td>
+              <!--<td class="right"><?php echo $information['sort_order']; ?></td>-->
+              <td class="right"><?php foreach ($actions as $action) { ?>
+                [ <a href="<?php echo $action['edit_link']; ?>"><?php echo $edit_text; ?></a> ]
                 <?php } ?></td>
             </tr>
             <?php } ?>

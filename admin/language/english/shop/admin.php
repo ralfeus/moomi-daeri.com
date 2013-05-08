@@ -5,7 +5,9 @@ $_['heading_title_holiday'] = 'Holidays';
 $_['heading_title_action']  = 'Actions';
 $_['button_save']           = 'Save';
 $_['button_cancel']         = 'Cancel';
+$_['edit_text']             = 'Edit';
 
+$_['entry_action_name']     = 'Action Name';
 $_['entry_all_groups']      = 'All Groups';
 $_['entry_customer_group']  = 'Action for group';
 $_['entry_action_start']    = 'Start';
