@@ -31,6 +31,8 @@
                         <td style="width: 1px"><?= $textCustomer ?></td>
                         <td style="width: 1px"><?= $textSiteName ?></td>
                         <td style="width: 1px"><?= $textQuantity ?></td>
+                        <td style="width: 100px"><?= $textPricePerItem ?></td>
+                        <td style="width: 100px"><?= $textShipping ?></td>
                         <td style="width: 1px"><?= $textAmount ?> (<?= $currencyCode ?>)</td>
                         <td style="width: 1px"><?= $textStatus ?></td>
                         <td style="width: auto;" "><?= $textComment ?></td>
@@ -53,6 +55,7 @@
                         </td>
                         <td><input name="filterSiteName" value="<?= $filterSiteName ?>" onkeydown="filterKeyDown(event)" /></td>
                         <td />
+                        <td /><td />
                         <td><input name="filterAmount"  size="9" value="<?= $filterAmount; ?>" onkeydown="filterKeyDown(event);"/></td>
                         <td>
                             <select name="filterStatusId[]" multiple="true">
@@ -95,7 +98,21 @@
                                         />
                             </td>
                             <td>
+                                <input id="price_<?= $order['orderId'] ?>"
+                                        onkeydown="changePrice(event, this, <?= $order['orderId'] ?>)"
+                                        style="width: 100%"
+                                        value="<?= $order['price'] ?>"
+                                        />
+                            </td>
+                            <td>
                                 <input
+                                        onkeydown="changeShipping(event, this, <?= $order['orderId'] ?>)"
+                                        style="width: 100%"
+                                        value="<?= $order['shipping'] ?>"
+                                        />
+                            </td>
+                            <td>
+                                <input id="total_<?= $order['orderId'] ?>"
                                     onkeydown="amountKeyDown(event, this, <?= $order['orderId'] ?>)"
                                     style="width: 100%"
                                     value="<?= $order['amount'] ?>"
@@ -155,6 +172,17 @@ $(document).ready(function() {
     $('button.ui-multiselect').css('width', '110px');
 });
 
+function changePrice(event, sender, orderId)
+{
+    if (event.keyCode == 13)
+        setProperty(orderId, sender, 'price');
+}
+
+function changeShipping(event, sender, orderId)
+{
+    if (event.keyCode == 13)
+        setProperty(orderId, sender, 'shipping');
+}
 
 function amountKeyDown(event, sender, orderId)
 {
@@ -212,8 +240,9 @@ function imageManager(orderId, imageElement) {
 
 function quantityKeyDown(event, sender, orderId)
 {
-    if (event.keyCode == 13)
-        setProperty(orderId, sender, 'quantity');
+    if (event.keyCode == 13) {
+      setProperty(orderId, sender, 'quantity');
+    }
 }
 
 function saveComment(orderItemId, control, isPrivate) {
@@ -266,8 +295,13 @@ function setProperty(orderId, sender, propName)
             $(sender).attr('disabled', false);
         },
         success: function(json) {
-            if (json['error'])
-                alert("setProperty(): " + json['error']);
+          if (json['error']) {
+            alert("setProperty(): " + json['error']);
+          }
+          else {
+            $('#price_'+json['itemId']).val(json['price']);
+            $('#total_'+json['itemId']).val(json['total'])
+          }
         },
         error: function(jqXHR, textStatus, errorThrown) {
             alert("setProperty(): " + jqXHR.responseText);

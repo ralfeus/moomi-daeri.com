@@ -1,4 +1,4 @@
-<?= $header ?>
+<?= $header; ?>
 <div id="content">
     <div class="breadcrumb">
         <?php foreach ($breadcrumbs as $breadcrumb) {
@@ -87,6 +87,7 @@
                             <td class="right"><?= $textItemName ?></td>
                             <td class="right"><?= $textPrice ?></td>
                             <td class="right"><?= $textQuantity ?></td>
+                            <td class="right"><?= $textShipping ?></td>
                             <td class="right"><?= $textSubtotal ?></td>
                             <td class="left"><?= $textComment ?></td>
                         </tr>
@@ -106,6 +107,7 @@
                                 </td>
                                 <td class="right"><?= $order_item['price'] ?></td>
                                 <td class="right"><?= $order_item['quantity'] ?></td>
+                                <td class="right"><?= $order_item['shipping'] ?></td>
                                 <td class="right"><?= $order_item['subtotal'] ?></td>
                                 <td class="left"><?= $order_item['comment'] ?></td>
                             </tr>
@@ -113,7 +115,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="6"><div id="total" class="right"><?= $textTotal ?></div></td>
+                            <td colspan="7"><div id="total" class="right"><?= $textTotal ?></div></td>
                             <td>
                                 <?= $total ?>
                                 <input type="hidden" name="total" value="<?= $totalRaw ?>" />

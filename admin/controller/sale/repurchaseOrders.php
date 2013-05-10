@@ -23,7 +23,6 @@ class ControllerSaleRepurchaseOrders extends Controller
 
     private function getData() 	{
         $modelToolImage = $this->load->model('tool/image');
-//        $this->log->write(print_r($this->request,true));
         $order = '';
         $urlParameters = array();
 
@@ -115,9 +114,9 @@ class ControllerSaleRepurchaseOrders extends Controller
             'limit'           => $this->config->get('config_admin_limit')
         );
         $data = array_merge($data, $this->parameters);
-//        $this->log->write(print_r($data, true));
+
         $order_items = $this->modelSaleRepurchaseOrder->getOrders($data);
-//        $this->log->write(print_r($order_items, true));
+
         $showedCustomerIds = array();
         $this->data['customers'] = array();
         foreach ($order_items as $order_item)
@@ -183,14 +182,10 @@ class ControllerSaleRepurchaseOrders extends Controller
                         $order_item['status'],
                         $this->config->get('config_language_id'))
                     : "",
-                'amount' => $order_item['total'],
                 'quantity'		=> $order_item['quantity'],
-//                'selected'      =>
-//                    (isset($_REQUEST['selectedItems'])
-//                        && is_array($_REQUEST['selectedItems'])
-//                        && in_array($order_item['order_product_id'], $this->parameters['selectedItems']))
-//                        ? '"selected"'
-//                        : '',
+                'price' => $order_item['price'],
+                'shipping' => $order_item['shipping'],
+                'amount' => $order_item['total'],
                 'actions'                    => $actions,
                 'whoOrders' => $order_item['whoOrders']
             );
@@ -212,13 +207,6 @@ class ControllerSaleRepurchaseOrders extends Controller
             $this->data['success'] = '';
         }
 
-//        $urlParameters['order'] = $order == 'ASC' ? 'DESC' : 'DESC';
-//        $url = implode('&', $urlParameters);
-//        $this->data['sort_order_id'] = $this->url->link('sale/order_items', 'token=' .$this->session->data['token'] . '&sort=order_id' . $url, 'SSL');
-//        $this->data['sort_order_item_id'] = $this->url->link('sale/order_items', 'token=' .$this->session->data['token'] . '&sort=order_item_id' . $url, 'SSL');
-//        $this->data['sort_supplier'] = $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . '&sort=supplier_name' . $url, 'SSL');
-//        $this->data['sort_supplier_group'] = $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . '&sort=supplier_group_id' . $url, 'SSL');
-
         $pagination = new Pagination();
         $pagination->total = $this->model_sale_order_item->getOrderItemsCount($data);
         $pagination->page = $page;
@@ -239,12 +227,11 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->data['invoiceUrl'] = $this->url->link('sale/invoice/showForm', 'token=' . $this->session->data['token'], 'SSL');
         $this->data['urlImageChange'] = $this->url->link('sale/repurchaseOrders/setProperty', 'propName=image&token=' . $this->parameters['token'], 'SSL');
         $this->data['urlImageManager'] = $this->url->link('common/filemanager', 'field=image&token=' . $this->parameters['token'], 'SSL');
-//        $this->log->write(print_r($this->data['orders'], true));
+
     }
 
     public function index()
     {
-        //$this->log->write(print_r($this, true));
         $this->getData();
 
         /// Set interface
@@ -262,6 +249,8 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->data['textCustomer'] = $this->language->get('CUSTOMER');
         $this->data['textStatus'] = $this->language->get('STATUS');
         $this->data['textQuantity'] = $this->language->get('QUANTITY');
+        $this->data['textPricePerItem'] = $this->language->get('PricePerItem');
+        $this->data['textShipping'] = $this->language->get('Shipping');
         $this->data['textWeight'] = $this->language->get('WEIGHT');
         $this->data['textFilter'] = $this->language->get('FILTER');
         $this->data['textInvoice'] = $this->language->get('INVOICE');
@@ -304,7 +293,6 @@ class ControllerSaleRepurchaseOrders extends Controller
                 'statusId'    => $order_item_status['status_id'],
                 'name' => $order_item_status['name']
             );
-//        $this->log->write(print_r($this->data['statuses'], true));
     }
 
     private function isValidPropValue($propName, $propValue)
@@ -343,7 +331,8 @@ class ControllerSaleRepurchaseOrders extends Controller
 
     public function setProperty()
     {
-        $this->log->write(print_r($this->parameters, true));
+        $this->log->write(print_r($_GET, true));
+        $this->parameters = $_GET;
         if (empty($this->parameters['orderId']))
             return;
         if (empty($this->parameters['value']))
@@ -362,7 +351,17 @@ class ControllerSaleRepurchaseOrders extends Controller
             case 'quantity':
                 $this->modelSaleRepurchaseOrder->setQuantity($this->parameters['orderId'], $this->parameters['value']);
                 break;
+            case 'price':
+                $this->modelSaleRepurchaseOrder->setPrice($this->parameters['orderId'], $this->parameters['value']);
+                break;
+            case 'shipping':
+                $this->modelSaleRepurchaseOrder->setShipping($this->parameters['orderId'], $this->parameters['value']);
+                break;
         }
+        $rows = $this->modelSaleRepurchaseOrder->getPrices($this->parameters['orderId']);
+        $json['itemId'] = $rows[0]['order_product_id'];
+        $json['price'] = $rows[0]['price'];
+        $json['total'] = $rows[0]['total'];
         $json['result'] = 'Done';
         $this->log->write(print_r($json, true));
         $this->response->setOutput(json_encode($json));
@@ -394,7 +393,6 @@ class ControllerSaleRepurchaseOrders extends Controller
 
         $json['newStatusName'] = Status::getStatus(
             $_REQUEST['statusId'], $this->config->get('config_language_id'));
-//        $this->log->write(print_r($json, true));
 
         $this->response->setOutput(json_encode($json));
     }

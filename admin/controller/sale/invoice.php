@@ -391,6 +391,8 @@ class ControllerSaleInvoice extends Controller
             'selected_items' => $this->request->request['selectedItems']
         ));
 
+
+        //print_r($orderItems);
         /// Initialize interface values
         $this->data['button_action'] = $this->language->get('buttonCreate');
         $this->data['readOnly'] = "";
@@ -403,25 +405,26 @@ class ControllerSaleInvoice extends Controller
         $orderItemIdParam = '';
         foreach ($orderItems as $orderItem)
         {
-            $this->data['orderItems'][] = array(
-                'id' => $orderItem['order_product_id'],
-                'comment' => $orderItem['public_comment'],
-                'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
-                'model' => $orderItem['model'],
-                'name' => $orderItem['name'],
-                'order_id' => $orderItem['order_id'],
-                'options' => $this->modelSaleOrderItem->getOrderItemOptionsString($orderItem['order_item_id']),
-                'price' => $this->currency->format($orderItem['price'], $this->config->get('config_currency')),
-                'quantity' => $orderItem['quantity'],
-                'subtotal' => $this->currency->format($orderItem['price'] * $orderItem['quantity'], $this->config->get('config_currency'))
-            );
-            $totalWeight +=
-                $this->weight->convert(
-                    $orderItem['weight'],
-                    $orderItem['weight_class_id'],
-                    $this->config->get('config_weight_class_id')) * $orderItem['quantity'];
-            $total += $orderItem['total']; //$orderItem['price'] * $orderItem['quantity'];
-            $orderItemIdParam .= '&orderItemId[]=' . $orderItem['order_product_id'];
+          $this->data['orderItems'][] = array(
+            'id' => $orderItem['order_product_id'],
+            'comment' => $orderItem['public_comment'],
+            'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
+            'model' => $orderItem['model'],
+            'name' => $orderItem['name'],
+            'order_id' => $orderItem['order_id'],
+            'options' => $this->modelSaleOrderItem->getOrderItemOptionsString($orderItem['order_item_id']),
+            'price' => $this->currency->format($orderItem['price'], $this->config->get('config_currency')),
+            'quantity' => $orderItem['quantity'],
+            'shipping' => $this->currency->format($orderItem['shipping'], $this->config->get('config_currency')),
+            'subtotal' => $this->currency->format($orderItem['price'] * $orderItem['quantity'] + $orderItem['shipping'], $this->config->get('config_currency'))
+          );
+          $totalWeight +=
+              $this->weight->convert(
+                  $orderItem['weight'],
+                  $orderItem['weight_class_id'],
+                  $this->config->get('config_weight_class_id')) * $orderItem['quantity'];
+          $total += $orderItem['total']; //$orderItem['price'] * $orderItem['quantity'];
+          $orderItemIdParam .= '&orderItemId[]=' . $orderItem['order_product_id'];
         }
         /// Set invoice data
         $firstItemOrder = $this->modelSaleOrder->getOrder($orderItems[0]['order_id']);
@@ -488,7 +491,7 @@ class ControllerSaleInvoice extends Controller
         foreach ($this->modelSaleInvoice->getInvoiceItems($invoice['invoice_id']) as $invoiceItem)
         {
             $orderItem = $this->modelSaleOrderItem->getOrderItem($invoiceItem['order_item_id']);
-            //$this->log->write(print_r($orderItem, true));
+            //print_r($orderItem); die();
             $this->data['orderItems'][] = array(
                 'id' => $orderItem['order_product_id'],
                 'comment' => $orderItem['public_comment'],
@@ -556,6 +559,7 @@ class ControllerSaleInvoice extends Controller
         $this->data['textPackageNumber'] = $this->language->get("PACKAGE_NUMBER");
         $this->data['textPrice'] = $this->language->get('textPrice');
         $this->data['textQuantity'] = $this->language->get('textQuantity');
+        $this->data['textShipping'] = $this->language->get('textShipping');
         $this->data['textShippingCost'] = $this->language->get('textShippingCost');
         $this->data['textShippingAddress'] = $this->language->get('textShippingAddress');
         $this->data['textShippingMethod'] = $this->language->get('textShippingMethod');
@@ -568,13 +572,13 @@ class ControllerSaleInvoice extends Controller
 
         if ($this->request->server['REQUEST_METHOD'] == 'GET')
         {
-            $this->data['submitAction'] = "javascript:window.close();";
-            $this->showEditForm();
+          $this->data['submitAction'] = "javascript:window.close();";
+          $this->showEditForm();
         }
         elseif ($this->request->server['REQUEST_METHOD'] == 'POST')
         {
-            $this->data['submitAction'] = $this->url->link('sale/invoice/create', 'token=' . $this->session->data['token'], 'SSL');
-            $this->showCreateForm();
+          $this->data['submitAction'] = $this->url->link('sale/invoice/create', 'token=' . $this->session->data['token'], 'SSL');
+          $this->showCreateForm();
         }
     }
 
