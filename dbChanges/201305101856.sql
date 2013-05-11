@@ -1,0 +1,1 @@
+ALTER TABLE order_product CHANGE shipping DECIMAL(15,4) NOT NULL

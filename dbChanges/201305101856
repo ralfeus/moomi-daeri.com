@@ -1,1 +1,0 @@
-ALTER TABLE order_product CHANGE email DECIMAL(15,4) NOT NULL
