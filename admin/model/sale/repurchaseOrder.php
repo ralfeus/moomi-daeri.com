@@ -86,6 +86,7 @@ class ModelSaleRepurchaseOrder extends Model
                     : (!empty($options[REPURCHASE_ORDER_COMMENT_OPTION_ID])
                         ? $options[REPURCHASE_ORDER_COMMENT_OPTION_ID]['value'] : ''),
                 'quantity' => $repurchaseOrderItem['quantity'],
+                'shipping' => $repurchaseOrderItem['shipping'],
                 'status' => $repurchaseOrderItem['status'] >> 16 == GROUP_REPURCHASE_ORDER_ITEM_STATUS
                     ? $repurchaseOrderItem['status'] : REPURCHASE_ORDER_ITEM_STATUS_WAITING,
                 'timeAdded' => $repurchaseOrderItem['date_added'],
@@ -144,6 +145,23 @@ class ModelSaleRepurchaseOrder extends Model
     public function setAmount($orderId, $amount)
     {
         $this->modelOrderItem->setOrderItemTotal($orderId, $amount);
+        $this->modelOrderItem->setOrderItemPrice($orderId, $amount);
+    }
+
+    public function setPrice($orderId, $amount)
+    {
+        $this->modelOrderItem->setPrice($orderId, $amount);
+    }
+
+    public function setShipping($orderId, $amount)
+    {
+        $this->modelOrderItem->setShipping($orderId, $amount);
+    }
+
+    public function getPrices($orderId) {
+      $query = "SELECT * FROM " . DB_PREFIX . "order_product WHERE order_product_id = " . (int)$orderId;
+      $result = $this->db->query($query);
+      return $result->rows;
     }
 
     public function setImage($orderId, $imagePath)
@@ -174,13 +192,9 @@ class ModelSaleRepurchaseOrder extends Model
 
     public function setQuantity($orderId, $quantity)
     {
-        $query = "
-                UPDATE " . DB_PREFIX . "order_product
-                SET
-                    quantity = " . (int)$quantity . "
-                WHERE order_product_id = " . (int)$orderId
-        ;
-        //$this->log->write($query);
+        $query = "UPDATE " . DB_PREFIX . "order_product SET quantity = " . (int)$quantity . " WHERE order_product_id = " . (int)$orderId;
+        $this->db->query($query);
+        $query = "UPDATE " . DB_PREFIX . "order_product SET total = (quantity*price) + shipping WHERE order_product_id = " . (int)$orderId;
         $this->db->query($query);
     }
 }

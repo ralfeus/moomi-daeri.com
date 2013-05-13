@@ -232,6 +232,7 @@ $(document).ready(function(){
             <a href="<?php echo $report_shop_holiday; ?>"><?php echo $text_admin_shop_holiday; ?></a>
           </li>
           <li><a href="<?php echo $page; ?>"><?php echo $text_page; ?></a></li>
+          <li><a href="<?php echo $action; ?>"><?php echo $text_actions; ?></a></li>
         </ul>
       </li>
     </ul>

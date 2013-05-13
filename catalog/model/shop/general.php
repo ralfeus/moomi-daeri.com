@@ -78,5 +78,11 @@ class ModelShopGeneral extends Model {
 
 		return $result = array('pages' => $pages, "children" => $children);
 	}
+
+	public function getAction($data) {
+		$query = "SELECT * FROM " . DB_PREFIX . "action WHERE customer_group_id=".(int)$data['customer_group_id']." AND '".$data['current_date']."' BETWEEN start_date AND finish_date LIMIT 1";
+		$result = $this->db->query($query);
+		return $result->rows;
+	}
 }
 ?>

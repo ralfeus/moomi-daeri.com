@@ -39,6 +39,7 @@ $_['textOrderItemId'] = 'Order item ID:';
 $_['textOrderItems'] = 'Order items';
 $_['textPrice'] = 'Price:';
 $_['textQuantity'] = 'Quantity:';
+$_['textShipping'] = 'Shipping:';
 $_['textShippingAddress'] = 'Shipping address';
 $_['textShippingCost'] = 'Shipping cost';
 $_['textShippingMethod'] = 'Shipping method:';

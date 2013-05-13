@@ -48,10 +48,24 @@ class ModelSaleOrderItem extends Model
             ORDER BY supplier_name, op.model, op.order_product_id
 			" . ($limit ? "LIMIT $limit" : "");
 
+        //print_r($query); die();
 		$order_item_query = $this->db->query($query);
 
-		if ($order_item_query->num_rows)
-			return $order_item_query->rows;
+		if ($order_item_query->num_rows) {
+            $this->modelOrderItem = $this->load->model('sale/order_item');
+
+            $response = $order_item_query->rows;
+            foreach ($response as $index => $row) {
+                if($row['image_path'] == '') {
+                    $options = $this->modelOrderItem->getOrderItemOptions($row['order_product_id']);
+                    $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
+                    ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
+                    $response[$index]['image_path'] = $itemUrl;
+                }
+            }
+
+            return $response;
+        }
 		else
 			return false;
 	}
@@ -268,11 +282,33 @@ class ModelSaleOrderItem extends Model
 
     public function setOrderItemTotal($orderItemId, $amount)
     {
-        $this->db->query("
-            UPDATE " . DB_PREFIX . "order_product
-            SET total = " . (float)$amount . "
-            WHERE order_product_id = " . (int)$orderItemId
-        );
+      $this->db->query("
+        UPDATE " . DB_PREFIX . "order_product
+        SET total = " . (float)$amount . "
+        WHERE order_product_id = " . (int)$orderItemId
+      );
+    }
+
+    public function setOrderItemPrice($orderItemId, $amount)
+    {
+      $query = "UPDATE " . DB_PREFIX . "order_product SET price = (total - shipping)/quantity WHERE order_product_id = " . (int)$orderItemId;
+      $this->db->query($query);
+    }
+
+    public function setPrice($orderItemId, $amount)
+    {
+      $query = "UPDATE " . DB_PREFIX . "order_product SET price = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
+      $this->db->query($query);
+      $query = "UPDATE " . DB_PREFIX . "order_product SET total = (quantity*price) + shipping WHERE order_product_id = " . (int)$orderItemId;
+      $this->db->query($query);
+    }
+
+    public function setShipping($orderItemId, $amount)
+    {
+      $query = "UPDATE " . DB_PREFIX . "order_product SET shipping = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
+      $this->db->query($query);
+      $query = "UPDATE " . DB_PREFIX . "order_product SET total = (quantity*price) + shipping WHERE order_product_id = " . (int)$orderItemId;
+      $this->db->query($query);
     }
 }
 ?>
