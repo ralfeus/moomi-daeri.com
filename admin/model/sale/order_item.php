@@ -57,11 +57,11 @@ class ModelSaleOrderItem extends Model
             $response = $order_item_query->rows;
             foreach ($response as $index => $row) {
                 $this->log->write("------?--------?-------- " . print_r($row['image_path'], true));
-                if($row['image_path'] == '') {
+                if($row['image_path'] == '' || $row['image_path'] == "data/event/agent-moomidae.jpg") {
                     $options = $this->modelOrderItem->getOrderItemOptions($row['order_product_id']);
                     $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
                     ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
-                    $response[$index]['image_path'] = $itemUrl;
+                    $response[$index]['image_path'] = !empty($itemUrl) ? $itemUrl : $row['image_path'];
                 }
             }
 
