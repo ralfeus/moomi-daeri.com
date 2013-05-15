@@ -18,8 +18,8 @@ class ModelAccountOrderItem extends Model
 				p.product_id, p.supplier_id as supplier_id, p.image as image_path, p.weight, p.weight_class_id,
 				s.name as supplier_name, s.supplier_group_id, s.internal_model as internal_model,
 				oils.date_last_status_set as status_date
-			FROM 
-				" . DB_PREFIX . "order_product as op 
+			FROM
+				" . DB_PREFIX . "order_product as op
 				JOIN `" . DB_PREFIX . "order` as o on o.order_id = op.order_id
 				JOIN " . DB_PREFIX . "product as p on op.product_id  = p.product_id
 				LEFT JOIN " . DB_PREFIX . "supplier as s on p.supplier_id = s.supplier_id
@@ -36,16 +36,16 @@ class ModelAccountOrderItem extends Model
 		//$this->log->write(print_r($query, true));
 		$order_item_query = $this->db->query($query);
 
-		if ($order_item_query->num_rows) 
+		if ($order_item_query->num_rows)
 			return $order_item_query->rows;
 		else
 			return array();
 	}
-	
+
 	private function fetchOrderItemsCount($filter = "")	{
 		$query = "
 			SELECT COUNT(*) as total
-			FROM 
+			FROM
 				" . DB_PREFIX . "order_product as op join " . DB_DATABASE . "." . DB_PREFIX . "order as o on o.order_id = op.order_id
 				join " . DB_PREFIX . "customer as c on o.customer_id = c.customer_id
 				join " . DB_PREFIX . "product as p on op.product_id  = p.product_id
@@ -60,12 +60,12 @@ class ModelAccountOrderItem extends Model
                     GROUP BY order_item_id) as oih1 on op.order_product_id = oih1.order_item_id
 			" . ($filter ? "WHERE $filter" : "");
 		$order_item_query = $this->db->query($query);
-		
+
 		return $order_item_query->row['total'];
 	}
-	
+
 	public function getOrderItems($data = array()) 	{
-        //print_r($data);exit();
+        //print_r($data); die();
 		$filter = $this->buildFilterString($data);
 		$sort = "";
 		$limit = "";
@@ -126,7 +126,7 @@ class ModelAccountOrderItem extends Model
                 'weight' => $total_weight
             );
     }
-	
+
 	private function buildFilterString($data = array()) {
 		$filter = "o.customer_id = " . $this->customer->getId();
         if (isset($data['selected_items']) && count($data['selected_items']))

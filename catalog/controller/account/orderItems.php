@@ -56,6 +56,7 @@ class ControllerAccountOrderItems extends Controller {
         $data = $this->parameters;
         $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
         $data['limit']           = $this->config->get('config_admin_limit');
+        $data['order']           = 'DESC';
 //		$this->log->write(print_r($data, true));
         $orderItems = $this->modelAccountOrderItem->getOrderItems($data);
 //        $this->log->write(count($orderItems));

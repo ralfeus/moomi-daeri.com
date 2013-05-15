@@ -405,6 +405,8 @@ class ControllerSaleInvoice extends Controller
         $orderItemIdParam = '';
         foreach ($orderItems as $orderItem)
         {
+          $this->log->write("------------------------> " . print_r($orderItem['image_path'], true));
+          //echo "<img src='".$orderItem['image_path']."' />"; die();
           $this->data['orderItems'][] = array(
             'id' => $orderItem['order_product_id'],
             'comment' => $orderItem['public_comment'],
