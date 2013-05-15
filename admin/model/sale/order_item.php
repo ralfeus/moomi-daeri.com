@@ -56,6 +56,7 @@ class ModelSaleOrderItem extends Model
 
             $response = $order_item_query->rows;
             foreach ($response as $index => $row) {
+                $this->log->write("------?--------?-------- " . print_r($row['image_path'], true));
                 if($row['image_path'] == '') {
                     $options = $this->modelOrderItem->getOrderItemOptions($row['order_product_id']);
                     $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
