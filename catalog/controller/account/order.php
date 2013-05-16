@@ -308,7 +308,7 @@ class ControllerAccountOrder extends Controller {
                     $options = $this->modelOrderItem->getOrderItemOptions($product['order_product_id']);
                     $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
                     ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
-                    $response[$index]['image_path'] = !empty($itemUrl) ? $itemUrl : $product['image_path'];
+                    $product['image_path'] = !empty($itemUrl) ? $itemUrl : $product['image_path'];
                   }
 
                   if ($product['image_path'] && file_exists(DIR_IMAGE . $product['image_path']))
