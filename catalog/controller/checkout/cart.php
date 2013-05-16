@@ -130,7 +130,9 @@ class ControllerCheckoutCart extends Controller {
 				if ($product['minimum'] > $product_total) {
 					$this->data['error_warning'] = sprintf($this->language->get('error_minimum'), $product['name'], $product['minimum']);
 				}
-
+        //print_r($product);
+        //$this->load->model('shop/general');
+        //$order_product = $this->model_shop_general->getOrderProduct($pro)
         /*if($product['image'] == '' || $product['image'] == "data/event/agent-moomidae.jpg") {
           $this->modelOrderItem = $this->load->model('sale/order_item');
           $options = $this->modelOrderItem->getOrderItemOptions($product['order_product_id']);

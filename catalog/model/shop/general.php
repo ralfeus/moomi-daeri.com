@@ -84,5 +84,11 @@ class ModelShopGeneral extends Model {
 		$result = $this->db->query($query);
 		return $result->rows;
 	}
+
+	public function getOrderProduct($product_id) {
+		$query = "SELECT * FROM " . DB_PREFIX . "order_product WHERE product_id=".(int)$product_id;
+		$result = $this->db->query($query);
+		return $result->rows[0];
+	}
 }
 ?>

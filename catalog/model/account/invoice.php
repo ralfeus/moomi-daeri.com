@@ -87,12 +87,20 @@ class ModelAccountInvoice extends Model
         return $query->row['total'];
     }
 
-    public function getInvoices($customerId)
+    public function getInvoices($customerId, $orderBy = '')
     {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "invoices WHERE customer_id = " . (int)$customerId);
-        if ($query->num_rows)
-            return $query->rows;
-        else
-            return null;
+      $arrDebug = debug_backtrace();
+
+      $sql = "SELECT * FROM " . DB_PREFIX . "invoices WHERE customer_id = " . (int)$customerId;
+      if($orderBy != '') {
+        $sql .= " ORDER BY invoice_id " . $orderBy;
+      }
+
+      $query = $this->db->query($sql);
+
+      if ($query->num_rows)
+        return $query->rows;
+      else
+        return null;
     }
 }

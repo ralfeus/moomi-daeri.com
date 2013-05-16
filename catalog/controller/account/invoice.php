@@ -69,7 +69,7 @@ class ControllerAccountInvoice extends Controller
     {
         $modelAccountInvoice = $this->registry->get('model_account_invoice');
         //$modelSaleCustomer = $this->load->model('sale/customer');
-        $invoices = $modelAccountInvoice->getInvoices($this->customer->getId());
+        $invoices = $modelAccountInvoice->getInvoices($this->customer->getId(), "DESC");
         if ($invoices)
         {
             foreach ($invoices as $invoice)
