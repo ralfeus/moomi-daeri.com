@@ -304,6 +304,7 @@ class ControllerAccountOrder extends Controller {
         		}
             //print_r($product);
                   if($product['image_path'] == '' || $product['image_path'] == "data/event/agent-moomidae.jpg") {
+                    $this->modelOrderItem = $this->load->model('sale/order_item');
                     $options = $this->modelOrderItem->getOrderItemOptions($product['order_product_id']);
                     $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
                     ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
