@@ -131,13 +131,13 @@ class ControllerCheckoutCart extends Controller {
 					$this->data['error_warning'] = sprintf($this->language->get('error_minimum'), $product['name'], $product['minimum']);
 				}
 
-        if($product['image'] == '' || $product['image'] == "data/event/agent-moomidae.jpg") {
+        /*if($product['image'] == '' || $product['image'] == "data/event/agent-moomidae.jpg") {
           $this->modelOrderItem = $this->load->model('sale/order_item');
           $options = $this->modelOrderItem->getOrderItemOptions($product['order_product_id']);
           $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
           ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
           $product['image'] = !empty($itemUrl) ? $itemUrl : $product['image'];
-        }
+        }*/
 
 				if ($product['image']) {
 					$image = $this->model_tool_image->resize($product['image'], $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
