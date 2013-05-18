@@ -328,7 +328,7 @@ class ControllerAccountRegister extends Controller {
       $resp = recaptcha_check_answer ($privateKey, $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
 
       if (!$resp->is_valid) {
-        $this->error['recaptcha'] = $this->language->get('Ебать тут код не правильный');
+        $this->error['recaptcha'] = $this->language->get('Неверный код');
       }
 
       if (!isset($this->request->post['firstname']) || (utf8_strlen($this->request->post['firstname']) > 32)) {
