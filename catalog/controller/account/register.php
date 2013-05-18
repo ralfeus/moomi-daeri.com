@@ -328,7 +328,7 @@ class ControllerAccountRegister extends Controller {
       $resp = recaptcha_check_answer ($privateKey, $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
 
       if (!$resp->is_valid) {
-        $this->language->load('error/permissiion')
+        $this->language->load('account/register');
         $this->error['recaptcha'] = $this->language->get('recaptcha_error');
       }
 
