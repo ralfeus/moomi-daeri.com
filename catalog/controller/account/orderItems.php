@@ -56,6 +56,7 @@ class ControllerAccountOrderItems extends Controller {
         $data = $this->parameters;
         $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
         $data['limit']           = $this->config->get('config_admin_limit');
+        $data['order']           = 'DESC';
 //		$this->log->write(print_r($data, true));
         $orderItems = $this->modelAccountOrderItem->getOrderItems($data);
 //        $this->log->write(count($orderItems));
@@ -63,6 +64,14 @@ class ControllerAccountOrderItems extends Controller {
         {
             foreach ($orderItems as $orderItem)
             {
+              //print_r($orderItem);
+                if($orderItem['image_path'] == '' || $orderItem['image_path'] == "data/event/agent-moomidae.jpg") {
+                  $this->modelOrderItem = $this->load->model('sale/order_item');
+                  $options = $this->modelOrderItem->getOrderItemOptions($orderItem['order_product_id']);
+                  $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
+                  ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
+                  $orderItem['image_path'] = !empty($itemUrl) ? $itemUrl : $orderItem['image_path'];
+                }
                 if ($orderItem['image_path'] && file_exists(DIR_IMAGE . $orderItem['image_path'])):
                     $image = $this->model_tool_image->resize($orderItem['image_path'], 100, 100);
                 else:

@@ -78,7 +78,7 @@ class ControllerAccountRepurchaseOrders extends Controller
         $this->data['orders'] = array();
         $this->data['statuses'] = Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id'));
         $data = $this->parameters;
-//        $this->log->write(print_r($data, true));
+        $data['order'] = 'DESC';
         foreach ($this->modelAccountRepurchaseOrder->getOrders($data) as $repurchase_order)
         {
             if (file_exists(DIR_IMAGE . $repurchase_order['imagePath']))

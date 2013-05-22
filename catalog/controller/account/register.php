@@ -1,4 +1,4 @@
-<?php 
+<?php
 class ControllerAccountRegister extends Controller {
 	private $error = array();
     private $modelAccountCustomer;
@@ -17,8 +17,11 @@ class ControllerAccountRegister extends Controller {
 
         $this->document->setTitle($this->language->get('heading_title'));
     }
-	      
+
   	public function index() {
+
+      $this->data['publicKey'] = $this->config->get('RECAPTCHA_PUBLIC_KEY');//RECAPTCHA_PUBLIC_KEY;
+
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate())
         {
 			unset($this->session->data['guest']);
@@ -29,28 +32,28 @@ class ControllerAccountRegister extends Controller {
             }
 			$this->customer->login($this->request->post['email'], $this->request->post['password']);
 	  		$this->redirect($this->url->link('account/success'));
-    	} 
+    	}
 
       	$this->data['breadcrumbs'] = array();
 
       	$this->data['breadcrumbs'][] = array(
         	'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home'),        	
+			'href'      => $this->url->link('common/home'),
         	'separator' => false
-      	); 
+      	);
 
       	$this->data['breadcrumbs'][] = array(
         	'text'      => $this->language->get('text_account'),
-			'href'      => $this->url->link('account/account', '', 'SSL'),      	
+			'href'      => $this->url->link('account/account', '', 'SSL'),
         	'separator' => $this->language->get('text_separator')
       	);
-		
+
       	$this->data['breadcrumbs'][] = array(
         	'text'      => $this->language->get('text_register'),
-			'href'      => $this->url->link('account/register', '', 'SSL'),      	
+			'href'      => $this->url->link('account/register', '', 'SSL'),
         	'separator' => $this->language->get('text_separator')
       	);
-		
+
     	$this->data['heading_title'] = $this->language->get('heading_title');
 
 		$this->data['text_yes'] = $this->language->get('text_yes');
@@ -61,7 +64,7 @@ class ControllerAccountRegister extends Controller {
     	$this->data['text_your_address'] = $this->language->get('text_your_address');
     	$this->data['text_your_password'] = $this->language->get('text_your_password');
 		$this->data['text_newsletter'] = $this->language->get('text_newsletter');
-				
+
     	$this->data['entry_firstname'] = $this->language->get('entry_firstname');
     	$this->data['entry_lastname'] = $this->language->get('entry_lastname');
         $this->data['entry_nickname'] = $this->language->get('entry_nickname');
@@ -82,19 +85,25 @@ class ControllerAccountRegister extends Controller {
         $this->data['textBillingDetails'] = $this->language->get('BILLING_DETAILS');
 
 		$this->data['button_continue'] = $this->language->get('button_continue');
-    
+
 		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
 		} else {
 			$this->data['error_warning'] = '';
 		}
-		
+
+    if (isset($this->error['recaptcha'])) {
+      $this->data['error_recaptcha'] = $this->error['recaptcha'];
+    } else {
+      $this->data['error_recaptcha'] = '';
+    }
+
 		if (isset($this->error['firstname'])) {
 			$this->data['error_firstname'] = $this->error['firstname'];
 		} else {
 			$this->data['error_firstname'] = '';
-		}	
-		
+		}
+
 		if (isset($this->error['lastname'])) {
 			$this->data['error_lastname'] = $this->error['lastname'];
 		} else {
@@ -111,37 +120,37 @@ class ControllerAccountRegister extends Controller {
 		} else {
 			$this->data['error_email'] = '';
 		}
-		
+
 		if (isset($this->error['telephone'])) {
 			$this->data['error_telephone'] = $this->error['telephone'];
 		} else {
 			$this->data['error_telephone'] = '';
 		}
-		
+
 		if (isset($this->error['password'])) {
 			$this->data['error_password'] = $this->error['password'];
 		} else {
 			$this->data['error_password'] = '';
 		}
-		
+
  		if (isset($this->error['confirm'])) {
 			$this->data['error_confirm'] = $this->error['confirm'];
 		} else {
 			$this->data['error_confirm'] = '';
 		}
-		
+
   		if (isset($this->error['address_1'])) {
 			$this->data['error_address_1'] = $this->error['address_1'];
 		} else {
 			$this->data['error_address_1'] = '';
 		}
-   		
+
 		if (isset($this->error['city'])) {
 			$this->data['error_city'] = $this->error['city'];
 		} else {
 			$this->data['error_city'] = '';
 		}
-		
+
 		if (isset($this->error['postcode'])) {
 			$this->data['error_postcode'] = $this->error['postcode'];
 		} else {
@@ -159,7 +168,7 @@ class ControllerAccountRegister extends Controller {
 		} else {
 			$this->data['error_zone'] = '';
 		}
-		
+
     	$this->data['action'] = $this->url->link('account/register', '', 'SSL');
 
 		if (isset($this->request->post['firstname'])) {
@@ -185,25 +194,25 @@ class ControllerAccountRegister extends Controller {
 		} else {
 			$this->data['email'] = '';
 		}
-		
+
 		if (isset($this->request->post['telephone'])) {
     		$this->data['telephone'] = $this->request->post['telephone'];
 		} else {
 			$this->data['telephone'] = '';
 		}
-		
+
 		if (isset($this->request->post['fax'])) {
     		$this->data['fax'] = $this->request->post['fax'];
 		} else {
 			$this->data['fax'] = '';
 		}
-		
+
 		if (isset($this->request->post['company'])) {
     		$this->data['company'] = $this->request->post['company'];
 		} else {
 			$this->data['company'] = '';
 		}
-		
+
 		if (isset($this->request->post['address_1'])) {
     		$this->data['address_1'] = $this->request->post['address_1'];
 		} else {
@@ -221,7 +230,7 @@ class ControllerAccountRegister extends Controller {
 		} else {
 			$this->data['postcode'] = '';
 		}
-		
+
 		if (isset($this->request->post['city'])) {
     		$this->data['city'] = $this->request->post['city'];
 		} else {
@@ -230,43 +239,43 @@ class ControllerAccountRegister extends Controller {
 
     	if (isset($this->request->post['country_id'])) {
       		$this->data['country_id'] = $this->request->post['country_id'];
-		} else {	
+		} else {
       		$this->data['country_id'] = $this->config->get('config_country_id');
     	}
 
     	if (isset($this->request->post['zone_id'])) {
-      		$this->data['zone_id'] = $this->request->post['zone_id']; 	
+      		$this->data['zone_id'] = $this->request->post['zone_id'];
 		} else {
       		$this->data['zone_id'] = '';
     	}
-		
+
 		$this->load->model('localisation/country');
-		
+
     	$this->data['countries'] = $this->model_localisation_country->getCountries();
-		
+
 		if (isset($this->request->post['password'])) {
     		$this->data['password'] = $this->request->post['password'];
 		} else {
 			$this->data['password'] = '';
 		}
-		
+
 		if (isset($this->request->post['confirm'])) {
     		$this->data['confirm'] = $this->request->post['confirm'];
 		} else {
 			$this->data['confirm'] = '';
 		}
-		
+
 		if (isset($this->request->post['newsletter'])) {
     		$this->data['newsletter'] = $this->request->post['newsletter'];
 		} else {
 			$this->data['newsletter'] = '';
-		}	
+		}
 
 		if ($this->config->get('config_account_id')) {
 			$this->load->model('catalog/information');
-			
+
 			$information_info = $this->model_catalog_information->getInformation($this->config->get('config_account_id'));
-			
+
 			if ($information_info) {
 				$this->data['text_agree'] = sprintf($this->language->get('text_agree'), $this->url->link('information/information/info', 'information_id=' . $this->config->get('config_account_id'), 'SSL'), $information_info['title'], $information_info['title']);
 			} else {
@@ -275,7 +284,7 @@ class ControllerAccountRegister extends Controller {
 		} else {
 			$this->data['text_agree'] = '';
 		}
-		
+
 		if (isset($this->request->post['agree'])) {
       		$this->data['agree'] = $this->request->post['agree'];
 		} else {
@@ -303,7 +312,7 @@ class ControllerAccountRegister extends Controller {
 			'common/content_top',
 			'common/content_bottom',
 			'common/footer',
-			'common/header'	
+			'common/header'
 		);
 		$this->response->setOutput($this->render());
   	}
@@ -314,6 +323,19 @@ class ControllerAccountRegister extends Controller {
     }
 
   	private function validate() {
+      require_once(DIR_SYSTEM . 'library/recaptchalib.php');
+      $privateKey = $this->config->get('RECAPTCHA_PRIVATE_KEY');
+      $resp = recaptcha_check_answer ($privateKey, $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
+
+      if (!$resp->is_valid) {
+        $this->language->load('account/register');
+        $this->error['recaptcha'] = $this->language->get('recaptcha_error');
+      }
+
+      if (!isset($this->request->post['firstname']) || (utf8_strlen($this->request->post['firstname']) > 32)) {
+          $this->error['firstname'] = $this->language->get('error_firstname');
+      }
+
     	if (!isset($this->request->post['firstname']) || (utf8_strlen($this->request->post['firstname']) > 32)) {
       		$this->error['firstname'] = $this->language->get('error_firstname');
     	}
@@ -332,7 +354,7 @@ class ControllerAccountRegister extends Controller {
     	if ($this->model_account_customer->getTotalCustomersByEmail($this->request->post['email'])) {
       		$this->error['warning'] = $this->language->get('error_exists');
     	}
-		
+
     	if ((utf8_strlen($this->request->post['telephone']) < 3) || (utf8_strlen($this->request->post['telephone']) > 32)) {
       		$this->error['telephone'] = $this->language->get('error_telephone');
     	}
@@ -346,9 +368,9 @@ class ControllerAccountRegister extends Controller {
     	}
 
 		$this->load->model('localisation/country');
-		
+
 		$country_info = $this->model_localisation_country->getCountry($this->request->post['country_id']);
-		
+
 		if ($country_info && $country_info['postcode_required'] && (utf8_strlen($this->request->post['postcode']) < 2) || (utf8_strlen($this->request->post['postcode']) > 10)) {
 			$this->error['postcode'] = $this->language->get('error_postcode');
 		}
@@ -356,7 +378,7 @@ class ControllerAccountRegister extends Controller {
     	if ($this->request->post['country_id'] == '') {
       		$this->error['country'] = $this->language->get('error_country');
     	}
-		
+
     	if ($this->request->post['zone_id'] == '') {
       		$this->error['zone'] = $this->language->get('error_zone');
     	}
@@ -368,46 +390,47 @@ class ControllerAccountRegister extends Controller {
     	if ($this->request->post['confirm'] != $this->request->post['password']) {
       		$this->error['confirm'] = $this->language->get('error_confirm');
     	}
-		
+
 		if ($this->config->get('config_account_id')) {
 			$this->load->model('catalog/information');
-			
+
 			$information_info = $this->model_catalog_information->getInformation($this->config->get('config_account_id'));
-			
+
 			if ($information_info && !isset($this->request->post['agree'])) {
       			$this->error['warning'] = sprintf($this->language->get('error_agree'), $information_info['title']);
 			}
 		}
-		
+
     	if (!$this->error) {
       		return true;
     	} else {
       		return false;
     	}
   	}
-  
-  	public function zone() {
+
+  public function zone() {
 		$output = '<option value="">' . $this->language->get('text_select') . '</option>';
-		
+
 		$this->load->model('localisation/zone');
 
     	$results = $this->model_localisation_zone->getZonesByCountryId($this->request->get['country_id']);
-        
+
       	foreach ($results as $result) {
         	$output .= '<option value="' . $result['zone_id'] . '"';
-	
+
 	    	if (isset($this->request->get['zone_id']) && ($this->request->get['zone_id'] == $result['zone_id'])) {
 	      		$output .= ' selected="selected"';
 	    	}
-	
+
 	    	$output .= '>' . $result['name'] . '</option>';
-    	} 
-		
+    	}
+
 		if (!$results) {
 		  	$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
 		}
-	
+
 		$this->response->setOutput($output);
-  	}  
+  }
+
 }
 ?>
