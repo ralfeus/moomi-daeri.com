@@ -17,17 +17,17 @@
         <div class="content">
             <div id="tabs" class="vtabs">
 <?php foreach ($languages as $language): ?>
-                <a href="#language<?php $language['language_id'] ?>">
-                    <img src="view/image/flags/<?php $language['image'] ?>" title="<?php $language['name'] ?>" /> <?= $language['name'] ?>
+                <a href="#language<?= $language['language_id'] ?>">
+                    <img src="view/image/flags/<?= $language['image'] ?>" title="<?= $language['name'] ?>" /> <?= $language['name'] ?>
                 </a>
-<?php endforeach; ?>"
+<?php endforeach; ?>
             </div>
             <form id="form" action="<?= $urlSaveForm ?>" method="post">
                 <input type="hidden" name="contentId" value="<?= $contentId ?>" />
 <?php foreach ($languages as $language): ?>
-                <div id="language<?php $language['language_id'] ?>" class="vtabs-content">
-                    <textarea name="text[<?php $language['language_id'] ?>]" id="text<?php $language['language_id'] ?>">
-                        <?php $text[$language['language_id']] ?>
+                <div id="language<?= $language['language_id'] ?>" class="vtabs-content">
+                    <textarea name="text[<?= $language['language_id'] ?>]" id="text<?= $language['language_id'] ?>">
+                        <?= $text[$language['language_id']] ?>
                     </textarea>
                 </div>
 <?php endforeach; ?>

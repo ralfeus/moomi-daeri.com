@@ -40,7 +40,7 @@ class ControllerCmsText extends Controller
         $this->parameters['token'] = $this->session->data['token'];
     }
 
-    private function setBreadcrumbs()
+    protected function setBreadcrumbs()
     {
         $this->data['breadcrumbs'] = array();
         $this->data['breadcrumbs'][] = array(
