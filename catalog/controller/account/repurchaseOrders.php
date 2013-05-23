@@ -166,7 +166,7 @@ class ControllerAccountRepurchaseOrders extends Controller
         $this->setStatus($this->request->request['orderId'], REPURCHASE_ORDER_ITEM_STATUS_REJECTED);
     }
 
-    private function setBreadcrumbs()
+    protected function setBreadcrumbs()
     {
         $this->data['breadcrumbs'] = array();
 

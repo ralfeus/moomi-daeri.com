@@ -367,7 +367,7 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->response->setOutput(json_encode($json));
     }
 
-    private function setBreadcrumbs()
+    protected function setBreadcrumbs()
     {
         $this->data['breadcrumbs'] = array();
 

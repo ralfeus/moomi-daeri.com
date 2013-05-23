@@ -230,7 +230,7 @@ class ControllerAccountOrderItems extends Controller {
         return isset($order_item_id) && $this->model_sale_order_item->getOrderItem($order_item_id);
     }
 
-    private function setBreadcrumbs()
+    protected function setBreadcrumbs()
     {
         $this->data['breadcrumbs'] = array();
 

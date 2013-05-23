@@ -146,7 +146,7 @@ class ControllerSaleCreditManagement extends Controller
         Messaging::updateSystemMessage($request['messageId'], $request['data']);
     }
 
-    private function setBreadcrumps()
+    protected function setBreadcrumps()
     {
         $this->data['breadcrumbs'] = array();
         $this->data['breadcrumbs'][] = array(

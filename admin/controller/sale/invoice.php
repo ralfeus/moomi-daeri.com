@@ -352,7 +352,7 @@ class ControllerSaleInvoice extends Controller
         $this->response->setOutput('');
     }
 
-    private function setBreadcrumbs()
+    protected function setBreadcrumbs()
     {
         $this->data['breadcrumbs'] = array();
         $this->data['breadcrumbs'][] = array(

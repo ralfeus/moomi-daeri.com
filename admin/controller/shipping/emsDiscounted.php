@@ -79,7 +79,7 @@ class ControllerShippingEMSDiscounted extends Controller {
         if (empty($_REQUEST['weight'])) $this->parameters['weight'] =  null;
     }
 
-    private function setBreadcrumbs()
+    protected function setBreadcrumbs()
     {
         $this->data['breadcrumbs'] = array();
         $this->data['breadcrumbs'][] = array(

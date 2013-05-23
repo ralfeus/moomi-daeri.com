@@ -1471,7 +1471,7 @@ class ControllerCatalogProduct extends Controller {
         $this->getList();
     }
 
-    private function setBreadcrumbs()
+    protected function setBreadcrumbs()
     {
         $this->data['breadcrumbs'] = array();
 

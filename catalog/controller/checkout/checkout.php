@@ -68,7 +68,7 @@ class ControllerCheckoutCheckout extends Controller {
         $this->parameters['selected'] = empty($_REQUEST['selected']) ? null : $_REQUEST['selected'];
     }
 
-    private function setBreadcrumbs()
+    protected function setBreadcrumbs()
     {
         $this->data['breadcrumbs'] = array();
 

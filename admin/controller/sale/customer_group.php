@@ -368,7 +368,7 @@ class ControllerSaleCustomerGroup extends Controller {
 		}
 	}
 
-    private function setBreadcrumbs($url = null)
+    protected function setBreadcrumbs($url = null)
     {
         $this->data['breadcrumbs'] = array();
 

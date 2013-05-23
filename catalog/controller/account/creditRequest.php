@@ -68,7 +68,7 @@ class ControllerAccountCreditRequest extends Controller
         $this->response->setOutput($this->render());
     }
 
-    private function setBreadcrumps()
+    protected function setBreadcrumps()
     {
         $this->data['breadcrumbs'] = array();
         $this->data['breadcrumbs'][] = array(
