@@ -42,10 +42,7 @@ class ControllerCommonHome extends Controller {
 			mkdir(IMAGES_DOWNLOAD_FOLDER . "/" . $this->customer->getId(), 0777);
 			mkdir(IMAGES_DOWNLOAD_FOLDER . "/" . $this->customer->getId() . "/" . $result->rows[0]['name'], 0777);
 			foreach ($result->rows as $row) {
-				$string = <<<XML
-<?xml version='1.0'?><p>
-XML;
-
+				$string = "<?xml version='1.0'?><p>\n";
 				$string .= htmlspecialchars_decode($row["description"]);
 				$string .= '</p>';
         $search = array('&lt;', '&gt;', '&nbsp;');

@@ -16,7 +16,7 @@
 <?php foreach ($links as $link) { ?>
 <link href="<?php echo str_replace('&', '&amp;', $link['href']); ?>" rel="<?php echo $link['rel']; ?>" />
 <?php } ?>
-<link rel="stylesheet" type="text/css" href="catalog/view/theme/<?php echo $template; ?>/stylesheet/stylesheet.css" />
+<link rel="stylesheet" type="text/css" href="catalog/view/theme/6color_sb/stylesheet/stylesheet.css" />
 <!--[if lt IE 7]>
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/ie6.css" />
 <script type="text/javascript" src="catalog/view/javascript/DD_belatedPNG_0.0.8a-min.js"></script>
@@ -27,10 +27,10 @@ DD_belatedPNG.fix('img, #header .div3 a, #content .left, #content .right, .box .
 <?php foreach ($styles as $style) { ?>
 <link rel="<?php echo $style['rel']; ?>" type="text/css" href="<?php echo $style['href']; ?>" media="<?php echo $style['media']; ?>" />
 <?php } ?>
-<script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.6.1.min.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/jquery/thickbox/thickbox-compressed.js"></script>
 <link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/thickbox/thickbox.css" />
-<script type="text/javascript" src="catalog/view/javascript/jquery/tab.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/jquery/tabs.js"></script>
 <?php foreach ($scripts as $script) { ?>
 <script type="text/javascript" src="<?php echo $script; ?>"></script>
 <?php } ?>
@@ -49,6 +49,7 @@ function bookmark(url, title) {
 	}
 }
 //--></script>
+<?= $google_analytics ?>
 </head>
 <body>
 <div id="container">
@@ -59,7 +60,8 @@ function bookmark(url, title) {
       <a href="<?php echo str_replace('&', '&amp;', $home); ?>"><img src="<?php echo $logo; ?>" title="<?php echo $store; ?>" alt="<?php echo $store; ?>" /></a>
       <?php } ?>
     </div>
-    <div class="div3"><a href="<?php echo str_replace('&', '&amp;', $special); ?>" style="background-image: url('catalog/view/theme/default/image/special.png');"><?php echo $text_special; ?></a><a onclick="bookmark(document.location, '<?php echo addslashes($title); ?>');" style="background-image: url('catalog/view/theme/default/image/bookmark.png');"><?php echo $text_bookmark; ?></a><a href="<?php echo str_replace('&', '&amp;', $contact); ?>" style="background-image: url('catalog/view/theme/default/image/contact.png');"><?php echo $text_contact; ?></a><a href="<?php echo str_replace('&', '&amp;', $sitemap); ?>" style="background-image: url('catalog/view/theme/default/image/sitemap.png');"><?php echo $text_sitemap; ?></a></div>
+    <div class="div3">
+        <a href="<?php echo str_replace('&', '&amp;', $special); ?>" style="background-image: url('catalog/view/theme/6color_sb/image/special.png');"><?php echo $text_special; ?></a><a onclick="bookmark(document.location, '<?php echo addslashes($title); ?>');" style="background-image: url('catalog/view/theme/6color_sb/image/bookmark.png');"><?php echo $text_bookmark; ?></a><a href="<?php echo str_replace('&', '&amp;', $contact); ?>" style="background-image: url('catalog/view/theme/6color_sb/image/contact.png');"><?php echo $text_contact; ?></a><a href="<?php echo str_replace('&', '&amp;', $sitemap); ?>" style="background-image: url('catalog/view/theme/6color_sb/image/sitemap.png');"><?php echo $text_sitemap; ?></a></div>
     <div class="div4"><a href="<?php echo str_replace('&', '&amp;', $home); ?>" id="tab_home"><?php echo $text_home; ?></a>
       <?php if (!$logged) { ?>
       <a href="<?php echo str_replace('&', '&amp;', $login); ?>" id="tab_login"><?php echo $text_login; ?></a>

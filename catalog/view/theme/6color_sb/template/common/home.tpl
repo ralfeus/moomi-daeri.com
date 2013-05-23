@@ -1,6 +1,6 @@
 <?php echo $header; ?><?php echo $column_left; ?><?php echo $column_right; ?>
 <div id="content">
-  <?php if ($welcome) { ?>
+<?php if (isset($welcome)): ?>
   <div class="top">
     <div class="left"></div>
     <div class="right"></div>
@@ -16,9 +16,11 @@
     <div class="right"></div>
     <div class="center"></div>
   </div>
-  <?php } ?>
-  <?php foreach ($modules as $module) { ?>
-  <?php echo ${$module['code']}; ?>
-  <?php } ?>
+<?php endif; ?>
+<?php if (isset($modules)):
+    foreach ($modules as $module): ?>
+  <?= ${$module['code']}; ?>
+    <?php endforeach; ?>
+<?php endif; ?>
 </div>
 <?php echo $footer; ?> 

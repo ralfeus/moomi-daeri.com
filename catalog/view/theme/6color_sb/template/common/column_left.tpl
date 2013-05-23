@@ -1,5 +1,6 @@
 <div id="column_left">
-  <?php foreach ($modules as $module) { ?>
-  <?php echo ${$module['code']}; ?>
-  <?php } ?>
+    <?php foreach ($modules as $module) {
+        if (isset($module['code']))
+            echo ${$module['code']};
+    } ?>
 </div>

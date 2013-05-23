@@ -10,7 +10,9 @@ class ControllerCommonContentBottom extends Controller {
 		$this->data['text_button_download'] = $this->language->get('text_button_download');
 		$this->data['isSaler'] = $this->customer->getCustomerGroupId() == 6;
 		$this->data['showDownload'] = false;
-		if($this->request->get['route'] == "product/category" || $this->request->get['route'] == "common/home") {
+        if (empty($_REQUEST['route']))
+            $_REQUEST['route'] = 'common/home';
+		if($_REQUEST['route'] == "product/category" || $_REQUEST['route'] == "common/home") {
 			$this->data['showDownload'] = true;
 		}
 

@@ -117,6 +117,11 @@ abstract class Controller extends OpenCartBase
     	}
 	}
 
+    protected function setBreadcrumbs()
+    {
+        $this->data['breadcrumbs'] = array();
+    }
+
     private function setSelfRoutes()
     {
         $route = empty($_REQUEST['route']) ? 'common/home' : $_REQUEST['route'];

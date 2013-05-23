@@ -78,8 +78,12 @@ class ControllerCommonHeader extends Controller {
 			$str = "&nbsp;&nbsp;&nbsp;<img src='".$url."' alt='vip' height='20' class='bottom5' />&nbsp;";
 		}
 
+        $this->data['button_go'] = $this->language->get('GO');
 
-		$this->data['text_home'] = $this->language->get('text_home');
+        $this->data['entry_search'] = '';
+        $this->data['keyword'] = '';
+
+        $this->data['text_home'] = $this->language->get('text_home');
 		$this->data['text_wishlist'] = sprintf($this->language->get('text_wishlist'), (isset($this->session->data['wishlist']) ? count($this->session->data['wishlist']) : 0));
 		$this->data['text_cart'] = $this->language->get('text_cart');
 		$this->data['text_items'] = sprintf($this->language->get('text_items'), $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->currency->format($total));
@@ -89,8 +93,16 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_account'] = $this->language->get('text_account');
    	$this->data['text_checkout'] = $this->language->get('text_checkout');
 		$this->data['text_language'] = $this->language->get('text_language');
-    $this->data['text_currency'] = $this->language->get('text_currency');
-    $this->data['text_repurchase_order'] = $this->language->get('text_repurchase_order');
+        $this->data['text_advanced'] = $this->language->get('ADVANCED');
+        $this->data['text_bookmark'] = $this->language->get('BOOKMARK');
+        $this->data['text_contact'] = $this->language->get('CONTACT');
+        $this->data['text_currency'] = $this->language->get('text_currency');
+        $this->data['text_keyword'] = $this->language->get('KEYWORD');
+        $this->data['text_login'] = $this->language->get('LOGIN');
+        $this->data['text_logout'] = $this->language->get('LOGOUT');
+        $this->data['text_repurchase_order'] = $this->language->get('text_repurchase_order');
+        $this->data['text_sitemap'] = $this->language->get('SITEMAP');
+        $this->data['text_special'] = $this->language->get('SPECIAL');
     $this->data['textGallery'] = $this->language->get('GALLERY');
     $this->data['textShoppingGuide'] = $this->language->get('text_shopping_guide');
 
@@ -248,12 +260,12 @@ class ControllerCommonHeader extends Controller {
 		$this->load->language('shop/general');
 		$this->data['text_no_select_images'] = $this->language->get('text_no_select_images');
 		$this->data['text_button_download'] = $this->language->get('text_button_download');
+        $this->setBreadcrumbs();
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/header.tpl')) {
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/header.tpl'))
 			$this->template = $this->config->get('config_template') . '/template/common/header.tpl';
-		} else {
+		else
 			$this->template = 'default/template/common/header.tpl';
-		}
 
         $this->render();
 	}
