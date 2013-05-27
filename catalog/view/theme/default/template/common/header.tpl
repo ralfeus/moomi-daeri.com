@@ -98,7 +98,7 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
         $('.ui-datepicker-inline').addClass('width180');
       });
       var currentUrl = "<?php echo $_GET['route']; ?>";
-      if(currentUrl == 'common/home') {
+      if(currentUrl == 'common/home' || currentUrl == '') {
         var action_url = "<?php echo $this->url->link('shop/admin/hasAction'); ?>";
         $.post(action_url, function(response) {
           response = $.parseJSON(response);
