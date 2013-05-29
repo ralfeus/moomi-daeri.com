@@ -55,7 +55,7 @@ class ControllerCheckoutSuccess extends Controller {
                 $successText = $this->language->get('text_customer');
             else
                 $successText = $text['text'];
-    		    $this->data['text_message'] = $text['text']; //sprintf(
+            $this->data['text_message'] = $successText; //sprintf(
 //                    $successText,
 //                    $this->url->link('account/account', '', 'SSL'),
 //                    $this->url->link('account/order', '', 'SSL'),
