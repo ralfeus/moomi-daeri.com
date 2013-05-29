@@ -1,5 +1,5 @@
 <div class="action_image">
-  <a href="<?php echo $action_url; ?>">
+  <a href="#" onclick="javascript: parent.window.location.href='<?php echo $action_url; ?>'">
     <img src="<?php echo $action_image ?>" width="400" height="400" />
   </a>
 </div>
