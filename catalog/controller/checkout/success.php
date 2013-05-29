@@ -55,13 +55,13 @@ class ControllerCheckoutSuccess extends Controller {
                 $successText = $this->language->get('text_customer');
             else
                 $successText = $text['text'];
-    		    $this->data['text_message'] = sprintf(
-                    $successText,
-                    $this->url->link('account/account', '', 'SSL'),
-                    $this->url->link('account/order', '', 'SSL'),
-                    $this->url->link('account/download', '', 'SSL'),
-                    $this->url->link('information/contact')
-                );
+    		    $this->data['text_message'] = $text['text']; //sprintf(
+//                    $successText,
+//                    $this->url->link('account/account', '', 'SSL'),
+//                    $this->url->link('account/order', '', 'SSL'),
+//                    $this->url->link('account/download', '', 'SSL'),
+//                    $this->url->link('information/contact')
+//                );
 		} else {
     		$this->data['text_message'] = sprintf($this->language->get('text_guest'), $this->url->link('information/contact'));
 		}
