@@ -323,14 +323,14 @@ class ControllerAccountRegister extends Controller {
     }
 
   	private function validate() {
-      require_once(DIR_SYSTEM . 'library/recaptchalib.php');
-      $privateKey = $this->config->get('RECAPTCHA_PRIVATE_KEY');
-      $resp = recaptcha_check_answer ($privateKey, $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
-
-      if (!$resp->is_valid) {
-        $this->language->load('account/register');
-        $this->error['recaptcha'] = $this->language->get('recaptcha_error');
-      }
+//      require_once(DIR_SYSTEM . 'library/recaptchalib.php');
+//      $privateKey = $this->config->get('RECAPTCHA_PRIVATE_KEY');
+//      $resp = recaptcha_check_answer ($privateKey, $_SERVER["REMOTE_ADDR"], $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
+//
+//      if (!$resp->is_valid) {
+//        $this->language->load('account/register');
+//        $this->error['recaptcha'] = $this->language->get('recaptcha_error');
+//      }
 
       if (!isset($this->request->post['firstname']) || (utf8_strlen($this->request->post['firstname']) > 32)) {
           $this->error['firstname'] = $this->language->get('error_firstname');

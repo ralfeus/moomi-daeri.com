@@ -166,16 +166,6 @@
         </tr>
       </table>
     </div>
-    <div class="content">
-      <?php if ($error_recaptcha) { ?>
-        <span class="error" style="margin-bottom: 20px;"><?php echo $error_recaptcha; ?></span>
-      <?php } ?>
-      <div class="clear"></div>
-      <?php
-      require_once(DIR_SYSTEM . 'library/recaptchalib.php');
-      echo recaptcha_get_html($publicKey);
-      ?>
-    </div>
     <?php if ($text_agree) { ?>
     <div class="buttons">
       <div class="right"><?php echo $text_agree; ?>
@@ -195,12 +185,12 @@
   <?php echo $content_bottom; ?></div>
 <script type="text/javascript"><!--
 $('select[name=\'zone_id\']').load('index.php?route=account/register/zone&country_id=<?php echo $country_id; ?>&zone_id=<?php echo $zone_id; ?>');
-//--></script>
+//--></script> 
 <script type="text/javascript"><!--
 $('.fancybox').fancybox({
 	width: 560,
 	height: 560,
 	autoDimensions: false
 });
-//--></script>
+//--></script>  
 <?php echo $footer; ?>
