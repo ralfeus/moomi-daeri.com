@@ -114,7 +114,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['checkout'] = $this->url->link('checkout/checkout', '', 'SSL');
     $this->data['repurchase_order'] = $this->url->link('product/repurchase', '', 'SSL');
     $this->data['urlGallery'] = $this->url->link('product/gallery', '', 'SSL');
-    $this->data['urlShoppingGuide'] = $this->url->link('shop/admin/showPage', '', 'SSL');
+    $this->data['urlShoppingGuide'] = $this->url->link('shop/admin/showPage&page_id=1', '', 'SSL');
 
 		if (isset($this->request->get['filter_name'])) {
 			$this->data['filter_name'] = $this->request->get['filter_name'];
