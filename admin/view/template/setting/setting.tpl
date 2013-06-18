@@ -868,6 +868,10 @@
               <td><?php echo $entry_google_analytics; ?></td>
               <td><textarea name="config_google_analytics" cols="40" rows="5"><?php echo $config_google_analytics; ?></textarea></td>
             </tr>
+              <tr>
+                  <td><?= $textYandexCounterCode ?></td>
+                  <td><textarea name="config_YandexCounterCode" cols="40" rows="5"><?= $config_YandexCounterCode ?></textarea></td>
+              </tr>
           </table>
         </div>
       </form>

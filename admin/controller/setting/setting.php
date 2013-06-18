@@ -123,6 +123,7 @@ class ControllerSettingSetting extends Controller {
 		$this->data['entry_sms_alert'] = $this->language->get('entry_sms_alert');
 		$this->data['entry_sms_copy'] = $this->language->get('entry_sms_copy');
 		$this->data['entry_registred_group'] = $this->language->get('entry_registred_group');
+        $this->data['textYandexCounterCode'] = $this->language->get('YANDEX_COUNTER_CODE');
 		
 		$this->data['button_save'] = $this->language->get('button_save');
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
@@ -889,7 +890,7 @@ class ControllerSettingSetting extends Controller {
 		} else {
 			$this->data['config_google_analytics'] = $this->config->get('config_google_analytics');
 		}
-		
+
 		if (isset($this->request->post['config_sms_gatename'])) {
 			$this->data['config_sms_gatename'] = $this->request->post['config_sms_gatename'];
 		} else {
@@ -938,6 +939,8 @@ class ControllerSettingSetting extends Controller {
 			$this->data['config_sms_copy'] = $this->config->get('config_sms_copy');
 		}
 
+        $this->data = array_merge($this->data, $this->parameters);
+
 		$this->template = 'setting/setting.tpl';
 		$this->children = array(
 			'common/header',
@@ -946,6 +949,12 @@ class ControllerSettingSetting extends Controller {
 				
 		$this->response->setOutput($this->render());
 	}
+
+    protected function initParameters()
+    {
+        $this->parameters['config_YandexCounterCode'] = empty($_REQUEST['config_YandexCounterCode']) ?
+            $this->config->get('config_YandexCounterCode') : $_REQUEST['config_YandexCounterCode'];
+    }
 
 	private function validate() {
 		if (!$this->user->hasPermission('modify', 'setting/setting')) {

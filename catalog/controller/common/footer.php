@@ -42,6 +42,7 @@ class ControllerCommonFooter extends Controller {
 		$this->data['wishlist'] = $this->url->link('account/wishlist', '', 'SSL');
 		$this->data['newsletter'] = $this->url->link('account/newsletter', '', 'SSL');		
 
+        $this->data['yandexCounterCode'] = $this->config->get('config_YandexCounterCode');
 		$this->data['powered'] = sprintf($this->language->get('text_powered'), $this->config->get('config_name'), '2005 - 2013');
 		
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/footer.tpl')) {
