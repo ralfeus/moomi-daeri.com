@@ -138,9 +138,11 @@ $_['error_upload_999']        = 'Warning: No error code available!';
 
 $_['ACTIONS'] = "Actions";
 $_['AMOUNT'] = 'Amount';
+$_['BALANCE'] = 'Balance';
 $_['BASE_CURRENCY'] = 'Base currency';
 $_['DISCOUNT'] = 'Discount';
 $_['COMMENT'] = 'Comment';
+$_['CURRENCY'] = 'Currency';
 $_['CUSTOMER'] = 'Customer';
 $_['DATE_ADDED'] = 'Date added';
 $_['DISABLE'] = 'Disable';
@@ -155,11 +157,14 @@ $_['ORDER_ID'] = 'Order ID';
 $_['PRINT'] = 'Print';
 $_['QUANTITY'] = 'Quantity';
 $_['RECALCULATE_SHIPPING_COST'] = 'Recalculate shipping cost';
+$_['REQUEST_ID'] = 'Request ID';
 $_['RESET_FILTER'] = 'Reset filter';
 $_['SITE_NAME'] = "Site name";
 $_['STATUS'] = 'Status';
 $_['SUCCESS_INVOICE_CREATED'] = "The invoice was successfully created. Invoice ID is %s";
 $_['TIME_ADDED'] = 'Creation time';
+$_['TOTAL'] = 'Total';
 $_['TRANSACTION'] = 'Transaction';
 $_['TRANSACTION_ID'] = 'Transaction ID';
 $_['VIEW'] = 'View';
+

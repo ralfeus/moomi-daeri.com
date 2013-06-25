@@ -68,6 +68,8 @@ $_['error_postcode']        = 'Postcode must be between 2 and 10 characters for 
 $_['error_country']         = 'Please select a country!';
 $_['error_zone']            = 'Please select a region / state!';
 
+$_['EXPENSE_AMOUNT'] = 'Expense amount';
+$_['INCOME_AMOUNT'] = 'Income amount';
 $_['PURGE_CART'] = 'Purge cart';
 $_['SUCCESS_CART_PURGED'] = 'The cart of customer <bold>%s</bold> is marked for purge. It will be purged once user refreshes the page';
 $_['SUCCESS_PAYMENT_ADDED'] = 'The payment is successfully added';

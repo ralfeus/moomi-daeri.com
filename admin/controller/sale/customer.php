@@ -31,8 +31,116 @@ class ControllerSaleCustomer extends Controller {
         natcasesort($tmpResult);
         return $tmpResult;
     }
-  
-  	public function index() {
+
+    private function getCreditRequests($customer)
+    {
+        $this->load->library('Messaging');
+        $this->load->library('Status');
+        $addCreditRequests = Messaging::getSystemMessages(
+            array(
+                'systemMessageType' => SYS_MSG_ADD_CREDIT,
+                'filterCustomerId' => array($customer['customer_id']),
+                'start' => ($this->parameters['creditRequestsPage'] - 1 ) * 10,
+                'limit' => 10
+            )
+        );
+//        $this->log->write(print_r($addCreditRequests, true));
+        foreach ($addCreditRequests as $addCreditRequest)
+        {
+            $this->data['requests'][] = array(
+                'requestId' => $addCreditRequest['messageId'],
+                'amount' => $addCreditRequest['data']->amount,
+                'comment' => $addCreditRequest['data']->comment,
+                'currency' => $addCreditRequest['data']->currency,
+                'status' => Status::getStatus($addCreditRequest['data']->status, $this->config->get('language_id'), true),
+                'statusId' => $addCreditRequest['data']->status,
+                'timeAdded' => $addCreditRequest['timeAdded']
+            );
+        }
+
+        /// Initialize interface
+        $this->data['textAmount'] = $this->language->get('AMOUNT');
+        $this->data['textComment'] = $this->language->get('COMMENT');
+        $this->data['textRequestId'] = $this->language->get('REQUEST_ID');
+        $this->data['textStatus'] = $this->language->get('STATUS');
+        $this->data['textTimeAdded'] = $this->language->get('TIME_ADDED');
+
+        $pagination = new Pagination();
+        $pagination->total = Messaging::getSystemMessagesCount(SYS_MSG_ADD_CREDIT, $customer['customer_id']);
+        $pagination->page = $this->parameters['creditRequestsPage'];
+        $pagination->limit = 10;
+        $pagination->text = $this->language->get('text_pagination');
+        $pagination->url = $this->url->link(
+            'sale/customer/transaction',
+            'creditRequestsPage={page}&transactionsPage=' . $this->parameters['transactionsPage'] .
+                '&token=' . $this->parameters['token'] .
+                '&customerId=' . $this->parameters['customerId'], 'SSL');
+        $this->data['creditRequestsPagination'] = $pagination->render();
+    }
+
+    private function getTransactions($customer)
+    {
+        //$this->data['addCreditUrl'] = $this->url->link('account/addCredit', '', 'SSL');
+        $this->data['textTimeAdded'] = $this->language->get('TIME_ADDED');
+        $this->data['textComment'] = $this->language->get('COMMENT');
+        $this->data['textBalance'] = $this->language->get('BALANCE');
+        $this->data['textExpenseAmount'] = $this->language->get('EXPENSE_AMOUNT');
+        $this->data['textIncomeAmount'] = $this->language->get('INCOME_AMOUNT');
+        $this->data['textCurrency'] = $this->language->get('CURRENCY');
+        $this->data['text_total'] = $this->language->get('TOTAL');
+        $this->data['text_empty'] = $this->language->get('text_empty');
+        $this->data['textAddCredit'] = $this->language->get('ADD_CREDIT');
+        $this->data['textInvoiceId'] = $this->language->get('INVOICE_ID');
+        $this->data['textTransactionId'] = $this->language->get('TRANSACTION_ID');
+        $this->data['total'] = $this->currency->format($customer['balance'], $customer['base_currency_code'], 1);
+
+        $data = array(
+            'sort'  => 'customer_transaction_id',
+            'order' => 'DESC',
+            'start' => ($this->parameters['transactionsPage'] - 1) * 10,
+            'limit' => 10
+        );
+
+        $transaction_total = $this->modelSaleCustomer->getTotalTransactions($customer['customer_id']);
+        $transactions = $this->modelSaleCustomer->getTransactions($customer['customer_id'], $data['start'], $data['limit']);
+
+        $this->data['transactions'] = array();
+        foreach ($transactions as $transaction) {
+            $actions = array();
+            $actions[] = array(
+                'text' => $this->language->get('DELETE'),
+                'onclick' => "deleteTransaction(" . $transaction['customer_transaction_id'] . ");"
+            );
+            $amount = -$transaction['amount'];
+            $amountString = $this->currency->format($amount, $transaction['currency_code'], 1);
+            $this->data['transactions'][] = array(
+                'actions' => $actions,
+                'balance' => $this->currency->format($transaction['balance'], $customer['base_currency_code'], 1),
+                'expenseAmount'      => $amount < 0 ? $amountString : '',
+                'incomeAmount'      => $amount >= 0 ? $amountString : '',
+                'currency_code' => $transaction['currency_code'],
+                'date_added'  => $transaction['date_added'],
+                'description' => $transaction['description'],
+                'invoiceId' => $transaction['invoice_id'] ? $transaction['invoice_id'] : '',
+                'invoiceUrl' => $this->url->link('sale/invoice/showForm', 'invoiceId=' . $transaction['invoice_id'] . '&token=' . $this->parameters['token'], 'SSL'),
+                'transactionId' => $transaction['customer_transaction_id']
+            );
+        }
+
+        $pagination = new Pagination();
+        $pagination->total = $transaction_total;
+        $pagination->page = $this->parameters['transactionsPage'];
+        $pagination->limit = 10;
+        $pagination->text = $this->language->get('text_pagination');
+        $pagination->url = $this->url->link(
+            'sale/customer/transaction',
+            'transactionsPage={page}&creditRequestsPage=' . $this->parameters['creditRequestsPage'] .
+                '&token=' . $this->parameters['token'] .
+                '&customerId=' . $this->parameters['customerId'], 'SSL');
+        $this->data['transactionsPagination'] = $pagination->render();
+    }
+
+    public function index() {
     	$this->getList();
   	}
 
@@ -40,7 +148,10 @@ class ControllerSaleCustomer extends Controller {
     {
         $this->parameters['baseCurrency'] = empty($_REQUEST['baseCurrency']) ? null : $_REQUEST['baseCurrency'];
         $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
-        $this->parameters['customerId'] = empty($_REQUEST['customerId']) ? array() : $_REQUEST['customerId'];
+        $this->parameters['customerId'] =
+            empty($_REQUEST['customerId']) ? (empty($_REQUEST['customer_id']) ? array() : $_REQUEST['customer_id']) : $_REQUEST['customerId'];
+        $this->parameters['creditRequestsPage'] = empty($_REQUEST['creditRequestsPage']) ? 1 : $_REQUEST['creditRequestsPage'];
+        $this->parameters['transactionsPage'] = empty($_REQUEST['transactionsPage']) ? 1 : $_REQUEST['transactionsPage'];
         $this->parameters['token'] = $this->session->data['token'];
     }
   
@@ -1217,7 +1328,7 @@ class ControllerSaleCustomer extends Controller {
 	
 	public function transaction() {
         $this->load->library('Transaction');
-        $customer = $this->modelSaleCustomer->getCustomer($this->request->get['customer_id']);
+        $customer = $this->modelSaleCustomer->getCustomer($this->parameters['customerId']);
         if ($this->request->server['REQUEST_METHOD'] == 'POST')
         {
             if ($this->user->hasPermission('modify', 'sale/customer')) {
@@ -1226,7 +1337,7 @@ class ControllerSaleCustomer extends Controller {
                     if ($this->request->post['amount'] < 0)
                     {
                         Transaction::addCredit(
-                            $this->request->get['customer_id'],
+                            $this->parameters['customerId'],
                             -$this->request->post['amount'],
                             $customer['base_currency_code'],
                             $this->registry,
@@ -1237,7 +1348,7 @@ class ControllerSaleCustomer extends Controller {
                     {
                         Transaction::addTransaction(
                             0,
-                            $this->request->get['customer_id'],
+                            $this->parameters['customerId'],
                             $this->request->post['amount'],
                             $customer['base_currency_code'],
                             $this->request->post['description']);
@@ -1263,6 +1374,7 @@ class ControllerSaleCustomer extends Controller {
                             $this->language->get('SUCCESS_TRANSACTION_DELETED'), $this->request->post['transactionId']);
                     }
                 }
+                $customer = $this->modelSaleCustomer->getCustomer($this->parameters['customerId']);
             }
             else
                 $this->data['error_warning'] = $this->language->get('error_permission');
@@ -1270,9 +1382,7 @@ class ControllerSaleCustomer extends Controller {
 		
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && !$this->user->hasPermission('modify', 'sale/customer')) {
 			$this->data['error_warning'] = $this->language->get('error_permission');
-		} else {
-
-		}		
+		}
 		
 		$this->data['text_no_results'] = $this->language->get('text_no_results');
 		$this->data['text_balance'] = $this->language->get('text_balance');
@@ -1283,7 +1393,13 @@ class ControllerSaleCustomer extends Controller {
         $this->data['textAction'] = $this->language->get('ACTIONS');
         $this->data['textInvoiceId'] = $this->language->get('INVOICE_ID');
         $this->data['textTransactionId'] = $this->language->get('TRANSACTION_ID');
-		
+
+        $this->getTransactions($customer);
+        $this->getCreditRequests($customer);
+        $this->template = 'sale/customerTransaction.php';
+        $this->response->setOutput($this->render());
+        return;
+
 		if (isset($this->request->get['page'])) {
 			$page = $this->request->get['page'];
 		} else {

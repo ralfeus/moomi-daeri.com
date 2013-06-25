@@ -16,11 +16,14 @@
       <div class="buttons"><a onclick="$('#form').submit();" class="button"><?php echo $button_save; ?></a><a onclick="location = '<?php echo $cancel; ?>';" class="button"><?php echo $button_cancel; ?></a></div>
     </div>
     <div class="content">
-      <div id="htabs" class="htabs"><a href="#tab-general"><?php echo $tab_general; ?></a>
-        <?php if ($customer_id) { ?>
-        <a href="#tab-transaction"><?php echo $tab_transaction; ?></a><a href="#tab-reward"><?php echo $tab_reward; ?></a>
-        <?php } ?>
-        <a href="#tab-ip"><?php echo $tab_ip; ?></a></div>
+      <div id="htabs" class="htabs">
+          <a href="#tab-general"><?php echo $tab_general; ?></a>
+<?php if ($customer_id): ?>
+            <a href="#tab-transaction"><?php echo $tab_transaction; ?></a>
+            <a href="#tab-reward"><?php echo $tab_reward; ?></a>
+<?php endif; ?>
+            <a href="#tab-ip"><?php echo $tab_ip; ?></a>
+      </div>
       <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form">
         <div id="tab-general">
           <div id="vtabs" class="vtabs"><a href="#tab-customer"><?php echo $tab_general; ?></a>
@@ -214,7 +217,7 @@
           <?php $address_row++; ?>
           <?php } ?>
         </div>
-        <?php if ($customer_id) { ?>
+<?php if ($customer_id): ?>
         <div id="tab-transaction">
           <table class="form">
             <tr>
@@ -257,7 +260,7 @@
           </table>
           <div id="reward"></div>
         </div>
-        <?php } ?>
+<?php endif; ?>
         <div id="tab-ip">
           <table class="list">
             <thead>
@@ -360,7 +363,7 @@ $('#transaction .pagination a').live('click', function() {
 	return false;
 });			
 
-$('#transaction').load('index.php?route=sale/customer/transaction&token=<?php echo $token; ?>&customer_id=<?php echo $customer_id; ?>');
+$('#transaction').load('index.php?route=sale/customer/transaction&token=<?= $token ?>&customer_id=<?= $customer_id ?>');
 
 function addTransaction() {
 	$.ajax({
