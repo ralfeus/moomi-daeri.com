@@ -712,7 +712,7 @@ $(document).ready(function () {
 		
 		$("#uploader").plupload({
 		
-		runtimes : 'html5,flash',
+		runtimes : 'flash',
 		url : 'index.php?route=common/filemanager/multi&token=<?php echo $token; ?>&directory=' + window.dr,
 		max_file_size : '5mb', // allowed by OC '300kb', 
 		chunk_size : '1mb',
