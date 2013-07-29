@@ -90,13 +90,13 @@ class NatureRepublic extends ProductSource
                 $product = new Product(
                     $this,
                     preg_match('/(?<=pid=).*?(?=&)/', $item->attr['href'], $matches) ? $matches[0] : null,
-                    mb_convert_encoding(trim($item->find('text')[0]->plaintext), 'utf-8', 'euc-kr'),
+                    mb_convert_encoding(trim($item->find('text', 0)->plaintext), 'utf-8', 'euc-kr'),
                     'http://' . $this->getSite()->name . $item->attr['href'],
                     $item->parent->first_child()->attr['src'],
                     preg_replace(
                         '/\D+/',
                         '',
-                        sizeof($item->find('strike')) ? $item->find('strike')[0]->next_sibling()->plaintext : $item->find('.price')[0]->plaintext)//,
+                        sizeof($item->find('strike')) ? $item->find('strike', 0)->next_sibling()->plaintext : $item->find('.price', 0)->plaintext)//,
                     // here will be description extraction code
                 );
                 self::fillDetails($product);
