@@ -848,12 +848,12 @@ class ControllerCatalogProduct extends Controller {
 			$this->data['date_available'] = date('Y-m-d', time() - 86400);
 		}
 											
-    	if (isset($this->request->post['korean_name'])) {
-      		$this->data['korean_name'] = $this->request->post['korean_name'];
+    	if (isset($this->request->post['quantity'])) {
+      		$this->data['quantity'] = $this->request->post['quantity'];
     	} elseif (!empty($product_info)) {
-      		$this->data['korean_name'] = $product_info['korean_name'];
+      		$this->data['quantity'] = $product_info['quantity'];
     	} else {
-			$this->data['korean_name'] = '';
+			$this->data['quantity'] = '';
 		}
 		
 		if (isset($this->request->post['minimum'])) {

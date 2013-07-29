@@ -207,7 +207,7 @@ $(document).ready(function() {
     var customers = $.parseJSON(json);
     for(var index in customers) {
         var customer = customers[index];
-        if(customer['isCusmoterOrderReady'] == true) {
+        if(customer['isCustomerOrderReady'] == true) {
             var input = $('[title="'+customer['nickname_name']+'"]');
             $(input).next('span').css('background-color', 'red');
         }

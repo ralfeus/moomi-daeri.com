@@ -8,8 +8,8 @@ class ModelCatalogProduct extends Model {
 		        user_id = '" . (int)$data['user_id'] . "',
 		        sku = '" . $this->db->escape($data['sku']) . "',
 		        upc = '" . $this->db->escape($data['upc']) . "',
-		        location = '" . $this->db->escape($data['location']) . /*"',
-		        quantity = '" . (int)$data['quantity'] . */"',
+		        location = '" . $this->db->escape($data['location']) . "',
+		        quantity = 9999,
 		        minimum = '" . (int)$data['minimum'] . "',
 		        subtract = '" . (int)$data['subtract'] . "',
 		        stock_status_id = '" . (int)$data['stock_status_id'] . "',
@@ -151,6 +151,7 @@ class ModelCatalogProduct extends Model {
 		}
 						
 		$this->cache->delete('product');
+        return $product_id;
 	}
 
     private function buildFilterString($data = array())
@@ -459,7 +460,6 @@ class ModelCatalogProduct extends Model {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_layout WHERE product_id = '" . (int)$product_id . "'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = '" . (int)$product_id . "'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "review WHERE product_id = '" . (int)$product_id . "'");
-		
 		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . (int)$product_id. "'");
 		
 		$this->cache->delete('product');
@@ -496,8 +496,8 @@ class ModelCatalogProduct extends Model {
 			        LEFT JOIN " . DB_PREFIX . "product_description AS pd ON (p.product_id = pd.product_id)
 			        LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
                     LEFT JOIN " . DB_PREFIX . "manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
-                    LEFT JOIN " . DB_PREFIX . "product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)
-                    LEFT JOIN " . DB_PREFIX . "product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
+                    LEFT JOIN " . DB_PREFIX . "product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=" . ATTRIBUTE_LINK . ")
+                    LEFT JOIN " . DB_PREFIX . "product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=" . ATTRIBUTE_KOREAN_NAME . ")
                     LEFT JOIN " . DB_PREFIX . "user AS u ON p.user_id = u.user_id";
 			
 			if (!empty($data['filter_category_id']))

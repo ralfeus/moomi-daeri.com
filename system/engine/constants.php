@@ -54,3 +54,7 @@ define('REPURCHASE_ORDER_SHOP_BUYS_OPTION_VALUE_ID', 35882); // ID of the produc
 
 define('CMS_ORDER_CONFIRMATION', 0x00070001);
 define('CMS_SITE_GUIDE', 0x00070002);
+
+//TODO: Replace attribute with field in `product` table
+define('ATTRIBUTE_KOREAN_NAME', 42); // Attribute ID of the attribute containing korean name of the product.
+define('ATTRIBUTE_LINK', 43); // Attribute ID of the attribute containing link to the product of the source site

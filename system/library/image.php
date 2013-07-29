@@ -35,8 +35,8 @@ final class Image {
 		} elseif ($mime == 'image/jpeg') {
 			return imagecreatefromjpeg($image);
 		}
-    }	
-	
+    }
+
     public function save($file, $quality = 90) {
        $info = pathinfo($file);
 
