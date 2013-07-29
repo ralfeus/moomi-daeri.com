@@ -114,6 +114,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_zone'] = $this->language->get('text_zone');
         $this->data['textContentManagement'] = $this->language->get('CONTENT_MANAGEMENT');
         $this->data['textCreditManagement'] = $this->language->get('CREDIT_MANAGEMENT');
+        $this->data['textImportProducts'] = $this->language->get('IMPORT_PRODUCTS');
         $this->data['textSiteGuide'] = $this->language->get('SITE_GUIDE');
         $this->data['textOrderConfirmation'] = $this->language->get('ORDER_CONFIRMATION');
         $this->data['textRepurchaseOrders'] = $this->language->get('REPURCHASE_ORDERS');
@@ -196,6 +197,7 @@ class ControllerCommonHeader extends Controller {
 			$this->data['zone'] = $this->url->link('localisation/zone', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['page'] = $this->url->link('shop/page', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['action'] = $this->url->link('shop/action', 'token=' . $this->session->data['token'], 'SSL');
+            $this->data['urlImportProducts'] = $this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters), 'SSL');
             $this->data['urlOrderConfirmationText'] = $this->url->link(
                 'cms/text/edit',
                 'contentId=' . CMS_ORDER_CONFIRMATION . '&token=' . $this->session->data['token'], 'SSL');
@@ -221,5 +223,8 @@ class ControllerCommonHeader extends Controller {
 
 		$this->render();
 	}
+
+    protected function initParameters() {
+        $this->parameters['token'] = $this->session->data['token'];
+    }
 }
-?>

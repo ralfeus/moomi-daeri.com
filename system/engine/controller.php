@@ -89,16 +89,19 @@ abstract class Controller extends OpenCartBase
         return $result;
     }
 
-    protected function initParameters()
-    {
+    protected function initParameters() {
 //        $this->log->write("Stub function");
+    }
+
+    protected function loadStrings() {
+        /// Stub function. Should be replaced with abstract one once all Controller derived classes implement it
     }
 	
 	protected function render() {
 		foreach ($this->children as $child) {
 			$this->data[basename($child)] = $this->getChild($child);
 		}
-		
+		$this->loadStrings();
 		if (file_exists(DIR_TEMPLATE . $this->template)) {
 			extract($this->data);
 			
@@ -117,8 +120,7 @@ abstract class Controller extends OpenCartBase
     	}
 	}
 
-    protected function setBreadcrumbs()
-    {
+    protected function setBreadcrumbs() {
         $this->data['breadcrumbs'] = array();
     }
 

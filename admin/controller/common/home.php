@@ -502,11 +502,11 @@ class ControllerCommonHome extends Controller {
   {
       if (empty($this->session->data['parameters']['catalog/product']))
           $this->session->data['parameters']['catalog/product'] = array();
-      if (empty($_REQUEST['resetFilter']))
-      {
+      if (empty($_REQUEST['resetFilter'])) {
           foreach ($_REQUEST as $key => $value)
-              if (strpos($key, 'filter') == 0)
+              if (strpos($key, 'filter') === 0) {
                   $this->session->data['parameters']['catalog/product'][$key] = $value;
+              }
       }
       else
           $this->session->data['parameters']['catalog/product'] = array();

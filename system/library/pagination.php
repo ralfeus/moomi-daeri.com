@@ -12,6 +12,15 @@ final class Pagination {
 	public $text_prev = '&lt;';
 	public $style_links = 'links';
 	public $style_results = 'results';
+
+    public function __construct($page = 1, $limit = 20, $total = 0, $text = null, $url = '') {
+        $this->page = $page;
+        $this->limit = $limit;
+        $this->total = $total;
+        if ($text)
+            $this->text = $text;
+        $this->url = $url;
+    }
 	 
 	public function render() {
 		$total = $this->total;
