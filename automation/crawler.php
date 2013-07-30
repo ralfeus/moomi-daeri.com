@@ -123,15 +123,14 @@ class NatureRepublic extends ProductSource
     {
         echo date('Y-m-d H:i:s');
         $products = array();
-        $urls = self::getCategoryUrls();
-        echo "\nGot " . sizeof($urls) . " categories\n";
-        foreach ($urls as $url)
-        {
+        $urls = self::getCategoryUrls(); $currCategory = 1;
+        foreach ($urls as $url) {
+            echo "Crawling " . $currCategory++ . " of " . sizeof($urls);
             $products = array_merge($products, self::getCategoryProducts($url));
-            break;
+//            break;
         }
         echo "Totally found " . sizeof($products) . " products\n";
-        echo date('Y-m-d H:i:s');
+        echo date('Y-m-d H:i:s') . " --- Finished\n";
         return $products;
     }
 
@@ -199,7 +198,7 @@ class DatabaseManager
         $statement = $this->connection->prepare($sql);
         foreach ($site->getProducts() as $product)
         {
-            print_r($product);
+//            print_r($product);
             $statement->execute(array(
                 ':sourceSiteId' => $site->getSite()->id,
                 ':sourceUrl' => $product->url,
