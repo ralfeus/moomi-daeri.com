@@ -2,6 +2,16 @@
 require_once("simple_html_dom.php");
 require_once('../config.php');
 
+function handleError($errno, $errstr, $errfile, $errline, array $errcontext)
+{
+    // error was suppressed with the @-operator
+    if (0 === error_reporting()) {
+        return false;
+    }
+
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+}
+
 abstract class ProductSource
 {
     protected static $instance;
@@ -18,6 +28,32 @@ abstract class ProductSource
         }
         else
             return false;
+    }
+
+    /**
+     * Gets HTML page by URL.
+     * Represents a wrapper around the file_get_html($url) function with retry functionality
+     * @param string $url
+     * @return simple_html_dom
+     * @throws ErrorException
+     */
+    protected function getHtmlDocument($url) {
+        set_error_handler('handleError');
+        $finalException = null;
+        for ($retriesLeft = 5; $retriesLeft > 0; $retriesLeft--) {
+            try {
+                $html = file_get_html($url);
+                restore_error_handler();
+                return $html;
+            }
+            catch (ErrorException $exception) {
+                echo "Non-fatal error has occurred. Operation will be retried\n";
+                print_r($exception);
+                $finalException = $exception;
+            }
+        }
+        restore_error_handler();
+        throw $finalException;
     }
 
     /**
@@ -89,7 +125,7 @@ class NatureRepublic extends ProductSource
     }
 
     private function fillDetails(Product $product) {
-        $html = file_get_html($product->url);
+        $html = $this->getHtmlDocument($product->url);
         /// Get images
         $items = $html->find('div.detail_imgView a[rel=thumbnail]');
         foreach ($items as $item)
@@ -103,7 +139,7 @@ class NatureRepublic extends ProductSource
     private function getCategoryProducts($categoryUrl)
     {
         $products = array();
-        $html = file_get_html($categoryUrl);
+        $html = $this->getHtmlDocument($categoryUrl);
         $pages = $html->find('a[href^=javascript:paging]');
         $pagesNum =  sizeof($pages) + 1;
         $matches = array();
@@ -132,7 +168,7 @@ class NatureRepublic extends ProductSource
 //                $products[] = $product;
             }
             if ($currPage < $pagesNum)
-                $html = file_get_html($categoryUrl . '&sPage=' . ($currPage + 1));
+                $html = $this->getHtmlDocument($categoryUrl . '&sPage=' . ($currPage + 1));
         }
         echo "Got " . sizeof($products) . " products\n";
         return $products;
@@ -141,7 +177,7 @@ class NatureRepublic extends ProductSource
     private function getCategoryUrls()
     {
         $categories = array();
-        $html = file_get_html(self::getUrl());
+        $html = $this->getHtmlDocument(self::getUrl());
         $items = $html->find('a[href^=/category/nr_ctgr_list.jsp]');
         foreach ($items as $categoryAElement)
             $categories[] = 'http://www.naturerepublic.co.kr' . $categoryAElement->attr['href'];
@@ -242,6 +278,7 @@ class DatabaseManager
             if ($product->id)
                 self::addImages($product);
         }
+        echo date('Y-m-d H:i:s') . " Added data to database\n";
     }
 }
 
