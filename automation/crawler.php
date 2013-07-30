@@ -97,7 +97,6 @@ class NatureRepublic extends ProductSource
                     preg_replace('/\D+/', '', $item->find('.price', 0)->plaintext)//,
                     // here will be description extraction code
                 );
-                echo $product->name . "\n";
                 if (sizeof($item->find('strike')))
                     $product->promoPrice = preg_replace('/\D+/', '', $item->find('strike', 0)->next_sibling()->plaintext);
                 self::fillDetails($product);
@@ -195,6 +194,7 @@ class DatabaseManager
         $statement = $this->connection->prepare($sql);
         foreach ($site->getProducts() as $product)
         {
+            print_r($product);
             $statement->execute(array(
                 ':sourceSiteId' => $site->getSite()->id,
                 ':sourceUrl' => $product->url,
