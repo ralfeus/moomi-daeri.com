@@ -27,6 +27,7 @@ class Product
     public $description;
     public $name;
     public $price;
+    public $promoPrice = null;
     public $sourceProductId;
     public $sourceSite;
     public $thumbnail;
@@ -93,12 +94,11 @@ class NatureRepublic extends ProductSource
                     mb_convert_encoding(trim($item->find('text', 0)->plaintext), 'utf-8', 'euc-kr'),
                     'http://' . $this->getSite()->name . $item->attr['href'],
                     $item->parent->first_child()->attr['src'],
-                    preg_replace(
-                        '/\D+/',
-                        '',
-                        sizeof($item->find('strike')) ? $item->find('strike', 0)->next_sibling()->plaintext : $item->find('.price', 0)->plaintext)//,
+                    preg_replace('/\D+/', '', $item->find('.price', 0)->plaintext)//,
                     // here will be description extraction code
                 );
+                if (sizeof($item->find('strike')))
+                    $product->promoPrice = preg_replace('/\D+/', '', $item->find('strike', 0)->next_sibling()->plaintext);
                 self::fillDetails($product);
                 $products[] = $product;
             }
@@ -128,7 +128,7 @@ class NatureRepublic extends ProductSource
         foreach ($urls as $url)
         {
             $products = array_merge($products, self::getCategoryProducts($url));
-            ///break;
+            break;
         }
         echo "Totally found " . sizeof($products) . " products\n";
         echo date('Y-m-d H:i:s');
