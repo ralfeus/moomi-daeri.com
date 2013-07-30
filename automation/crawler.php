@@ -6,6 +6,33 @@ abstract class ProductSource
 {
     protected static $instance;
 
+    /**
+     * @param Product $product
+     * @param array $list
+     * @return bool
+     */
+    protected function addProductToList(Product $product, array &$list) {
+        if ($this->getProductBySourceId($list, $product->sourceProductId) == null) {
+            $list[] = $product;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    /**
+     * @param array $list
+     * @param int $sourceProductId
+     * @return Product
+     */
+    protected function getProductBySourceId(array $list, $sourceProductId) {
+        foreach ($list as $product) {
+            if ($product->sourceProductId == $sourceProductId)
+                return $product;
+        }
+        return null;
+    }
+
     public abstract function getProducts();
 
     /**
@@ -97,10 +124,12 @@ class NatureRepublic extends ProductSource
                     preg_replace('/\D+/', '', $item->find('.price', 0)->plaintext)//,
                     // here will be description extraction code
                 );
-                if (sizeof($item->find('strike')))
-                    $product->promoPrice = preg_replace('/\D+/', '', $item->find('strike', 0)->next_sibling()->plaintext);
-                self::fillDetails($product);
-                $products[] = $product;
+                if ($this->addProductToList($product, $products)) {
+                    if (sizeof($item->find('strike')))
+                        $product->promoPrice = preg_replace('/\D+/', '', $item->find('strike', 0)->next_sibling()->plaintext);
+                    self::fillDetails($product);
+                }
+//                $products[] = $product;
             }
             if ($currPage < $pagesNum)
                 $html = file_get_html($categoryUrl . '&sPage=' . ($currPage + 1));
@@ -121,7 +150,7 @@ class NatureRepublic extends ProductSource
 
     public function getProducts()
     {
-        echo date('Y-m-d H:i:s');
+        echo date('Y-m-d H:i:s') . "\n";
         $products = array();
         $urls = self::getCategoryUrls(); $currCategory = 1;
         foreach ($urls as $url) {
@@ -162,8 +191,9 @@ class DatabaseManager
         $sql = "
             INSERT INTO imported_product_images
             SET
-              imported_product_id = :productId,
-              url = :url
+                imported_product_id = :productId,
+                url = :url
+            ON DUPLICATE KEY UPDATE imported_product_image_id = imported_product_image_id
         ";
         $statement = $this->connection->prepare($sql);
         foreach ($product->getImages() as $imageUrl) {
