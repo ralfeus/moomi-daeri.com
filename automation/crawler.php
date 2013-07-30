@@ -154,7 +154,7 @@ class NatureRepublic extends ProductSource
         $products = array();
         $urls = self::getCategoryUrls(); $currCategory = 1;
         foreach ($urls as $url) {
-            echo "Crawling " . $currCategory++ . " of " . sizeof($urls);
+            echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . "\n";
             $products = array_merge($products, self::getCategoryProducts($url));
 //            break;
         }

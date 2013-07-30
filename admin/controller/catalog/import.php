@@ -151,12 +151,13 @@ class ControllerCatalogImport extends Controller {
 
     protected function loadStrings() {
         $this->data['headingTitle'] = $this->language->get('headingTitle');
+        $this->data['heading_title'] = $this->data['headingTitle'];
         $this->data['textActions'] = $this->language->get('ACTIONS');
         $this->data['textDeleteAll'] = $this->language->get('DELETE_ALL');
         $this->data['textDeleteSelected'] = $this->language->get('DELETE_SELECTED');
         $this->data['textFilter'] = $this->language->get('FILTER');
         $this->data['textId'] = $this->language->get('ID');
-        $this->data['textImage'] = $this->language->get('IMAGE');
+        $this->data['textImage'] = $this->language->get('ITEM_IMAGE');
         $this->data['textItem'] = $this->language->get('ITEM');
         $this->data['textLocal'] = $this->language->get('LOCAL');
         $this->data['textPrice'] = $this->language->get('PRICE');
