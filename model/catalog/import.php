@@ -20,6 +20,25 @@ class ModelCatalogImport extends Model{
         return $filter;
     }
 
+    private function getCorrespondingProductById($productId) {
+        $modelCatalogProduct = $this->load->model('catalog/product');
+        $correspondingProduct = $productId ? $modelCatalogProduct->getProduct($productId) : null;
+        if ($correspondingProduct) {
+            $correspondingProductPromoPrices = $modelCatalogProduct->getProductSpecials($productId);
+            $currentPromoPrice = null;
+            foreach ($correspondingProductPromoPrices as $promoPrice) {
+                if ($promoPrice['customer_group_id'] == 8 /* Default group */ &&
+                    (strtotime($promoPrice['date_start']) < time()) &&
+                    (strtotime($promoPrice['date_end']) + 86400 > time())) {
+                    $currentPromoPrice = $promoPrice['price'];
+                    break;
+                }
+            }
+            $correspondingProduct['promoPrice'] = $currentPromoPrice;
+        }
+        return $correspondingProduct;
+    }
+
     public function getImportedProduct($importedProductId) {
         $sql = "
             SELECT
@@ -33,16 +52,15 @@ class ModelCatalogImport extends Model{
         $result = $this->db->query($sql);
         if (!$result->num_rows)
             return null;
-        $modelCatalogProduct = $this->load->model('catalog/product');
-        $correspondingProduct = $result->row['product_id'] ? $modelCatalogProduct->getProduct($result->row['product_id']) : null;
+        $correspondingProduct = $this->getCorrespondingProductById($result->row['product_id']);
         return new ImportedProduct(
             $result->row['imported_product_id'],
             $result->row['source_product_id'],
             $result->row['product_id'],
             $result->row['name'],
             $result->row['description'],
-            $correspondingProduct ? $correspondingProduct['price'] : null,
-            $result->row['price'],
+            $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
+            new Price($result->row['price'], $result->row['price_promo']),
             new SourceSite(
                 $result->row['imported_source_site_id'],
                 $result->row['source_site_name'],
@@ -58,7 +76,6 @@ class ModelCatalogImport extends Model{
     }
 
     public function getImportedProducts(array $data) {
-        $modelCatalogProduct = $this->load->model('catalog/product');
         $filter = $this->buildFilterString($data);
         $sql = "
             SELECT
@@ -73,15 +90,15 @@ class ModelCatalogImport extends Model{
         $result = array();
         foreach ($this->db->query($sql)->rows as $row)
         {
-            $correspondingProduct = $row['product_id'] ? $modelCatalogProduct->getProduct($row['product_id']) : null;
+            $correspondingProduct = $this->getCorrespondingProductById($row['product_id']);
             $result[] = new ImportedProduct(
                 $row['imported_product_id'],
                 $row['source_product_id'],
                 $row['product_id'],
                 $row['name'],
                 $row['description'],
-                $correspondingProduct ? $correspondingProduct['price'] : null,
-                $row['price'],
+                $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
+                new Price($row['price'], $row['price_promo']),
                 new SourceSite(
                     $row['imported_source_site_id'],
                     $row['source_site_name'],
@@ -173,7 +190,7 @@ class ImportedProduct {
     private $timeModified;
 
     public function __construct(
-        $id, $sourceProductId, $localProductId, $name, $description, $localPrice, $sourcePrice, SourceSite $sourceSite,
+        $id, $sourceProductId, $localProductId, $name, $description, Price $localPrice = null, Price $sourcePrice, SourceSite $sourceSite,
         $sourceUrl, $thumbnailUrl, array $images, $timeModified
     ) {
         $this->id = $id;
@@ -208,7 +225,7 @@ class ImportedProduct {
     public function getImages() { return $this->images; }
 
     /**
-     * @return decimal
+     * @return Price
      */
     public function getLocalPrice() { return $this->localPrice; }
 
@@ -218,12 +235,12 @@ class ImportedProduct {
     public function getName() { return $this->name; }
 
     /**
-     * @return decimal
+     * @return Price
      */
     public function getSourcePrice() { return $this->sourcePrice; }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getSourceProductId() { return $this->sourceProductId; }
 
@@ -289,4 +306,26 @@ class SourceSite {
      * @return string
      */
     public function getName() { return $this->name; }
+}
+
+class Price
+{
+    private $price;
+    private $promoPrice;
+
+    function __construct($price, $promoPrice = null)
+    {
+        $this->price = $price;
+        $this->promoPrice = $promoPrice;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrice() { return $this->price; }
+
+    /**
+     * @return int
+     */
+    public function getPromoPrice() { return $this->promoPrice; }
 }

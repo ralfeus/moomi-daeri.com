@@ -51,11 +51,18 @@ class ControllerCatalogImport extends Controller {
             'minimum' => null,
             'model' => $productToAdd->getName(),
             'points' => null,
-            'price' => $productToAdd->getSourcePrice(),
+            'price' => $productToAdd->getSourcePrice()->getPrice(),
             'product_attribute' => array($koreanName),
             'product_category' => array($productToAdd->getSourceSite()->getDefaultCategoryId()),
             'product_description' => $product_description,
             'product_image' => $images,
+            'product_special' => array(array(
+                'customer_group_id' => 8, /* Default customer group ID */
+                'priority' => 0, /// Highest priority
+                'price' => $productToAdd->getSourcePrice()->getPromoPrice(),
+                'date_start' => date('Y-m-d'),
+                'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
+            )),
             'product_store' => array($productToAdd->getSourceSite()->getDefaultStoreId()),
             'product_tag' => null,
             'seo_title' => null, 'seo_h1' => null,

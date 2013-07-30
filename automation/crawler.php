@@ -242,7 +242,7 @@ class DatabaseManager
 
     public function addProducts(ProductSource $site)
     {
-        $sql = "
+        $sql = '
                 INSERT INTO imported_products
                 SET
                     source_site_id = :sourceSiteId,
@@ -252,6 +252,7 @@ class DatabaseManager
                     name = :name,
                     description = :description,
                     price = :price,
+                    price_promo = :promoPrice,
                     time_modified = NOW()
                 ON DUPLICATE KEY UPDATE
                     source_url = :sourceUrl,
@@ -259,8 +260,9 @@ class DatabaseManager
                     name = :name,
                     description = :description,
                     price = :price,
+                    price_promo = :promoPrice,
                     time_modified = NOW()
-            ";
+            ';
         $statement = $this->connection->prepare($sql);
         foreach ($site->getProducts() as $product)
         {
@@ -272,7 +274,8 @@ class DatabaseManager
                 ':thumbnail' => $product->thumbnail,
                 ':name' => $product->name,
                 ':description' => $product->description,
-                ':price' => $product->price
+                ':price' => $product->price,
+                ':promoPrice' => $product->promoPrice
             ));
             $product->id = $this->connection->lastInsertId();
             if ($product->id)

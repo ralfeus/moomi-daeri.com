@@ -68,8 +68,36 @@
               </td>
               <td><?= $product->getSourceSite()->getName() ?></td>
               <td>
-                  <?= $textSource ?>:&nbsp;<?= $product->getSourcePrice() ?><br />
-                  <?= $textLocal ?>:&nbsp;<?= $product->getLocalPrice() ?>
+                <table>
+                  <tbody>
+                    <tr>
+        <?php if ($product->getSourcePrice()->getPromoPrice()): ?>
+                      <td rowspan="2"><?= $textSource ?>:</td>
+                      <td><strike><?= $product->getSourcePrice()->getPrice() ?></strike></td>
+                    </tr>
+                    <tr>
+                      <td style="color: red;"><?= $product->getSourcePrice()->getPromoPrice() ?></td>
+        <?php else: ?>
+                      <td><?= $textSource ?>:</td>
+                      <td><?= $product->getSourcePrice()->getPrice() ?> </td>
+        <?php endif; ?>
+                    </tr>
+        <?php if ($product->getLocalPrice()) : ?>
+                    <tr>
+            <?php if ($product->getLocalPrice()->getPromoPrice()): ?>
+                      <td rowspan="2"><?= $textLocal ?>:</td>
+                      <td><strike><?= $product->getLocalPrice()->getPrice() ?></strike></td>
+                    </tr>
+                    <tr>
+                      <td style="color:red;"><?= $product->getLocalPrice()->getPromoPrice() ?></td>
+            <?php else: ?>
+                      <td><?= $textLocal ?>:</td>
+                      <td><?= $product->getLocalPrice()->getPrice() ?> </td>
+            <?php endif; ?>
+                    </tr>
+        <?php endif; ?>
+                  </tbody>
+                </table>
               </td>
               <td><?= $product->getTimeModified() ?></td>
               <td>
