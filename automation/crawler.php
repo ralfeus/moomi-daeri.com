@@ -70,7 +70,7 @@ class NatureRepublic extends ProductSource
 
         /// Get description
         $items = $html->find('div.jeon_ingredient>dl>dd.center_t');
-        $product->description = trim($items[0]->innertext);
+        $product->description = mb_convert_encoding(trim($items[0]->innertext), 'utf-8', 'euc-kr');
     }
 
     private function getCategoryProducts($categoryUrl)
