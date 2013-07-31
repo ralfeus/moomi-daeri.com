@@ -24,7 +24,7 @@ class ControllerCatalogImport extends Controller {
         $thumbnail = $modelToolImage->download($productToAdd->getThumbnailUrl());
         $images = array();
         foreach ($productToAdd->getImages() as $imageUrl)
-            $images[]['image'] = $modelToolImage->download($imageUrl);
+            $images[] = array('image' => $modelToolImage->download($imageUrl));
         /// Preparing name, korean name and description
         $product_description = array();
         $koreanName = array();
@@ -39,6 +39,17 @@ class ControllerCatalogImport extends Controller {
                 'text' => $productToAdd->getName()
             );
         }
+        /// Preparing promo price
+        if ($productToAdd->getSourcePrice()->getPromoPrice())
+            $promoPrice = array(array(
+                'customer_group_id' => 8, /* Default customer group ID */
+                'priority' => 0, /// Highest priority
+                'price' => $productToAdd->getSourcePrice()->getPromoPrice(),
+                'date_start' => date('Y-m-d'),
+                'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
+            ));
+        else
+            $promoPrice = null;
 
         $productId = $this->modelCatalogProduct->addProduct(array(
             'date_available' => date('Y-m-d'),
@@ -56,13 +67,7 @@ class ControllerCatalogImport extends Controller {
             'product_category' => array($productToAdd->getSourceSite()->getDefaultCategoryId()),
             'product_description' => $product_description,
             'product_image' => $images,
-            'product_special' => array(array(
-                'customer_group_id' => 8, /* Default customer group ID */
-                'priority' => 0, /// Highest priority
-                'price' => $productToAdd->getSourcePrice()->getPromoPrice(),
-                'date_start' => date('Y-m-d'),
-                'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
-            )),
+            'product_special' => $promoPrice,
             'product_store' => array($productToAdd->getSourceSite()->getDefaultStoreId()),
             'product_tag' => null,
             'seo_title' => null, 'seo_h1' => null,
@@ -92,6 +97,11 @@ class ControllerCatalogImport extends Controller {
         elseif ($this->parameters['what'] == 'all')
             $productsToDelete = $this->modelCatalogImport->getImportedProducts($this->parameters);
         foreach ($productsToDelete as $productToDelete) {
+            foreach ($this->modelCatalogProduct->getProductImages($productToDelete->getLocalProductId()) as $image) {
+                unlink(DIR_IMAGE . $image['image']);
+            }
+            $localProduct = $this->modelCatalogProduct->getProduct($productToDelete->getLocalProductId());
+            unlink(DIR_IMAGE . $localProduct['image']);
             $this->modelCatalogProduct->deleteProduct($productToDelete->getLocalProductId());
             $this->modelCatalogImport->unpairImportedProduct($productToDelete->getId());
         }
@@ -196,7 +206,76 @@ class ControllerCatalogImport extends Controller {
         $this->redirect($this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters)));
     }
 
-    private function updateFromSource($productToUpdate) {
+    private function updateFromSource(ImportedProduct $productToUpdate) {
+        /// Downloading images
+        foreach ($this->modelCatalogProduct->getProductImages($productToUpdate->getLocalProductId()) as $image) {
+            unlink(DIR_IMAGE . $image['image']);
+        }
+        $localProduct = $this->modelCatalogProduct->getProduct($productToUpdate->getLocalProductId());
+        unlink(DIR_IMAGE . $localProduct['image']);
+        $modelToolImage = $this->load->model('tool/image');
+        $thumbnail = $modelToolImage->download($productToUpdate->getThumbnailUrl());
+        $images = array();
+        foreach ($productToUpdate->getImages() as $imageUrl)
+            $images[] = array('image' => $modelToolImage->download($imageUrl));
+        /// Preparing name, korean name and description
+        $product_description = array();
+        $koreanName = array();
+        $koreanName['attribute_id'] = ATTRIBUTE_KOREAN_NAME;
+        $koreanName['product_attribute_description'] = array();
+        foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
+            $product_description[$language['language_id']] = array(
+                'name' => $productToUpdate->getName(),
+                'description' => $productToUpdate->getDescription()
+            );
+            $koreanName['product_attribute_description'][$language['language_id']] = array(
+                'text' => $productToUpdate->getName()
+            );
+        }
+        /// Preparing promo price
+        if ($productToUpdate->getSourcePrice()->getPromoPrice())
+            $promoPrice = array(array(
+                'customer_group_id' => 8, /* Default customer group ID */
+                'priority' => 0, /// Highest priority
+                'price' => $productToUpdate->getSourcePrice()->getPromoPrice(),
+                'date_start' => date('Y-m-d'),
+                'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
+            ));
+        else
+            $promoPrice = null;
 
+        $this->modelCatalogProduct->editProduct($productToUpdate->getLocalProductId(), array(
+            'date_available' => date('Y-m-d'),
+            'height' => null,
+            'image' => $thumbnail,
+            'length' => null, 'length_class_id' => 1,
+            'location' => null,
+            'manufacturer_id' => $productToUpdate->getSourceSite()->getDefaultManufacturerId(),
+            'meta_keywords' => null, 'meta_description' => null,
+            'minimum' => null,
+            'model' => $productToUpdate->getName(),
+            'points' => null,
+            'price' => $productToUpdate->getSourcePrice()->getPrice(),
+            'product_attribute' => array($koreanName),
+            'product_category' => array($productToUpdate->getSourceSite()->getDefaultCategoryId()),
+            'product_description' => $product_description,
+            'product_image' => $images,
+            'product_special' => $promoPrice,
+            'product_store' => array($productToUpdate->getSourceSite()->getDefaultStoreId()),
+            'product_tag' => null,
+            'seo_title' => null, 'seo_h1' => null,
+            'shipping' => null,
+            'sku' => null,
+            'sort_order' => null,
+            'status' => 1,
+            'stock_status_id' => 8,
+            'subtract' => null,
+            'supplier_id' => $productToUpdate->getSourceSite()->getDefaultSupplierId(),
+            'tax_class' => null,
+            'upc' => null,
+            'user_id' => 0,
+            'weight' => null, 'weight_class_id' => 1,
+            'width' => null
+        ));
     }
 }
