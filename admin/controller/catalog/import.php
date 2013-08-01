@@ -85,7 +85,7 @@ class ControllerCatalogImport extends Controller {
             'tax_class' => null,
             'upc' => null,
             'user_id' => 0,
-            'weight' => null, 'weight_class_id' => 1,
+            'weight' => $productToAdd->getWeight(), 'weight_class_id' => 1,
             'width' => null
         ));
 

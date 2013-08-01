@@ -73,6 +73,7 @@ class ModelCatalogImport extends Model{
             $result->row['source_url'],
             $result->row['image_url'],
             $this->getProductImages($result->row['imported_product_id']),
+            $result->row['weight'],
             $result->row['time_modified'],
             $result->row['active']
         );
@@ -112,6 +113,7 @@ class ModelCatalogImport extends Model{
                 $row['source_url'],
                 $row['image_url'],
                 $this->getProductImages($row['imported_product_id']),
+                $row['weight'],
                 $row['time_modified'],
                 $row['active']
             );
@@ -193,10 +195,11 @@ class ImportedProduct {
     private $sourceUrl;
     private $thumbnailUrl;
     private $timeModified;
+    private $weight;
 
     public function __construct(
         $id, $sourceProductId, $localProductId, $name, $description, Price $localPrice = null, Price $sourcePrice, SourceSite $sourceSite,
-        $sourceUrl, $thumbnailUrl, array $images, $timeModified, $isActive
+        $sourceUrl, $thumbnailUrl, array $images, $weight, $timeModified, $isActive
     ) {
         $this->id = $id;
         $this->localProductId = empty($localProductId) ? null : $localProductId;
@@ -211,6 +214,7 @@ class ImportedProduct {
         $this->thumbnailUrl = $thumbnailUrl;
         $this->images = $images;
         $this->timeModified = $timeModified;
+        $this->weight = $weight;
     }
 
     public function getLocalProductId() { return $this->localProductId; }
@@ -269,6 +273,11 @@ class ImportedProduct {
      * @return datetime
      */
     public function getTimeModified() { return $this->timeModified; }
+
+    /**
+     * @return float
+     */
+    public function getWeight() { return $this->weight; }
 }
 
 class SourceSite {

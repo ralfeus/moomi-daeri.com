@@ -95,9 +95,10 @@ class Product
     public $sourceSite;
     public $thumbnail;
     public $url;
+    public $weight;
 
     public function __construct(
-        ProductSource $sourceSite, $sourceProductId, $name, $url, $thumbnail, $price, $description = null
+        ProductSource $sourceSite, $sourceProductId, $name, $url, $thumbnail, $price, $description = null, $weight = null
     )
     {
         $this->description = $description;
@@ -107,6 +108,7 @@ class Product
         $this->sourceSite = $sourceSite;
         $this->thumbnail = $thumbnail;
         $this->url = $url;
+        $this->weight = $weight;
     }
 
     public function getImages() {
@@ -157,8 +159,9 @@ class NatureRepublic extends ProductSource
                     mb_convert_encoding(trim($item->find('text', 0)->plaintext), 'utf-8', 'euc-kr'),
                     'http://' . $this->getSite()->name . $item->attr['href'],
                     $item->parent->first_child()->attr['src'],
-                    preg_replace('/\D+/', '', $item->find('.price', 0)->plaintext)//,
-                    // here will be description extraction code
+                    preg_replace('/\D+/', '', $item->find('.price', 0)->plaintext),
+                    null,
+                    0.25
                 );
                 if ($this->addProductToList($product, $products)) {
                     if (sizeof($item->find('strike')))
@@ -253,7 +256,8 @@ class DatabaseManager
                     description = :description,
                     price = :price,
                     price_promo = :promoPrice,
-                    time_modified = NOW()
+                    time_modified = NOW(),
+                    weight = :weight
                 ON DUPLICATE KEY UPDATE
                     source_url = :sourceUrl,
                     image_url = :thumbnail,
@@ -261,7 +265,8 @@ class DatabaseManager
                     description = :description,
                     price = :price,
                     price_promo = :promoPrice,
-                    time_modified = NOW()
+                    time_modified = NOW(),
+                    weight = :weight
             ';
         $statement = $this->connection->prepare($sql);
         foreach ($site->getProducts() as $product)
@@ -275,7 +280,8 @@ class DatabaseManager
                 ':name' => $product->name,
                 ':description' => $product->description,
                 ':price' => $product->price,
-                ':promoPrice' => $product->promoPrice
+                ':promoPrice' => $product->promoPrice,
+                ':weight' => $product->weight
             ));
             $product->id = $this->connection->lastInsertId();
             if ($product->id)
