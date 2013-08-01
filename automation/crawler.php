@@ -283,6 +283,16 @@ class DatabaseManager
         }
         echo date('Y-m-d H:i:s') . " Added data to database\n";
     }
-}
 
+    public function cleanup($syncTime) {
+        $statement = $this->connection->prepare('
+            UPDATE imported_products
+            SET active = FALSE
+            WHERE time_modified < :lastUpdateTime
+        ');
+        $statement->execute(array(':lastUpdateTime' => date('Y-m-d H:i:s', $syncTime)));
+    }
+}
+$startTime = time();
 DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
+DatabaseManager::getInstance()->cleanup($startTime);

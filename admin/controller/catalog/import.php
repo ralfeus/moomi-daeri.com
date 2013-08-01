@@ -162,6 +162,7 @@ class ControllerCatalogImport extends Controller {
     }
 
     protected function initParameters() {
+        $this->parameters['filterIsActive'] = isset($_REQUEST['filterIsActive']) && is_numeric($_REQUEST['filterIsActive']) ? $_REQUEST['filterIsActive'] : null;
         $this->parameters['filterItem'] = empty($_REQUEST['filterItem']) ? null : $_REQUEST['filterItem'];
         $this->parameters['filterSourceSiteId'] = empty($_REQUEST['filterSourceSiteId']) ? array() : $_REQUEST['filterSourceSiteId'];
         $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
@@ -185,6 +186,7 @@ class ControllerCatalogImport extends Controller {
         $this->data['textProductId'] = $this->language->get('PRODUCT_ID');
         $this->data['textSource'] = $this->language->get('SOURCE');
         $this->data['textSourceSite'] = $this->language->get('SOURCE_SITE');
+        $this->data['textStatus'] = $this->language->get('STATUS');
         $this->data['textTimeModified'] = $this->language->get('TIME_MODIFIED');
         $this->data['textUpdateAll'] = $this->language->get('UPDATE_ALL');
         $this->data['textUpdateSelected'] = $this->language->get('UPDATE_SELECTED');

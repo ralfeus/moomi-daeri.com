@@ -31,6 +31,7 @@
               <td><?= $textItem ?></td>
               <td><?= $textSourceSite ?></td>
               <td><?= $textPrice ?></td>
+              <td><?= $textStatus ?></td>
               <td><?= $textTimeModified ?></td>
               <td><?= $textActions ?></td>
             </tr>
@@ -41,7 +42,7 @@
                 <td />
                 <td><input type="text" name="filterItem" value="<?= $filterItem ?>" /></td>
                 <td>
-                    <select name="filterSourceSiteId[]">
+                    <select name="filterSourceSiteId[]" multiple="true">
 <?php foreach ($sourceSites as $id => $name):
     $selected = in_array($id, $filterSourceSiteId) ? 'selected' : '';
 ?>
@@ -50,6 +51,13 @@
                     </select>
                 </td>
                 <td />
+                <td>
+                    <select name="filterIsActive" multiple="true">
+                        <option>No filter</option>
+                        <option value="1" <?= $filterIsActive === '1' ? 'selected' :  '' ?>>Active</option>
+                        <option value="0" <?= $filterIsActive === '0' ? 'selected' :  '' ?>>Inactive</option>
+                    </select>
+                </td>
                 <td />
                 <td><a onclick="filter();" class="button"><?= $textFilter; ?></a></td>
             </tr>
@@ -99,6 +107,7 @@
                   </tbody>
                 </table>
               </td>
+              <td><?= $product->getIsActive() ? "Active" : "Inactive" ?></td>
               <td><?= $product->getTimeModified() ?></td>
               <td>
         <?php foreach ($product->actions as $action): ?>
@@ -129,6 +138,13 @@ $(document).ready(function() {
             selectedList: 1
         })
         .multiselectfilter();
+    $('[name=filterIsActive]')
+        .multiselect({
+            multiple: false,
+            noneSelectedText: "No filter",
+            selectedList: 1
+        });
+
     // $('button.ui-multiselect').css('width', '110px');
 });
 

@@ -11,11 +11,13 @@ class ModelCatalogImport extends Model{
     private function buildFilterString(array $data)
     {
         $filter = "";
-        if (!empty($data['filterSourceSiteId']))
-            $filter .= ($filter ? " AND" : "") . " ip.source_site_id IN (" . implode(', ', $data['filterSourceSiteId']) . ")";
+        if (isset($data['filterIsActive']))
+            $filter .= ($filter ? " AND" : "") . " ip.active = " . (int)$data['filterIsActive'];
         if (!empty($data['filterItem']))
             $filter .= ($filter ? " AND" : "") . " ip.name LIKE '%" . $this->db->escape($data['filterItem']) . "%' " .
-            "OR ip.description LIKE '%" . $this->db->escape($data['filterItem']) . "%'";
+                "OR ip.description LIKE '%" . $this->db->escape($data['filterItem']) . "%'";
+        if (!empty($data['filterSourceSiteId']))
+            $filter .= ($filter ? " AND" : "") . " ip.source_site_id IN (" . implode(', ', $data['filterSourceSiteId']) . ")";
 
         return $filter;
     }
@@ -71,7 +73,8 @@ class ModelCatalogImport extends Model{
             $result->row['source_url'],
             $result->row['image_url'],
             $this->getProductImages($result->row['imported_product_id']),
-            $result->row['time_modified']
+            $result->row['time_modified'],
+            $result->row['active']
         );
     }
 
@@ -109,7 +112,8 @@ class ModelCatalogImport extends Model{
                 $row['source_url'],
                 $row['image_url'],
                 $this->getProductImages($row['imported_product_id']),
-                $row['time_modified']
+                $row['time_modified'],
+                $row['active']
             );
         }
         return $result;
@@ -180,6 +184,7 @@ class ImportedProduct {
     private $name;
     private $description;
     private $images;
+    private $isActive;
     private $localPrice;
     private $sourcePrice;
     private $localProductId;
@@ -191,12 +196,13 @@ class ImportedProduct {
 
     public function __construct(
         $id, $sourceProductId, $localProductId, $name, $description, Price $localPrice = null, Price $sourcePrice, SourceSite $sourceSite,
-        $sourceUrl, $thumbnailUrl, array $images, $timeModified
+        $sourceUrl, $thumbnailUrl, array $images, $timeModified, $isActive
     ) {
         $this->id = $id;
         $this->localProductId = empty($localProductId) ? null : $localProductId;
         $this->name = $name;
         $this->description = $description;
+        $this->isActive = $isActive;
         $this->localPrice = empty($localPrice) ? null : $localPrice;
         $this->sourcePrice = $sourcePrice;
         $this->sourceSite = $sourceSite;
@@ -223,6 +229,11 @@ class ImportedProduct {
      * @return array
      */
     public function getImages() { return $this->images; }
+
+    /**
+     * @return bool
+     */
+    public function getIsActive() { return $this->isActive; }
 
     /**
      * @return Price
