@@ -25,19 +25,23 @@ class ControllerCatalogImport extends Controller {
         $images = array();
         foreach ($productToAdd->getImages() as $imageUrl)
             $images[] = array('image' => $modelToolImage->download($imageUrl));
-        /// Preparing name, korean name and description
+        /// Preparing name, korean name, link and description
         $product_description = array();
-        $koreanName = array();
-        $koreanName['attribute_id'] = ATTRIBUTE_KOREAN_NAME;
-        $koreanName['product_attribute_description'] = array();
+        $koreanName = array(
+            'attribute_id' => ATTRIBUTE_KOREAN_NAME,
+            'product_attribute_description' => array()
+        );
+        $sourceUrl = array(
+            'attribute_id' => ATTRIBUTE_LINK,
+            'product_attribute_description' => array()
+        );
         foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
             $product_description[$language['language_id']] = array(
                 'name' => $productToAdd->getName(),
                 'description' => $productToAdd->getDescription()
             );
-            $koreanName['product_attribute_description'][$language['language_id']] = array(
-                'text' => $productToAdd->getName()
-            );
+            $koreanName['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getName() );
+            $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getSourceUrl() );
         }
         /// Preparing promo price
         if ($productToAdd->getSourcePrice()->getPromoPrice())
@@ -63,7 +67,7 @@ class ControllerCatalogImport extends Controller {
             'model' => $productToAdd->getSourceProductId(),
             'points' => null,
             'price' => $productToAdd->getSourcePrice()->getPrice(),
-            'product_attribute' => array($koreanName),
+            'product_attribute' => array($koreanName, $sourceUrl),
             'product_category' => array($productToAdd->getSourceSite()->getDefaultCategoryId()),
             'product_description' => $product_description,
             'product_image' => $images,
@@ -220,17 +224,21 @@ class ControllerCatalogImport extends Controller {
             $images[] = array('image' => $modelToolImage->download($imageUrl));
         /// Preparing name, korean name and description
         $product_description = array();
-        $koreanName = array();
-        $koreanName['attribute_id'] = ATTRIBUTE_KOREAN_NAME;
-        $koreanName['product_attribute_description'] = array();
+        $koreanName = array(
+            'attribute_id' => ATTRIBUTE_KOREAN_NAME,
+            'product_attribute_description' => array()
+        );
+        $sourceUrl = array(
+            'attribute_id' => ATTRIBUTE_LINK,
+            'product_attribute_description' => array()
+        );
         foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
 //            $product_description[$language['language_id']] = array(
 //                'name' => $productToUpdate->getName(),
 //                'description' => $productToUpdate->getDescription()
 //            );
-            $koreanName['product_attribute_description'][$language['language_id']] = array(
-                'text' => $productToUpdate->getName()
-            );
+            $koreanName['product_attribute_description'][$language['language_id']] = array( 'text' => $productToUpdate->getName() );
+            $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToUpdate->getSourceUrl() );
         }
         /// Preparing promo price
         if ($productToUpdate->getSourcePrice()->getPromoPrice())
@@ -256,7 +264,7 @@ class ControllerCatalogImport extends Controller {
             'model' => $localProduct['model'],
             'points' => null,
             'price' => $productToUpdate->getSourcePrice()->getPrice(),
-            'product_attribute' => array($koreanName),
+            'product_attribute' => array($koreanName, $sourceUrl),
             'product_category' => array($productToUpdate->getSourceSite()->getDefaultCategoryId()),
             'product_description' => null,
             'product_image' => $images,
