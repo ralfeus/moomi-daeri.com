@@ -59,8 +59,8 @@ class ControllerCatalogImport extends Controller {
             'location' => null,
             'manufacturer_id' => $productToAdd->getSourceSite()->getDefaultManufacturerId(),
             'meta_keywords' => null, 'meta_description' => null,
-            'minimum' => null,
-            'model' => $productToAdd->getName(),
+            'minimum' => 1,
+            'model' => $productToAdd->getSourceProductId(),
             'points' => null,
             'price' => $productToAdd->getSourcePrice()->getPrice(),
             'product_attribute' => array($koreanName),
@@ -71,7 +71,7 @@ class ControllerCatalogImport extends Controller {
             'product_store' => array($productToAdd->getSourceSite()->getDefaultStoreId()),
             'product_tag' => null,
             'seo_title' => null, 'seo_h1' => null,
-            'shipping' => null,
+            'shipping' => 1,
             'sku' => null,
             'sort_order' => null,
             'status' => 1,
@@ -207,11 +207,11 @@ class ControllerCatalogImport extends Controller {
     }
 
     private function updateFromSource(ImportedProduct $productToUpdate) {
+        $localProduct = $this->modelCatalogProduct->getProduct($productToUpdate->getLocalProductId());
         /// Downloading images
         foreach ($this->modelCatalogProduct->getProductImages($productToUpdate->getLocalProductId()) as $image) {
             unlink(DIR_IMAGE . $image['image']);
         }
-        $localProduct = $this->modelCatalogProduct->getProduct($productToUpdate->getLocalProductId());
         unlink(DIR_IMAGE . $localProduct['image']);
         $modelToolImage = $this->load->model('tool/image');
         $thumbnail = $modelToolImage->download($productToUpdate->getThumbnailUrl());
@@ -224,10 +224,10 @@ class ControllerCatalogImport extends Controller {
         $koreanName['attribute_id'] = ATTRIBUTE_KOREAN_NAME;
         $koreanName['product_attribute_description'] = array();
         foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
-            $product_description[$language['language_id']] = array(
-                'name' => $productToUpdate->getName(),
-                'description' => $productToUpdate->getDescription()
-            );
+//            $product_description[$language['language_id']] = array(
+//                'name' => $productToUpdate->getName(),
+//                'description' => $productToUpdate->getDescription()
+//            );
             $koreanName['product_attribute_description'][$language['language_id']] = array(
                 'text' => $productToUpdate->getName()
             );
@@ -245,7 +245,7 @@ class ControllerCatalogImport extends Controller {
             $promoPrice = null;
 
         $this->modelCatalogProduct->editProduct($productToUpdate->getLocalProductId(), array(
-            'date_available' => date('Y-m-d'),
+            'date_available' => $localProduct['date_available'],
             'height' => null,
             'image' => $thumbnail,
             'length' => null, 'length_class_id' => 1,
@@ -253,12 +253,12 @@ class ControllerCatalogImport extends Controller {
             'manufacturer_id' => $productToUpdate->getSourceSite()->getDefaultManufacturerId(),
             'meta_keywords' => null, 'meta_description' => null,
             'minimum' => null,
-            'model' => $productToUpdate->getName(),
+            'model' => $localProduct['model'],
             'points' => null,
             'price' => $productToUpdate->getSourcePrice()->getPrice(),
             'product_attribute' => array($koreanName),
             'product_category' => array($productToUpdate->getSourceSite()->getDefaultCategoryId()),
-            'product_description' => $product_description,
+            'product_description' => null,
             'product_image' => $images,
             'product_special' => $promoPrice,
             'product_store' => array($productToUpdate->getSourceSite()->getDefaultStoreId()),
@@ -274,7 +274,7 @@ class ControllerCatalogImport extends Controller {
             'tax_class' => null,
             'upc' => null,
             'user_id' => 0,
-            'weight' => null, 'weight_class_id' => 1,
+            'weight' => $localProduct['weight'], 'weight_class_id' => $localProduct['weight_class_id'],
             'width' => null
         ));
     }
