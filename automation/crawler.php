@@ -212,7 +212,11 @@ class DatabaseManager
         $statement->execute(array(':lastUpdateTime' => date('Y-m-d H:i:s', $syncTime)));
     }
 }
-if (file_exists('start') && !(shell_exec('ps axo cmd | grep "^php crawler.php"'))) {
+echo file_exists('start');
+echo "\n";
+echo !shell_exec('ps axo cmd | grep "^php crawler.php"');
+echo "\n";
+if (file_exists('start') && !shell_exec('ps axo cmd | grep "^php crawler.php"')) {
     echo "Starting\n";
     $startTime = time();
     //DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
