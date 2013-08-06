@@ -6,4 +6,4 @@
  * Time: 10:27
  * To change this template use File | Settings | File Templates.
  */
-shell_exec('ps ax | grep php crawler.php &');
+shell_exec('ps ax &');
