@@ -22,6 +22,7 @@ class Missha extends ProductSource {
         /// Get description
         $items = $html->find('td.M_g_detail');
         $product->description = mb_convert_encoding(trim($items[0]->innertext), 'utf-8', 'euc-kr');
+        $html->clear();
     }
 
     private function getCategoryProducts($categoryUrl)
@@ -29,23 +30,23 @@ class Missha extends ProductSource {
         $products = array();
         echo $categoryUrl . "\n";
         $html = $this->getHtmlDocument($categoryUrl);
-        $pages = $html->find('div.pg2 a[href*=category_large.php\?pagenum]');
+        $pages = $html->find('div.pg2', 0)->find('a[href*=category_large.php\?pagenum]');
         $pagesNum =  sizeof($pages) + 1;
         $matches = array();
         for ($currPage = 1; $currPage <= $pagesNum; $currPage++)
         {
             echo "Page $currPage of $pagesNum\n"; $tmp = 1;
-            $items = $html->find('table.news03>tbody>tr>td>table>tbody');
+            $items = $html->find('table#mainTable table.news03');
             foreach ($items as $item) {
                 echo date('H:i:s') . "\tItem " . $tmp++ . " of " . sizeof($items) . "\n";
-                $aElement = $item->children(1)->find('a[href*=category_detail.php]', 0);
+                $aElement = $item->find('a[href*=category_detail.php]', 0);
                 $product = new Product(
                     $this,
                     preg_match('/(?<=id=)\d*?/', $aElement->attr['href'], $matches) ? $matches[0] : null,
-                    mb_convert_encoding(trim($item->children(2)->find('a[href*=category_detail.php]', 0)->find('text', 0)->plaintext), 'utf-8', 'euc-kr'),
+                    mb_convert_encoding(trim($item->find('a[href*=category_detail.php]', 1)->find('text', 0)->plaintext), 'utf-8', 'euc-kr'),
                     'http://shop.beautynet.co.kr/' . $aElement->attr['href'],
                     $aElement->find('image', 0)->attr['src'],
-                    preg_replace('/\D+/', '', $item->children(2)->find('td.won', 0)->plaintext),
+                    preg_replace('/\D+/', '', $item->find('td.won', 0)->plaintext),
                     null,
                     0.25
                 );
@@ -56,6 +57,7 @@ class Missha extends ProductSource {
                 }
 //                $products[] = $product;
             }
+            $html->clear();
             if ($currPage < $pagesNum)
                 $html = $this->getHtmlDocument($categoryUrl . '&pagenum=' . ($currPage + 1));
         }
@@ -70,6 +72,7 @@ class Missha extends ProductSource {
         $items = $html->find('a[href*=\/missha\/category_large.php]');
         foreach ($items as $categoryAElement)
             $categories[] = 'http://shop.beautynet.co.kr/' . $categoryAElement->attr['href'];
+        $html->clear();
         return array_unique($categories);
     }
 

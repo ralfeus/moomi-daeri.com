@@ -216,9 +216,9 @@ class DatabaseManager
 if (file_exists('start') && (shell_exec('ps axo cmd | grep -c "^php crawler.php"') == 1)) {
     echo "Starting\n";
     $startTime = time();
-    //DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
-    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
-    //DatabaseManager::getInstance()->cleanup($startTime);
+    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
+    //DatabaseManager::getInstance()->addProducts(Missha::getInstance());
+    DatabaseManager::getInstance()->cleanup($startTime);
     unlink('start');
 }
 else {
