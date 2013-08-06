@@ -6,4 +6,7 @@
  * Time: 10:27
  * To change this template use File | Settings | File Templates.
  */
+phpinfo();
+exit;
 file_put_contents('/var/www/moomi-daeri.com/automation/start', null, 1);
+header('Location: ' . $_SERVER['REFERER']);
