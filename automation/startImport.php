@@ -6,6 +6,4 @@
  * Time: 10:27
  * To change this template use File | Settings | File Templates.
  */
-if (!shell_exec('ps axo cmd | grep "^php crawler.php"')) {
-    exec('cd /var/www/moomi-daeri.com/automation && nohup php crawler.php &');
-}
+file_put_contents('/var/www/moomi-daeri.com/automation/start', null, 1);
