@@ -115,6 +115,7 @@ class ControllerCommonHeader extends Controller {
         $this->data['textContentManagement'] = $this->language->get('CONTENT_MANAGEMENT');
         $this->data['textCreditManagement'] = $this->language->get('CREDIT_MANAGEMENT');
         $this->data['textImportProducts'] = $this->language->get('IMPORT_PRODUCTS');
+        $this->data['textStartImportProducts'] = $this->language->get('START_IMPORT_PRODUCTS');
         $this->data['textSiteGuide'] = $this->language->get('SITE_GUIDE');
         $this->data['textOrderConfirmation'] = $this->language->get('ORDER_CONFIRMATION');
         $this->data['textRepurchaseOrders'] = $this->language->get('REPURCHASE_ORDERS');
@@ -204,6 +205,7 @@ class ControllerCommonHeader extends Controller {
             $this->data['urlSiteGuideText'] = $this->url->link(
                 'cms/text/edit',
                 'contentId=' . CMS_SITE_GUIDE . '&token=' . $this->session->data['token'], 'SSL');
+            $this->data['urlStartImportProducts'] = HTTP_SERVER . 'automation/startImport.php';
 
 			$this->data['stores'] = array();
 

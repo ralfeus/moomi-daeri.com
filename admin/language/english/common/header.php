@@ -5,6 +5,7 @@ $_['IMPORT_PRODUCTS'] = 'Import products';
 $_['ORDER_CONFIRMATION'] = 'Checkout confirmation';
 $_['REPURCHASE_ORDERS'] = "Agent orders";
 $_['SITE_GUIDE'] = 'Site guide';
+$_['START_IMPORT_PRODUCTS'] = 'Start products import';
 // Heading
 $_['heading_title']                    = 'Administration';
 
