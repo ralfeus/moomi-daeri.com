@@ -212,13 +212,13 @@ class DatabaseManager
         $statement->execute(array(':lastUpdateTime' => date('Y-m-d H:i:s', $syncTime)));
     }
 }
-if (file_get_contents('start')) {
+if (file_exists('start')) {
     echo "Starting\n";
     $startTime = time();
     //DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
     DatabaseManager::getInstance()->addProducts(Missha::getInstance());
     //DatabaseManager::getInstance()->cleanup($startTime);
-    file_put_contents('start', null, 0);
+    unlink('start');
 }
 else {
     echo "Nothing to do\n";
