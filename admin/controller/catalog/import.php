@@ -244,13 +244,22 @@ class ControllerCatalogImport extends Controller {
         }
         /// Preparing promo price
         if ($productToUpdate->getSourcePrice()->getPromoPrice())
-            $promoPrice = array(array(
-                'customer_group_id' => 8, /* Default customer group ID */
-                'priority' => 0, /// Highest priority
-                'price' => $productToUpdate->getSourcePrice()->getPromoPrice(),
-                'date_start' => date('Y-m-d'),
-                'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
-            ));
+            $promoPrice = array(
+                array(
+                    'customer_group_id' => 8, /* Default customer group ID */
+                    'priority' => 0, /// Highest priority
+                    'price' => $productToUpdate->getSourcePrice()->getPromoPrice(),
+                    'date_start' => date('Y-m-d'),
+                    'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
+                ),
+                array(
+                    'customer_group_id' => 6, /* Оптовики group ID */
+                    'priority' => 0, /// Highest priority
+                    'price' => $productToUpdate->getSourcePrice()->getPromoPrice(),
+                    'date_start' => date('Y-m-d'),
+                    'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
+                )
+            );
         else
             $promoPrice = null;
 
