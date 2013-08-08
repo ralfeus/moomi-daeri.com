@@ -63,7 +63,7 @@
             </tr>
           </thead>
           <tbody>
-<?php if ($products): ?>
+<?php if (isset($products) && is_array($products)): ?>
     <?php foreach ($products as $product): ?>
             <tr>
               <td><input type="checkbox" name="selectedItems[]" value="<?= $product->getId() ?>"</td>

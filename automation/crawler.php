@@ -183,8 +183,6 @@ class DatabaseManager
         $statement = $this->connection->prepare($sql);
         foreach ($site->getProducts() as $product)
         {
-            print_r($product);
-            break;
             $statement->execute(array(
                 ':sourceSiteId' => $site->getSite()->id,
                 ':sourceUrl' => $product->url,
@@ -213,14 +211,14 @@ class DatabaseManager
     }
 }
 
-if (file_exists('start') && (shell_exec('ps axo cmd | grep -c "^php crawler.php"') == 1)) {
+//if (file_exists('start') && (shell_exec('ps axo cmd | grep -c "^php crawler.php"') == 1)) {
     echo "Starting\n";
     $startTime = time();
-    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
-    //DatabaseManager::getInstance()->addProducts(Missha::getInstance());
-    DatabaseManager::getInstance()->cleanup($startTime);
-    unlink('start');
-}
-else {
-    echo "Nothing to do\n";
-}
+//    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
+    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
+//    DatabaseManager::getInstance()->cleanup($startTime);
+//    unlink('start');
+//}
+//else {
+//    echo "Nothing to do\n";
+//}

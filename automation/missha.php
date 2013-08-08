@@ -15,13 +15,24 @@ class Missha extends ProductSource {
         $matches = array();
         /// Get images
         $items = $html->find('td.M_s_img_b img');
-        foreach ($items as $item)
-            if (preg_match('/(?<=loadImage\(\').+?(?=\'\))', $item->attr['onmouseover'], $matches))
+        foreach ($items as $item) {
+            if (preg_match('/(?<=loadImage\(\').+?(?=\'\))/', $item->attr['onmouseover'], $matches)) {
                 $product->images[] =  $matches[0];
+            }
+        }
 
         /// Get description
         $items = $html->find('td.M_g_detail');
-        $product->description = mb_convert_encoding(trim($items[0]->innertext), 'utf-8', 'euc-kr');
+        $product->description = trim($items[0]->innertext);
+        /// Get price and promo price
+        if ($html->find('span.M_TT_s_t>del', 0)) {
+            $product->price = preg_replace('/\D+/', '', $html->find('span.M_TT_s_t>del', 0)->plaintext);
+            $product->promoPrice = preg_replace('/\D+/', '', $html->find('td.M_TT_13w', 0)->firstChild()->plaintext);
+        }
+        else {
+            $product->price = preg_replace('/\D+/', '', $html->find('td.M_TT_13w', 0)->firstChild()->plaintext);
+        }
+
         $html->clear();
     }
 
@@ -42,11 +53,11 @@ class Missha extends ProductSource {
                 $aElement = $item->find('a[href*=category_detail.php]', 0);
                 $product = new Product(
                     $this,
-                    preg_match('/(?<=id=)\d*?/', $aElement->attr['href'], $matches) ? $matches[0] : null,
-                    mb_convert_encoding(trim($item->find('a[href*=category_detail.php]', 1)->find('text', 0)->plaintext), 'utf-8', 'euc-kr'),
-                    'http://shop.beautynet.co.kr/' . $aElement->attr['href'],
-                    $aElement->find('image', 0)->attr['src'],
-                    preg_replace('/\D+/', '', $item->find('td.won', 0)->plaintext),
+                    preg_match('/(?<=id=)\d+/', $aElement->attr['href'], $matches) ? $matches[0] : null,
+                    trim($item->find('a[href*=category_detail.php]', 1)->plaintext),
+                    'http://shop.beautynet.co.kr/' . preg_replace('/^\/?\.\./', '', $aElement->attr['href']),
+                    $aElement->find('img', 0)->attr['src'],
+                    null,
                     null,
                     0.25
                 );
@@ -55,7 +66,6 @@ class Missha extends ProductSource {
                         $product->promoPrice = preg_replace('/\D+/', '', $item->find('strike', 0)->next_sibling()->plaintext);
                     self::fillDetails($product);
                 }
-//                $products[] = $product;
             }
             $html->clear();
             if ($currPage < $pagesNum)
@@ -71,7 +81,7 @@ class Missha extends ProductSource {
         $html = $this->getHtmlDocument(self::getUrl());
         $items = $html->find('a[href*=\/missha\/category_large.php]');
         foreach ($items as $categoryAElement)
-            $categories[] = 'http://shop.beautynet.co.kr/' . $categoryAElement->attr['href'];
+            $categories[] = 'http://shop.beautynet.co.kr/' . preg_replace('/^\/?\.\./', '', $categoryAElement->attr['href']);
         $html->clear();
         return array_unique($categories);
     }
