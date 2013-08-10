@@ -53,6 +53,7 @@ class Missha extends ProductSource {
                 $aElement = $item->find('a[href*=category_detail.php]', 0);
                 $product = new Product(
                     $this,
+                    preg_match('/(?<=part_code=)\d+/', $categoryUrl, $matches) ? $matches[0] : null,
                     preg_match('/(?<=id=)\d+/', $aElement->attr['href'], $matches) ? $matches[0] : null,
                     trim($item->find('a[href*=category_detail.php]', 1)->plaintext),
                     'http://shop.beautynet.co.kr/' . preg_replace('/^\/?\.\./', '', $aElement->attr['href']),
@@ -93,7 +94,7 @@ class Missha extends ProductSource {
         foreach ($urls as $url) {
             echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . "\n";
             $products = array_merge($products, self::getCategoryProducts($url));
-            break;
+//            break;
         }
         echo "Totally found " . sizeof($products) . " products\n";
         echo date('Y-m-d H:i:s') . " --- Finished\n";

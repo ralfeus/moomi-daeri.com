@@ -45,7 +45,7 @@ class ModelCatalogImport extends Model{
         $sql = "
             SELECT
                 ip.*,
-                iss.imported_source_site_id, iss.name AS source_site_name, iss.default_category_id, iss.default_manufacturer_id, iss.default_supplier_id
+                iss.imported_source_site_id, iss.name AS source_site_name, iss.default_category_id, iss.default_manufacturer_id, iss.default_store_id, iss.default_supplier_id
             FROM
                 " . DB_PREFIX . "imported_products AS ip
                 JOIN " . DB_PREFIX . "imported_source_sites AS iss ON ip.source_site_id = iss.imported_source_site_id
@@ -60,6 +60,7 @@ class ModelCatalogImport extends Model{
             $result->row['source_product_id'],
             $result->row['product_id'],
             $result->row['name'],
+            $result->row['source_category_id'] ? self::getMatchingCategories($result->row['source_category_id']) : $result->row['default_category_id'],
             $result->row['description'],
             $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
             new Price($result->row['price'], $result->row['price_promo']),
@@ -68,6 +69,7 @@ class ModelCatalogImport extends Model{
                 $result->row['source_site_name'],
                 $result->row['default_category_id'],
                 $result->row['default_manufacturer_id'],
+                $result->row['default_store_id'],
                 $result->row['default_supplier_id']
             ),
             $result->row['source_url'],
@@ -84,7 +86,7 @@ class ModelCatalogImport extends Model{
         $sql = "
             SELECT
                 ip.*,
-                iss.imported_source_site_id, iss.name AS source_site_name, iss.default_category_id, iss.default_manufacturer_id, iss.default_supplier_id
+                iss.imported_source_site_id, iss.name AS source_site_name, iss.default_category_id, iss.default_manufacturer_id, iss.default_store_id, iss.default_supplier_id
             FROM
                 " . DB_PREFIX . "imported_products AS ip
                 JOIN " . DB_PREFIX . "imported_source_sites AS iss ON ip.source_site_id = iss.imported_source_site_id
@@ -100,6 +102,7 @@ class ModelCatalogImport extends Model{
                 $row['source_product_id'],
                 $row['product_id'],
                 $row['name'],
+                $row['source_category_id'] ? self::getMatchingCategories($row['source_category_id']) : $row['default_category_id'],
                 $row['description'],
                 $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
                 new Price($row['price'], $row['price_promo']),
@@ -108,6 +111,7 @@ class ModelCatalogImport extends Model{
                     $row['source_site_name'],
                     $row['default_category_id'],
                     $row['default_manufacturer_id'],
+                    $row['default_store_id'],
                     $row['default_supplier_id']
                 ),
                 $row['source_url'],
@@ -130,6 +134,24 @@ class ModelCatalogImport extends Model{
         ;
         $result = $this->db->query($sql);
         return $result->row['quantity'];
+    }
+
+    /**
+     * @param $sourceCategoryId
+     * @return array
+     */
+    private function getMatchingCategories($sourceCategoryId) {
+        $sql = "
+            SELECT local_category_id
+            FROM " . DB_PREFIX . "imported_product_categories
+            WHERE source_site_category_id = '" . $this->db->escape($sourceCategoryId) . "'
+        ";
+        $categories = array();
+        $result = $this->db->query($sql);
+        foreach ($result->rows as $row)
+            $categories[] = $row['local_category_id'];
+
+        return $categories;
     }
 
     private function getProductImages($productId) {
@@ -156,6 +178,7 @@ class ModelCatalogImport extends Model{
                 $row['name'],
                 $row['default_category_id'],
                 $row['default_manufacturer_id'],
+                $row['default_store_id'],
                 $row['default_supplier_id']
             );
         return $result;
@@ -184,6 +207,7 @@ class ModelCatalogImport extends Model{
 class ImportedProduct {
     private $id;
     private $name;
+    private $categories;
     private $description;
     private $images;
     private $isActive;
@@ -198,11 +222,12 @@ class ImportedProduct {
     private $weight;
 
     public function __construct(
-        $id, $sourceProductId, $localProductId, $name, $description, Price $localPrice = null, Price $sourcePrice, SourceSite $sourceSite,
+        $id, $sourceProductId, $localProductId, $name, $categories, $description, Price $localPrice = null, Price $sourcePrice, SourceSite $sourceSite,
         $sourceUrl, $thumbnailUrl, array $images, $weight, $timeModified, $isActive
     ) {
         $this->id = $id;
         $this->localProductId = empty($localProductId) ? null : $localProductId;
+        $this->categories = $categories;
         $this->name = $name;
         $this->description = $description;
         $this->isActive = $isActive;
@@ -216,6 +241,11 @@ class ImportedProduct {
         $this->timeModified = $timeModified;
         $this->weight = $weight;
     }
+
+    /**
+     * @return array
+     */
+    public function getCategories() { return $this->categories; }
 
     public function getLocalProductId() { return $this->localProductId; }
     public function getThumbnailUrl() { return $this->thumbnailUrl; }
@@ -288,10 +318,10 @@ class SourceSite {
     private $defaultStoreId;
     private $defaultSupplierId;
 
-    function __construct($id, $name, $defaultCategoryId, $defaultManufacturerId, $defaultSupplierId)
-    {
+    function __construct($id, $name, $defaultCategoryId, $defaultManufacturerId, $defaultStoreId, $defaultSupplierId) {
         $this->defaultCategoryId = $defaultCategoryId;
         $this->defaultManufacturerId = $defaultManufacturerId;
+        $this->defaultStoreId = $defaultStoreId;
         $this->defaultSupplierId = $defaultSupplierId;
         $this->id = $id;
         $this->name = $name;

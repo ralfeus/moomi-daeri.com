@@ -88,6 +88,7 @@ abstract class ProductSource
 class Product
 {
     public $id;
+    public $categoryId;
     public $images = array();
     public $description;
     public $name;
@@ -100,9 +101,10 @@ class Product
     public $weight;
 
     public function __construct(
-        ProductSource $sourceSite, $sourceProductId, $name, $url, $thumbnail, $price, $description = null, $weight = null
+        ProductSource $sourceSite, $categoryId, $sourceProductId, $name, $url, $thumbnail, $price, $description = null, $weight = null
     )
     {
+        $this->categoryId = $categoryId;
         $this->description = $description;
         $this->name = $name;
         $this->price = $price;
@@ -161,6 +163,7 @@ class DatabaseManager
                 INSERT INTO imported_products
                 SET
                     source_site_id = :sourceSiteId,
+                    source_category_id = :sourceCategoryId,
                     source_url = :sourceUrl,
                     source_product_id = :sourceProductId,
                     image_url = :thumbnail,
@@ -171,6 +174,7 @@ class DatabaseManager
                     time_modified = NOW(),
                     weight = :weight
                 ON DUPLICATE KEY UPDATE
+                    source_category_id = :sourceCategoryId,
                     source_url = :sourceUrl,
                     image_url = :thumbnail,
                     name = :name,
@@ -185,6 +189,7 @@ class DatabaseManager
         {
             $statement->execute(array(
                 ':sourceSiteId' => $site->getSite()->id,
+                ':sourceCategoryId' => $product->categoryId,
                 ':sourceUrl' => $product->url,
                 ':sourceProductId' => $product->sourceProductId,
                 ':thumbnail' => $product->thumbnail,
