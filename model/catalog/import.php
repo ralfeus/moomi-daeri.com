@@ -321,7 +321,7 @@ class SourceSite {
     function __construct($id, $name, $defaultCategoryId, $defaultManufacturerId, $defaultStoreId, $defaultSupplierId) {
         $this->defaultCategoryId = $defaultCategoryId;
         $this->defaultManufacturerId = $defaultManufacturerId;
-        $this->defaultStoreId = $defaultStoreId;
+        $this->defaultStoreId = explode(',', $defaultStoreId);
         $this->defaultSupplierId = $defaultSupplierId;
         $this->id = $id;
         $this->name = $name;
@@ -338,7 +338,8 @@ class SourceSite {
     public function getDefaultManufacturerId() { return $this->defaultManufacturerId; }
 
     /**
-     *  @return int
+     *  List of default stores assigned to the site
+     *  @return array
      */
     public function getDefaultStoreId() { return $this->defaultStoreId; }
 
