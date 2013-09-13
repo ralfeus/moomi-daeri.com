@@ -26,9 +26,9 @@ class ControllerCommonHome extends Controller {
 	}
 
 	public function downloadImages() {
-    error_reporting(1);
-    apache_setenv('no-gzip', '1');
-    ob_start();
+        error_reporting(E_ERROR);
+        apache_setenv('no-gzip', '1');
+        ob_start();
 		$products = explode(",", $_REQUEST['products']);
 		$imagesInfo = array();
 
@@ -45,21 +45,21 @@ class ControllerCommonHome extends Controller {
 				$string = "<?xml version='1.0'?><p>\n";
 				$string .= htmlspecialchars_decode($row["description"]);
 				$string .= '</p>';
-        $search = array('&lt;', '&gt;', '&nbsp;');
-        $replace = array('', '', '');
-        //$string =
-        $string = str_replace($search, $replace, $string);
-        //print_r($string);
+                $search = array('&lt;', '&gt;', '&nbsp;');
+                $replace = array('', '', '');
+                //$string =
+                $string = str_replace($search, $replace, $string);
+                //print_r($string);
 				$xml = simplexml_load_string($string);
-        //var_dump($string); die();
+                //var_dump($string); die();
 				$result1 = $xml->xpath('img');
 				$result2 = $xml->xpath('p/img');
 				$result = array_merge($result1, $result2);
-        $result3 = $xml->xpath('p/a/img');
-        $result = array_merge($result, $result3);
+                $result3 = $xml->xpath('p/a/img');
+                $result = array_merge($result, $result3);
 				while(list( , $node) = each($result)) {
 					//echo (string)$node->attributes()->src;
-    			$imagesInfo[$product_id]['images'][] = "." . (string)$node->attributes()->src;
+    			    $imagesInfo[$product_id]['images'][] = "." . (string)$node->attributes()->src;
 				}
 			}
 		}
@@ -69,20 +69,18 @@ class ControllerCommonHome extends Controller {
 			foreach ($arrValue['images'] as $imagePath) {
 				$path_parts = pathinfo($imagePath);
 				if (file_exists($imagePath)) {
-    			copy($imagePath, $pathToFile . "/" . $path_parts['basename']);
-				}
-        else {
-          $imagePath = substr($imagePath, 1); //print_r($imagePath); echo "<br />";
-          $content = file_get_contents($imagePath);
-          file_put_contents($pathToFile . "/" . $path_parts['basename'], $content);
-        }
+    			    copy($imagePath, $pathToFile . "/" . $path_parts['basename']);
+				} elseif (file_exists(substr($imagePath, 1))) {
+                  $content = file_get_contents(substr($imagePath, 1));
+                  file_put_contents($pathToFile . "/" . $path_parts['basename'], $content);
+                }
 			}
 		}
 
 		$path = IMAGES_DOWNLOAD_FOLDER  . "/" . $this->customer->getId();
     $zipFile = $path . '.zip';
 		HZip::zipDir($path, $zipFile);
-		HZip::deleteDirectory($path);
+//		HZip::deleteDirectory($path);
 
     //flush();
     header("Pragma: public");
@@ -96,7 +94,7 @@ class ControllerCommonHome extends Controller {
     header("Content-length: " . filesize($zipFile));
     //ob_end_clean();
     readfile($zipFile);
-    unlink($zipFile);
+//    unlink($zipFile);
 	}
 }
 
