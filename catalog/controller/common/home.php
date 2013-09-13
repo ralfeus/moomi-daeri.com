@@ -78,9 +78,9 @@ class ControllerCommonHome extends Controller {
 		}
 
 		$path = IMAGES_DOWNLOAD_FOLDER  . "/" . $this->customer->getId();
-    $zipFile = $path . '.zip';
+        $zipFile = $path . '.zip';
 		HZip::zipDir($path, $zipFile);
-//		HZip::deleteDirectory($path);
+		HZip::deleteDirectory($path);
 
     //flush();
     header("Pragma: public");
@@ -94,7 +94,7 @@ class ControllerCommonHome extends Controller {
     header("Content-length: " . filesize($zipFile));
     //ob_end_clean();
     readfile($zipFile);
-//    unlink($zipFile);
+    unlink($zipFile);
 	}
 }
 
