@@ -102,7 +102,7 @@ class TonyMoly extends ProductSource
         foreach ($urls as $url) {
             echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . "\n";
             $products = array_merge($products, self::getCategoryProducts($url));
-            break;
+//            break;
         }
         echo "Totally found " . sizeof($products) . " products\n";
         echo date('Y-m-d H:i:s') . " --- Finished\n";
