@@ -3,6 +3,7 @@ require_once("simple_html_dom.php");
 require_once('../config.php');
 require_once('missha.php');
 require_once('natureRepublic.php');
+require_once('tonyMoly.php');
 
 function handleError($errno, $errstr, $errfile, $errline, array $errcontext)
 {
@@ -132,6 +133,7 @@ class DatabaseManager
             DB_PASSWORD,
             array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
         );
+        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
     }
 
     public static function getInstance() {
@@ -185,7 +187,8 @@ class DatabaseManager
                     weight = :weight
             ';
         $statement = $this->connection->prepare($sql);
-        foreach ($site->getProducts() as $product)
+        $products = $site->getProducts();
+        foreach ($products as $product)
         {
             $statement->execute(array(
                 ':sourceSiteId' => $site->getSite()->id,
@@ -216,14 +219,15 @@ class DatabaseManager
     }
 }
 
-if (file_exists('start') && (shell_exec('ps axo cmd | grep -c "^php crawler.php"') == 1)) {
+//if (file_exists('start') && (shell_exec('ps axo cmd | grep -c "^php crawler.php"') == 1)) {
     echo "Starting\n";
     $startTime = time();
-    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
-    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
-    DatabaseManager::getInstance()->cleanup($startTime);
+//    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
+//    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
+    DatabaseManager::getInstance()->addProducts(TonyMoly::getInstance());
+//    DatabaseManager::getInstance()->cleanup($startTime);
     unlink('start');
-}
-else {
-    echo "Nothing to do\n";
-}
+//}
+//else {
+//    echo "Nothing to do\n";
+//}
