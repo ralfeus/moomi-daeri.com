@@ -319,7 +319,7 @@ class SourceSite {
     private $defaultSupplierId;
 
     function __construct($id, $name, $defaultCategoryId, $defaultManufacturerId, $defaultStoreId, $defaultSupplierId) {
-        $this->defaultCategoryId = $defaultCategoryId;
+        $this->defaultCategoryId = explode(',', $defaultCategoryId);
         $this->defaultManufacturerId = $defaultManufacturerId;
         $this->defaultStoreId = explode(',', $defaultStoreId);
         $this->defaultSupplierId = $defaultSupplierId;
