@@ -278,6 +278,7 @@ class ControllerCatalogImport extends Controller {
             'points' => null,
             'price' => $productToUpdate->getSourcePrice()->getPrice(),
             'product_attribute' => array($koreanName, $sourceUrl),
+            'product_category' => $productToUpdate->getCategories(),
             'product_description' => null,
             'product_image' => $images,
             'product_special' => $promoPrice,

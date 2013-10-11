@@ -8,6 +8,13 @@
  */
 
 class ModelCatalogImport extends Model{
+    private $sourceSites;
+
+    public function __construct($registry) {
+        parent::__construct($registry);
+//        $this->sourceSites = self::getSourceSites();
+    }
+
     private function buildFilterString(array $data)
     {
         $filter = "";
@@ -60,7 +67,7 @@ class ModelCatalogImport extends Model{
             $result->row['source_product_id'],
             $result->row['product_id'],
             $result->row['name'],
-            $result->row['source_category_id'] ? self::getMatchingCategories($result->row['source_category_id']) : $result->row['default_category_id'],
+            $result->row['source_category_id'] ? self::getMatchingCategories($result->row['source_category_id']) : array(),
             $result->row['description'],
             $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
             new Price($result->row['price'], $result->row['price_promo']),
@@ -102,7 +109,7 @@ class ModelCatalogImport extends Model{
                 $row['source_product_id'],
                 $row['product_id'],
                 $row['name'],
-                $row['source_category_id'] ? self::getMatchingCategories($row['source_category_id']) : $row['default_category_id'],
+                $row['source_category_id'] ? self::getMatchingCategories($row['source_category_id']) : array(),
                 $row['description'],
                 $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
                 new Price($row['price'], $row['price_promo']),
@@ -243,9 +250,14 @@ class ImportedProduct {
     }
 
     /**
+     * Returns categories of the imported product.
+     * In case of absence of categories specific for certain product returns categories for source site
+     *
      * @return array
      */
-    public function getCategories() { return $this->categories; }
+    public function getCategories() {
+        return sizeof($this->categories) ? $this->categories : $this->sourceSite->getDefaultCategoryId();
+    }
 
     public function getLocalProductId() { return $this->localProductId; }
     public function getThumbnailUrl() { return $this->thumbnailUrl; }
@@ -328,7 +340,7 @@ class SourceSite {
     }
 
     /**
-     * @return int
+     * @return array
      */
     public function getDefaultCategoryId() { return $this->defaultCategoryId; }
 
