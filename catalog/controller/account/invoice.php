@@ -198,7 +198,7 @@ class ControllerAccountInvoice extends Controller
                 //$this->log->write(print_r($orderItem, true));
                 $this->data['orderItems'][] = array(
                     'id' => $orderItem['order_product_id'],
-                    'comment' => $orderItem['comment'],
+                    'comment' => $orderItem['public_comment'],
                     'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
                     'model' => $orderItem['model'],
                     'name' => $orderItem['name'],
