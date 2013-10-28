@@ -331,7 +331,7 @@ class ControllerCheckoutCart extends Controller {
     }
 
 	public function update() {
-//        $this->log->write(print_r($this->request->request, true));
+        $this->log->write(print_r($this->request->request, true));
 		$this->language->load('checkout/cart');
 
 		$json = array();
@@ -339,6 +339,7 @@ class ControllerCheckoutCart extends Controller {
 		if (isset($this->request->post['product_id'])) {
 			$this->load->model('catalog/product');
 
+            $this->log->write("Getting product info");
 			$product_info = $this->model_catalog_product->getProduct($this->request->post['product_id']);
             $this->log->write(print_r($product_info, true));
 
