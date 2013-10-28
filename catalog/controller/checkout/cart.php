@@ -340,6 +340,7 @@ class ControllerCheckoutCart extends Controller {
 			$this->load->model('catalog/product');
 
 			$product_info = $this->model_catalog_product->getProduct($this->request->post['product_id']);
+            $this->log->write(print_r($product_info, true));
 
 			if ($product_info) {
                     if (empty($this->request->post['quantity']))
