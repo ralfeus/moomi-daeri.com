@@ -67,7 +67,7 @@ DD_belatedPNG.fix('#logo img');
   }
 
 ?>
-<!-- BEGIN JIVOSITE CODE {literal} --
+<!-- BEGIN JIVOSITE CODE {literal} -->
 <script type="text/javascript">
 <!--
 var actionCheckboxChecked = '';
@@ -206,7 +206,7 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
     }
 </style>
 <!-- {/literal} END JIVOSITE CODE -->
-<!-- RedHelper -->
+<!-- RedHelper --
 <script id="rhlpscrtg" type="text/javascript" charset="utf-8" async="async"
         src="https://web.redhelper.ru/service/main.js?c=moomidae">
 </script>
