@@ -32,7 +32,7 @@ final class Cache {
     /// New version with APC using
     public function get($key) {
         if (apc_exists($key)) {
-            return apc_fetch($key);
+            return unserialize(apc_fetch($key));
         }
         else {
             return false;
@@ -53,7 +53,7 @@ final class Cache {
 
     /// New version with APC using
     public function set($key, $value) {
-        apc_store($key, $value);
+        apc_store($key, serialize($value));
     }
 	
 //  	public function delete($key) {
