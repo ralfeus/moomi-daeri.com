@@ -68,10 +68,7 @@ DD_belatedPNG.fix('#logo img');
 
 ?>
 <!-- BEGIN JIVOSITE CODE {literal} -->
-<script type="text/javascript">
-<!--
-var actionCheckboxChecked = '';
-var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'Christmas Day']];
+<script type="text/javascript">//<!--
     (function() {
         var widget_id = '15225';
         var s = document.createElement('script');
@@ -81,7 +78,18 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
         var ss = document.getElementsByTagName('script')[0];
         ss.parentNode.insertBefore(s, ss);
     })();
+//-->
+</script>
+<!-- {/literal} END JIVOSITE CODE -->
+<!-- RedHelper --
+<script id="rhlpscrtg" type="text/javascript" charset="utf-8" async="async"
+        src="https://web.redhelper.ru/service/main.js?c=moomidae">
+</script>
+<!--/Redhelper -->
 
+<script language="javascript">//<!--
+    var actionCheckboxChecked = '';
+    var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'Christmas Day']];
     $(document).ready(function() {
       var url = "<?php echo $this->url->link('shop/admin/getAllHolidaysForCalendar'); ?>";
       $.post(url, function(response) {
@@ -177,6 +185,7 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
        }
       return [true, ''];
     }
+//-->
 </script>
 <style type="text/css">
   .width180 {
@@ -204,12 +213,6 @@ var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'
       border: 1px solid #BF5A0C;
     }
 </style>
-<!-- {/literal} END JIVOSITE CODE -->
-<!-- RedHelper --
-<script id="rhlpscrtg" type="text/javascript" charset="utf-8" async="async"
-        src="https://web.redhelper.ru/service/main.js?c=moomidae">
-</script>
-<!--/Redhelper -->
 </head>
 <body>
 <div id="container">
