@@ -34,9 +34,9 @@ final class Cache {
         if (apc_exists($key)) {
             return unserialize(apc_fetch($key));
         }
-        else {
-            return null;
-        }
+//        else {
+//            return null;
+//        }
     }
 
 //  	public function set($key, $value) {
