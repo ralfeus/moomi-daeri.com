@@ -571,7 +571,7 @@ class ModelCatalogProduct extends Model {
 
 	public function getTotalProducts($data = array()) {
         /// Cache implementation
-        $dataHash = base64_encode(serialize($data));
+        $dataHash = base64_encode(serialize($data)) . $this->config->get('config_store_id');
         $result = $this->cache->get("productsCount.$dataHash");
         if (isset($result))
             return $result;
