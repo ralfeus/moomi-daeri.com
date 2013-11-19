@@ -182,7 +182,7 @@ class ControllerCheckoutCart extends Controller {
 				}
 
         		$this->data['products'][] = array(
-                    'actionDeleteUrl' => $this->url->link('checkout/cart/removeItem', 'key=' . $product['key'], 'SSL'),
+                    'actionDeleteUrl' => $this->url->link('checkout/cart/removeItem', 'key=' . urlencode($product['key']), 'SSL'),
           			'key'      => $product['key'],
           			'thumb'    => $image,
 					'name'     => $product['name'],
