@@ -44,9 +44,11 @@ define('REPURCHASE_ORDER_ITEM_STATUS_CANCELLED', 0x00060065);
 
 define("REPURCHASE_ORDER_PRODUCT_ID", 8608); // ID of the product serving as repurchase order
 define("REPURCHASE_ORDER_IMAGE_URL_OPTION_ID", 14967); // ID of the product option representing image URL
+define("REPURCHASE_ORDER_ITEM_NAME_OPTION_ID", 103067); // ID of the product option representing item name
 define("REPURCHASE_ORDER_ITEM_URL_OPTION_ID", 14968); // ID of the product option representing item URL
 define("REPURCHASE_ORDER_COMMENT_OPTION_ID", 14969); // ID of the product option representing customer comment
 define("REPURCHASE_ORDER_COLOR_OPTION_ID", 14970); // ID of the product option representing item color
+define("REPURCHASE_ORDER_SHOP_NAME_OPTION_ID", 103066); // ID of the product option representing source shop name
 define("REPURCHASE_ORDER_SIZE_OPTION_ID", 14971); // ID of the product option representing item size
 define("REPURCHASE_ORDER_WHO_BUYS_OPTION_ID", 18518); // ID of the product option representing buying side
 define('REPURCHASE_ORDER_CUSTOMER_BUYS_OPTION_VALUE_ID', 35883); // ID of the product option value representing customer buying

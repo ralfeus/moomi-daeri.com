@@ -85,18 +85,22 @@ class ControllerProductRepurchase extends Controller
         $this->data['textApproximatePrice'] = $this->language->get('APPROXIMATE_PRICE');
         $this->data['textComment'] = $this->language->get('COMMENT');
         $this->data['textCustomerBuys'] = $this->language->get('CUSTOMER_BUYS');
+        $this->data['textItemName'] = $this->language->get('ITEM_NAME');
         $this->data['textShopBuys'] = $this->language->get('SHOP_BUYS');
+        $this->data['textShopName'] = $this->language->get('SHOP_NAME');
         $this->data['textUploadFile'] = $this->language->get('UPLOAD_FILE');
         $this->data['button_delete'] = $this->language->get('button_delete');
 
         $this->data['order_items'][] = array(
             'order_item_id'     => 'new0',
             'image_path'        => '',
+            'item_name'         => '',
             'item_url'          => '',
             'size'              => '',
             'color'             => '',
             'original_price'    => '',
             'quantity'          => '',
+            'shop_name'         => '',
             'subtotal'          => '',
             'fee'               => '',
             'total'             => ''

@@ -39,10 +39,20 @@
                                         </a>
                                     </td>
                                 </tr>
-                                <tr><td colspan="4">
-                                    <input type="radio" id='whoBuys' value='<?= REPURCHASE_ORDER_SHOP_BUYS_OPTION_VALUE_ID ?>' checked="true" disabled="true"/>&nbsp;<?= $textShopBuys ?><br />
-                                    <input type="radio" id='whoBuys' value='<?= REPURCHASE_ORDER_CUSTOMER_BUYS_OPTION_VALUE_ID ?>' disabled="true"/>&nbsp;<?= $textCustomerBuys ?><br />
-                                </td></tr>
+                                <tr>
+                                    <td>
+                                        <input type="radio" id='whoBuys' value='<?= REPURCHASE_ORDER_SHOP_BUYS_OPTION_VALUE_ID ?>' checked="true" disabled="true"/>&nbsp;<?= $textShopBuys ?><br />
+                                        <input type="radio" id='whoBuys' value='<?= REPURCHASE_ORDER_CUSTOMER_BUYS_OPTION_VALUE_ID ?>' disabled="true"/>&nbsp;<?= $textCustomerBuys ?><br />
+                                    </td>
+                                    <td colspan="2">
+                                        <?= $textItemName ?><br />
+                                        <input id="itemName" style="width: 100%;" />
+                                    </td>
+                                    <td>
+                                        <?= $textShopName ?><br />
+                                        <input id="shopName" style="width: 100%;" />
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td width="25%">
                                         <?php echo $entry_size; ?><br />
@@ -122,12 +132,14 @@ function addOrdersToCart()
                 'quantity': $(this).find('[id^="quantity"]').val(),
                 'itemPrice': $(this).find('[id^="price"]').val(),
                 'product_id': '<?= REPURCHASE_ORDER_PRODUCT_ID ?>',
+                'option[<?= REPURCHASE_ORDER_ITEM_NAME_OPTION_ID ?>]': $(this).find('[id^="itemName"]').val(),
                 'option[<?= REPURCHASE_ORDER_ITEM_URL_OPTION_ID ?>]': $(this).find('[id^="itemUrl"]').val(),
                 'option[<?= REPURCHASE_ORDER_IMAGE_URL_OPTION_ID ?>]': $(this).find('[id^="imagePath"]').val(),
                 'option[<?= REPURCHASE_ORDER_WHO_BUYS_OPTION_ID ?>]': $(this).find('[id^="whoBuys"]:checked').val(),
                 'option[<?= REPURCHASE_ORDER_COLOR_OPTION_ID ?>]': $(this).find('[id^="color"]').val(),
                 'option[<?= REPURCHASE_ORDER_SIZE_OPTION_ID ?>]': $(this).find('[id^="size"]').val(),
-                'option[<?= REPURCHASE_ORDER_COMMENT_OPTION_ID ?>]': $(this).find('[id^="comment"]').val()
+                'option[<?= REPURCHASE_ORDER_COMMENT_OPTION_ID ?>]': $(this).find('[id^="comment"]').val(),
+                'option[<?= REPURCHASE_ORDER_SHOP_NAME_OPTION_ID ?>]': $(this).find('[id^="shopName"]').val()
             },
             dataType: 'json',
             beforeSend: function()
