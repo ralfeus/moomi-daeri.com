@@ -154,7 +154,7 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->data['textAmount'] = $this->language->get('AMOUNT');
         $this->data['textComment'] = $this->language->get('COMMENT');
         $this->data['textFilter'] = $this->language->get('FILTER');
-        $this->data['textItemImage'] = $this->language->get('ITEM_IMAGE');
+        $this->data['textItem'] = $this->language->get('ITEM');
         $this->data['textOrderId'] = $this->language->get('ORDER_ID');
         $this->data['textUnderlyingOrderId'] = $this->language->get('UNDERLYING_ORDER_ID');
         $this->data['textCustomer'] = $this->language->get('CUSTOMER');
@@ -184,6 +184,7 @@ class ControllerSaleRepurchaseOrders extends Controller
     {
         $this->parameters['filterAmount'] = !isset($_REQUEST['filterAmount']) ? null : $_REQUEST['filterAmount'];
         $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
+        $this->parameters['filterItemName'] = empty($_REQUEST['filterItemName']) ? null : $_REQUEST['filterItemName'];
         $this->parameters['filterOrderId'] = empty($_REQUEST['filterOrderId']) ? null : $_REQUEST['filterOrderId'];
         $this->parameters['filterShopName'] = empty($_REQUEST['filterShopName']) ? null : $_REQUEST['filterShopName'];
         $this->parameters['filterSiteName'] = empty($_REQUEST['filterSiteName']) ? null : $_REQUEST['filterSiteName'];
@@ -278,6 +279,9 @@ class ControllerSaleRepurchaseOrders extends Controller
             case 'image':
                 $this->modelSaleRepurchaseOrder->setImage($this->parameters['orderId'], $this->parameters['value']);
                 $json['image'] = $this->load->model('tool/image')->resize($this->parameters['value'], 100, 100);
+                break;
+            case 'itemName':
+                $this->modelSaleRepurchaseOrder->setItemName($this->parameters['orderId'], $this->parameters['value']);
                 break;
             case 'quantity':
                 $this->modelSaleRepurchaseOrder->setQuantity($this->parameters['orderId'], $this->parameters['value']);

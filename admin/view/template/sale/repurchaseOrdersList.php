@@ -27,7 +27,7 @@
                         <td style="width: 1px; text-align: center;"><input type="checkbox" onclick="selectAll(this);" /></td>
                         <td style="width: 1px"><?= $textOrderId ?></td>
                         <td style="width: 1px;"><?= $textUnderlyingOrderId ?></td>
-                        <td style="width: 1px"><?= $textItemImage ?></td>
+                        <td style="width: 1px"><?= $textItem ?></td>
                         <td style="width: 1px"><?= $textCustomer ?></td>
                         <td style="width: 1px"><?= $textShop ?></td>
                         <td style="width: 1px"><?= $textQuantity ?></td>
@@ -41,7 +41,10 @@
                     <tr class="filter">
                         <td />
                         <td><input name="filterOrderId" value="<?= $filterOrderId ?>" size="3" onkeydown="filterKeyDown(event);" /></td>
-                        <td /><td />
+                        <td />
+                        <td>
+                            <input name="filterItemName" value="<?= $filterItemName ?>" onkeydown="filterKeyDown(event)" />
+                        </td>
                         <td>
                             <select name="filterCustomerId[]" multiple="true">
                                 <?php foreach ($customers as $customer):
@@ -88,9 +91,16 @@
                             </td>
                             <td><?= $order['orderId'] ?></td>
                             <td><?= $order['underlyingOrderId'] ?></td>
-                            <td><a href="<?= $order['originalImagePath'] ?>" target="_blank">
-                                <img src="<?= $order['imagePath'] ?>" title="<?= $order['hint'] ?>"/>
-                            </a></td>
+                            <td>
+                                <input
+                                    onkeydown="itemNameKeyDown(event, this, <?= $order['orderId'] ?>)"
+                                    style="width: 100%"
+                                    value="<?= $order['itemName'] ?>"
+                                    />
+                                <a href="<?= $order['originalImagePath'] ?>" target="_blank">
+                                    <img src="<?= $order['imagePath'] ?>" title="<?= $order['hint'] ?>"/>
+                                </a>
+                            </td>
                             <td style="white-space: nowrap;"><a href="<?= $order['customerUrl'] ?>"><?= $order['customerNick'] ?></a></td>
                             <td>
                                 <input
@@ -248,6 +258,13 @@ function imageManager(orderId, imageElement) {
         modal: false
     });
 };
+
+
+function itemNameKeyDown(event, sender, orderId) {
+    if (event.keyCode == 13) {
+        setProperty(orderId, sender, 'itemName');
+    }
+}
 
 function quantityKeyDown(event, sender, orderId)
 {

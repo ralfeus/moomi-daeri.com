@@ -24,6 +24,15 @@ class ModelSaleRepurchaseOrder extends Model
         {
             if (isset($data['filterAmount']) && ($data['filterAmount'] != null))
                 $filter .= " AND op.total = " . (float)$data['filterAmount'];
+            if (!empty($data['filterItemName'])) {
+                $filter .= " AND EXISTS (
+                    SELECT order_option_id
+                    FROM " . DB_PREFIX . "order_option
+                    WHERE
+                        order_product_id = op.order_product_id
+                        AND product_option_id = " . REPURCHASE_ORDER_ITEM_NAME_OPTION_ID . "
+                        AND value LIKE '%" . $data['filterItemName'] . "%')";
+            }
             if (!empty($data['filterShopName'])) {
                 $filter .= " AND EXISTS (
                     SELECT order_option_id
@@ -166,6 +175,39 @@ class ModelSaleRepurchaseOrder extends Model
     {
         $this->modelOrderItem->setOrderItemTotal($orderId, $amount);
         $this->modelOrderItem->setOrderItemPrice($orderId, $amount);
+    }
+
+    public function setItemName($orderId, $itemName) {
+        $testRow = $this->getDb()->query("
+            SELECT order_option_id
+            FROM " . DB_PREFIX . "order_option
+            WHERE
+                order_product_id = " . (int)$orderId . "
+                AND product_option_id = " . REPURCHASE_ORDER_ITEM_NAME_OPTION_ID
+        );
+        if ($testRow->num_rows) {
+            $this->getDb()->query("
+                UPDATE " . DB_PREFIX . "order_option
+                SET value = '" . $this->getDb()->escape($itemName) . "'
+                WHERE
+                    order_product_id = " . (int)$orderId . "
+                    AND product_option_id = " . REPURCHASE_ORDER_ITEM_NAME_OPTION_ID
+            );
+        }
+        else {
+            $orderItem = $this->modelOrderItem->getOrderItem($orderId);
+            $this->getDb()->query("
+                INSERT INTO " . DB_PREFIX . "order_option
+                SET
+                    order_id = " . (int)$orderItem['order_id'] . ",
+                    order_product_id = " . (int)$orderId . ",
+                    product_option_id = " . REPURCHASE_ORDER_ITEM_NAME_OPTION_ID . ",
+                    product_option_value_id = 0,
+                    name = 'Item Name',
+                    value = '" . $this->getDb()->escape($itemName) . "',
+                    type = 'text'
+            ");
+        }
     }
 
     public function setPrice($orderId, $amount)
