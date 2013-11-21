@@ -112,8 +112,6 @@ class ControllerSaleRepurchaseOrders extends Controller
             );
         }
 
-        $this->data['token'] = $this->session->data['token'];
-
         if (isset($this->error['warning'])) {
             $this->data['error_warning'] = $this->error['warning'];
         } else {
@@ -129,11 +127,11 @@ class ControllerSaleRepurchaseOrders extends Controller
         }
 
         $pagination = new Pagination();
-        $pagination->total = $this->model_sale_order_item->getOrderItemsCount($data);
+        $pagination->total = $this->modelSaleRepurchaseOrder->getOrdersCount($data);
         $pagination->page = $this->parameters['page'];
         $pagination->limit = $this->config->get('config_admin_limit');
         $pagination->text = $this->language->get('text_pagination');
-        $pagination->url = $this->url->link('sale/order_items', 'token=' . $urlParameters . '&page={page}', 'SSL');
+        $pagination->url = $this->url->link('sale/order_items', $urlParameters . '&page={page}', 'SSL');
 
         $this->data['pagination'] = $pagination->render();
         $this->data['currencyCode'] = $this->config->get('config_currency');
@@ -174,7 +172,7 @@ class ControllerSaleRepurchaseOrders extends Controller
 
         $this->setBreadcrumbs();
         $this->initStatuses();
-        $this->template = 'sale/repurchaseOrdersList.tpl';
+        $this->template = 'sale/repurchaseOrdersList.php';
         $this->children = array(
             'common/header',
             'common/footer'
@@ -289,6 +287,9 @@ class ControllerSaleRepurchaseOrders extends Controller
                 break;
             case 'shipping':
                 $this->modelSaleRepurchaseOrder->setShipping($this->parameters['orderId'], $this->parameters['value']);
+                break;
+            case 'shopName':
+                $this->modelSaleRepurchaseOrder->setShopName($this->parameters['orderId'], $this->parameters['value']);
                 break;
         }
         $rows = $this->modelSaleRepurchaseOrder->getPrices($this->parameters['orderId']);

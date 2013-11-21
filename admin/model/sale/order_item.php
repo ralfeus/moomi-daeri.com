@@ -18,7 +18,7 @@ class ModelSaleOrderItem extends Model
             ORDER BY date_added
         ";
 //        $this->log->write($sql);
-        $query = $this->db->query($sql);
+        $query = $this->getDb()->query($sql);
         return $query->rows;
     }
 
@@ -136,8 +136,9 @@ class ModelSaleOrderItem extends Model
 		return $this->fetchOrderItems($filter, $sort, $limit);
 	}
 
-	public function getOrderItemsCount($data = array())	{
-		return $this->fetchOrderItemsCount($this->buildFilterString($data));
+	public function getOrderItemsCount($data = array(), $filter = null)	{
+        $filter = empty($filter) ? $this->buildFilterString($data) : $filter;
+		return $this->fetchOrderItemsCount($filter);
 	}
 
     public function getOrderItemsTotals($data = array())

@@ -34,4 +34,11 @@ class OpenCartBase
     public function __set($key, $value) {
         $this->registry->set($key, $value);
     }
+
+    /**
+     * @return DBDriver
+     */
+    protected function getDb() {
+        return $this->db;
+    }
 }

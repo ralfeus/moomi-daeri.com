@@ -1,5 +1,6 @@
 <?php
-final class MySQL {
+require_once('DBDriver.php');
+final class MySQL implements DBDriver{
 	private $connection;
 	
 	public function __construct($hostname, $username, $password, $database) {

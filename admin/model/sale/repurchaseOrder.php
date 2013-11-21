@@ -118,7 +118,7 @@ class ModelSaleRepurchaseOrder extends Model
     public function getOrdersCount($data = array())
     {
         $data['filter_model'] = 'Repurchase agent';
-        return $this->modelOrderItem->getOrderItemsCount($data);
+        return $this->modelOrderItem->getOrderItemsCount(null, $this->buildFilterString($data));
     }
 
     private function getOrderInitialStatus()
@@ -176,6 +176,39 @@ class ModelSaleRepurchaseOrder extends Model
     public function setShipping($orderId, $amount)
     {
         $this->modelOrderItem->setShipping($orderId, $amount);
+    }
+
+    public function setShopName($orderId, $shopName) {
+        $testRow = $this->getDb()->query("
+            SELECT order_option_id
+            FROM " . DB_PREFIX . "order_option
+            WHERE
+                order_product_id = " . (int)$orderId . "
+                AND product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID
+        );
+        if ($testRow->num_rows) {
+            $this->getDb()->query("
+                UPDATE " . DB_PREFIX . "order_option
+                SET value = '" . $this->getDb()->escape($shopName) . "'
+                WHERE
+                    order_product_id = " . (int)$orderId . "
+                    AND product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID
+            );
+        }
+        else {
+            $orderItem = $this->modelOrderItem->getOrderItem($orderId);
+            $this->getDb()->query("
+                INSERT INTO " . DB_PREFIX . "order_option
+                SET
+                    order_id = " . (int)$orderItem['order_id'] . ",
+                    order_product_id = " . (int)$orderId . ",
+                    product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID . ",
+                    product_option_value_id = 0,
+                    name = 'Shop Name',
+                    value = '" . $this->getDb()->escape($shopName) . "',
+                    type = 'text'
+            ");
+        }
     }
 
     public function getPrices($orderId) {
