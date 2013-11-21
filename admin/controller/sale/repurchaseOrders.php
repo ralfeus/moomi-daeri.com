@@ -203,15 +203,16 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->parameters['order'] = empty($_REQUEST['order']) ? '' : $_REQUEST['order'];
         $this->parameters['orderId'] = empty($_REQUEST['orderId']) ? null : $_REQUEST['orderId'];
         $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
-        if (!empty($_REQUEST['propName']) && in_array($_REQUEST['propName'], array('amount', 'image', 'quantity')))
-            $this->parameters['propName'] = $_REQUEST['propName'];
-        else
-            $this->parameters['propName'] = null;
+//        if (!empty($_REQUEST['propName']) && in_array($_REQUEST['propName'], array('amount', 'image', 'quantity')))
+//            $this->parameters['propName'] = $_REQUEST['propName'];
+//        else
+//            $this->parameters['propName'] = null;
+        $this->parameters['propName'] = empty($_REQUEST['propName']) ? null : $_REQUEST['propName'];
         $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
         $this->parameters['sort'] = empty($_REQUEST['sort']) ? '' : $_REQUEST['sort'];
         $this->parameters['token'] = $this->session->data['token'];
         $this->parameters['value'] =
-            !empty($_REQUEST['value']) && $this->isValidPropValue($this->parameters['propName'], $_REQUEST['value'])
+            isset($_REQUEST['value']) && $this->isValidPropValue($this->parameters['propName'], $_REQUEST['value'])
                 ? $_REQUEST['value'] : null;
     }
 
@@ -227,16 +228,24 @@ class ControllerSaleRepurchaseOrders extends Controller
             );
     }
 
-    private function isValidPropValue($propName, $propValue)
-    {
-        switch ($propName)
-        {
+    /**
+     * @param $propName
+     * @param $propValue
+     * @return bool
+     */
+    private function isValidPropValue($propName, $propValue) {
+        switch ($propName) {
             case 'amount':
             case 'quantity':
+            case 'price':
                 return is_numeric($propValue);
             case 'image':
                 return exif_imagetype(DIR_IMAGE . $propValue);
+            case 'itemName':
+            case 'shopName':
+                return true;
         }
+        return false;
     }
 
     public function printPage()
@@ -263,16 +272,8 @@ class ControllerSaleRepurchaseOrders extends Controller
 
     public function setProperty()
     {
-        $this->log->write(print_r($_GET, true));
-        $this->parameters = $_GET;
-        if (empty($this->parameters['orderId']))
-            return;
-        if (empty($this->parameters['value']))
-            return;
-        if (empty($this->parameters['propName']))
-            return;
-        switch ($this->parameters['propName'])
-        {
+//        $this->log->write(print_r($_GET, true));
+        switch ($this->parameters['propName']) {
             case 'amount':
                 $this->modelSaleRepurchaseOrder->setAmount($this->parameters['orderId'], $this->parameters['value']);
                 break;
@@ -301,7 +302,7 @@ class ControllerSaleRepurchaseOrders extends Controller
         $json['price'] = $rows[0]['price'];
         $json['total'] = $rows[0]['total'];
         $json['result'] = 'Done';
-        $this->log->write(print_r($json, true));
+//        $this->log->write(print_r($json, true));
         $this->response->setOutput(json_encode($json));
     }
 

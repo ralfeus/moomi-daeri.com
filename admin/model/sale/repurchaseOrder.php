@@ -210,13 +210,11 @@ class ModelSaleRepurchaseOrder extends Model
         }
     }
 
-    public function setPrice($orderId, $amount)
-    {
+    public function setPrice($orderId, $amount) {
         $this->modelOrderItem->setPrice($orderId, $amount);
     }
 
-    public function setShipping($orderId, $amount)
-    {
+    public function setShipping($orderId, $amount) {
         $this->modelOrderItem->setShipping($orderId, $amount);
     }
 
