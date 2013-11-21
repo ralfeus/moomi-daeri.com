@@ -23,100 +23,19 @@ class ControllerSaleRepurchaseOrders extends Controller
 
     private function getData() 	{
         $modelToolImage = $this->load->model('tool/image');
-        $order = '';
-        $urlParameters = array();
+        $urlParameters = $this->buildUrlParameterString($this->parameters);
 
-        /// Filter initialization
-
-        if (!isset($_REQUEST['filterAmount']))
-            $filterAmount = null;
-        else
-        {
-            $filterAmount = $_REQUEST['filterAmount'];
-            $urlParameters[] = "filterAmount=$filterAmount";
-        }
-        if (empty($_REQUEST['filterCustomerId']))
-            $filterCustomerId = array();
-        else
-        {
-            $filterCustomerId = $_REQUEST['filterCustomerId'];
-            $urlParameters[] = "filterCustomerId[]=" . implode("&filterCustomerId[]=", $filterCustomerId);
-        }
-        if (empty($_REQUEST['filterOrderId']))
-            $filterOrderId = null;
-        else
-        {
-            $filterOrderId = $_REQUEST['filterOrderId'];
-            $urlParameters[] = "filterOrderId=$filterOrderId";
-        }
-        if (empty($_REQUEST['filterSiteName']))
-            $filterSiteName = null;
-        else
-        {
-            $filterSiteName = $_REQUEST['filterSiteName'];
-            $urlParameters[] = "filterSiteName=" . urlencode($filterSiteName);
-        }
-        if (empty($_REQUEST['filterStatusId']))
-            $filterStatusId = array();
-        else
-        {
-            $filterStatusId = $_REQUEST['filterStatusId'];
-            $urlParameters[] = "filterStatusId[]=" . implode("&filterStatusId[]=", $filterStatusId);
-        }
-        if (empty($_REQUEST['filterWhoOrders']))
-            $filterWhoOrders = null;
-        else
-        {
-            $filterWhoOrders = $_REQUEST['filterWhoOrders'];
-            $urlParameters[] = "filterWhoOrders=$filterWhoOrders";
-        }
-
-        if (empty($_REQUEST['sort']))
-            $sort = "";
-        else
-        {
-            $sort = $_REQUEST['sort'];
-            $urlParameters[] = "sort=$sort";
-        }
-        if (empty($_REQUEST['order']))
-            $order = '';
-        else
-        {
-            $order = $_REQUEST['order'];
-            $urlParameters['order'] = "order=$order";
-        }
-        if (empty($filterAmount) && empty($filterCustomerId) && empty($filterOrderId) &&
-            empty($filterSiteName) && empty($filterStatusId) && empty($filterWhoOrders) &&
-            $_SERVER['REQUEST_METHOD'] == "GET")
-            $filterStatusId = array(REPURCHASE_ORDER_ITEM_STATUS_WAITING);
-        if (empty($_REQUEST['page']))
-            $page = 1;
-        else
-            $page = $_REQUEST['page'];
-        $urlParameters[] = "page=$page";
-
-        $url = '&' . implode("&", $urlParameters);
-
-        $this->data['invoice'] = $this->url->link('sale/invoice/showForm' . $url, 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['print'] = $this->url->link('sale/repurchaseOrders/printPage' . $url, 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['invoice'] = $this->url->link('sale/invoice/showForm' . $urlParameters, 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['print'] = $this->url->link('sale/repurchaseOrders/printPage' . $urlParameters, 'token=' . $this->session->data['token'], 'SSL');
         $this->data['orders'] = array();
 
         $data = array(
-            'filterAmount' => $filterAmount,
-            'filterCustomerId' => $filterCustomerId,
-            'filterOrderId' => $filterOrderId,
-            'filterSiteName' => $filterSiteName,
-            'filterStatusId'=> $filterStatusId,
-            'filterWhoOrders' => $filterWhoOrders,
-            'sort'            => $sort,
-            'order'           => $order,
-            'start'           => ($page - 1) * $this->config->get('config_admin_limit'),
+            'start'           => ($this->parameters['page'] - 1) * $this->config->get('config_admin_limit'),
             'limit'           => $this->config->get('config_admin_limit')
         );
         $data = array_merge($data, $this->parameters);
 
         $order_items = $this->modelSaleRepurchaseOrder->getOrders($data);
-
         $showedCustomerIds = array();
         $this->data['customers'] = array();
         foreach ($order_items as $order_item)
@@ -145,8 +64,8 @@ class ControllerSaleRepurchaseOrders extends Controller
                 $siteName = $matches[1];
             else
                 $siteName = 'Wrong URL format';
-            /// Get image path or URL
 
+            /// Get image path or URL
             if (file_exists(DIR_IMAGE . $order_item['imagePath']))
             {
                 $image = $modelToolImage->resize($order_item['imagePath'], 100, 100);
@@ -164,6 +83,9 @@ class ControllerSaleRepurchaseOrders extends Controller
                 'underlyingOrderId' => $order_item['orderId'],
                 'hint' => $hint,
                 'imagePath'	            => $image,
+                'itemName' => $order_item['itemName'],
+                'itemUrl'	            => $order_item['itemUrl'],
+                'shopName' => $order_item['shopName'],
                 'siteName'			 => $siteName,
                 'customerName' => $order_item['customerName'],
                 'customerNick' => $order_item['customerNick'],
@@ -171,7 +93,6 @@ class ControllerSaleRepurchaseOrders extends Controller
                     'sale/customer/update',
                     'token=' . $this->session->data['token'] . '&customer_id=' . $order_item['customerId'],
                     'SSL'),
-                'itemUrl'	            => $order_item['itemUrl'],
                 'options'       => nl2br($this->modelSaleRepurchaseOrder->getOrderOptionsString($order_item['orderItemId'])),
                 'originalImagePath' => file_exists(DIR_IMAGE . $order_item['imagePath'])
                     ? HTTP_IMAGE . $order_item['imagePath']
@@ -209,25 +130,17 @@ class ControllerSaleRepurchaseOrders extends Controller
 
         $pagination = new Pagination();
         $pagination->total = $this->model_sale_order_item->getOrderItemsCount($data);
-        $pagination->page = $page;
+        $pagination->page = $this->parameters['page'];
         $pagination->limit = $this->config->get('config_admin_limit');
         $pagination->text = $this->language->get('text_pagination');
-        $pagination->url = $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . $url . '&page={page}', 'SSL');
+        $pagination->url = $this->url->link('sale/order_items', 'token=' . $urlParameters . '&page={page}', 'SSL');
 
         $this->data['pagination'] = $pagination->render();
-        $this->data['filterAmount'] = $filterAmount;
-        $this->data['filterCustomerId'] = $filterCustomerId;
-        $this->data['filterOrderId'] = $filterOrderId;
-        $this->data['filterSiteName'] = $filterSiteName;
-        $this->data['filterStatusId'] = $filterStatusId;
-        $this->data['filterWhoOrders'] = $filterWhoOrders;
-        $this->data['sort'] = $sort;
-        $this->data['order'] = $order;
         $this->data['currencyCode'] = $this->config->get('config_currency');
         $this->data['invoiceUrl'] = $this->url->link('sale/invoice/showForm', 'token=' . $this->session->data['token'], 'SSL');
         $this->data['urlImageChange'] = $this->url->link('sale/repurchaseOrders/setProperty', 'propName=image&token=' . $this->parameters['token'], 'SSL');
         $this->data['urlImageManager'] = $this->url->link('common/filemanager', 'field=image&token=' . $this->parameters['token'], 'SSL');
-
+        $this->data = array_merge($this->data, $this->parameters);
     }
 
     public function index()
@@ -256,7 +169,7 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->data['textInvoice'] = $this->language->get('INVOICE');
         $this->data['textNoSelectedItems'] = $this->language->get('NO_SELECTED_ITEMS');
         $this->data['textPrint'] = $this->language->get('PRINT');
-        $this->data['textSiteName'] = $this->language->get('SITE_NAME');
+        $this->data['textShop'] = $this->language->get('SHOP_NAME') . '/' . $this->language->get('SITE_NAME');
         $this->data['textWhoOrders'] = $this->language->get('WHO_ORDERS');
 
         $this->setBreadcrumbs();
@@ -271,12 +184,32 @@ class ControllerSaleRepurchaseOrders extends Controller
 
     protected function initParameters()
     {
+        $this->parameters['filterAmount'] = !isset($_REQUEST['filterAmount']) ? null : $_REQUEST['filterAmount'];
+        $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
+        $this->parameters['filterOrderId'] = empty($_REQUEST['filterOrderId']) ? null : $_REQUEST['filterOrderId'];
+        $this->parameters['filterShopName'] = empty($_REQUEST['filterShopName']) ? null : $_REQUEST['filterShopName'];
+        $this->parameters['filterSiteName'] = empty($_REQUEST['filterSiteName']) ? null : $_REQUEST['filterSiteName'];
+        $this->parameters['filterStatusId'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
+        $this->parameters['filterWhoOrders'] = empty($_REQUEST['filterWhoOrders']) ? null : $_REQUEST['filterWhoOrders'];
+        $filterSet = false;
+        foreach ($this->parameters as $parameter) {
+            if (!empty($parameter)) {
+                $filterSet = true;
+                break;
+            }
+        }
+        if (!$filterSet && ($_SERVER['REQUEST_METHOD'] == "GET"))
+            $this->parameters['filterStatusId'] = array(REPURCHASE_ORDER_ITEM_STATUS_WAITING);
+
+        $this->parameters['order'] = empty($_REQUEST['order']) ? '' : $_REQUEST['order'];
         $this->parameters['orderId'] = empty($_REQUEST['orderId']) ? null : $_REQUEST['orderId'];
+        $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
         if (!empty($_REQUEST['propName']) && in_array($_REQUEST['propName'], array('amount', 'image', 'quantity')))
             $this->parameters['propName'] = $_REQUEST['propName'];
         else
             $this->parameters['propName'] = null;
         $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
+        $this->parameters['sort'] = empty($_REQUEST['sort']) ? '' : $_REQUEST['sort'];
         $this->parameters['token'] = $this->session->data['token'];
         $this->parameters['value'] =
             !empty($_REQUEST['value']) && $this->isValidPropValue($this->parameters['propName'], $_REQUEST['value'])

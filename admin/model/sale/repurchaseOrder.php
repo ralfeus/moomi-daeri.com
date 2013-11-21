@@ -24,6 +24,24 @@ class ModelSaleRepurchaseOrder extends Model
         {
             if (isset($data['filterAmount']) && ($data['filterAmount'] != null))
                 $filter .= " AND op.total = " . (float)$data['filterAmount'];
+            if (!empty($data['filterShopName'])) {
+                $filter .= " AND EXISTS (
+                    SELECT order_option_id
+                    FROM " . DB_PREFIX . "order_option
+                    WHERE
+                        order_product_id = op.order_product_id
+                        AND product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID . "
+                        AND value LIKE '%" . $data['filterShopName'] . "%')";
+            }
+            if (!empty($data['filterSiteName'])) {
+                $filter .= " AND EXISTS (
+                    SELECT order_option_id
+                    FROM " . DB_PREFIX . "order_option
+                    WHERE
+                        order_product_id = op.order_product_id
+                        AND product_option_id = " . REPURCHASE_ORDER_ITEM_URL_OPTION_ID . "
+                        AND value LIKE '%" . $data['filterSiteName'] . "%')";
+            }
             if (!empty($data['filterCustomerId']))
                 $filter .= " AND c.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
             if (!empty($data['filterOrderId']))
@@ -60,9 +78,6 @@ class ModelSaleRepurchaseOrder extends Model
         {
             $options = $this->modelOrderItem->getOrderItemOptions($repurchaseOrderItem['order_item_id']);
 //            $this->log->write(print_r($options, true));
-            if (!empty($data['filterSiteName']))
-                if (strpos($options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'], $data['filterSiteName']) === false)
-                    continue;
             if (!empty($data['filterWhoOrders']) && !empty($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]))
                 if ($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value_id'] != $data['filterWhoOrders'])
                     continue;
@@ -77,6 +92,8 @@ class ModelSaleRepurchaseOrder extends Model
                     ? $options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value'] : '',
                 'imagePath' => !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID])
                     ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '',
+                'itemName' => !empty($options[REPURCHASE_ORDER_ITEM_NAME_OPTION_ID]['value'])
+                    ? $options[REPURCHASE_ORDER_ITEM_NAME_OPTION_ID]['value'] : '',
                 'itemUrl' => !empty($options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'])
                     ? $options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'] : '',
                 'orderItemStatusId' => $repurchaseOrderItem['status'],
@@ -87,6 +104,8 @@ class ModelSaleRepurchaseOrder extends Model
                         ? $options[REPURCHASE_ORDER_COMMENT_OPTION_ID]['value'] : ''),
                 'quantity' => $repurchaseOrderItem['quantity'],
                 'shipping' => $repurchaseOrderItem['shipping'],
+                'shopName' => !empty($options[REPURCHASE_ORDER_SHOP_NAME_OPTION_ID])
+                    ? $options[REPURCHASE_ORDER_SHOP_NAME_OPTION_ID]['value'] : '',
                 'status' => $repurchaseOrderItem['status'] >> 16 == GROUP_REPURCHASE_ORDER_ITEM_STATUS
                     ? $repurchaseOrderItem['status'] : REPURCHASE_ORDER_ITEM_STATUS_WAITING,
                 'timeAdded' => $repurchaseOrderItem['date_added'],
@@ -133,7 +152,8 @@ class ModelSaleRepurchaseOrder extends Model
         $options = '';
         foreach ($this->getOrderOptions($repurchaseOrderId) as $option)
 //            $this->log->write(print_r($option, true));
-            if ($option['product_option_id'] == REPURCHASE_ORDER_IMAGE_URL_OPTION_ID)
+            if (($option['product_option_id'] == REPURCHASE_ORDER_IMAGE_URL_OPTION_ID) ||
+                ($option['product_option_id'] == REPURCHASE_ORDER_SHOP_NAME_OPTION_ID))
                 continue;
             elseif (preg_match(URL_PATTERN, $option['value']))
                 $options .= $option['name'] . ":" . '<a target="_blank" href="' . $option['value'] . '">hyperlink</a>' . "\n";

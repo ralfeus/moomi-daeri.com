@@ -29,7 +29,7 @@
                         <td style="width: 1px;"><?= $textUnderlyingOrderId ?></td>
                         <td style="width: 1px"><?= $textItemImage ?></td>
                         <td style="width: 1px"><?= $textCustomer ?></td>
-                        <td style="width: 1px"><?= $textSiteName ?></td>
+                        <td style="width: 1px"><?= $textShop ?></td>
                         <td style="width: 1px"><?= $textQuantity ?></td>
                         <td style="width: 100px"><?= $textPricePerItem ?></td>
                         <td style="width: 100px"><?= $textShipping ?></td>
@@ -53,7 +53,10 @@
                                 <?php endforeach; ?>
                             </select>
                         </td>
-                        <td><input name="filterSiteName" value="<?= $filterSiteName ?>" onkeydown="filterKeyDown(event)" /></td>
+                        <td>
+                            <input name="filterShopName" value="<?= $filterShopName ?>" onkeydown="filterKeyDown(event)" />
+                            <input name="filterSiteName" value="<?= $filterSiteName ?>" onkeydown="filterKeyDown(event)" />
+                        </td>
                         <td />
                         <td /><td />
                         <td><input name="filterAmount"  size="9" value="<?= $filterAmount; ?>" onkeydown="filterKeyDown(event);"/></td>
@@ -89,7 +92,10 @@
                                 <img src="<?= $order['imagePath'] ?>" title="<?= $order['hint'] ?>"/>
                             </a></td>
                             <td style="white-space: nowrap;"><a href="<?= $order['customerUrl'] ?>"><?= $order['customerNick'] ?></a></td>
-                            <td><a href="<?= $order['itemUrl'] ?>"><?= $order['siteName'] ?></a></td>
+                            <td>
+                                <?= $order['shopName'] ?><br />
+                                <a href="<?= $order['itemUrl'] ?>"><?= $order['siteName'] ?></a>
+                            </td>
                             <td>
                                 <input
                                         onkeydown="quantityKeyDown(event, this, <?= $order['orderId'] ?>)"

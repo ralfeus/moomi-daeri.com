@@ -10,6 +10,7 @@ $_['HEADING_TITLE']               = 'Agent orders';
 
 $_['CHANGE_PICTURE']              = 'Change picture';
 $_['GOTO_ITEM']                   = "Go to item page";
+$_['SHOP_NAME'] = 'Shop name';
 $_['WHO_ORDERS']                  = 'Who orders';
 
 $_['WARNING_HTML_PAGE_PROVIDED']  = 'No image was provided. Click on the placeholder to open provided URL';
