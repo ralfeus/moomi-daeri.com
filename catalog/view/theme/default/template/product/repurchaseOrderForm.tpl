@@ -40,15 +40,15 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>
+                                    <!--td>
                                         <input type="radio" id='whoBuys' value='<?= REPURCHASE_ORDER_SHOP_BUYS_OPTION_VALUE_ID ?>' checked="true" disabled="true"/>&nbsp;<?= $textShopBuys ?><br />
                                         <input type="radio" id='whoBuys' value='<?= REPURCHASE_ORDER_CUSTOMER_BUYS_OPTION_VALUE_ID ?>' disabled="true"/>&nbsp;<?= $textCustomerBuys ?><br />
-                                    </td>
+                                    </td-->
                                     <td colspan="2">
                                         <?= $textItemName ?><br />
                                         <input id="itemName" style="width: 100%;" />
                                     </td>
-                                    <td>
+                                    <td colspan="2">
                                         <?= $textShopName ?><br />
                                         <input id="shopName" style="width: 100%;" />
                                     </td>
