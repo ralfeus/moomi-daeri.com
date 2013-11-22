@@ -142,8 +142,10 @@ class ModelAccountRepurchaseOrder extends Model
                 'orderItemStatusId' => $repurchaseOrderItem['status'],
                 'price' => $repurchaseOrderItem['price'],
                 'quantity' => $repurchaseOrderItem['quantity'],
+                'shipping' => $repurchaseOrderItem['shipping'],
                 'status' => $repurchaseOrderItem['status'] >> 16 == GROUP_REPURCHASE_ORDER_ITEM_STATUS
                     ? $repurchaseOrderItem['status'] : REPURCHASE_ORDER_ITEM_STATUS_WAITING,
+                'subtotal' => $repurchaseOrderItem['price'] * $repurchaseOrderItem['quantity'],
                 'timeAdded' => $repurchaseOrderItem['date_added'],
                 'total' => $repurchaseOrderItem['total']
             );

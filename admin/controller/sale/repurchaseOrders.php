@@ -238,6 +238,7 @@ class ControllerSaleRepurchaseOrders extends Controller
             case 'amount':
             case 'quantity':
             case 'price':
+            case 'shipping':
                 return is_numeric($propValue);
             case 'image':
                 return exif_imagetype(DIR_IMAGE . $propValue);

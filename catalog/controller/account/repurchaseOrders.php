@@ -99,11 +99,14 @@ class ControllerAccountRepurchaseOrders extends Controller
                 'imageUrl' => $repurchase_order['imagePath'],
                 'itemUrl' => $repurchase_order['itemUrl'],
                 'options' => $this->load->model('account/order_item')->getOrderItemOptions($repurchase_order['orderItemId']),
+                'price' => $this->currency->format($repurchase_order['price']),
                 'quantity' => $repurchase_order['quantity'],
+                'shipping' => $this->currency->format($repurchase_order['shipping']),
                 'statusId' => $repurchase_order['status'],
                 'statusName' => Status::getStatus($repurchase_order['status'], $this->config->get('config_language_id'), true),
                 'timeAdded'    => $repurchase_order['timeAdded'],
-                'total'         => $this->currency->format($repurchase_order['total']),
+                'subtotal'         => $this->currency->format($repurchase_order['subtotal']),
+                'total' => $this->currency->format($repurchase_order['total'])
             );
         }
 //        $this->log->write(print_r($this->data['orders'], true));
@@ -118,9 +121,12 @@ class ControllerAccountRepurchaseOrders extends Controller
         $this->data['textTimeAdded'] = $this->language->get('TIME_ADDED');
         $this->data['textNoItems'] = $this->language->get('NO_ITEMS');
         $this->data['textOrderItemId'] = $this->language->get('ORDER_ITEM_ID');
+        $this->data['textPrice'] = $this->language->get('PRICE');
         $this->data['textQuantity'] = $this->language->get('QUANTITY');
         $this->data['textReject'] = $this->language->get('REJECT');
+        $this->data['textShipping'] = $this->language->get('SHIPPING');
         $this->data['textStatus'] = $this->language->get('STATUS');
+        $this->data['textSubtotal'] = $this->language->get('SUBTOTAL');
         $this->data['textTotal'] = $this->language->get('TOTAL');
         $this->data['urlRepurchaseOrders'] = $this->url->link('account/repurchaseOrders', '', 'SSL');
 

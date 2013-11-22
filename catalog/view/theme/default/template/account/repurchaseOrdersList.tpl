@@ -45,7 +45,7 @@
                     <div class="order-content">
                         <table>
                             <tr>
-                                <td rowspan="3">
+                                <td rowspan="6">
                                     <a href="<?= $order['imageUrl'] ?>" target="_blank">
                                         <image src="<?= $order['imagePath'] ?>" title="<?= $order['hint'] ?>"/>
                                     </a>
@@ -53,7 +53,7 @@
                                 <td style="white-space: nowrap;">
                                     <b><?php echo $textTimeAdded; ?></b> <?php echo $order['timeAdded']; ?><br />
                                 </td>
-                                <td rowspan="3">
+                                <td rowspan="6">
                                     <a href="<?= $order['itemUrl'] ?>" style="text-decoration: none;">
                                         <?php foreach ($order['options'] as $option): ?>
                                             &nbsp;<small> - <?= $option['name'] ?>: <?= substr($option['value'], 0, 60) . (strlen($option['value']) > 60 ? '...' : '') ?></small>
@@ -66,14 +66,15 @@
                                 <?php endif; ?>
                             </tr>
                             <tr>
-                                <td><b><?php echo $textQuantity; ?>:&nbsp;</b> <?php echo $order['quantity']; ?></td>
-                                <?php if ($order['statusId'] == REPURCHASE_ORDER_ITEM_STATUS_OFFER): ?>
-                                    <td><a id="reject<?= $order['orderItemId'] ?>" onclick="reject(<?= $order['orderItemId'] ?>);" class="button"><span><?= $textReject ?></span></a></td>
-                                <?php endif; ?>
+                                <td><b><?= $textPrice ?>:&nbsp;</b><?= $order['price'] ?></td>
+<?php if ($order['statusId'] == REPURCHASE_ORDER_ITEM_STATUS_OFFER): ?>
+                                <td><a id="reject<?= $order['orderItemId'] ?>" onclick="reject(<?= $order['orderItemId'] ?>);" class="button"><span><?= $textReject ?></span></a></td>
+<?php endif; ?>
                             </tr>
-                            <tr><td>
-                                <b><?php echo $textTotal; ?>:&nbsp;</b> <?php echo $order['total']; ?><br />
-                            </td></tr>
+                            <tr><td><b><?php echo $textQuantity; ?>:&nbsp;</b> <?php echo $order['quantity']; ?></td></tr>
+                            <tr><td><b><?= $textSubtotal ?>:&nbsp;</b><?= $order['subtotal'] ?></td></tr>
+                            <tr><td><b><?= $textShipping ?>:&nbsp;</b><?= $order['shipping'] ?><br />
+                            <tr><td><b><?= $textTotal ?>:&nbsp;</b><?= $order['total'] ?><br /></td></tr>
                             <tr><td colspan="2"><b><?= $textComment ?>:</b> <?= $order['comment'] ?></td></tr>
                         </table>
                     </div>
