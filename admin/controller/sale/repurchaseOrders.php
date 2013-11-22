@@ -25,8 +25,8 @@ class ControllerSaleRepurchaseOrders extends Controller
         $modelToolImage = $this->load->model('tool/image');
         $urlParameters = $this->buildUrlParameterString($this->parameters);
 
-        $this->data['invoice'] = $this->url->link('sale/invoice/showForm' . $urlParameters, 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['print'] = $this->url->link('sale/repurchaseOrders/printPage' . $urlParameters, 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['invoice'] = $this->url->link('sale/invoice/showForm', $urlParameters, 'SSL');
+        $this->data['print'] = $this->url->link('sale/repurchaseOrders/printPage', $urlParameters, 'SSL');
         $this->data['orders'] = array();
 
         $data = array(
