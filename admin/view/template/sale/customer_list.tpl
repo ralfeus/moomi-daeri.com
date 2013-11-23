@@ -68,45 +68,37 @@
                       <?php endforeach; ?>
                   </select>
               </td>
-              <td><input type="text" name="filter_email" value="<?php echo $filter_email; ?>" /></td>
-              <td><select name="filter_customer_group_id">
+              <td><input type="text" name="filterEmail" value="<?= $filterEmail ?>" /></td>
+              <td><select name="filterCustomerGroupId">
                   <option />
                   <?php foreach ($customer_groups as $customer_group) { ?>
-                  <?php if ($customer_group['customer_group_id'] == $filter_customer_group_id) { ?>
+                  <?php if ($customer_group['customer_group_id'] == $filterCustomerGroupId) { ?>
                   <option value="<?php echo $customer_group['customer_group_id']; ?>" selected="selected"><?php echo $customer_group['name']; ?></option>
                   <?php } else { ?>
                   <option value="<?php echo $customer_group['customer_group_id']; ?>"><?php echo $customer_group['name']; ?></option>
                   <?php } ?>
                   <?php } ?>
                 </select></td>
-              <td><select name="filter_status">
-                  <option />
-                  <?php if ($filter_status) { ?>
-                  <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
-                  <?php } else { ?>
-                  <option value="1"><?php echo $text_enabled; ?></option>
-                  <?php } ?>
-                  <?php if (!is_null($filter_status) && !$filter_status) { ?>
-                  <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
-                  <?php } else { ?>
-                  <option value="0"><?php echo $text_disabled; ?></option>
-                  <?php } ?>
+              <td><select name="filterStatus">
+                    <option />
+                    <option value="1" "<?= $filterStatus ? 'selected' : '' ?>"><?= $text_enabled ?></option>
+                    <option value="0" "<?= (!is_null($filterStatus) && !$filterStatus) ? 'selected' : '' ?>"><?= $text_disabled ?></option>
                 </select></td>
-              <td><select name="filter_approved">
+              <td><select name="filterApproved">
                   <option />
-                  <?php if ($filter_approved) { ?>
+                  <?php if ($filterApproved) { ?>
                   <option value="1" selected="selected"><?php echo $text_yes; ?></option>
                   <?php } else { ?>
                   <option value="1"><?php echo $text_yes; ?></option>
                   <?php } ?>
-                  <?php if (!is_null($filter_approved) && !$filter_approved) { ?>
+                  <?php if (!is_null($filterApproved) && !$filterApproved) { ?>
                   <option value="0" selected="selected"><?php echo $text_no; ?></option>
                   <?php } else { ?>
                   <option value="0"><?php echo $text_no; ?></option>
                   <?php } ?>
                 </select></td>
-              <td><input type="text" name="filter_ip" value="<?php echo $filter_ip; ?>" /></td>
-              <td><input type="text" name="filter_date_added" value="<?php echo $filter_date_added; ?>" size="12" id="date" /></td>
+              <td><input type="text" name="filterIp" value="<?= $filterIp ?>" /></td>
+              <td><input type="text" name="filterDateAdded" value="<?= $filterDateAdded ?>" size="12" id="date" /></td>
               <td></td>
               <td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td>
             </tr>
@@ -128,7 +120,7 @@
               <td class="left"><?php echo $customer['approved']; ?></td>
               <td class="left"><?php echo $customer['ip']; ?></td>
               <td class="left"><?php echo $customer['date_added']; ?></td>
-              <td class="left"><select onchange="((this.value !== '') ? window.open('index.php?route=sale/customer/login&token=<?php echo $token; ?>&customer_id=<?php echo $customer['customer_id']; ?>&store_id=' + this.value) : null); this.value = '';">
+              <td class="left"><select onchange="((this.value !== '') ? window.open('index.php?route=sale/customer/login&token=<?= $token ?>&customer_id=<?= $customer['customer_id'] ?>&store_id=' + this.value) : null); this.value = '';">
                   <option value=""><?php echo $text_select; ?></option>
                   <option value="0"><?php echo $text_default; ?></option>
                   <?php foreach ($stores as $store) { ?>

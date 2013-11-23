@@ -29,11 +29,14 @@ abstract class Controller extends OpenCartBase
         $this->load->library('audit');
     }
 
-    protected function buildUrlParameterString($parameters)
+    protected function buildUrlParameterString($parameters, $paramsToReplace = array())
     {
         $result = "";
         foreach ($parameters as $key => $value)
         {
+            if (array_key_exists($key, $paramsToReplace)) {
+                $value = $paramsToReplace[$key];
+            }
             if (empty($value))
                 continue;
             $result .= '&' . $this->getParamString($key, $value);
