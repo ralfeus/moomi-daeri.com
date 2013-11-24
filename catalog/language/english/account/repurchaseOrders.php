@@ -9,3 +9,4 @@
 
 $_['HEADING_TITLE'] = 'Agent order';
 $_['FILTER_BY'] = 'Filter by';
+$_['UNCONDITIONALLY_ACCEPT'] = 'Unconditionally accept';

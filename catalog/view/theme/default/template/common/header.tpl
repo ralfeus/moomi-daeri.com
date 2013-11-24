@@ -1,24 +1,24 @@
 <?php if (isset($_SERVER['HTTP_USER_AGENT']) && !strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6')) echo '<?xml version="1.0" encoding="UTF-8"?>'. "\n"; ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="<?php echo $direction; ?>" lang="<?php echo $lang; ?>" xml:lang="<?php echo $lang; ?>">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="<?= $direction ?>" lang="<?= $lang ?>" xml:lang="<?= $lang ?>">
 <head>
-<title><?php echo $title; ?></title>
-<base href="<?php echo $base; ?>" />
+<title><?= $title ?></title>
+<base href="<?= $base ?>" />
 <?php if ($description) { ?>
-<meta name="description" content="<?php echo $description; ?>" />
+<meta name="description" content="<?= $description ?>" />
 <?php } ?>
 <?php if ($keywords) { ?>
-<meta name="keywords" content="<?php echo $keywords; ?>" />
+<meta name="keywords" content="<?= $keywords ?>" />
 <?php } ?>
 <?php if ($icon) { ?>
-<link href="<?php echo $icon; ?>" rel="icon" />
+<link href="<?= $icon ?>" rel="icon" />
 <?php } ?>
 <?php foreach ($links as $link) { ?>
-<link href="<?php echo $link['href']; ?>" rel="<?php echo $link['rel']; ?>" />
+<link href="<?= $link['href'] ?>" rel="<?= $link['rel'] ?>" />
 <?php } ?>
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/stylesheet.css" />
 <?php foreach ($styles as $style) { ?>
-<link rel="<?php echo $style['rel']; ?>" type="text/css" href="<?php echo $style['href']; ?>" media="<?php echo $style['media']; ?>" />
+<link rel="<?= $style['rel'] ?>" type="text/css" href="<?= $style['href'] ?>" media="<?= $style['media'] ?>" />
 <?php } ?>
 <script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.6.1.min.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>
@@ -38,12 +38,12 @@
 <![endif]-->
 <script type="text/javascript" src="catalog/view/javascript/jquery/tabs.js"></script>
 <script type="text/javascript">
-  var warningMesssage = '<?php echo $text_no_select_images; ?>';
+  var warningMesssage = '<?= $text_no_select_images ?>';
 </script>
 <script type="text/javascript" src="catalog/view/javascript/common.js"></script>
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/ui-lightness/jquery-ui-1.8.23.custom.css" />
 <?php foreach ($scripts as $script) { ?>
-<script type="text/javascript" src="<?php echo $script; ?>"></script>
+<script type="text/javascript" src="<?= $script ?>"></script>
 <?php } ?>
 <!--[if IE 7]>
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/ie7.css" />
@@ -91,7 +91,7 @@ DD_belatedPNG.fix('#logo img');
     var actionCheckboxChecked = '';
     var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'Christmas Day']];
     $(document).ready(function() {
-      var url = "<?php echo $this->url->link('shop/admin/getAllHolidaysForCalendar'); ?>";
+      var url = "<?= $this->url->link('shop/admin/getAllHolidaysForCalendar') ?>";
       $.post(url, function(response) {
         response = $.parseJSON(response);
         holiDays = response['holidays'];
@@ -105,9 +105,9 @@ DD_belatedPNG.fix('#logo img');
         //$('.ui-datepicker-inline').css('width', '180px');
         $('.ui-datepicker-inline').addClass('width180');
       });
-      var currentUrl = "<?php echo $_GET['route']; ?>";
+      var currentUrl = "<?= $_GET['route'] ?>";
       if(currentUrl == 'common/home' || currentUrl == '') {
-        var action_url = "<?php echo $this->url->link('shop/admin/hasAction'); ?>";
+        var action_url = "<?= $this->url->link('shop/admin/hasAction') ?>";
         $.post(action_url, function(response) {
           response = $.parseJSON(response);
           if(response['result'] == 1) {
@@ -115,7 +115,7 @@ DD_belatedPNG.fix('#logo img');
             //console.log("--------");
             //console.log(cookie);
             if(cookie == null && !cookie) {
-              var fancy_url = "<?php echo $this->url->link('shop/admin/showAction'); ?>";
+              var fancy_url = "<?= $this->url->link('shop/admin/showAction') ?>";
               $.fancybox({
                 'width'             : 420,
                 'height'            : 455,
@@ -217,9 +217,9 @@ DD_belatedPNG.fix('#logo img');
 <body>
 <div id="container">
   <div id="header"
-      <?php if ($logo): ?>
-      style="background: url('<?php echo $logo ?>')"
-      <?php endif; ?>
+<?php if ($logo): ?>
+      style="background: url('<?= $logo ?>')"
+<?php endif; ?>
       >
       <table style="width: 100%; height: 150px;">
           <tbody>
@@ -230,7 +230,7 @@ DD_belatedPNG.fix('#logo img');
                   <td style="width: 100%;"></td>
                   <td style="vertical-align: bottom;">
                       <div id="span-selectors">
-                          <form id="selectors" action="<?php echo $action; ?>" method="post" enctype="multipart/form-data">
+                          <form id="selectors" action="<?= $action ?>" method="post" enctype="multipart/form-data">
                               <table style="border: 4px solid #40db4b">
                                   <tbody>
                                       <tr>
@@ -240,11 +240,11 @@ DD_belatedPNG.fix('#logo img');
                                             <input type="hidden" name="currency_code" value="" />
                                             <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
                                               <div class="language-selector">
-                                                <a href="index.php?<?php echo unset_query_string_var('language', $_SERVER['QUERY_STRING']); ?>&amp;language=<?php echo $language['code']; ?>">
+                                                <a href="index.php?<?= unset_query_string_var('language', $_SERVER['QUERY_STRING']) ?>&amp;language=<?= $language['code'] ?>">
                                                   <img
                                                       src="image/flags/<?php echo $language['image'] ?>"
                                                       alt="<?php echo $language['name'] ?>"
-                                                      title="<?php echo $language['name']; ?>" />
+                                                      title="<?= $language['name'] ?>" />
                                                 </a>
                                               </div>
                                           </td>
@@ -282,35 +282,35 @@ DD_belatedPNG.fix('#logo img');
       </table>
       <div id="cart">
           <div class="heading">
-              <h4><?php echo $text_cart; ?></h4>
-              <a><span id="cart_total"><?php echo $text_items; ?></span></a>
+              <h4><?= $text_cart ?></h4>
+              <a><span id="cart_total"><?= $text_items ?></span></a>
           </div>
           <div class="content"></div>
       </div>
       <div id="search">
           <div class="button-search"></div>
-          <?php if ($filter_name) { ?>
-          <input type="text" name="filter_name" value="<?php echo $filter_name; ?>" />
-          <?php } else { ?>
-          <input type="text" name="filter_name" value="<?php echo $text_search; ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
-          <?php } ?>
+<?php if ($filter_name): ?>
+          <input type="text" name="filter_name" value="<?= $filter_name ?>" />
+<?php else: ?>
+          <input type="text" name="filter_name" value="<?= $text_search ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
+<?php endif; ?>
       </div>
-      <div id="welcome">
-          <?php if (!$logged) { ?>
-          <?php echo $text_welcome; ?>
-          <?php } else { ?>
-          <?php echo $text_logged; ?>
-          <?php } ?>
-      </div>
+      <div id="welcome"><?= (!$logged) ? $text_welcome :$text_logged ?></div>
       <div class="links">
-          <a class="button" href="<?php echo $home; ?>"><span><?php echo $text_home; ?></span></a>
-          <a class="button" href="<?php echo $wishlist; ?>" id="wishlist_total"><span><?php echo $text_wishlist; ?></span></a>
-          <a class="button" href="<?php echo $account; ?>"><span><?php echo $text_account; ?></span></a>
-          <a class="button" href="<?php echo $cart; ?>"><span><?php echo $text_cart; ?></span></a>
-          <a class="button" href="<?php echo $checkout; ?>"><span><?php echo $text_checkout; ?></span></a>
-          <a class="button" href="<?php echo $repurchase_order; ?>"><span><?php echo $text_repurchase_order; ?></span></a><br />
-          <a class="button" href="<?= $urlGallery ?>"><span><?= $textGallery ?></span></a>
-          <a class="buttonPink" href="<?= $urlShoppingGuide ?>"><span><?= $textShoppingGuide ?></span></a>
+          <table>
+              <tr><td>
+                  <a class="button" href="<?= $home ?>"><span><?= $text_home ?></span></a>
+                  <a class="button" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>
+                  <a class="button" href="<?= $account ?>"><span><?= $text_account ?></span></a>
+                  <a class="button" href="<?= $cart ?>"><span><?= $text_cart ?></span></a>
+                  <a class="button" href="<?= $checkout ?>"><span><?= $text_checkout ?></span></a>
+                  <a class="button" href="<?= $repurchase_order ?>"><span><?= $text_repurchase_order ?></span></a>
+              </td></tr>
+              <tr><td>
+                  <a class="button" href="<?= $urlGallery ?>"><span><?= $textGallery ?></span></a>
+                  <a class="buttonPink" href="<?= $urlShoppingGuide ?>"><span><?= $textShoppingGuide ?></span></a>
+              </td></tr>
+          </table>
       </div>
   </div>
 <?php if ($categories) { ?>
@@ -318,9 +318,9 @@ DD_belatedPNG.fix('#logo img');
     <ul>
       <?php foreach ($categories as $category) { ?>
       <li><?php if ($category['active']) { ?>
-  	<a href="<?php echo $category['href']; ?>" class="active"><?php echo $category['name']; ?></a>
+  	<a href="<?= $category['href'] ?>" class="active"><?= $category['name'] ?></a>
   	<?php } else { ?>
-  	<a href="<?php echo $category['href']; ?>"><?php echo $category['name']; ?></a>
+  	<a href="<?= $category['href'] ?>"><?= $category['name'] ?></a>
   	<?php } ?>
 
         <?php if ($category['children']) { ?>
@@ -330,7 +330,7 @@ DD_belatedPNG.fix('#logo img');
             <?php $j = $i + ceil(count($category['children']) / $category['column']); ?>
             <?php for (; $i < $j; $i++) { ?>
             <?php if (isset($category['children'][$i])) { ?>
-            <li><a href="<?php echo $category['children'][$i]['href']; ?>"><?php echo $category['children'][$i]['name']; ?></a></li>
+            <li><a href="<?= $category['children'][$i]['href'] ?>"><?= $category['children'][$i]['name'] ?></a></li>
             <?php } ?>
             <?php } ?>
           </ul>

@@ -61,14 +61,22 @@
                                         <?php endforeach; ?>
                                     </a>
                                 </td>
-                                <?php if ($order['statusId'] == REPURCHASE_ORDER_ITEM_STATUS_OFFER): ?>
-                                    <td><a id="accept<?= $order['orderItemId'] ?>" onclick="accept(<?= $order['orderItemId'] ?>);" class="button"><span><?= $textAccept ?></span></a></td>
-                                <?php endif; ?>
+<?php if ($order['textAccept']): ?>
+                                <td>
+                                    <a id="accept<?= $order['orderItemId'] ?>" onclick="accept(<?= $order['orderItemId'] ?>);" class="button">
+                                        <span><?= $order['textAccept'] ?></span>
+                                    </a>
+                                </td>
+<?php endif; ?>
                             </tr>
                             <tr>
                                 <td><b><?= $textPrice ?>:&nbsp;</b><?= $order['price'] ?></td>
 <?php if ($order['statusId'] == REPURCHASE_ORDER_ITEM_STATUS_OFFER): ?>
-                                <td><a id="reject<?= $order['orderItemId'] ?>" onclick="reject(<?= $order['orderItemId'] ?>);" class="button"><span><?= $textReject ?></span></a></td>
+                                <td>
+                                    <a id="reject<?= $order['orderItemId'] ?>" onclick="reject(<?= $order['orderItemId'] ?>);" class="button">
+                                        <span><?= $textReject ?></span>
+                                    </a>
+                                </td>
 <?php endif; ?>
                             </tr>
                             <tr><td><b><?php echo $textQuantity; ?>:&nbsp;</b> <?php echo $order['quantity']; ?></td></tr>

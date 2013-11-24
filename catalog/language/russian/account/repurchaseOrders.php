@@ -8,3 +8,4 @@
  */
 
 $_['HEADING_TITLE'] = 'Заказ агента';
+$_['UNCONDITIONALLY_ACCEPT'] = 'Безусловно принять';

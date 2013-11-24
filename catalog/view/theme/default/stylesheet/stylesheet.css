@@ -556,48 +556,55 @@ table.list .center {
 }
 /* button */
 a.button {
+    color: #FAD3CF ! important;
+    padding: 5px ! important;
+    border-radius: 10px;
+    min-width: 50px;
+    text-align: center;
 	display: inline-block;
-	padding-left: 6px;
-	background: url('../image/button-left.png') top left no-repeat;
 	text-decoration: none;
-	cursor: pointer;
-  margin-left: 5px;
-}
-a.button span {
-	/*color: #FFFFFF;*/
-	color: #FAD3CF;
-	line-height: 12px;
-	font-size: 12px;
-	font-weight: bold;
-	display: inline-block;
-	padding: 6px 12px 8px 5px;
-	background: url('../image/button-right.png') top right no-repeat;
+    font-weight: bold;
+    margin-left: 5px;
+    background-image: linear-gradient(to bottom, #21AEEF 0%, #089EDE 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#21AEEF', endColorstr='#089EDE');  /* IE < 10*/
 }
 a.button:hover {
-	background: url('../image/button-left-active.png') top left no-repeat;
+    background-image: linear-gradient(to bottom, #086D94 0%, #005D84 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#086D94', endColorstr='#005D84');  /* IE < 10 */
+}
+
+a.button span {
+    /*vertical-align: middle;*/
+	/*color: #FFFFFF;*/
+    /*color: #FAD3CF;*/
+	/*line-height: 12px;*/
+	/*font-size: 12px;*/
+	/*font-weight: bold;*/
+	/*display: inline-block;*/
+	/*padding: 6px 12px 8px 5px;*/
+	/*background: url('../image/button-right.png') top right no-repeat;*/
 }
 a.button:hover span {
 	/*color: #FFFFFF;*/
-	color: #FAD3CF;
-	background: url('../image/button-right-active.png') top right no-repeat;
+	/*color: #FAD3CF;*/
+	/*background: url('../image/button-right-active.png') top right no-repeat;*/
 }
 
 a.button-disabled {
 	display: inline-block;
-	padding-left: 6px;
-	background: url('../image/button-left.png') top left no-repeat;
-	text-decoration: none;
-	cursor: pointer;
+	padding: 5px;
+    background-image: linear-gradient(to bottom, #21AEEF 0%, #089EDE 100%);
+    text-decoration: none;
 }
 
 a.button-disabled span {
-	color: gray;
-	line-height: 12px;
-	font-size: 12px;
-	font-weight: bold;
-	display: inline-block;
-	padding: 6px 12px 8px 5px;
-	background: url('../image/button-right.png') top right no-repeat;
+	/*color: gray;*/
+	/*line-height: 12px;*/
+	/*font-size: 12px;*/
+	/*font-weight: bold;*/
+	/*display: inline-block;*/
+	/*padding: 6px 12px 8px 5px;*/
+	/*background: url('../image/button-right.png') top right no-repeat;*/
 }
 
 .buttons {

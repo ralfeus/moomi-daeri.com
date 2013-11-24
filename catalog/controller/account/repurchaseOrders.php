@@ -91,6 +91,13 @@ class ControllerAccountRepurchaseOrders extends Controller
                 $imagePath = $this->load->model('tool/image')->resize('no_image.jpg', 100, 100);
                 $warningHint = $this->language->get('WARNING_HTML_PAGE_PROVIDED');
             }
+            if ($repurchase_order['status'] == REPURCHASE_ORDER_ITEM_STATUS_OFFER) {
+                $textAccept = $this->language->get('ACCEPT');
+            } else if ($repurchase_order['status'] == REPURCHASE_ORDER_ITEM_STATUS_WAITING) {
+                $textAccept = $this->language->get('UNCONDITIONALLY_ACCEPT');
+            } else {
+                $textAccept = null;
+            }
             $this->data['orders'][] = array(
                 'comment' => $repurchase_order['comment'],
                 'hint' => $warningHint,
@@ -106,6 +113,7 @@ class ControllerAccountRepurchaseOrders extends Controller
                 'statusName' => Status::getStatus($repurchase_order['status'], $this->config->get('config_language_id'), true),
                 'timeAdded'    => $repurchase_order['timeAdded'],
                 'subtotal'         => $this->currency->format($repurchase_order['subtotal']),
+                'textAccept' => $textAccept,
                 'total' => $this->currency->format($repurchase_order['total'])
             );
         }
@@ -113,8 +121,6 @@ class ControllerAccountRepurchaseOrders extends Controller
 
         /// Set interface
         $this->setBreadcrumbs();
-
-        $this->data['textAccept'] = $this->language->get('ACCEPT');
         $this->data['textComment'] = $this->language->get('COMMENT');
         $this->data['textFilter'] = $this->language->get('FILTER');
         $this->data['textFilterBy'] = $this->language->get('FILTER_BY');

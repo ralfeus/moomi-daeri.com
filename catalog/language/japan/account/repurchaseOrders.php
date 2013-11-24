@@ -8,3 +8,4 @@
  */
 
 $_['heading_title'] = '買戻しの順序';
+$_['UNCONDITIONALLY_ACCEPT'] = '無条件に受け入れる';
