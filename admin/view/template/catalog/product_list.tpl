@@ -19,7 +19,7 @@
           <a onclick="$('#form').attr('action', '<?php echo $disable; ?>'); $('#form').submit();" class="button"><?php echo $button_disable; ?></a>
           <a onclick="location = '<?php echo $insert; ?>'" class="button"><?php echo $button_insert; ?></a>
           <a onclick="$('#form').attr('action', '<?php echo $copy; ?>'); $('#form').submit();" class="button"><?php echo $button_copy; ?></a>
-          <a onclick="$('form').submit();" class="button"><?php echo $button_delete; ?></a>
+          <?php /*<a onclick="$('form').submit();" class="button"><?php echo $button_delete; ?></a>*/ ?>
       </div>
     </div>
     <div class="content">

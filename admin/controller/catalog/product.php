@@ -154,51 +154,51 @@ class ControllerCatalogProduct extends Controller {
   	}
 
   	public function delete() {
-		if (isset($this->request->post['selected']) && $this->validateDelete()) {
-			foreach ($this->request->post['selected'] as $product_id) {
-				$this->model_catalog_product->deleteProduct($product_id);
-                Audit::getInstance($this->registry)->addAdminEntry(
-                    AUDIT_ADMIN_PRODUCT_DELETE,
-                    array('route' => $_REQUEST['route'], 'selected' => $_REQUEST['selected'])
-                );
-	  		}
-
-			$this->session->data['success'] = $this->language->get('text_success');
-			
-			$url = '';
-			
-			if (isset($this->request->get['filter_name'])) {
-				$url .= '&filter_name=' . $this->request->get['filter_name'];
-			}
-		
-			if (isset($this->request->get['filter_model'])) {
-				$url .= '&filter_model=' . $this->request->get['filter_model'];
-			}
-			
-			if (isset($this->request->get['filter_price'])) {
-				$url .= '&filter_price=' . $this->request->get['filter_price'];
-			}
-			
-			if (isset($this->request->get['filter_korean_name'])) {
-				$url .= '&filter_korean_name=' . $this->request->get['filter_korean_name'];
-			}	
-		
-			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
-			}
-
-			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
-			}
-
-			if (isset($this->request->get['page'])) {
-				$url .= '&page=' . $this->request->get['page'];
-			}
-			
-			$this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
-		}
-
-    	$this->getList();
+//		if (isset($this->request->post['selected']) && $this->validateDelete()) {
+//			foreach ($this->request->post['selected'] as $product_id) {
+//				$this->model_catalog_product->deleteProduct($product_id);
+//                Audit::getInstance($this->registry)->addAdminEntry(
+//                    AUDIT_ADMIN_PRODUCT_DELETE,
+//                    array('route' => $_REQUEST['route'], 'selected' => $_REQUEST['selected'])
+//                );
+//	  		}
+//
+//			$this->session->data['success'] = $this->language->get('text_success');
+//
+//			$url = '';
+//
+//			if (isset($this->request->get['filter_name'])) {
+//				$url .= '&filter_name=' . $this->request->get['filter_name'];
+//			}
+//
+//			if (isset($this->request->get['filter_model'])) {
+//				$url .= '&filter_model=' . $this->request->get['filter_model'];
+//			}
+//
+//			if (isset($this->request->get['filter_price'])) {
+//				$url .= '&filter_price=' . $this->request->get['filter_price'];
+//			}
+//
+//			if (isset($this->request->get['filter_korean_name'])) {
+//				$url .= '&filter_korean_name=' . $this->request->get['filter_korean_name'];
+//			}
+//
+//			if (isset($this->request->get['sort'])) {
+//				$url .= '&sort=' . $this->request->get['sort'];
+//			}
+//
+//			if (isset($this->request->get['order'])) {
+//				$url .= '&order=' . $this->request->get['order'];
+//			}
+//
+//			if (isset($this->request->get['page'])) {
+//				$url .= '&page=' . $this->request->get['page'];
+//			}
+//
+//			$this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+//		}
+//
+//    	$this->getList();
   	}
 
   	public function copy() {
