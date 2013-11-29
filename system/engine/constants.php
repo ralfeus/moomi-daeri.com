@@ -60,3 +60,13 @@ define('CMS_SITE_GUIDE', 0x00070002);
 //TODO: Replace attribute with field in `product` table
 define('ATTRIBUTE_KOREAN_NAME', 42); // Attribute ID of the attribute containing korean name of the product.
 define('ATTRIBUTE_LINK', 43); // Attribute ID of the attribute containing link to the product of the source site
+
+/// Definition of search string weight in different product properties
+define('SEARCH_WEIGHT_FULL_PHRASE_MODEL', 10000); // Full search phrase in product model
+define('SEARCH_WEIGHT_FULL_PHRASE_NAME', 10000); // Full search phrase in product name
+define('SEARCH_WEIGHT_FULL_PHRASE_TAG', 1000); // Full search phrase in product tag
+define('SEARCH_WEIGHT_FULL_PHRASE_DESCR', 10000); // Full search phrase in product description
+define('SEARCH_WEIGHT_WORD_MODEL', 10); // One of search words in product model
+define('SEARCH_WEIGHT_WORD_NAME', 10); // One of search words in product name
+define('SEARCH_WEIGHT_WORD_TAG', 5); // One of search words in product tag
+define('SEARCH_WEIGHT_WORD_DESCR', 1); // One of search words in product description

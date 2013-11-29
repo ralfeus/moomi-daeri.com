@@ -21,7 +21,7 @@ $_['text_display']      = 'Вид:';
 $_['text_list']         = 'Список';
 $_['text_grid']         = 'Витрина';
 $_['text_sort']         = 'Сортировать по:';
-$_['text_default']      = 'По-умолчанию';
+$_['text_default']      = 'По умолчанию';
 $_['text_name_asc']     = 'Имени (от А до Я)';
 $_['text_name_desc']    = 'Имени (от Я до А)';
 $_['text_price_asc']    = 'Ценам (Низкие &gt; Высокие)';
@@ -35,4 +35,5 @@ $_['text_limit']        = 'На странице:';
 // Entry
 $_['entry_search']      = 'Поиск:';
 $_['entry_description'] = 'Поиск по описанию';
-?>
+
+$_['RELEVANCE'] = 'Соответствию';

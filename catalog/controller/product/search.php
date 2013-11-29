@@ -45,7 +45,7 @@ class ControllerProductSearch extends Controller {
 		if (isset($this->request->get['sort'])) {
 			$sort = $this->request->get['sort'];
 		} else {
-			$sort = 'p.sort_order';
+			$sort = null;
 		} 
 
 		if (isset($this->request->get['order'])) {
@@ -209,51 +209,54 @@ class ControllerProductSearch extends Controller {
 			);
 					
 			$product_total = $this->model_catalog_product->getTotalProducts($data);
-								
 			$results = $this->model_catalog_product->getProductsM($data);
-					
-			foreach ($results as $result) {
-				if ($result['image']) {
-					$image = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
+
+            if ($sort == null) {
+                $results = $this->sortByRelevance($results, $filter_name);
+            }
+
+			for ($index = $data['start']; $index < $data['start'] + $limit; $index++) {
+				if ($results[$index]['image']) {
+					$image = $this->model_tool_image->resize($results[$index]['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
 				} else {
 					$image = false;
 				}
 				
 				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-					$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+					$price = $this->currency->format($this->tax->calculate($results[$index]['price'], $results[$index]['tax_class_id'], $this->config->get('config_tax')));
 				} else {
 					$price = false;
 				}
 				
-				if ((float)$result['special']) {
-					$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+				if ((float)$results[$index]['special']) {
+					$special = $this->currency->format($this->tax->calculate($results[$index]['special'], $results[$index]['tax_class_id'], $this->config->get('config_tax')));
 				} else {
 					$special = false;
 				}	
 				
 				if ($this->config->get('config_tax')) {
-					$tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price']);
+					$tax = $this->currency->format((float)$results[$index]['special'] ? $results[$index]['special'] : $results[$index]['price']);
 				} else {
 					$tax = false;
 				}				
 				
 				if ($this->config->get('config_review_status')) {
-					$rating = (int)$result['rating'];
+					$rating = (int)$results[$index]['rating'];
 				} else {
 					$rating = false;
 				}
 			
 				$this->data['products'][] = array(
-					'product_id'  => $result['product_id'],
+					'product_id'  => $results[$index]['product_id'],
 					'thumb'       => $image,
-					'name'        => $result['name'],
-					'description' => utf8_truncate(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
+					'name'        => $results[$index]['name'],
+					'description' => utf8_truncate(strip_tags(html_entity_decode($results[$index]['description'], ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
 					'price'       => $price,
 					'special'     => $special,
 					'tax'         => $tax,
-					'rating'      => $result['rating'],
-					'reviews'     => sprintf($this->language->get('text_reviews'), (int)$result['reviews']),
-					'href'        => $this->url->link('product/product', $url . '&product_id=' . $result['product_id'])
+					'rating'      => $results[$index]['rating'],
+					'reviews'     => sprintf($this->language->get('text_reviews'), (int)$results[$index]['reviews']),
+					'href'        => $this->url->link('product/product', $url . '&product_id=' . $results[$index]['product_id'])
 				);
 			}
 					
@@ -285,13 +288,20 @@ class ControllerProductSearch extends Controller {
 						
 			$this->data['sorts'] = array();
 			
-			$this->data['sorts'][] = array(
-				'text'  => $this->language->get('text_default'),
-				'value' => 'p.sort_order-ASC',
-				'href'  => $this->url->link('product/search', 'sort=p.sort_order&order=ASC' . $url)
-			);
-			
-			$this->data['sorts'][] = array(
+//			$this->data['sorts'][] = array(
+//				'text'  => $this->language->get('text_default'),
+//				'value' => 'p.sort_order-ASC',
+//				'href'  => $this->url->link('product/search', 'sort=p.sort_order&order=ASC' . $url)
+//			);
+
+            $this->data['sorts'][] = array(
+                'text'  => $this->language->get('RELEVANCE'),
+                'value' => null,
+                'href'  => $this->url->link('product/search', '' . $url)
+            );
+
+
+            $this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_name_asc'),
 				'value' => 'pd.name-ASC',
 				'href'  => $this->url->link('product/search', 'sort=pd.name&order=ASC' . $url)
@@ -471,5 +481,40 @@ class ControllerProductSearch extends Controller {
 				
 		$this->response->setOutput($this->render());
   	}
+
+    private function sortByRelevance($results, $filter_name) {
+        $searchWords = explode(' ', $filter_name);
+        $resultsWeights = array();
+        foreach (array_keys($results) as $i) {
+            $resultsWeights[$i] = 0;
+            if (is_numeric(stripos($results[$i]['model'], $filter_name))) {
+                $resultsWeights[$i] += SEARCH_WEIGHT_FULL_PHRASE_MODEL;
+            }
+            if (is_numeric(stripos($results[$i]['name'], $filter_name))) {
+                $resultsWeights[$i] += SEARCH_WEIGHT_FULL_PHRASE_NAME;
+            }
+            if (is_numeric(stripos($results[$i]['tag'], $filter_name))) {
+                $resultsWeights[$i] += SEARCH_WEIGHT_FULL_PHRASE_TAG;
+            }
+            if (is_numeric(stripos($results[$i]['description'], $filter_name))) {
+                $resultsWeights[$i] += SEARCH_WEIGHT_FULL_PHRASE_DESCR;
+            }
+            foreach ($searchWords as $searchWord) {
+                if (is_numeric(stripos($results[$i]['model'], $searchWord))) {
+                    $resultsWeights[$i] += SEARCH_WEIGHT_WORD_MODEL;
+                }
+                if (is_numeric(stripos($results[$i]['name'], $searchWord))) {
+                    $resultsWeights[$i] += SEARCH_WEIGHT_WORD_NAME;
+                }
+                if (is_numeric(stripos($results[$i]['tag'], $searchWord))) {
+                    $resultsWeights[$i] += SEARCH_WEIGHT_WORD_TAG;
+                }
+                if (is_numeric(stripos($results[$i]['description'], $searchWord))) {
+                    $resultsWeights[$i] += SEARCH_WEIGHT_WORD_DESCR;
+                }
+            }
+        }
+        array_multisort($resultsWeights, SORT_DESC, $results);
+        return $results;
+    }
 }
-?>
