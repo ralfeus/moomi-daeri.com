@@ -65,7 +65,7 @@ define('ATTRIBUTE_LINK', 43); // Attribute ID of the attribute containing link t
 define('SEARCH_WEIGHT_FULL_PHRASE_MODEL', 10000); // Full search phrase in product model
 define('SEARCH_WEIGHT_FULL_PHRASE_NAME', 10000); // Full search phrase in product name
 define('SEARCH_WEIGHT_FULL_PHRASE_TAG', 1000); // Full search phrase in product tag
-define('SEARCH_WEIGHT_FULL_PHRASE_DESCR', 10000); // Full search phrase in product description
+define('SEARCH_WEIGHT_FULL_PHRASE_DESCR', 100); // Full search phrase in product description
 define('SEARCH_WEIGHT_WORD_MODEL', 10); // One of search words in product model
 define('SEARCH_WEIGHT_WORD_NAME', 10); // One of search words in product name
 define('SEARCH_WEIGHT_WORD_TAG', 5); // One of search words in product tag
