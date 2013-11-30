@@ -48,7 +48,7 @@ class ModelSaleOrderItem extends Model
             ORDER BY supplier_name, op.model, op.order_product_id
 			" . ($limit ? "LIMIT $limit" : "");
 
-        $this->getLogger()->write($query);
+//        $this->getLogger()->write($query);
 		$order_item_query = $this->getDb()->query($query);
 
 		if ($order_item_query->num_rows) {
