@@ -40,7 +40,7 @@ class ModelSaleRepurchaseOrder extends Model
                     WHERE
                         order_product_id = op.order_product_id
                         AND product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID . "
-                        AND value LIKE '%" . $data['filterShopName'] . "%')";
+                        AND value LIKE '%" . $this->getDb()->escape($data['filterShopName']) . "%')";
             }
             if (!empty($data['filterSiteName'])) {
                 $filter .= " AND EXISTS (
@@ -49,7 +49,7 @@ class ModelSaleRepurchaseOrder extends Model
                     WHERE
                         order_product_id = op.order_product_id
                         AND product_option_id = " . REPURCHASE_ORDER_ITEM_URL_OPTION_ID . "
-                        AND value LIKE '%" . $data['filterSiteName'] . "%')";
+                        AND value LIKE '%" . $this->getDb()->escape($data['filterSiteName']) . "%')";
             }
             if (!empty($data['filterCustomerId']))
                 $filter .= " AND c.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
@@ -57,6 +57,15 @@ class ModelSaleRepurchaseOrder extends Model
                 $filter .= " AND op.order_product_id = " . (int)$data['filterOrderId'];
             if (!empty($data['filterStatusId']))
                 $filter .= " AND op.status_id IN (" . implode(', ', $data['filterStatusId']) . ")";
+            if (!empty($data['filterStatusIdDateSet']) && !empty($data['filterStatusSetDate']))
+                $filter .= " AND EXISTS (
+                    SELECT order_item_history_id
+                    FROM " . DB_PREFIX . "order_item_history
+                    WHERE
+                        order_item_id = op.order_product_id
+                        AND order_item_status_id IN (" . implode(', ', $data['filterStatusIdDateSet']) . ")
+                        AND date_added = '" . $this->getDb()->escape($data['filterStatusSetDate']) . "'
+                )";
         }
 //        $this->log->write($filter);
         return $filter;

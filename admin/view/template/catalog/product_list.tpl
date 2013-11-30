@@ -72,55 +72,55 @@
               <td style="width: 1px; white-space: nowrap;"><?= $textDateAdded ?></td>
               <td class="right"><?php echo $column_action; ?></td>
             </tr>
+            <tr class="filter">
+                <td></td>
+                <td></td>
+                <td><input name="filterName" value="<?= $filterName ?>" /></td>
+                <td><input name="filterModel" value="<?= $filterModel ?>" /></td>
+                <td><input name="filterPrice" value="<?= $filterPrice ?>" /></td>
+                <td><input name="filterKoreanName" value="<?= $filterKoreanName ?>" /></td>
+                <td>
+                    <select name="filterUserNameId[]" multiple="true">
+                        <?php foreach ($usernames as $key => $value):
+                        $selected = in_array($key, $filterUserNameId) ? 'selected' : ''; ?>
+                        <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+                <td>
+                    <select name="filterStatus" multiple="true">
+                        <option>-- No filter --</option>
+                        <option value="0" <?= $filterStatus === "0" ? "selected" : "" ?>>Disabled</option>
+                        <option value="1" <?= $filterStatus === "1" ? "selected" : "" ?>>Enabled</option>
+                    </select>
+                </td>
+                <td>
+                    <select name="filterManufacturerId[]" multiple="true">
+                        <?php foreach ($manufacturers as $key => $value):
+                        $selected = in_array($key, $filterManufacturerId) ? 'selected' : ''; ?>
+                        <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+                <td>
+                    <select name="filterSupplierId[]" multiple="true">
+                        <?php foreach ($suppliers as $key => $value):
+                        $selected = in_array($key, $filterSupplierId) ? 'selected' : ''; ?>
+                        <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+                <td>
+                    <input name="filterDateAddedFrom" class="date" value="<?= $filterDateAddedFrom ?>" />
+                    <input name="filterDateAddedTo" class="date" value="<?= $filterDateAddedTo ?>" />
+                </td>
+                <td align="right">
+                    <a onclick="filter();" class="button"><?php echo $button_filter; ?></a>
+                    <a onclick="resetFilter();" class="button"><?= $textResetFilter ?></a>
+                </td>
+            </tr>
           </thead>
           <tbody>
-            <tr class="filter">
-              <td></td>
-              <td></td>
-              <td><input name="filterName" value="<?= $filterName ?>" /></td>
-              <td><input name="filterModel" value="<?= $filterModel ?>" /></td>
-              <td><input name="filterPrice" value="<?= $filterPrice ?>" /></td>
-              <td><input name="filterKoreanName" value="<?= $filterKoreanName ?>" /></td>
-              <td>
-                  <select name="filterUserNameId[]" multiple="true">
-                      <?php foreach ($usernames as $key => $value):
-                      $selected = in_array($key, $filterUserNameId) ? 'selected' : ''; ?>
-                      <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
-                      <?php endforeach; ?>
-                  </select>
-              </td>
-              <td>
-                  <select name="filterStatus" multiple="true">
-                      <option>-- No filter --</option>
-                      <option value="0" <?= $filterStatus === "0" ? "selected" : "" ?>>Disabled</option>
-                      <option value="1" <?= $filterStatus === "1" ? "selected" : "" ?>>Enabled</option>
-                  </select>
-              </td>
-			        <td>
-                  <select name="filterManufacturerId[]" multiple="true">
-                      <?php foreach ($manufacturers as $key => $value):
-                      $selected = in_array($key, $filterManufacturerId) ? 'selected' : ''; ?>
-                      <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
-                      <?php endforeach; ?>
-                  </select>
-              </td>
-			  <td>
-                  <select name="filterSupplierId[]" multiple="true">
-                      <?php foreach ($suppliers as $key => $value):
-                      $selected = in_array($key, $filterSupplierId) ? 'selected' : ''; ?>
-                      <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
-                      <?php endforeach; ?>
-                  </select>
-			  </td>
-              <td>
-                  <input name="filterDateAddedFrom" class="date" value="<?= $filterDateAddedFrom ?>" />
-                  <input name="filterDateAddedTo" class="date" value="<?= $filterDateAddedTo ?>" />
-              </td>
-              <td align="right">
-                  <a onclick="filter();" class="button"><?php echo $button_filter; ?></a>
-                  <a onclick="resetFilter();" class="button"><?= $textResetFilter ?></a>
-              </td>
-            </tr>
             <?php if ($products) { ?>
             <?php foreach ($products as $product) { ?>
             <tr>
@@ -208,8 +208,7 @@ $(document).ready(function() {
     $('button.ui-multiselect').css('width', '110px');
 });
 
-function filter()
-{
+function filter() {
     $('#form')
             .attr('action', 'index.php?route=catalog/product&token=<?= $token ?>')
             .submit();

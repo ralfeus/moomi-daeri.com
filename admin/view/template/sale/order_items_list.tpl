@@ -36,7 +36,7 @@
                         $sort_class = 'class="' . strtolower($order) . '"';
                     else
                         $sort_class = ""; ?>
-                    <a href="<?php echo $sort_order_item_id; ?>" <?php echo $sort_class; ?>><?php echo $column_order_item_id; ?></a>
+                    <a href="<?= $sort_order_item_id ?>" <?= $sort_class ?>><?= $column_order_item_id ?></a>
                 </td>
 				<td style="width: 40px;">
 					<?php if ($sort == 'order_id')
@@ -284,13 +284,11 @@ function saveQuantity(orderItemId, control) {
     });
 }
 
-function selectAll(control)
-{
+function selectAll(control) {
 	$('input[name*=\'selectedItems\']').attr('checked', control.checked);
 }
 
-function submitForm(action)
-{
+function submitForm(action) {
     if ($('#selectedItems\\[\\]:checked').length != 0)
     {
         $('#form').attr('action', action);

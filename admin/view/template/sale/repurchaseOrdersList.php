@@ -25,15 +25,16 @@
                 <thead>
                     <tr>
                         <td style="width: 1px; text-align: center;"><input type="checkbox" onclick="selectAll(this);" /></td>
-                        <td style="width: 1px"><?= $textOrderId ?></td>
-                        <td style="width: 1px;"><?= $textUnderlyingOrderId ?></td>
+                        <td style="width: 1px"><?= $textOrderId ?> / <?= $textUnderlyingOrderId ?></td>
                         <td style="width: 1px"><?= $textItem ?></td>
                         <td style="width: 1px"><?= $textCustomer ?></td>
-                        <td style="width: 1px"><?= $textShop ?></td>
-                        <td style="width: 1px"><?= $textQuantity ?></td>
-                        <td style="width: 100px"><?= $textPricePerItem ?></td>
-                        <td style="width: 100px"><?= $textShipping ?></td>
-                        <td style="width: 1px"><?= $textAmount ?> (<?= $currencyCode ?>)</td>
+                        <td style="width: 1px"><?= $textShopName ?> / <?= $textSiteName ?></td>
+                        <td style="width: 1px">
+                            <?= preg_replace('/\s/', '&nbsp;', $textPricePerItem) ?><br />
+                            <?= preg_replace('/\s/', '&nbsp;', $textQuantity) ?><br />
+                            <?= preg_replace('/\s/', '&nbsp;', $textShipping) ?><br />
+                            <?= preg_replace('/\s/', '&nbsp;', $textAmount) ?>&nbsp;(<?= $currencyCode ?>)
+                        </td>
                         <td style="width: 1px"><?= $textStatus ?></td>
                         <td style="width: auto;" "><?= $textComment ?></td>
                         <td style="width: 1px"><?= $textActions ?></td>
@@ -41,38 +42,36 @@
                     <tr class="filter">
                         <td />
                         <td><input name="filterOrderId" value="<?= $filterOrderId ?>" size="3" onkeydown="filterKeyDown(event);" /></td>
-                        <td />
                         <td>
                             <input name="filterItemName" value="<?= $filterItemName ?>" onkeydown="filterKeyDown(event)" />
                         </td>
                         <td>
                             <select name="filterCustomerId[]" multiple="true">
-                                <?php foreach ($customers as $customer):
-                            if (in_array($customer['id'], $filterCustomerId))
-                                $selected = "selected=\"selected\"";
-                            else
-                                $selected = ""; ?>
+<?php foreach ($customers as $customer):
+    if (in_array($customer['id'], $filterCustomerId))
+        $selected = "selected=\"selected\"";
+    else
+        $selected = ""; ?>
                                 <option value="<?= $customer['id'] ?>" <?= $selected ?>><?= $customer['name'] ?></option>
-                                <?php endforeach; ?>
+<?php endforeach; ?>
                             </select>
                         </td>
                         <td>
                             <input name="filterShopName" value="<?= $filterShopName ?>" onkeydown="filterKeyDown(event)" />
                             <input name="filterSiteName" value="<?= $filterSiteName ?>" onkeydown="filterKeyDown(event)" />
                         </td>
-                        <td />
-                        <td /><td />
-                        <td><input name="filterAmount"  size="9" value="<?= $filterAmount; ?>" onkeydown="filterKeyDown(event);"/></td>
+                        <td><input name="filterAmount"  size="9" value="<?= $filterAmount; ?>" onkeydown="filterKeyDown(event);" placeholder="Amount filter"/></td>
                         <td>
                             <select name="filterStatusId[]" multiple="true">
                                 <?php foreach ($statuses as $status):
-                                    if (in_array($status['statusId'], $filterStatusId))
+                                    if (in_array($status['statusId'], $filterStatusId) || in_array($status['statusId'], $filterStatusIdDateSet))
                                         $selected = "selected=\"selected\"";
                                     else
                                         $selected = ""; ?>
                                     <option value="<?= $status['statusId'] ?>" <?= $selected ?>><?= $status['name'] ?></option>
                                 <?php endforeach; ?>
                             </select>
+                            <input name="filterStatusSetDate" class="date" value="<?= $filterStatusSetDate ?>" onkeydown="filterKeyDown(event)" />
                         </td>
                         <td />
                         <td align="right"><a onclick="filter();" class="button"><?= $textFilter; ?></a></td>
@@ -89,8 +88,7 @@
                                         value="<?= $order['orderId'] ?>" />
                                         <!--?= $order['selected'] ?-->
                             </td>
-                            <td><?= $order['orderId'] ?></td>
-                            <td><?= $order['underlyingOrderId'] ?></td>
+                            <td><?= $order['orderId'] ?> / <?= $order['underlyingOrderId'] ?></td>
                             <td>
                                 <input
                                     onkeydown="itemNameKeyDown(event, this, <?= $order['orderId'] ?>)"
@@ -111,32 +109,26 @@
                                 <a href="<?= $order['itemUrl'] ?>"><?= $order['siteName'] ?></a>
                             </td>
                             <td>
+                                <input id="price_<?= $order['orderId'] ?>"
+                                       onkeydown="changePrice(event, this, <?= $order['orderId'] ?>)"
+                                       style="width: 100%"
+                                       value="<?= $order['price'] ?>"
+                                    />
                                 <input
                                         onkeydown="quantityKeyDown(event, this, <?= $order['orderId'] ?>)"
                                         style="width: 100%"
                                         value="<?= $order['quantity'] ?>"
                                         />
-                            </td>
-                            <td>
-                                <input id="price_<?= $order['orderId'] ?>"
-                                        onkeydown="changePrice(event, this, <?= $order['orderId'] ?>)"
-                                        style="width: 100%"
-                                        value="<?= $order['price'] ?>"
-                                        />
-                            </td>
-                            <td>
                                 <input
-                                        onkeydown="changeShipping(event, this, <?= $order['orderId'] ?>)"
-                                        style="width: 100%"
-                                        value="<?= $order['shipping'] ?>"
-                                        />
-                            </td>
-                            <td>
-                                <input id="total_<?= $order['orderId'] ?>"
-                                    onkeydown="amountKeyDown(event, this, <?= $order['orderId'] ?>)"
+                                    onkeydown="changeShipping(event, this, <?= $order['orderId'] ?>)"
                                     style="width: 100%"
-                                    value="<?= $order['amount'] ?>"
-                                />
+                                    value="<?= $order['shipping'] ?>"
+                                    />
+                                <input id="total_<?= $order['orderId'] ?>"
+                                       onkeydown="amountKeyDown(event, this, <?= $order['orderId'] ?>)"
+                                       style="width: 100%"
+                                       value="<?= $order['amount'] ?>"
+                                    />
                             </td>
                             <td id="status"><?= $order['status'] ?></td>
                             <td>
@@ -174,6 +166,7 @@
 </div>
 <script type="text/javascript">//<!--
 $(document).ready(function() {
+    $('.date').datepicker({dateFormat: 'yy-mm-dd'});
     $('[name=filterCustomerId\\[\\]]')
             .multiselect({
                 noneSelectedText: "-- No filter --",

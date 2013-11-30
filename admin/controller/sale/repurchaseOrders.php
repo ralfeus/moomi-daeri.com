@@ -17,8 +17,8 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->modelSaleRepurchaseOrder = $this->load->model('sale/repurchaseOrder');
         $this->load->language('sale/repurchaseOrders');
         $this->load->library('Status');
-        $this->document->setTitle($this->language->get('HEADING_TITLE'));
-        $this->data['headingTitle'] = $this->language->get('HEADING_TITLE');
+        $this->document->setTitle($this->getLanguage()->get('HEADING_TITLE'));
+        $this->data['headingTitle'] = $this->getLanguage()->get('HEADING_TITLE');
     }
 
     private function getData() 	{
@@ -51,11 +51,11 @@ class ControllerSaleRepurchaseOrders extends Controller
             $actions = array();
 
             $actions[] = array(
-                'text' => $this->language->get('GOTO_ITEM'),
+                'text' => $this->getLanguage()->get('GOTO_ITEM'),
                 'href' => $order_item['itemUrl']
             );
             $actions[] = array(
-                'text' => $this->language->get('CHANGE_PICTURE'),
+                'text' => $this->getLanguage()->get('CHANGE_PICTURE'),
                 'href' => '',
                 'onclick' => 'imageManager(' . $order_item['orderItemId'] . ', $(this).parent().parent().find(\'img\'))'
             );
@@ -74,7 +74,7 @@ class ControllerSaleRepurchaseOrders extends Controller
             else
             {
                 $image = $modelToolImage->resize('no_image.jpg', 100, 100);
-                $hint = $this->language->get('WARNING_HTML_PAGE_PROVIDED');
+                $hint = $this->getLanguage()->get('WARNING_HTML_PAGE_PROVIDED');
             }
 
             $this->data['orders'][] = array(
@@ -104,9 +104,9 @@ class ControllerSaleRepurchaseOrders extends Controller
                         $this->config->get('config_language_id'))
                     : "",
                 'quantity'		=> $order_item['quantity'],
-                'price' => $order_item['price'],
-                'shipping' => $order_item['shipping'],
-                'amount' => $order_item['total'],
+                'price' => (float)$order_item['price'],
+                'shipping' => (float)$order_item['shipping'],
+                'amount' => (float)$order_item['total'],
                 'actions'                    => $actions,
                 'whoOrders' => $order_item['whoOrders']
             );
@@ -130,7 +130,7 @@ class ControllerSaleRepurchaseOrders extends Controller
         $pagination->total = $this->modelSaleRepurchaseOrder->getOrdersCount($data);
         $pagination->page = $this->parameters['page'];
         $pagination->limit = $this->config->get('config_admin_limit');
-        $pagination->text = $this->language->get('text_pagination');
+        $pagination->text = $this->getLanguage()->get('text_pagination');
         $pagination->url = $this->url->link('sale/order_items', $urlParameters . '&page={page}', 'SSL');
 
         $this->data['pagination'] = $pagination->render();
@@ -146,29 +146,30 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->getData();
 
         /// Set interface
-        $this->data['text_missing'] = $this->language->get('text_missing');
-        $this->data['text_no_results'] = $this->language->get('NO_ITEMS');
-        $this->data['text_no_selected_items'] = $this->language->get('error_no_selected_items');
+        $this->data['text_missing'] = $this->getLanguage()->get('text_missing');
+        $this->data['text_no_results'] = $this->getLanguage()->get('NO_ITEMS');
+        $this->data['text_no_selected_items'] = $this->getLanguage()->get('error_no_selected_items');
 
-        $this->data['textActions'] = $this->language->get('ACTIONS');
-        $this->data['textAmount'] = $this->language->get('AMOUNT');
-        $this->data['textComment'] = $this->language->get('COMMENT');
-        $this->data['textFilter'] = $this->language->get('FILTER');
-        $this->data['textItem'] = $this->language->get('ITEM');
-        $this->data['textOrderId'] = $this->language->get('ORDER_ID');
-        $this->data['textUnderlyingOrderId'] = $this->language->get('UNDERLYING_ORDER_ID');
-        $this->data['textCustomer'] = $this->language->get('CUSTOMER');
-        $this->data['textStatus'] = $this->language->get('STATUS');
-        $this->data['textQuantity'] = $this->language->get('QUANTITY');
-        $this->data['textPricePerItem'] = $this->language->get('PricePerItem');
-        $this->data['textShipping'] = $this->language->get('Shipping');
-        $this->data['textWeight'] = $this->language->get('WEIGHT');
-        $this->data['textFilter'] = $this->language->get('FILTER');
-        $this->data['textInvoice'] = $this->language->get('INVOICE');
-        $this->data['textNoSelectedItems'] = $this->language->get('NO_SELECTED_ITEMS');
-        $this->data['textPrint'] = $this->language->get('PRINT');
-        $this->data['textShop'] = $this->language->get('SHOP_NAME') . '/' . $this->language->get('SITE_NAME');
-        $this->data['textWhoOrders'] = $this->language->get('WHO_ORDERS');
+        $this->data['textActions'] = $this->getLanguage()->get('ACTIONS');
+        $this->data['textAmount'] = $this->getLanguage()->get('AMOUNT');
+        $this->data['textComment'] = $this->getLanguage()->get('COMMENT');
+        $this->data['textFilter'] = $this->getLanguage()->get('FILTER');
+        $this->data['textItem'] = $this->getLanguage()->get('ITEM');
+        $this->data['textOrderId'] = $this->getLanguage()->get('ORDER_ID');
+        $this->data['textUnderlyingOrderId'] = $this->getLanguage()->get('UNDERLYING_ORDER_ID');
+        $this->data['textCustomer'] = $this->getLanguage()->get('CUSTOMER');
+        $this->data['textStatus'] = $this->getLanguage()->get('STATUS');
+        $this->data['textQuantity'] = $this->getLanguage()->get('QUANTITY');
+        $this->data['textPricePerItem'] = $this->getLanguage()->get('PricePerItem');
+        $this->data['textShipping'] = $this->getLanguage()->get('Shipping');
+        $this->data['textWeight'] = $this->getLanguage()->get('WEIGHT');
+        $this->data['textFilter'] = $this->getLanguage()->get('FILTER');
+        $this->data['textInvoice'] = $this->getLanguage()->get('INVOICE');
+        $this->data['textNoSelectedItems'] = $this->getLanguage()->get('NO_SELECTED_ITEMS');
+        $this->data['textPrint'] = $this->getLanguage()->get('PRINT');
+        $this->data['textShopName'] = $this->getLanguage()->get('SHOP_NAME');
+        $this->data['textSiteName'] = $this->getLanguage()->get('SITE_NAME');
+        $this->data['textWhoOrders'] = $this->getLanguage()->get('WHO_ORDERS');
 
         $this->setBreadcrumbs();
         $this->initStatuses();
@@ -188,8 +189,16 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->parameters['filterOrderId'] = empty($_REQUEST['filterOrderId']) ? null : $_REQUEST['filterOrderId'];
         $this->parameters['filterShopName'] = empty($_REQUEST['filterShopName']) ? null : $_REQUEST['filterShopName'];
         $this->parameters['filterSiteName'] = empty($_REQUEST['filterSiteName']) ? null : $_REQUEST['filterSiteName'];
-        $this->parameters['filterStatusId'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
-        $this->parameters['filterWhoOrders'] = empty($_REQUEST['filterWhoOrders']) ? null : $_REQUEST['filterWhoOrders'];
+        if (empty($_REQUEST['filterStatusSetDate'])) {
+            $this->parameters['filterStatusId'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
+            $this->parameters['filterStatusIdDateSet'] = null;
+            $this->parameters['filterStatusSetDate'] = null;
+        } else {
+            $this->parameters['filterStatusId'] = array();
+            $this->parameters['filterStatusIdDateSet'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
+            $this->parameters['filterStatusSetDate'] = empty($_REQUEST['filterStatusId']) ? null : $_REQUEST['filterStatusSetDate'];
+        }
+//        $this->parameters['filterWhoOrders'] = empty($_REQUEST['filterWhoOrders']) ? null : $_REQUEST['filterWhoOrders'];
         $filterSet = false;
         foreach ($this->parameters as $parameter) {
             if (!empty($parameter)) {
@@ -254,18 +263,18 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->getData();
 
         /// Set interface
-        $this->data['textAmount'] = $this->language->get('AMOUNT');
-        $this->data['textComment'] = $this->language->get('COMMENT');
-        $this->data['textItemImage'] = $this->language->get('ITEM_IMAGE');
-        $this->data['textOrderId'] = $this->language->get('ORDER_ID');
-        $this->data['textCustomer'] = $this->language->get('CUSTOMER');
-        $this->data['textStatus'] = $this->language->get('STATUS');
-        $this->data['textQuantity'] = $this->language->get('QUANTITY');
-        $this->data['textWeight'] = $this->language->get('WEIGHT');
-        $this->data['textFilter'] = $this->language->get('FILTER');
-        $this->data['textInvoice'] = $this->language->get('INVOICE');
-        $this->data['textSiteName'] = $this->language->get('SITE_NAME');
-        $this->data['textWhoOrders'] = $this->language->get('WHO_ORDERS');
+        $this->data['textAmount'] = $this->getLanguage()->get('AMOUNT');
+        $this->data['textComment'] = $this->getLanguage()->get('COMMENT');
+        $this->data['textItemImage'] = $this->getLanguage()->get('ITEM_IMAGE');
+        $this->data['textOrderId'] = $this->getLanguage()->get('ORDER_ID');
+        $this->data['textCustomer'] = $this->getLanguage()->get('CUSTOMER');
+        $this->data['textStatus'] = $this->getLanguage()->get('STATUS');
+        $this->data['textQuantity'] = $this->getLanguage()->get('QUANTITY');
+        $this->data['textWeight'] = $this->getLanguage()->get('WEIGHT');
+        $this->data['textFilter'] = $this->getLanguage()->get('FILTER');
+        $this->data['textInvoice'] = $this->getLanguage()->get('INVOICE');
+        $this->data['textSiteName'] = $this->getLanguage()->get('SITE_NAME');
+        $this->data['textWhoOrders'] = $this->getLanguage()->get('WHO_ORDERS');
 
         $this->template = 'sale/repurchaseOrdersListPrint.tpl';
         $this->response->setOutput($this->render());
@@ -312,12 +321,12 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->data['breadcrumbs'] = array();
 
         $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('text_home'),
+            'text'      => $this->getLanguage()->get('text_home'),
             'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
             'separator' => false
         );
         $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('HEADING_TITLE'),
+            'text'      => $this->getLanguage()->get('HEADING_TITLE'),
             'href'      => $this->url->link('sale/repurchaseOrders', 'token=' . $this->session->data['token'], 'SSL'),
             'separator' => ' :: '
         );

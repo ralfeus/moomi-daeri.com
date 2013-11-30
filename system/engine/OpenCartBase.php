@@ -23,7 +23,6 @@ class OpenCartBase
         $this->db = $this->registry->get('db');
         $this->load = new Loader(null);
         $this->load = $this->registry->get('load');
-        $this->log = new Log("");
         $this->log = $this->registry->get("log");
     }
 
@@ -36,9 +35,30 @@ class OpenCartBase
     }
 
     /**
+     * @return Currency
+     */
+    protected function getCurrency() {
+        return $this->registry->get('currency');
+    }
+
+    /**
      * @return DBDriver
      */
     protected function getDb() {
         return $this->db;
+    }
+
+    /**
+     *  @return Language
+     */
+    protected function getLanguage() {
+        return $this->registry->get('language');
+    }
+
+    /**
+     * @return Log
+     */
+    protected function getLogger() {
+        return $this->log;
     }
 }
