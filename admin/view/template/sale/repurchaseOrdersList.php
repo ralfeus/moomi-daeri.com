@@ -13,9 +13,10 @@
         <div class="heading">
             <h1><img src="view/image/order.png" alt="" /><?= $headingTitle ?></h1>
             <div class="buttons">
-                <?php foreach ($statuses as $status): ?>
+<?php foreach ($statuses as $status): ?>
                 <a onclick="submitStatus('<?= $status['statusId'] ?>');" class="button"><?= $status['name'] ?></a>
-                <?php endforeach; ?>
+<?php endforeach; ?>
+                <a onclick="recalculateShipping()" class="button"><?= $textRecalculateShipping ?></a>
                 <a onclick="submitForm('<?= $invoiceUrl ?>');" class="button"><?= $textInvoice ?></a>
                 <a onclick="$('#form').attr('target', '_blank'); submitForm('<?= $print ?>');" class="button"><?= $textPrint ?></a>
             </div>
@@ -119,7 +120,7 @@
                                         style="width: 100%"
                                         value="<?= $order['quantity'] ?>"
                                         />
-                                <input
+                                <input id="shipping_<?= $order['orderId'] ?>"
                                     onkeydown="changeShipping(event, this, <?= $order['orderId'] ?>)"
                                     style="width: 100%"
                                     value="<?= $order['shipping'] ?>"
@@ -266,6 +267,35 @@ function quantityKeyDown(event, sender, orderId)
     }
 }
 
+function recalculateShipping() {
+    var selectedItems = '';
+    $('#selectedItems\\[\\]:checked').each(function() {
+        selectedItems += '&selectedItems[]=' + this.value;
+    });
+    if (!selectedItems) {
+        alert("<?= $textNoSelectedItems ?>");
+        return;
+    }
+    $.ajax({
+        url: 'index.php?route=sale/repurchaseOrders/recalculateShipping&token=<?= $token ?>' + selectedItems,
+        dataType: 'json',
+        success: function(json) {
+            if (json['error']) {
+                alert("setProperty(): " + json['error']);
+            }
+            for (var i = 0; i < json.length; i++) {
+                $('#price_'+json[i]['itemId']).val(json[i]['price']);
+                $('#shipping_' + json[i]['itemId']).val(json[i]['shipping']);
+                $('#total_'+json[i]['itemId']).val(json[i]['total']);
+            }
+//            $('#selectedItems\\[\\]:checked').removeAttr('checked');
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(jqXHR.responseText);
+        }
+    });
+}
+
 function saveComment(orderItemId, control, isPrivate) {
     if (control.value == control.alt)
         return;
@@ -296,13 +326,11 @@ function saveComment(orderItemId, control, isPrivate) {
     });
 }
 
-function selectAll(control)
-{
+function selectAll(control) {
     $('input[name*=\'selectedItems\']').attr('checked', control.checked);
 }
 
-function setProperty(orderId, sender, propName)
-{
+function setProperty(orderId, sender, propName) {
     $.ajax({
         url: 'index.php?route=sale/repurchaseOrders/setProperty&token=<?= $this->session->data['token'] ?>&orderId=' +
                 orderId + '&propName=' + propName + '&value=' + sender.value,

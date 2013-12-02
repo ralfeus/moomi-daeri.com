@@ -16,4 +16,5 @@ $_['WHO_ORDERS']                  = 'Who orders';
 $_['WARNING_HTML_PAGE_PROVIDED']  = 'No image was provided. Click on the placeholder to open provided URL';
 $_['UNDERLYING_ORDER_ID']         = 'Underlying order ID';
 $_['PricePerItem']                = 'Price per Item';
+$_['RECALCULATE_SHIPPING'] = 'Recalculate shipping';
 $_['Shipping']                    = 'Shipping';

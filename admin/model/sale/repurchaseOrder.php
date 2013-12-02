@@ -7,6 +7,9 @@
   */
 class ModelSaleRepurchaseOrder extends Model
 {
+    /**
+     * @var ModelSaleOrderItem
+     */
     private $modelOrderItem;
 
     public function __construct($registry)
@@ -15,8 +18,7 @@ class ModelSaleRepurchaseOrder extends Model
         $this->modelOrderItem = $this->load->model('sale/order_item');
     }
 
-    private function buildFilterString($data = array())
-    {
+    private function buildFilterString($data = array()) {
         $filter = "op.product_id = " . REPURCHASE_ORDER_PRODUCT_ID;
         if (isset($data['selectedItems']) && count($data['selectedItems']))
             $filter = "op.order_product_id in (" . implode(', ', $data['selectedItems']) . ")";
@@ -71,22 +73,58 @@ class ModelSaleRepurchaseOrder extends Model
         return $filter;
     }
 
-    public function setStatus($orderId, $statusId)
-    {
+    public function setStatus($orderId, $statusId) {
 //        $this->log->write($statusId);
         $this->load->model('sale/order_item')->setOrderItemStatus($orderId, $statusId);
     }
 
-    public function deleteOrderItem($repurchase_order_item_id)
-    {
+    public function deleteOrderItem($repurchase_order_item_id) {
         $this->db->query("
             DELETE FROM " . DB_PREFIX . "repurchase_order_item
             WHERE repurchase_order_item_id = " . (int)$repurchase_order_item_id
         );
     }
 
-    public function getOrders($data = array())
-    {
+    /**
+     * @param $orderId int
+     * @return array
+     */
+    public function getOrder($orderId) {
+        $orderItem = $this->modelOrderItem->getOrderItem($orderId);
+        $options = $this->modelOrderItem->getOrderItemOptions($orderItem['order_item_id']);
+        return array (
+            'orderId' => $orderItem['order_id'],
+            'orderItemId' => $orderItem['order_item_id'],
+            'comment' => $orderItem['comment'],
+            'customerId' => $orderItem['customer_id'],
+            'customerName' => $orderItem['customer_name'],
+            'customerNick' => $orderItem['customer_nick'],
+//            'whoOrders' => !empty($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID])
+//                ? $options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value'] : '',
+            'imagePath' => !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID])
+                ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '',
+            'itemName' => !empty($options[REPURCHASE_ORDER_ITEM_NAME_OPTION_ID]['value'])
+                ? $options[REPURCHASE_ORDER_ITEM_NAME_OPTION_ID]['value'] : '',
+            'itemUrl' => !empty($options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'])
+                ? $options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'] : '',
+            'orderItemStatusId' => $orderItem['status'],
+            'price' => $orderItem['price'],
+            'publicComment' => !empty($orderItem['public_comment'])
+                ? $orderItem['public_comment']
+                : (!empty($options[REPURCHASE_ORDER_COMMENT_OPTION_ID])
+                    ? $options[REPURCHASE_ORDER_COMMENT_OPTION_ID]['value'] : ''),
+            'quantity' => $orderItem['quantity'],
+            'shipping' => $orderItem['shipping'],
+            'shopName' => !empty($options[REPURCHASE_ORDER_SHOP_NAME_OPTION_ID])
+                ? $options[REPURCHASE_ORDER_SHOP_NAME_OPTION_ID]['value'] : '',
+            'status' => $orderItem['status'] >> 16 == GROUP_REPURCHASE_ORDER_ITEM_STATUS
+                ? $orderItem['status'] : REPURCHASE_ORDER_ITEM_STATUS_WAITING,
+            'timeAdded' => $orderItem['date_added'],
+            'total' => $orderItem['total']
+        );
+    }
+
+    public function getOrders($data = array()) {
         $repurchaseOrderItems = $this->modelOrderItem->getOrderItems($data, $this->buildFilterString($data));
 //        $this->log->write(print_r($repurchaseOrderItems, true));
         $items = array();
@@ -106,8 +144,8 @@ class ModelSaleRepurchaseOrder extends Model
                 'customerId' => $repurchaseOrderItem['customer_id'],
                 'customerName' => $repurchaseOrderItem['customer_name'],
                 'customerNick' => $repurchaseOrderItem['customer_nick'],
-                'whoOrders' => !empty($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID])
-                    ? $options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value'] : '',
+//                'whoOrders' => !empty($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID])
+//                    ? $options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value'] : '',
                 'imagePath' => !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID])
                     ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '',
                 'itemName' => !empty($options[REPURCHASE_ORDER_ITEM_NAME_OPTION_ID]['value'])
@@ -133,8 +171,7 @@ class ModelSaleRepurchaseOrder extends Model
         return $items;
     }
 
-    public function getOrdersCount($data = array())
-    {
+    public function getOrdersCount($data = array()) {
         $data['filter_model'] = 'Repurchase agent';
         return $this->modelOrderItem->getOrderItemsCount(null, $this->buildFilterString($data));
     }
@@ -260,10 +297,19 @@ class ModelSaleRepurchaseOrder extends Model
         }
     }
 
+    /**
+     * @param $orderId int
+     * @return array
+    */
     public function getPrices($orderId) {
-      $query = "SELECT * FROM " . DB_PREFIX . "order_product WHERE order_product_id = " . (int)$orderId;
-      $result = $this->db->query($query);
-      return $result->rows;
+        $query = "SELECT * FROM " . DB_PREFIX . "order_product WHERE order_product_id = " . (int)$orderId;
+        $result = $this->db->query($query);
+        foreach (array_keys($result->row) as $key) {
+            if (is_numeric($result->row[$key])) {
+                $result->row[$key] = (float)$result->row[$key];
+            }
+        }
+        return $result->row;
     }
 
     public function setImage($orderId, $imagePath)

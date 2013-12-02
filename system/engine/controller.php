@@ -2,26 +2,37 @@
 require_once('OpenCartBase.php');
 abstract class Controller extends OpenCartBase
 {
+    /** @var array */
     protected $children = array();
+    /** @var array */
     protected $data = array(); // contains data for the template
+    /** @var Document */
+    protected $document;
     protected $id;
+    /** @var Language */
     protected $language;
 	protected $layout;
 	protected $output;
     protected $parameters = array(); // contains parameters passed to the controller and already handled
+    /** @var Request */
     protected $request;
+    /** @var Response */
+    protected $response;
     protected $selfRoute;
     protected $selfUrl;
+    /** @var Session */
     protected $session;
     protected $template;
 
+    /**
+     * @param $registry Registry
+     */
     public function __construct($registry) {
 		parent::__construct($registry);
-        $this->language = new Language("");
-        $this->request = new Request();
-        $this->session = new Session();
+        $this->document = $this->registry->get('document');
         $this->language = $this->registry->get('language');
         $this->request = $this->registry->get('request');
+        $this->response = $this->registry->get('response');
         $this->setSelfRoutes();
         $this->session = $this->registry->get('session');
         $this->initParameters();

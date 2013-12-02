@@ -8,20 +8,22 @@
  */
 class OpenCartBase
 {
+    /** @var Config */
     protected $config;
+    /** @var DBDriver */
     protected $db;
+    /** @var Loader */
     protected $load;
+    /** @var Log */
     protected $log;
+    /** @var Registry */
     protected $registry;
 
     protected function __construct($registry)
     {
-        $this->registry = new Registry();
         $this->registry = $registry;
-        $this->config = new Config();
         $this->config = $this->registry->get('config');
         $this->db = $this->registry->get('db');
-        $this->load = new Loader(null);
         $this->load = $this->registry->get('load');
         $this->log = $this->registry->get("log");
     }

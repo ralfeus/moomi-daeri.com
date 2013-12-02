@@ -8,6 +8,9 @@
  */
 class ControllerSaleRepurchaseOrders extends Controller
 {
+    /**
+     * @var ModelSaleRepurchaseOrder
+     */
     private $modelSaleRepurchaseOrder;
 
     public function __construct($registry)
@@ -161,6 +164,7 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->data['textStatus'] = $this->getLanguage()->get('STATUS');
         $this->data['textQuantity'] = $this->getLanguage()->get('QUANTITY');
         $this->data['textPricePerItem'] = $this->getLanguage()->get('PricePerItem');
+        $this->data['textRecalculateShipping'] = $this->getLanguage()->get('RECALCULATE_SHIPPING');
         $this->data['textShipping'] = $this->getLanguage()->get('Shipping');
         $this->data['textWeight'] = $this->getLanguage()->get('WEIGHT');
         $this->data['textFilter'] = $this->getLanguage()->get('FILTER');
@@ -280,8 +284,25 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->response->setOutput($this->render());
     }
 
-    public function setProperty()
-    {
+    public function recalculateShipping() {
+        $selectedOrdersShops = array();
+        $json = array();
+        foreach ($this->parameters['selectedItems'] as $selectedItemId) {
+            $repurchaseOrder = $this->modelSaleRepurchaseOrder->getOrder($selectedItemId);
+            if (in_array($repurchaseOrder['shopName'], $selectedOrdersShops)) {
+                $this->modelSaleRepurchaseOrder->setShipping($selectedItemId, 0);
+                $newPrices = $this->modelSaleRepurchaseOrder->getPrices($selectedItemId);
+                $newPrices['itemId'] = $selectedItemId;
+                $json[] = $newPrices;
+            }
+            else {
+                $selectedOrdersShops[] = $repurchaseOrder['shopName'];
+            }
+        }
+        $this->response->setOutput(json_encode($json));
+    }
+
+    public function setProperty() {
 //        $this->log->write(print_r($_GET, true));
         switch ($this->parameters['propName']) {
             case 'amount':
@@ -307,10 +328,10 @@ class ControllerSaleRepurchaseOrders extends Controller
                 $this->modelSaleRepurchaseOrder->setShopName($this->parameters['orderId'], $this->parameters['value']);
                 break;
         }
-        $rows = $this->modelSaleRepurchaseOrder->getPrices($this->parameters['orderId']);
-        $json['itemId'] = $rows[0]['order_product_id'];
-        $json['price'] = $rows[0]['price'];
-        $json['total'] = $rows[0]['total'];
+        $row = $this->modelSaleRepurchaseOrder->getPrices($this->parameters['orderId']);
+        $json['itemId'] = $row['order_product_id'];
+        $json['price'] = $row['price'];
+        $json['total'] = $row['total'];
         $json['result'] = 'Done';
 //        $this->log->write(print_r($json, true));
         $this->response->setOutput(json_encode($json));

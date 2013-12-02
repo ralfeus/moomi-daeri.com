@@ -503,7 +503,6 @@ class ModelCatalogProduct extends Model {
 
 			$sql .= " WHERE " . $this->buildFilterString($data);
 			$sql .= " GROUP BY p.product_id";
-//print_r($sql); die();						
 			$sort_data = array(
 				'pd.name',
 				'p.model',
@@ -536,7 +535,7 @@ class ModelCatalogProduct extends Model {
 			
 				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 			}	
-
+//            $this->getLogger()->write($sql);
 			$query = $this->db->query($sql);
             $productData = $query->rows;
             if (empty($data))
