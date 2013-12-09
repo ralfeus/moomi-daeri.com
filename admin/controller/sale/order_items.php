@@ -138,7 +138,6 @@ class ControllerSaleOrderItems extends Controller {
 
         $orderItems = $this->modelSaleOrderItem->getOrderItems($data);
 
-
         $arrReady = array();
 
         if ($orderItems)
@@ -161,11 +160,11 @@ class ControllerSaleOrderItems extends Controller {
                     }
                 }
 
-                if ($orderItem['image_path'] && file_exists(DIR_IMAGE . $orderItem['image_path'])):
+                if ($orderItem['image_path'] && file_exists(DIR_IMAGE . $orderItem['image_path'])) {
                     $image = $this->model_tool_image->resize($orderItem['image_path'], 100, 100);
-                else:
+                } else {
                     $image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
-                endif;
+                }
 
                 $supplier_url = "";
                 foreach ($this->model_catalog_product->getProductAttributes($orderItem['product_id']) as $attribute)

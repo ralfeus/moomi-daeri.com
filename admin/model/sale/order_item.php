@@ -80,14 +80,6 @@ class ModelSaleOrderItem extends Model
 				JOIN " . DB_PREFIX . "customer AS c ON o.customer_id = c.customer_id
 				JOIN " . DB_PREFIX . "product AS p ON op.product_id  = p.product_id
 				LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
-				JOIN (SELECT order_item_id, order_item_status_id
-                    FROM
-                        (SELECT order_item_id, oih.order_item_status_id, workflow_order
-                        FROM
-                            " . DB_PREFIX . "order_item_history as oih
-                            JOIN " . DB_PREFIX . "order_item_status as ois on oih.order_item_status_id = ois.order_item_status_id
-                        ORDER BY order_item_id, workflow_order DESC) as statuses
-                    GROUP BY order_item_id) as oih1 on op.order_product_id = oih1.order_item_id
 			" . ($filter ? "WHERE $filter" : "");
 		$order_item_query = $this->db->query($query);
 
