@@ -9,6 +9,7 @@
 require_once('auditConstants.php');
 class Audit extends OpenCartBase implements ILibrary
 {
+    /** @var  Audit */
     private static $instance;
 
     private function addEntry($userId, $userType, $eventId, $data)
@@ -25,8 +26,7 @@ class Audit extends OpenCartBase implements ILibrary
         ");
     }
 
-    public function addAdminEntry($eventId, $data)
-    {
+    public function addAdminEntry($eventId, $data) {
         $userId = $this->user->isLogged() ? $this->user->getId() : 0;
         $this->addEntry($userId, 'admin', $eventId, $data);
     }
@@ -37,8 +37,11 @@ class Audit extends OpenCartBase implements ILibrary
         $this->addEntry($userId, 'user', $eventId, $data);
     }
 
-    public static function getInstance($registry)
-    {
+    /**
+     * @param Registry $registry
+     * @return Audit
+     */
+    public static function getInstance($registry) {
         if (empty(Audit::$instance))
             Audit::$instance = new Audit($registry);
         return Audit::$instance;

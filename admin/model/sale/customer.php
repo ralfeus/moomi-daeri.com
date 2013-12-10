@@ -485,9 +485,12 @@ class ModelSaleCustomer extends Model {
 	}
 	
 	public function getTransactions($customer_id, $start = 0, $limit = 10) {
-		$query = $this->getDb()->query("SELECT * FROM " . DB_PREFIX . "customer_transaction WHERE customer_id = '" . (int)$customer_id . "' ORDER BY date_added DESC LIMIT " . (int)$start . "," . (int)$limit);
-	
-		return $query->rows;
+		$query = $this->getDb()->query("
+		    SELECT * FROM " . DB_PREFIX . "customer_transaction
+		    WHERE customer_id = '" . (int)$customer_id . "'
+		    ORDER BY date_added DESC LIMIT " . (int)$start . "," . (int)$limit
+        );
+        return $query->rows;
 	}
 
 	public function getTotalTransactions($customer_id) {

@@ -7,13 +7,13 @@
  * To change this template use File | Settings | File Templates.
  */
 include_once("ILibrary.php");
-class Transaction extends OpenCartBase implements ILibrary
-{
+class Transaction extends OpenCartBase implements ILibrary {
+    /** @var  Transaction */
     private static $instance;
+    /** @var  ModelSaleTransaction */
     private $modelTransaction;
 
-    protected function __construct($registry)
-    {
+    protected function __construct($registry) {
         parent::__construct($registry);
         $this->modelTransaction = $this->load->model('sale/transaction', 'admin');
     }
@@ -39,8 +39,13 @@ class Transaction extends OpenCartBase implements ILibrary
             }
     }
 
-    public static function addPayment($customerId, $invoiceId, $registry, $description = "")
-    {
+    /**
+     * @param int $customerId
+     * @param int $invoiceId
+     * @param Registry $registry
+     * @param string $description
+     */
+    public static function addPayment($customerId, $invoiceId, $registry, $description = "") {
         Transaction::$instance->log->write("Starting");
         $modelCustomer = Transaction::$instance->load->model('sale/customer', 'admin');
         $modelInvoice = Transaction::$instance->load->model('sale/invoice', 'admin');
@@ -49,22 +54,18 @@ class Transaction extends OpenCartBase implements ILibrary
         $customer = $modelCustomer->getCustomer($customerId);
         $invoice = $modelInvoice->getInvoice($invoiceId);
         $transactionAmount = $currency->convert($invoice['total'], $config->get('config_currency'), $customer['base_currency_code']);
-        if (($customer['balance'] < $transactionAmount) && !$customer['allow_overdraft'])
+        if (($customer['balance'] < $transactionAmount) && !$customer['allow_overdraft']) {
             $modelInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
-        else
-        {
+        } else {
             Transaction::addTransaction($invoiceId, $customerId, $invoice['total'], $config->get('config_currency'), $description);
             $modelInvoice->setInvoiceStatus($invoiceId, IS_PAID);
         }
     }
 
-    public static function addTransaction($invoiceId, $customer, $amount, $currency_code, $description = '')
-    {
-        if (is_numeric($customer)) /// customer ID is passed. Need to get whole customer
-        {
+    public static function addTransaction($invoiceId, $customer, $amount, $currency_code, $description = '') {
+        if (is_numeric($customer)) { /// customer ID is passed. Need to get customer object
             $modelCustomer = Transaction::$instance->load->model('sale/customer', 'admin');
             $customer = $modelCustomer->getCustomer($customer);
-
         }
 
         /// Now need to convert transaction amount to customer base currency

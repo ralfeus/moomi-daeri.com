@@ -115,7 +115,8 @@ class ControllerSaleCustomer extends Controller {
             $amountString = $this->currency->format($amount, $transaction['currency_code'], 1);
             $this->data['transactions'][] = array(
                 'actions' => $actions,
-                'balance' => $this->currency->format($transaction['balance'], $customer['base_currency_code'], 1),
+                'balance' => $this->currency->format(
+                    $transaction['balance'], $transaction['balance_currency'] ? $transaction['balance_currency'] : $customer['base_currency_code'], 1),
                 'expenseAmount'      => $amount < 0 ? $amountString : '',
                 'incomeAmount'      => $amount >= 0 ? $amountString : '',
                 'currency_code' => $transaction['currency_code'],
@@ -942,8 +943,7 @@ class ControllerSaleCustomer extends Controller {
 	public function transaction() {
         $this->load->library('Transaction');
         $customer = $this->modelSaleCustomer->getCustomer($this->parameters['customerId']);
-        if ($this->request->server['REQUEST_METHOD'] == 'POST')
-        {
+        if ($this->request->server['REQUEST_METHOD'] == 'POST') {
             if ($this->user->hasPermission('modify', 'sale/customer')) {
                 if ($this->request->post['action'] == 'add')
                 {

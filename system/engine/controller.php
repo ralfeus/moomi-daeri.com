@@ -158,8 +158,7 @@ abstract class Controller extends OpenCartBase
     protected function takeSessionVariables()
     {
 //        $this->log->write(print_r($this->session->data, true));
-        if (isset($this->session->data['notifications']))
-        {
+        if (isset($this->session->data['notifications'])) {
             $this->data['notifications'] = $this->session->data['notifications'];
             unset($this->session->data['notifications']);
         }
