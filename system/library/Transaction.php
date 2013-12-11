@@ -92,6 +92,11 @@ class Transaction extends OpenCartBase implements ILibrary {
                     balance = $newCustomerBalance
                 WHERE customer_id = " . $customer['customer_id']
         );
+        if (Transaction::$instance->user->isLogged()) {
+            Audit::getInstance(Transaction::$instance->registry)->addAdminEntry(AUDIT_ADMIN_TRANSACTION_ADD, $_REQUEST);
+        } elseif (Transaction::$instance->customer->isLogged()) {
+            Audit::getInstance(Transaction::$instance->registry)->addUserEntry(AUDIT_ADMIN_TRANSACTION_ADD, $_REQUEST);
+        }
     }
 
     public static function deleteTransaction($transactionId) {
