@@ -94,9 +94,16 @@ class Transaction extends OpenCartBase implements ILibrary {
         );
     }
 
-    public static function deleteTransaction($transactionId)
-    {
-        Transaction::$instance->modelTransaction->deleteTransaction($transactionId);
+    public static function deleteTransaction($transactionId) {
+        $transaction = Transaction::$instance->getTransaction($transactionId);
+//        Transaction::$instance->modelTransaction->deleteTransaction($transactionId);
+        Transaction::$instance->addTransaction(
+            $transaction['invoice_id'],
+            $transaction['customer_id'],
+            -$transaction['amount'],
+            $transaction['currency_code'],
+            'Cancellation of transaction #' . (int)$transactionId
+        );
     }
 
     public static function getInstance($registry)
@@ -105,6 +112,10 @@ class Transaction extends OpenCartBase implements ILibrary {
         if (!isset(Transaction::$instance))
             Transaction::$instance = new Transaction($registry);
         return Transaction::$instance;
+    }
+
+    private function getTransaction($transactionId) {
+        return Transaction::$instance->modelTransaction->getTransaction($transactionId);
     }
 
     public static function getTransactionByInvoiceId($invoiceId = 0)

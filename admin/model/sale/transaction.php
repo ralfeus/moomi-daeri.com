@@ -48,8 +48,7 @@ class ModelSaleTransaction extends Model
         );
     }
 
-    public function getTransaction($transactionId)
-    {
+    public function getTransaction($transactionId) {
         $query = $this->db->query("
             SELECT *
             FROM " . DB_PREFIX . "customer_transaction
