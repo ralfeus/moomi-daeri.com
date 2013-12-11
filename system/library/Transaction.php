@@ -81,7 +81,8 @@ class Transaction extends OpenCartBase implements ILibrary {
                 amount = $amountInCustomerCurrency,
                 currency_code = '" . $customer['base_currency_code'] . "',
                 date_added = NOW(),
-                balance = $newCustomerBalance
+                balance = $newCustomerBalance,
+                balance_currency = '" . Transaction::$instance->db->escape($customer['base_currency_code']) . "'
         ");
         $transactionId = Transaction::$instance->db->getLastId();
         /// Update customer's balance
