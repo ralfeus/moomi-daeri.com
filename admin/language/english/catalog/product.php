@@ -83,4 +83,6 @@ $_['error_warning']          = 'Warning: Please check the form carefully for err
 $_['error_permission']       = 'Warning: You do not have permission to modify products!';
 $_['error_name']             = 'Product Name must be greater than 3 and less than 255 characters!';
 $_['error_model']            = 'Product Model must be greater than 3 and less than 64 characters!';
+$_['DELETION_CONFIRM'] = "Products selected for deletion were ordered. Are you sure you want to delete them?<br /><br />";
 $_['IMAGE_MANAGER'] = 'Image manager';
+$_['TITLE_DELETION_CONFIRM'] = 'Remove product confirmation';

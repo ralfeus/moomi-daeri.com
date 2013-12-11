@@ -19,11 +19,11 @@
           <a onclick="$('#form').attr('action', '<?php echo $disable; ?>'); $('#form').submit();" class="button"><?php echo $button_disable; ?></a>
           <a onclick="location = '<?php echo $insert; ?>'" class="button"><?php echo $button_insert; ?></a>
           <a onclick="$('#form').attr('action', '<?php echo $copy; ?>'); $('#form').submit();" class="button"><?php echo $button_copy; ?></a>
-          <?php /*<a onclick="$('form').submit();" class="button"><?php echo $button_delete; ?></a>*/ ?>
+          <a onclick="$('#form').submit();" class="button"><?= $button_delete ?></a>
       </div>
     </div>
     <div class="content">
-      <form action="<?php echo $delete; ?>" method="post" enctype="multipart/form-data" id="form">
+      <form action="<?= $delete ?>" method="post" enctype="multipart/form-data" id="form">
         <table class="list">
           <thead>
             <tr>
@@ -179,6 +179,27 @@
     </div>
   </div>
 </div>
+<?php if (isset($notifications['confirm'])): ?>
+<div id="dialog-confirm" title="<?=$notifications['confirm']['title'] ?>"><?= $notifications['confirm']['text'] ?></div>
+<script type="text/javascript">//<!--
+$(document).ready(function() {
+    $( "#dialog-confirm" ).dialog({
+        resizable: true,
+        height: 255,
+        width: 415,
+        modal: true,
+        buttons: {
+            Yes: function() {
+                document.location = "<?= $notifications['confirm']['urlYes'] ?>";
+            },
+            No: function() {
+                $( this ).dialog( "close" );
+            }
+        }
+    });
+});
+//--></script>
+<?php endif; ?>
 <script type="text/javascript"><!--
 $(document).ready(function() {
     $('.date').datepicker({dateFormat: 'yy-mm-dd'});
@@ -229,4 +250,4 @@ $('#form input').keydown(function(e) {
 	}
 });
 //--></script> 
-<?php echo $footer; ?>
+<?= $footer ?>

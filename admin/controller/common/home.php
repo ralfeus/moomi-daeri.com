@@ -498,22 +498,21 @@ class ControllerCommonHome extends Controller {
 		
 	}
 
-	protected function initParameters()
-  {
-      if (empty($this->session->data['parameters']['catalog/product']))
-          $this->session->data['parameters']['catalog/product'] = array();
-      if (empty($_REQUEST['resetFilter'])) {
-          foreach ($_REQUEST as $key => $value)
-              if (strpos($key, 'filter') === 0) {
-                  $this->session->data['parameters']['catalog/product'][$key] = $value;
-              }
-      }
-      else
-          $this->session->data['parameters']['catalog/product'] = array();
+    protected function initParameters() {
+        if (empty($this->session->data['parameters']['catalog/product']))
+            $this->session->data['parameters']['catalog/product'] = array();
+        if (empty($_REQUEST['resetFilter'])) {
+            foreach ($_REQUEST as $key => $value)
+                if (strpos($key, 'filter') === 0) {
+                    $this->session->data['parameters']['catalog/product'][$key] = $value;
+                }
+        }
+        else
+            $this->session->data['parameters']['catalog/product'] = array();
 
 
-      $lastMonthStart  = mktime(0, 0, 0, date("m")-1, 1,   date("Y"));
-			$lastMonthEnd        = mktime(0, 0, 0, date("m"), 0, date("Y"));
+        $lastMonthStart  = mktime(0, 0, 0, date("m")-1, 1,   date("Y"));
+        $lastMonthEnd        = mktime(0, 0, 0, date("m"), 0, date("Y"));
 
       if (empty($this->session->data['parameters']['common/home']['filterDateAddedFrom']))
           $this->session->data['parameters']['common/home']['filterDateAddedFrom'] = date("Y-m-d", $lastMonthStart);

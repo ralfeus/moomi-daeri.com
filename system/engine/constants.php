@@ -70,3 +70,6 @@ define('SEARCH_WEIGHT_WORD_MODEL', 10); // One of search words in product model
 define('SEARCH_WEIGHT_WORD_NAME', 10); // One of search words in product name
 define('SEARCH_WEIGHT_WORD_TAG', 5); // One of search words in product tag
 define('SEARCH_WEIGHT_WORD_DESCR', 1); // One of search words in product description
+
+/// Options
+define('OPTION_MEMO_OPTION_ID', 18);

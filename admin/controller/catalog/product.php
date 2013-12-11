@@ -1,6 +1,7 @@
 <?php 
 class ControllerCatalogProduct extends Controller {
 	private $error = array();
+    /** @var ModelCatalogProduct */
     private $modelCatalogProduct;
 
     public function __construct($registry)
@@ -10,6 +11,7 @@ class ControllerCatalogProduct extends Controller {
         $this->document->setTitle($this->language->get('heading_title'));
         $this->data['heading_title'] = $this->language->get('heading_title');
         $this->modelCatalogProduct = $this->load->model('catalog/product');
+        $this->takeSessionVariables();
     }
 
   	public function index() {
@@ -50,7 +52,9 @@ class ControllerCatalogProduct extends Controller {
         if (empty($this->session->data['parameters']['catalog/product']['filterSupplierId']) || !is_array($this->session->data['parameters']['catalog/product']['filterSupplierId']))
             $this->session->data['parameters']['catalog/product']['filterSupplierId'] = array();
         $this->parameters = $this->session->data['parameters']['catalog/product'];
+        $this->parameters['confirm'] = empty($_REQUEST['confirm']) ? false : $_REQUEST['confirm'];
         $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
+        $this->parameters['selectedItems'] = empty($_REQUEST['selected']) ? array() : $_REQUEST['selected'];
         $this->parameters['sort'] = empty($_REQUEST['sort']) ? null : $_REQUEST['sort'];
         $this->parameters['token'] = $this->session->data['token'];
     }
@@ -58,9 +62,10 @@ class ControllerCatalogProduct extends Controller {
   	public function insert() {
 
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+            $this->addMemoOption();
     		$data = $this->request->post;
     		$data['user_id'] = $this->user->getId();
-				$this->model_catalog_product->addProduct($data);
+            $this->model_catalog_product->addProduct($data);
 	            Audit::getInstance($this->registry)->addAdminEntry(AUDIT_ADMIN_PRODUCT_CREATE, $_REQUEST);
 				$this->session->data['success'] = $this->language->get('text_success');
 		  
@@ -154,57 +159,26 @@ class ControllerCatalogProduct extends Controller {
   	}
 
   	public function delete() {
-//		if (isset($this->request->post['selected']) && $this->validateDelete()) {
-//			foreach ($this->request->post['selected'] as $product_id) {
-//				$this->model_catalog_product->deleteProduct($product_id);
-//                Audit::getInstance($this->registry)->addAdminEntry(
-//                    AUDIT_ADMIN_PRODUCT_DELETE,
-//                    array('route' => $_REQUEST['route'], 'selected' => $_REQUEST['selected'])
-//                );
-//	  		}
-//
-//			$this->session->data['success'] = $this->language->get('text_success');
-//
-//			$url = '';
-//
-//			if (isset($this->request->get['filter_name'])) {
-//				$url .= '&filter_name=' . $this->request->get['filter_name'];
-//			}
-//
-//			if (isset($this->request->get['filter_model'])) {
-//				$url .= '&filter_model=' . $this->request->get['filter_model'];
-//			}
-//
-//			if (isset($this->request->get['filter_price'])) {
-//				$url .= '&filter_price=' . $this->request->get['filter_price'];
-//			}
-//
-//			if (isset($this->request->get['filter_korean_name'])) {
-//				$url .= '&filter_korean_name=' . $this->request->get['filter_korean_name'];
-//			}
-//
-//			if (isset($this->request->get['sort'])) {
-//				$url .= '&sort=' . $this->request->get['sort'];
-//			}
-//
-//			if (isset($this->request->get['order'])) {
-//				$url .= '&order=' . $this->request->get['order'];
-//			}
-//
-//			if (isset($this->request->get['page'])) {
-//				$url .= '&page=' . $this->request->get['page'];
-//			}
-//
-//			$this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
-//		}
-//
-//    	$this->getList();
+		if (isset($this->parameters['selectedItems']) && $this->validateDelete()) {
+			foreach ($this->parameters['selectedItems'] as $product_id) {
+				$this->modelCatalogProduct->deleteProduct($product_id);
+                Audit::getInstance($this->registry)->addAdminEntry(
+                    AUDIT_ADMIN_PRODUCT_DELETE,
+                    array('route' => $this->parameters['route'], 'selectedItems' => $this->parameters['selectedItems'])
+                );
+	  		}
+
+			$this->session->data['success'] = $this->language->get('text_success');
+			$this->redirect($this->url->link('catalog/product', $this->buildUrlParameterString($this->parameters, array('route' => null)), 'SSL'));
+		}
+
+    	$this->redirect($this->url->link('catalog/product', $this->buildUrlParameterString($this->parameters, array('route' => null)), 'SSL'));
   	}
 
   	public function copy() {
 		if (isset($this->request->post['selected']) && $this->validateCopy()) {
 			foreach ($this->request->post['selected'] as $product_id) {
-				$this->model_catalog_product->copyProduct($product_id);
+				$this->modelCatalogProduct->copyProduct($product_id);
 	  		}
 
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -323,14 +297,14 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['insert'] = $this->url->link('catalog/product/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		$this->data['copy'] = $this->url->link('catalog/product/copy', 'token=' . $this->session->data['token'] . $url, 'SSL');	
 		$this->data['delete'] = $this->url->link('catalog/product/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
-    $this->data['enable'] = $this->url->link('catalog/product/enable', 'token=' . $this->session->data['token'] . $url, 'SSL');
-    $this->data['disable'] = $this->url->link('catalog/product/disable', 'token=' . $this->session->data['token'] . $url, 'SSL');
+        $this->data['enable'] = $this->url->link('catalog/product/enable', 'token=' . $this->session->data['token'] . $url, 'SSL');
+        $this->data['disable'] = $this->url->link('catalog/product/disable', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
 		$this->data['products'] = array();
-    $data = $this->parameters;
+        $data = $this->parameters;
 
-    $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
-    $data['limit']           = $this->config->get('config_admin_limit');
+        $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
+        $data['limit']           = $this->config->get('config_admin_limit');
 		$data['filter_price']	  = $filter_price;
 		$data['filter_korean_name'] = $filter_korean_name;
 		$data['sort']            = $sort;
@@ -343,9 +317,9 @@ class ControllerCatalogProduct extends Controller {
 		$product_total = $this->model_catalog_product->getTotalProducts($data);
 
 		$results = $this->model_catalog_product->getProducts($data);
-    $this->data['suppliers'] = $this->getSuppliers();
-    $this->data['usernames'] = $this->getUserNames();
-    $this->data['manufacturers'] = $this->getManufacturers();
+        $this->data['suppliers'] = $this->getSuppliers();
+        $this->data['usernames'] = $this->getUserNames();
+        $this->data['manufacturers'] = $this->getManufacturers();
 
     
 		foreach ($results as $result) {
@@ -1242,10 +1216,23 @@ class ControllerCatalogProduct extends Controller {
 	
   	private function validateDelete() {
     	if (!$this->user->hasPermission('modify', 'catalog/product')) {
-      		$this->error['warning'] = $this->language->get('error_permission');  
-    	}
-		
-		if (!$this->error) {
+            $this->session->data['notifications']['warning'] = $this->language->get('error_permission');
+    	} elseif (!($this->parameters['confirm'])) {
+            $modelSaleOrderItem = $this->load->model('sale/order_item');
+            foreach ($this->parameters['selectedItems'] as $productId) {
+                $productsCount = $modelSaleOrderItem->getOrderItemsCount(null, "op.product_id = " . (int)$productId);
+                if ($productsCount) {
+                    $this->session->data['notifications']['confirm']['text'] .= "$productId => $productsCount";
+                }
+            }
+            if (isset($this->session->data['notifications']['confirm'])) {
+                $this->session->data['notifications']['confirm']['title'] = $this->language->get('TITLE_DELETION_CONFIRM');
+                $this->session->data['notifications']['confirm']['urlYes'] = $this->selfUrl . '&confirm=1';
+                $this->session->data['notifications']['confirm']['text'] =
+                    $this->language->get('DELETION_CONFIRM') . $this->session->data['notifications']['confirm']['text'];
+            }
+        }
+		if (!$this->session->data['notifications']) {
 	  		return true;
 		} else {
 	  		return false;
@@ -1485,6 +1472,25 @@ class ControllerCatalogProduct extends Controller {
             'text'      => $this->language->get('heading_title'),
             'href'      => $this->url->link('catalog/product', 'token=' . $this->session->data['token'], 'SSL'),
             'separator' => ' :: '
+        );
+    }
+
+    private function addMemoOption() {
+        if (empty($this->request->post['product_option'])) {
+            $this->request->post['product_option'] = array();
+        }
+        foreach ($this->request->post['product_option'] as $productOption) {
+            if ($productOption['option_id'] == OPTION_MEMO_OPTION_ID) {
+                return;
+            }
+        }
+        $this->request->post['product_option'][] = array(
+            'name' => 'Memo',
+            'option_id' => OPTION_MEMO_OPTION_ID,
+            'option_value' => null,
+            'product_option_id' => null,
+            'required' => false,
+            'type' => 'textarea'
         );
     }
 }
