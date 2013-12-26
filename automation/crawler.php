@@ -2,6 +2,7 @@
 require_once("simple_html_dom.php");
 require_once('../config.php');
 require_once('missha.php');
+require_once('mizon.php');
 require_once('natureRepublic.php');
 require_once('tonyMoly.php');
 
@@ -15,8 +16,7 @@ function handleError($errno, $errstr, $errfile, $errline, array $errcontext)
     throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 }
 
-abstract class ProductSource
-{
+abstract class ProductSource {
     protected static $instance;
 
     /**
@@ -59,6 +59,29 @@ abstract class ProductSource
         throw $finalException;
     }
 
+    protected function getPage($url, $method = null, $params = null, $headers = null) {
+        if ($params) {
+            if (is_array($params)) {
+                $paramString = '';
+                foreach ($params as $key => $value) {
+                    $paramString .= '&' . urlencode($key) . '=' . urlencode($value);
+                }
+                $params = substr($paramString, 1);
+            }
+            $params = ' --data "' . $params . '"';
+        }
+        $strHeaders = '';
+        if (is_array($headers)) {
+            foreach ($headers as $header => $value) {
+                $strHeaders .= " --header $header:$value";
+            }
+        }
+        $get = ($method == 'GET') ? ' --get' : '';
+        $command = 'curl ' . $url . $params . $strHeaders . $get;
+        $result = shell_exec($command);
+        return $result;
+    }
+
     /**
      * @param array $list
      * @param int $sourceProductId
@@ -86,8 +109,7 @@ abstract class ProductSource
     public abstract function getUrl();
 }
 
-class Product
-{
+class Product {
     public $id;
     public $categoryId;
     public $images = array();
@@ -121,8 +143,7 @@ class Product
     }
 }
 
-class DatabaseManager
-{
+class DatabaseManager {
     private $connection;
 
     private static $instance;
@@ -159,8 +180,7 @@ class DatabaseManager
         }
     }
 
-    public function addProducts(ProductSource $site)
-    {
+    public function addProducts(ProductSource $site) {
         $sql = '
                 INSERT INTO imported_products
                 SET
@@ -188,8 +208,7 @@ class DatabaseManager
             ';
         $statement = $this->connection->prepare($sql);
         $products = $site->getProducts();
-        foreach ($products as $product)
-        {
+        foreach ($products as $product) {
             $statement->execute(array(
                 ':sourceSiteId' => $site->getSite()->id,
                 ':sourceCategoryId' => $product->categoryId,
@@ -220,11 +239,12 @@ class DatabaseManager
 }
 
 //if (file_exists('start') && (shell_exec('ps axo cmd | grep -c "^php crawler.php"') == 1)) {
-    echo "Starting\n";
+    echo date('Y-m-d H:i:s') . " Starting\n";
     $startTime = time();
 //    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
 //    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
-    DatabaseManager::getInstance()->addProducts(TonyMoly::getInstance());
+//    DatabaseManager::getInstance()->addProducts(TonyMoly::getInstance());
+    DatabaseManager::getInstance()->addProducts(Mizon::getInstance());
 //    DatabaseManager::getInstance()->cleanup($startTime);
 //    unlink('start');
 //}
