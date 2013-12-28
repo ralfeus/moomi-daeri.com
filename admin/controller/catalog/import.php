@@ -39,26 +39,6 @@ class ControllerCatalogImport extends Controller {
             $koreanName['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getName() );
             $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getSourceUrl() );
         }
-        /// Preparing promo price
-        if ($productToAdd->getSourcePrice()->getPromoPrice())
-            $promoPrice = array(
-                array(
-                    'customer_group_id' => 8, /* Default customer group ID */
-                    'priority' => 0, /// Highest priority
-                    'price' => $productToAdd->getSourcePrice()->getPromoPrice(),
-                    'date_start' => date('Y-m-d'),
-                    'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
-                ),
-                array(
-                    'customer_group_id' => 6, /* Wholesales customers group ID */
-                    'priority' => 0, /// Highest priority
-                    'price' => $productToAdd->getSourcePrice()->getPromoPrice(),
-                    'date_start' => date('Y-m-d'),
-                    'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
-                )
-            );
-        else
-            $promoPrice = null;
 
         $productId = $this->modelCatalogProduct->addProduct(array(
             'date_available' => date('Y-m-d'),
@@ -71,13 +51,13 @@ class ControllerCatalogImport extends Controller {
             'minimum' => 1,
             'model' => $productToAdd->getSourceProductId(),
             'points' => null,
-            'price' => $productToAdd->getSourcePrice()->getPrice(),
+            'price' => $productToAdd->getSourcePrice()->getPrice() * IMPORT_PRICE_RATE_NORMAL_CUSTOMERS,
             'product_attribute' => array($koreanName, $sourceUrl),
             'product_category' => $productToAdd->getCategories(),
             'product_description' => $product_description,
             'product_image' => $images,
             'product_option' => $this->setProductOption($productToAdd),
-            'product_special' => $promoPrice,
+            'product_special' => $this->getSpecialPrices($productToAdd),
             'product_store' => $productToAdd->getSourceSite()->getDefaultStoreId(),
             'product_tag' => null,
             'seo_title' => null, 'seo_h1' => null,
@@ -249,26 +229,6 @@ class ControllerCatalogImport extends Controller {
             $koreanName['product_attribute_description'][$language['language_id']] = array( 'text' => $productToUpdate->getName() );
             $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToUpdate->getSourceUrl() );
         }
-        /// Preparing promo price
-        if ($productToUpdate->getSourcePrice()->getPromoPrice())
-            $promoPrice = array(
-                array(
-                    'customer_group_id' => 8, /* Default customer group ID */
-                    'priority' => 0, /// Highest priority
-                    'price' => $productToUpdate->getSourcePrice()->getPromoPrice(),
-                    'date_start' => date('Y-m-d'),
-                    'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
-                ),
-                array(
-                    'customer_group_id' => 6, /* Оптовики group ID */
-                    'priority' => 0, /// Highest priority
-                    'price' => $productToUpdate->getSourcePrice()->getPromoPrice(),
-                    'date_start' => date('Y-m-d'),
-                    'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
-                )
-            );
-        else
-            $promoPrice = null;
 
         $this->modelCatalogProduct->editProduct($productToUpdate->getLocalProductId(), array(
             'date_available' => $localProduct['date_available'],
@@ -281,12 +241,12 @@ class ControllerCatalogImport extends Controller {
             'minimum' => null,
             'model' => $localProduct['model'],
             'points' => null,
-            'price' => $productToUpdate->getSourcePrice()->getPrice(),
+            'price' => $productToUpdate->getSourcePrice()->getPrice() * IMPORT_PRICE_RATE_NORMAL_CUSTOMERS,
             'product_attribute' => array($koreanName, $sourceUrl),
             'product_category' => $productToUpdate->getCategories(),
             'product_description' => null,
             'product_image' => $images,
-            'product_special' => $promoPrice,
+            'product_special' => $this->getSpecialPrices($productToUpdate),
             'product_store' => $productToUpdate->getSourceSite()->getDefaultStoreId(),
             'product_tag' => null,
             'seo_title' => null, 'seo_h1' => null,
@@ -316,5 +276,35 @@ class ControllerCatalogImport extends Controller {
             'type' => 'textarea'
         );
         return $productOptions;
+    }
+
+    private function getSpecialPrices($product) {
+        $prices = array(
+            array(
+                'customer_group_id' => 6, /* Wholesales customers group ID */
+                'priority' => 1, /// Highest priority
+                'price' => $product->getSourcePrice()->getPrice() * IMPORT_PRICE_RATE_WHOLESALES_CUSTOMERS,
+                'date_start' => date('Y-m-d'),
+                'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
+            )
+        );
+        /// Preparing promo price
+        if ($product->getSourcePrice()->getPromoPrice()) {
+            $prices[] = array(
+                'customer_group_id' => 8, /* Default customer group ID */
+                'priority' => 0, /// Highest priority
+                'price' => $product->getSourcePrice()->getPromoPrice() * IMPORT_PRICE_RATE_NORMAL_CUSTOMERS,
+                'date_start' => date('Y-m-d'),
+                'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
+            );
+            $prices[] = array(
+                'customer_group_id' => 6, /* Wholesales customers group ID */
+                'priority' => 0, /// Highest priority
+                'price' => $product->getSourcePrice()->getPromoPrice() * IMPORT_PRICE_RATE_WHOLESALES_CUSTOMERS,
+                'date_start' => date('Y-m-d'),
+                'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
+            );
+        }
+        return $prices;
     }
 }

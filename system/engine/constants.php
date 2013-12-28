@@ -73,3 +73,7 @@ define('SEARCH_WEIGHT_WORD_DESCR', 1); // One of search words in product descrip
 
 /// Options
 define('OPTION_MEMO_OPTION_ID', 18);
+
+/// Miscellanious
+define('IMPORT_PRICE_RATE_NORMAL_CUSTOMERS', 1.03);
+define('IMPORT_PRICE_RATE_WHOLESALES_CUSTOMERS', 1);
