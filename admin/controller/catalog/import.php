@@ -1,14 +1,9 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: dev
- * Date: 25.7.13
- * Time: 16:08
- * To change this template use File | Settings | File Templates.
- */
-
 class ControllerCatalogImport extends Controller {
     private $modelCatalogImport;
+    /**
+     *  @var ModelCatalogProduct
+     */
     private $modelCatalogProduct;
 
     public function __construct(Registry $registry) {
@@ -46,13 +41,22 @@ class ControllerCatalogImport extends Controller {
         }
         /// Preparing promo price
         if ($productToAdd->getSourcePrice()->getPromoPrice())
-            $promoPrice = array(array(
-                'customer_group_id' => 8, /* Default customer group ID */
-                'priority' => 0, /// Highest priority
-                'price' => $productToAdd->getSourcePrice()->getPromoPrice(),
-                'date_start' => date('Y-m-d'),
-                'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
-            ));
+            $promoPrice = array(
+                array(
+                    'customer_group_id' => 8, /* Default customer group ID */
+                    'priority' => 0, /// Highest priority
+                    'price' => $productToAdd->getSourcePrice()->getPromoPrice(),
+                    'date_start' => date('Y-m-d'),
+                    'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
+                ),
+                array(
+                    'customer_group_id' => 6, /* Wholesales customers group ID */
+                    'priority' => 0, /// Highest priority
+                    'price' => $productToAdd->getSourcePrice()->getPromoPrice(),
+                    'date_start' => date('Y-m-d'),
+                    'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
+                )
+            );
         else
             $promoPrice = null;
 
@@ -72,6 +76,7 @@ class ControllerCatalogImport extends Controller {
             'product_category' => $productToAdd->getCategories(),
             'product_description' => $product_description,
             'product_image' => $images,
+            'product_option' => $this->setProductOption($productToAdd),
             'product_special' => $promoPrice,
             'product_store' => $productToAdd->getSourceSite()->getDefaultStoreId(),
             'product_tag' => null,
@@ -298,5 +303,18 @@ class ControllerCatalogImport extends Controller {
             'weight' => $localProduct['weight'], 'weight_class_id' => $localProduct['weight_class_id'],
             'width' => null
         ));
+    }
+
+    private function setProductOption($productToSetOptionsTo) {
+        $productOptions = array();
+        $productOptions[] = array(
+            'name' => 'Memo',
+            'option_id' => OPTION_MEMO_OPTION_ID,
+            'option_value' => null,
+            'product_option_id' => null,
+            'required' => false,
+            'type' => 'textarea'
+        );
+        return $productOptions;
     }
 }
