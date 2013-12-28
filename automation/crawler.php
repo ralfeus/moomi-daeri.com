@@ -238,16 +238,16 @@ class DatabaseManager {
     }
 }
 
-//if (file_exists('start') && (shell_exec('ps axo cmd | grep -c "^php crawler.php"') == 1)) {
+if (file_exists('start') && (shell_exec('ps axo cmd | grep -c "^php crawler.php"') == 1)) {
     echo date('Y-m-d H:i:s') . " Starting\n";
     $startTime = time();
-//    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
-//    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
-//    DatabaseManager::getInstance()->addProducts(TonyMoly::getInstance());
+    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
+    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
+    DatabaseManager::getInstance()->addProducts(TonyMoly::getInstance());
     DatabaseManager::getInstance()->addProducts(Mizon::getInstance());
-//    DatabaseManager::getInstance()->cleanup($startTime);
-//    unlink('start');
-//}
-//else {
-//    echo "Nothing to do\n";
-//}
+    DatabaseManager::getInstance()->cleanup($startTime);
+    unlink('start');
+}
+else {
+    echo "Nothing to do\n";
+}
