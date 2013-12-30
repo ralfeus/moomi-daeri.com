@@ -1,7 +1,7 @@
 <?php
 
-class Mizon extends ProductSource {
-    private function __construct() {}
+abstract class GMarketCoKr extends ProductSource {
+    protected $shopId;
 
     private function fillDetails(Product $product) {
         $html = $this->getHtmlDocument($product->url);
@@ -17,18 +17,24 @@ class Mizon extends ProductSource {
             null,
             array('Referer' => $product->url)
         );
-        if (preg_match('/<center>.*<\/center>/s', $details, $matches)) {
-            $product->description = $matches[0];
+        $descHtml = str_get_html($details);
+        $descNode = $descHtml->find('div#contents', 0);
+        if ($descNode) {
+            $product->description = $descNode->outertext;
         }
+        $descHtml->clear();
         $details = $this->getPage(
             "http://item2.gmarket.co.kr/Item/detailview/ItemDetail1.aspx?goodscode=" . $product->sourceProductId,
             null,
             null,
             array('Referer' => $product->url)
         );
-        if (preg_match('/<center>.*<\/center>/s', $details, $matches)) {
-            $product->description .= $matches[0];
+        $descHtml = str_get_html($details);
+        $descNode = $descHtml->find('div#contents', 0);
+        if ($descNode) {
+            $product->description .= $descNode->outertext;
         }
+        $descHtml->clear();
 
         /// Get price and promo price
         $originalPriceElement = $html->find('tr#trCostPrice>td>p>del', 0);
@@ -43,11 +49,11 @@ class Mizon extends ProductSource {
     public function getProducts() {
         echo date('Y-m-d H:i:s') . "\n";
         $productsCount = $this->getProductsCount();
-        echo date('Y-m-d H:i:s') . " $productsCount are to be imported\n";
+        echo date('Y-m-d H:i:s') . " $productsCount products are to be imported\n";
         $output = $this->getPage(
             'http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax',
             null,
-            "type=LIST&page=1&pageSize=$productsCount&GdlcCd=&GdmcCd=&GdscCd=&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=TI5MR38DMTUxNY1zOTUzMzUxNjB%2FRw%3D%3D&CurrPage=minishop",
+            "type=LIST&page=1&pageSize=$productsCount&GdlcCd=&GdmcCd=&GdscCd=&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop",
             array("Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8")
         );
         $json = json_decode($output);
@@ -72,6 +78,7 @@ class Mizon extends ProductSource {
             if ($this->addProductToList($product, $products)) {
                 self::fillDetails($product);
             }
+            if ($tmp > 5) break;
         }
         $htmlDom->clear();
         echo date('Y-m-d H:i:s') . " --- Finished\n";
@@ -82,7 +89,7 @@ class Mizon extends ProductSource {
         $html = $this->getPage(
             'http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax',
             null,
-            "type=LIST&page=1&pageSize=40&GdlcCd=&GdmcCd=&GdscCd=&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=TI5MR38DMTUxNY1zOTUzMzUxNjB%2FRw%3D%3D&CurrPage=minishop",
+            "type=LIST&page=1&pageSize=40&GdlcCd=&GdmcCd=&GdscCd=&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop",
             array("Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8")
         );
         $json = json_decode($html);
@@ -93,19 +100,5 @@ class Mizon extends ProductSource {
         }
     }
 
-    /**
-     * @return Mizon
-     */
-    public static function getInstance() {
-        if (!self::$instance)
-            self::$instance = new Mizon();
-        return self::$instance;
-    }
-
-    /**
-     * @return stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 4, 'name' => 'mizon'); }
-
-    public function getUrl() { return 'http://gshop.gmarket.co.kr/Minishop/GlobalMinishop?CustNo=TI5MR38DMTUxNY1zOTUzMzUxNjB/Rw=='; }
+    public function getUrl() { return 'http://gshop.gmarket.co.kr/Minishop/GlobalMinishop?CustNo=' . $this->shopId; }
 }

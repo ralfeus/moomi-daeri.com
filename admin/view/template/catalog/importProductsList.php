@@ -146,6 +146,7 @@ $(document).ready(function() {
         });
 
     // $('button.ui-multiselect').css('width', '110px');
+    $('div.ui-multiselect-menu').css('width', '400px');
 });
 
 $('#form input').keydown(function(e) {

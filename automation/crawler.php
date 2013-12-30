@@ -1,6 +1,7 @@
 <?php
 require_once("simple_html_dom.php");
 require_once('../config.php');
+require_once('holikaHolika.php');
 require_once('missha.php');
 require_once('mizon.php');
 require_once('natureRepublic.php');
@@ -238,16 +239,17 @@ class DatabaseManager {
     }
 }
 
-if (file_exists('start') && (shell_exec('ps axo cmd | grep -c "^php crawler.php"') == 1)) {
+//if (file_exists('start') && (shell_exec('ps axo cmd | grep -c "^php crawler.php"') == 1)) {
     echo date('Y-m-d H:i:s') . " Starting\n";
     $startTime = time();
-    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
-    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
-    DatabaseManager::getInstance()->addProducts(TonyMoly::getInstance());
-    DatabaseManager::getInstance()->addProducts(Mizon::getInstance());
+//    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
+//    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
+//    DatabaseManager::getInstance()->addProducts(TonyMoly::getInstance());
+//    DatabaseManager::getInstance()->addProducts(Mizon::getInstance());
+    DatabaseManager::getInstance()->addProducts(HolikaHolika::getInstance());
     DatabaseManager::getInstance()->cleanup($startTime);
-    unlink('start');
-}
-else {
-    echo "Nothing to do\n";
-}
+//    unlink('start');
+//}
+//else {
+//    echo "Nothing to do\n";
+//}
