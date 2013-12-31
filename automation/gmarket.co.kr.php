@@ -65,7 +65,7 @@ abstract class GMarketCoKr extends ProductSource {
             $products = array();
             $tmp = 1;
             foreach ($items as $item) {
-                echo date('H:i:s') . "\tItem " . $tmp++ . " of $productsCount\n";
+                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount + $chunk . "\n";
     //            $aElement = $item->find('a[href*=category_detail.php]', 0);
                 $product = new Product(
                     $this,
