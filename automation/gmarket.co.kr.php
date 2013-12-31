@@ -50,9 +50,9 @@ abstract class GMarketCoKr extends ProductSource {
         echo date('Y-m-d H:i:s') . "\n";
         $productsCount = $this->getProductsCount();
         echo date('Y-m-d H:i:s') . " $productsCount products are to be imported\n";
-        $page = 0;
+        $page = 0; $productsToGet = $productsCount;
         do {
-            $chunk = min($productsCount, 200); $page++; $productsCount -= $chunk;
+            $chunk = min($productsToGet, 200); $page++; $productsToGet -= $chunk;
             $output = $this->getPage(
                 'http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax',
                 null,
@@ -65,7 +65,7 @@ abstract class GMarketCoKr extends ProductSource {
             $products = array();
             $tmp = 1;
             foreach ($items as $item) {
-                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount + $chunk . "\n";
+                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount . "\n";
     //            $aElement = $item->find('a[href*=category_detail.php]', 0);
                 $product = new Product(
                     $this,
@@ -84,7 +84,7 @@ abstract class GMarketCoKr extends ProductSource {
     //            if ($tmp > 5) break;
             }
             $htmlDom->clear();
-        } while ($productsCount);
+        } while ($productsToGet);
         echo date('Y-m-d H:i:s') . " --- Finished\n";
         return $products;
     }
