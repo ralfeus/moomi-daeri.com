@@ -1,6 +1,7 @@
 <?php
 require_once("simple_html_dom.php");
 require_once('../config.php');
+require_once('etudeHouse.php');
 require_once('holikaHolika.php');
 require_once('missha.php');
 require_once('mizon.php');
@@ -246,7 +247,8 @@ class DatabaseManager {
 //    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
 //    DatabaseManager::getInstance()->addProducts(TonyMoly::getInstance());
 //    DatabaseManager::getInstance()->addProducts(Mizon::getInstance());
-    DatabaseManager::getInstance()->addProducts(HolikaHolika::getInstance());
+//    DatabaseManager::getInstance()->addProducts(HolikaHolika::getInstance());
+    DatabaseManager::getInstance()->addProducts(EtudeHouse::getInstance());
     DatabaseManager::getInstance()->cleanup($startTime);
 //    unlink('start');
 //}
