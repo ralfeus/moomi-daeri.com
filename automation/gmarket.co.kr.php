@@ -51,6 +51,8 @@ abstract class GMarketCoKr extends ProductSource {
         $productsCount = $this->getProductsCount();
         echo date('Y-m-d H:i:s') . " $productsCount products are to be imported\n";
         $page = 0; $productsToGet = $productsCount;
+        $products = array();
+        $tmp = 1;
         do {
             $chunk = min($productsToGet, 200); $page++; $productsToGet -= $chunk;
             $output = $this->getPage(
@@ -62,8 +64,6 @@ abstract class GMarketCoKr extends ProductSource {
             $json = json_decode($output);
             $htmlDom = str_get_html($json->message);
             $items = $htmlDom->find('tr');
-            $products = array();
-            $tmp = 1;
             foreach ($items as $item) {
                 echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount . "\n";
     //            $aElement = $item->find('a[href*=category_detail.php]', 0);
