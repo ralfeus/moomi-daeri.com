@@ -50,37 +50,41 @@ abstract class GMarketCoKr extends ProductSource {
         echo date('Y-m-d H:i:s') . "\n";
         $productsCount = $this->getProductsCount();
         echo date('Y-m-d H:i:s') . " $productsCount products are to be imported\n";
-        $output = $this->getPage(
-            'http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax',
-            null,
-            "type=LIST&page=1&pageSize=$productsCount&GdlcCd=&GdmcCd=&GdscCd=&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop",
-            array("Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8")
-        );
-        $json = json_decode($output);
-        $htmlDom = str_get_html($json->message);
-        $items = $htmlDom->find('tr');
-        $products = array();
-        $tmp = 1;
-        foreach ($items as $item) {
-            echo date('H:i:s') . "\tItem " . $tmp++ . " of $productsCount\n";
-//            $aElement = $item->find('a[href*=category_detail.php]', 0);
-            $product = new Product(
-                $this,
+        $page = 0;
+        do {
+            $chunk = min($productsCount, 200); $page++; $productsCount -= $chunk;
+            $output = $this->getPage(
+                'http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax',
                 null,
-                preg_match('/(?<=goodscode=)\d+/', $item->first_child()->first_child()->first_child()->attr['href'], $matches) ? $matches[0] : null,
-                $item->first_child()->first_child()->first_child()->first_child()->attr['alt'],
-                $item->first_child()->first_child()->first_child()->attr['href'],
-                $item->first_child()->first_child()->first_child()->first_child()->attr['src'],
-                preg_replace('/\D+/', '', $item->find('li.discount_price', 0)->plaintext),
-                null,
-                0.3
+                "type=LIST&page=$page&pageSize=$chunk&GdlcCd=&GdmcCd=&GdscCd=&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop",
+                array("Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8")
             );
-            if ($this->addProductToList($product, $products)) {
-                self::fillDetails($product);
+            $json = json_decode($output);
+            $htmlDom = str_get_html($json->message);
+            $items = $htmlDom->find('tr');
+            $products = array();
+            $tmp = 1;
+            foreach ($items as $item) {
+                echo date('H:i:s') . "\tItem " . $tmp++ . " of $productsCount\n";
+    //            $aElement = $item->find('a[href*=category_detail.php]', 0);
+                $product = new Product(
+                    $this,
+                    null,
+                    preg_match('/(?<=goodscode=)\d+/', $item->first_child()->first_child()->first_child()->attr['href'], $matches) ? $matches[0] : null,
+                    $item->first_child()->first_child()->first_child()->first_child()->attr['alt'],
+                    $item->first_child()->first_child()->first_child()->attr['href'],
+                    $item->first_child()->first_child()->first_child()->first_child()->attr['src'],
+                    preg_replace('/\D+/', '', $item->find('li.discount_price', 0)->plaintext),
+                    null,
+                    0.3
+                );
+                if ($this->addProductToList($product, $products)) {
+                    self::fillDetails($product);
+                }
+    //            if ($tmp > 5) break;
             }
-//            if ($tmp > 5) break;
-        }
-        $htmlDom->clear();
+            $htmlDom->clear();
+        } while ($productsCount);
         echo date('Y-m-d H:i:s') . " --- Finished\n";
         return $products;
     }
