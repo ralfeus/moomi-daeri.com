@@ -228,7 +228,7 @@ class ModelLocalisationLanguage extends Model {
 		$this->cache->delete('weight_class');
 	}
 	
-	public function getLanguage($language_id) {
+	public function getLanguageInfo($language_id) {
 		$query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "language WHERE language_id = '" . (int)$language_id . "'");
 	
 		return $query->row;

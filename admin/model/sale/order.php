@@ -249,7 +249,7 @@ class ModelSaleOrder extends Model {
 
 			$this->load->model('localisation/language');
 
-			$language_info = $this->model_localisation_language->getLanguage($order_query->row['language_id']);
+			$language_info = $this->model_localisation_language->getLanguageInfo($order_query->row['language_id']);
 
 			if ($language_info) {
 				$language_code = $language_info['code'];

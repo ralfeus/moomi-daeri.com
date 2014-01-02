@@ -363,7 +363,7 @@ class ControllerLocalisationLanguage extends Controller {
 		$this->data['cancel'] = $this->url->link('localisation/language', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
 		if (isset($this->request->get['language_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
-			$language_info = $this->model_localisation_language->getLanguage($this->request->get['language_id']);
+			$language_info = $this->model_localisation_language->getLanguageInfo($this->request->get['language_id']);
 		}
 
 		if (isset($this->request->post['name'])) {
@@ -484,7 +484,7 @@ class ControllerLocalisationLanguage extends Controller {
 		$this->load->model('sale/order');
 		
 		foreach ($this->request->post['selected'] as $language_id) {
-			$language_info = $this->model_localisation_language->getLanguage($language_id);
+			$language_info = $this->model_localisation_language->getLanguageInfo($language_id);
 
 			if ($language_info) {
 				if ($this->config->get('config_language') == $language_info['code']) {
