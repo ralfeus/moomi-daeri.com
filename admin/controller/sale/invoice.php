@@ -8,10 +8,15 @@
  */
 class ControllerSaleInvoice extends Controller
 {
+    /** @var ModelReferenceAddress */
     private $modelReferenceAddress;
+    /** @var ModelSaleCustomer */
     private $modelSaleCustomer;
+    /** @var ModelSaleInvoice */
     private $modelSaleInvoice;
+    /** @var ModelSaleOrder */
     private $modelSaleOrder;
+    /** @var ModelSaleOrderItem */
     private $modelSaleOrderItem;
 
     public function __construct($registry)

@@ -197,8 +197,7 @@ class ModelSaleInvoice extends Model
         $this->db->query("
             UPDATE " . DB_PREFIX . "invoices
             SET
-                $field = '" . $this->db->escape($data) . "',
-                time_modified = NOW()
+                $field = '" . $this->db->escape($data) . "'
             WHERE invoice_id = " . (int)$invoiceId
         );
     }
