@@ -234,8 +234,7 @@ class ControllerSaleInvoice extends Controller
         return rtrim($result, "\n");
     }
 
-    public function getShippingCost()
-    {
+    public function getShippingCost() {
         $this->log->write(print_r($this->parameters, true));
         $orderItems = $this->modelSaleOrderItem->getOrderItems(array('filterOrderItemId' => $this->parameters['orderItemId']));
         $cost = Shipping::getCost(

@@ -162,13 +162,9 @@ class ControllerCommonHeader extends Controller {
     	}
 
 		$this->data['language_code'] = $this->session->data['language'];
-
 		$this->load->model('localisation/language');
-
 		$this->data['languages'] = array();
-
 		$results = $this->model_localisation_language->getLanguages();
-
 		foreach ($results as $result) {
 			if ($result['status']) {
 				$this->data['languages'][] = array(
@@ -193,13 +189,9 @@ class ControllerCommonHeader extends Controller {
    		}
 
 		$this->data['currency_code'] = $this->currency->getCode();
-
 		$this->load->model('localisation/currency');
-
-		 $this->data['currencies'] = array();
-
+	    $this->data['currencies'] = array();
 		$results = $this->model_localisation_currency->getCurrencies();
-
 		foreach ($results as $result) {
 			if ($result['status']) {
    				$this->data['currencies'][] = array(

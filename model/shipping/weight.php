@@ -49,7 +49,7 @@ class ModelShippingWeight extends ShippingMethodModel
             $result = array();
             foreach ($query->rows as $row)
             {
-                $row['code'] = 'weight.weight_' . $query->row['geo_zone_id'];
+                $row['code'] = 'weight.weight_' . $row['geo_zone_id'];
                 $row['shippingMethodName'] = 'Weight based shipping ' . $row['name'];
                 $result[] = $row;
             }
