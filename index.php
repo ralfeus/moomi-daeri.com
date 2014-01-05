@@ -185,7 +185,12 @@ $config->set('config_language', $languages[$code]['code']);
 
 // Language
 $language = new Language($languages[$code]['directory']);
-$language->load($languages[$code]['filename']);
+try {
+    $language->load($languages[$code]['filename']);
+} catch (Exception $exc) {
+    $language = new Language($languages[$config->get('config_admin_language')]['directory']);
+    $language->load($languages[$config->get('config_admin_language')]['filename']);
+}
 $registry->set('language', $language);
 
 // Document

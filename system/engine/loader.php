@@ -82,7 +82,10 @@ final class Loader extends OpenCartBase
 	}
 	
 	public function language($language) {
-		return $this->registry->get('language')->load($language);
+        try {
+		    return $this->registry->get('language')->load($language);
+        } catch (Exception $exc) {
+            return $this->registry->get('language')->load($this->config->get('config_admin_language'));
+        }
 	}
-} 
-?>
+}

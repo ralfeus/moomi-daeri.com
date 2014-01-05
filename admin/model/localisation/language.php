@@ -90,7 +90,23 @@ class ModelLocalisationLanguage extends Model {
 		}	
 		
 		$this->cache->delete('order_status');
-		
+
+        /// Statuses
+        $query = $this->db->query("
+            SELECT *
+            FROM " . DB_PREFIX . "statuses
+            WHERE language_id = " . (int)$this->config->get('config_language_id')
+        );
+        $sql = '';
+        foreach ($query->rows as $status) {
+            $sql .= sprintf(
+                ",(%d, %d, %d, '%s', '%s', '%s')",
+                $status['group_id'], $status['status_id'], $language_id, $status['name'], $status['public_name'], $status['description']);
+        }
+		if ($sql) {
+            $sql = "INSERT INTO " . DB_PREFIX . "statuses (group_id, status_id, language_id, name, public_name, description) VALUES " . substr($sql, 1);
+            $this->db->query($sql);
+        }
 		// Product
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_description WHERE language_id = '" . (int)$this->config->get('config_language_id') . "'");
 
