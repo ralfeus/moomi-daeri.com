@@ -32,9 +32,9 @@ class ControllerCatalogProduct extends Controller {
             $this->session->data['parameters']['catalog/product'] = array();
 
         if (empty($this->session->data['parameters']['catalog/product']['filterDateAddedFrom']))
-            $this->session->data['parameters']['catalog/product']['filterDateAddedFrom'] = '2012-01-01';
+            $this->session->data['parameters']['catalog/product']['filterDateAddedFrom'] = date('Y-01-01');
         if (empty($this->session->data['parameters']['catalog/product']['filterDateAddedTo']))
-            $this->session->data['parameters']['catalog/product']['filterDateAddedTo'] =  '2014-01-01';
+            $this->session->data['parameters']['catalog/product']['filterDateAddedTo'] =  date('Y-01-01', time() + 31536000);
         if (empty($this->session->data['parameters']['catalog/product']['filterManufacturerId']) || !is_array($this->session->data['parameters']['catalog/product']['filterManufacturerId']))
             $this->session->data['parameters']['catalog/product']['filterManufacturerId'] =  array();
         if (empty($this->session->data['parameters']['catalog/product']['filterModel']))
