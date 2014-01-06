@@ -1,6 +1,7 @@
 <?php
 class ControllerSaleOrder extends Controller {
 	private $error = array();
+    /** @var ModelSaleOrder */
     private $modelSaleOrder;
 	
 	public function __construct($registry)
@@ -275,6 +276,9 @@ class ControllerSaleOrder extends Controller {
       		'separator' => ' :: '
    		);
 
+        $this->data['urlCloseOrder'] = $this->url->link(
+            'sale/order/setStatus',
+            'token=' . $this->session->data['token'] . '&orderStatusId=' . ORDER_STATUS_FINISHED, 'SSL');
 		$this->data['invoice'] = $this->url->link('sale/order/invoice', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['delete'] = $this->url->link('sale/order/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
@@ -340,6 +344,7 @@ class ControllerSaleOrder extends Controller {
 		$this->data['button_invoice'] = $this->language->get('button_invoice');
 		$this->data['button_delete'] = $this->language->get('button_delete');
 		$this->data['button_filter'] = $this->language->get('FILTER');
+        $this->data['textCloseOrder'] = $this->language->get('CLOSE_SELECTED_ORDERS');
 
 		$this->data['token'] = $this->session->data['token'];
 
@@ -1698,7 +1703,7 @@ class ControllerSaleOrder extends Controller {
 		} else {
 			$this->data['error_warning'] = '';
 		}
-				
+
 		$this->data['text_no_results'] = $this->language->get('text_no_results');
 		
 		$this->data['column_date_added'] = $this->language->get('column_date_added');
@@ -1743,8 +1748,16 @@ class ControllerSaleOrder extends Controller {
 
     protected function initParameters()
     {
-        $this->parameters['orderStatusId'] = empty($_REQUEST['order_status_id']) ? null : $_REQUEST['order_status_id'];
+        $this->parameters['filter_customer'] = empty($_REQUEST['filter_customer']) ? null : $_REQUEST['filter_customer'];
+        $this->parameters['filter_date_added'] = empty($_REQUEST['filter_date_added']) ? null : $_REQUEST['filter_date_added'];
+        $this->parameters['filter_date_modified'] = empty($_REQUEST['filter_date_modified']) ? null : $_REQUEST['filter_date_modified'];
+        $this->parameters['filter_order_id'] = empty($_REQUEST['filter_order_id']) ? null : $_REQUEST['filter_order_id'];
+        $this->parameters['filter_order_status_id'] = empty($_REQUEST['filter_order_status_id']) ? null : $_REQUEST['filter_order_status_id'];
+        $this->parameters['filter_total'] = empty($_REQUEST['filter_total']) ? null : $_REQUEST['filter_total'];
+        $this->parameters['orderStatusId'] = empty($_REQUEST['orderStatusId']) ? null : $_REQUEST['orderStatusId'];
         $this->parameters['orderId'] = empty($_REQUEST['order_id']) ? null : $_REQUEST['order_id'];
+        $this->parameters['selected'] = empty($_REQUEST['selected']) ? array() : $_REQUEST['selected'];
+        $this->parameters['token'] = $this->session->data['token'];
     }
 	
 	public function download() {
@@ -2053,5 +2066,27 @@ class ControllerSaleOrder extends Controller {
 
 		$this->response->setOutput($this->render());
 	}
+
+    public function setStatus() {
+        $this->load->language('sale/order');
+        $this->load->library('Status');
+
+        if (!isset($this->error['warning'])) {
+            $this->error['warning'] = '';
+            $this->session->data['success'] = '';
+            $this->load->model('sale/order');
+            $this->load->model('localisation/order_status');
+
+            foreach ($this->parameters['selected'] as $orderId) {
+                $this->modelSaleOrder->addOrderHistory($orderId, array('order_status_id' => $this->parameters['orderStatusId']));
+                $this->session->data['success'] .= sprintf(
+                    $this->language->get("STATUS_SET"),
+                    $orderId,
+                    Status::getStatus(0x00080000 + $this->parameters['orderStatusId'], $this->config->get('language_id'))
+                );
+
+            }
+        }
+        $this->redirect($this->url->link('sale/order', $this->buildUrlParameterString($this->parameters), 'SSL'));
+    }
 }
-?>

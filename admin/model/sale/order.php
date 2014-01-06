@@ -578,7 +578,7 @@ class ModelSaleOrder extends Model {
 		}
 	}
 
-	public function addOrderHistory($order_id, $data) {
+	public function addOrderHistory($order_id, $data = array()) {
 		$this->db->query("
 		    UPDATE `" . DB_PREFIX . "order`
 		    SET
@@ -587,7 +587,15 @@ class ModelSaleOrder extends Model {
             WHERE order_id = '" . (int)$order_id . "'
         ");
 
-		$this->db->query("INSERT INTO " . DB_PREFIX . "order_history SET order_id = '" . (int)$order_id . "', order_status_id = '" . (int)$data['order_status_id'] . "', notify = '" . (isset($data['notify']) ? (int)$data['notify'] : 0) . "', comment = '" . $this->db->escape(strip_tags($data['comment'])) . "', date_added = NOW()");
+		$this->db->query("
+		    INSERT INTO " . DB_PREFIX . "order_history
+		    SET
+		        order_id = '" . (int)$order_id . "',
+		        order_status_id = '" . (int)$data['order_status_id'] . "',
+		        notify = '" . (isset($data['notify']) ? (int)$data['notify'] : 0) . "',
+		        comment = '" . $this->db->escape(strip_tags($data['comment'])) . "',
+		        date_added = NOW()
+        ");
 
 		$order_info = $this->getOrder($order_id);
 

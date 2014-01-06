@@ -14,7 +14,11 @@
   <div class="box">
     <div class="heading">
       <h1><img src="view/image/order.png" alt="" /> <?php echo $heading_title; ?></h1>
-      <div class="buttons"><a onclick="$('#form').attr('action', '<?php echo $invoice; ?>'); $('#form').attr('target', '_blank'); $('#form').submit();" class="button"><?php echo $button_invoice; ?></a><a onclick="$('#form').attr('action', '<?php echo $delete; ?>'); $('#form').attr('target', '_self'); $('#form').submit();" class="button"><?php echo $button_delete; ?></a></div>
+      <div class="buttons">
+          <a onclick="$('#form').attr('action', '<?= $urlCloseOrder ?>').submit()" class="button"><?= $textCloseOrder ?></a>
+          <a onclick="$('#form').attr('action', '<?= $invoice ?>'); $('#form').attr('target', '_blank'); $('#form').submit();" class="button"><?= $button_invoice ?></a>
+          <a onclick="$('#form').attr('action', '<?= $delete ?>'); $('#form').attr('target', '_self'); $('#form').submit();" class="button"><?= $button_delete ?></a>
+      </div>
     </div>
     <div class="content">
       <form action="" method="post" enctype="multipart/form-data" id="form">
@@ -61,7 +65,7 @@
               <td align="right"><input type="text" name="filter_order_id" value="<?php echo $filter_order_id; ?>" size="4" style="text-align: right;" /></td>
               <td><input type="text" name="filter_customer" value="<?php echo $filter_customer; ?>" /></td>
               <td><select name="filter_order_status_id">
-                  <option value="*"></option>
+                  <option></option>
                   <?php if ($filter_order_status_id == '0') { ?>
                   <option value="0" selected="selected"><?php echo $text_abandoned_orders; ?></option>
                   <?php } else { ?>
