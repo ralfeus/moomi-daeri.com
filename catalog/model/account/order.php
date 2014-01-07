@@ -124,7 +124,7 @@ class ModelAccountOrder extends Model {
 				AND os.language_id = '" . (int)$this->config->get('config_language_id') . "' 
 			ORDER BY o.order_id DESC 
 			LIMIT " . (int)$start . "," . (int)$limit;
-        $this->log->write($query);
+//        $this->log->write($query);
         $query = $this->db->query($query);
 	
 		return $query->rows;

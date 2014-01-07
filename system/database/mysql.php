@@ -13,7 +13,7 @@ final class MySQL implements DBDriver{
             $password,
             array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8; SET CHARACTER SET utf8; SET CHARACTER_SET_CONNECTION=utf8; SET SQL_MODE = ''")
         );
-        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   	}
 		
   	public function query($sql, $log = false) {
@@ -26,21 +26,24 @@ final class MySQL implements DBDriver{
 //		$resource = mysql_query($sql, $this->connection);
 		if ($result) {
             $i = 0;
-
             $data = array();
-            foreach ($this->statement->fetchAll() as $result) {
-                $data[$i] = $result;
-                $i++;
-            }
-            if ($log) $log->write($i);
-
-            if ($log) $log->write("Resource is freed up");
             $query = new stdClass();
-            $query->row = isset($data[0]) ? $data[0] : array();
-            $query->rows = $data;
-            $query->num_rows = $i;
+            try {
+                foreach ($this->statement->fetchAll() as $result) {
+                    $data[$i] = $result;
+                    $i++;
+                }
+                if ($log) $log->write($i);
 
-            unset($data);
+                if ($log) $log->write("Resource is freed up");
+                $query->row = isset($data[0]) ? $data[0] : array();
+                $query->rows = $data;
+                $query->num_rows = $i;
+
+                unset($data);
+            } catch (PDOException $exception) {
+
+            }
             return $query;
 		} else {
 			trigger_error('Error: ' . $this->statement->errorInfo() . '<br />Error No: ' . $this->statement->errorCode() . '<br />' . $sql);
