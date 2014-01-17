@@ -1,71 +1,76 @@
 <?php
 require_once('DBDriver.php');
 final class MySQL implements DBDriver{
-    /** @var PDO */
+    /** @var \mysqli */
 	private $connection;
-    /** @var PDOStatement */
-    private $statement;
 	
 	public function __construct($hostname, $username, $password, $database) {
-        $this->connection = new PDO(
-            "mysql:host=$hostname;dbname=$database",
-            $username,
-            $password,
-            array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8; SET CHARACTER SET utf8; SET CHARACTER_SET_CONNECTION=utf8; SET SQL_MODE = ''")
-        );
-        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		if (!$this->connection = new mysqli($hostname, $username, $password)) {
+      		exit('Error: Could not make a database connection using ' . $username . '@' . $hostname);
+    	}
+
+    	if (!$this->connection->select_db($database)) {
+      		exit('Error: Could not connect to database ' . $database);
+    	}
+		
+		$this->connection->query("SET NAMES 'utf8'");
+        $this->connection->query("SET CHARACTER SET utf8");
+        $this->connection->query("SET CHARACTER_SET_CONNECTION=utf8");
+        $this->connection->query("SET SQL_MODE = ''");
   	}
 		
   	public function query($sql, $log = false) {
-        if ($log) {
-          $log = new Log('error.log');
-          $log->write($sql);
-        }
-        $this->statement = $this->connection->prepare($sql);
-        $result = $this->statement->execute();
-//		$resource = mysql_query($sql, $this->connection);
-		if ($result) {
-            $i = 0;
-            $data = array();
-            $query = new stdClass();
-            try {
-                foreach ($this->statement->fetchAll() as $result) {
-                    $data[$i] = $result;
-                    $i++;
-                }
+          if ($log)
+          {
+              $log = new Log('error.log');
+              $log->write($sql);
+          }
+        /** @var $resource \mysqli_result */
+		$resource = $this->connection->query($sql);
+		if ($resource) {
+			if (is_object($resource)) {
+				$i = 0;
+    	
+				$data = array();
+				while ($result = $resource->fetch_assoc()) {
+					$data[$i] = $result;
+					$i++;
+				}
                 if ($log) $log->write($i);
 
-                if ($log) $log->write("Resource is freed up");
-                $query->row = isset($data[0]) ? $data[0] : array();
-                $query->rows = $data;
-                $query->num_rows = $i;
+				$resource->free_result();
+				if ($log) $log->write("Resource is freed up");
+				$query = new stdClass();
+				$query->row = isset($data[0]) ? $data[0] : array();
+				$query->rows = $data;
+				$query->num_rows = $i;
+				
+				unset($data);
 
-                unset($data);
-            } catch (PDOException $exception) {
-
-            }
-            return $query;
+				return $query;	
+    		} else {
+				return $resource;
+			}
 		} else {
-			trigger_error('Error: ' . $this->statement->errorInfo() . '<br />Error No: ' . $this->statement->errorCode() . '<br />' . $sql);
+			trigger_error('Error: ' . $this->connection->error . '<br />Error No: ' . $this->connection->errno . '<br />' . $sql);
 			exit();
     	}
-        $this->statement->closeCursor();
-    }
+  	}
 	
 	public function escape($value) {
-		return $value;
+		return $this->connection->real_escape_string($value);
 	}
 	
   	public function countAffected() {
-    	return $this->statement->rowCount();
+    	return $this->connection->affected_rows;
   	}
 
   	public function getLastId() {
-    	return $this->connection->lastInsertId();
-  	}	
+    	return $this->connection->insert_id;
+  	}
 	
 	public function __destruct() {
-		$this->statement->closeCursor();
+		$this->connection->close();
 	}
 }
 ?>
