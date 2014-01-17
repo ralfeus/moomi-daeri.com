@@ -78,7 +78,7 @@ class ModelCheckoutOrder extends Model {
 	}
 	
 	public function create($data) {
-		$this->db->query("
+        $sql = "
 			INSERT INTO `" . DB_PREFIX . "order` 
 			SET 
 				invoice_prefix = '" . $this->db->escape($data['invoice_prefix']) . "', 
@@ -130,8 +130,9 @@ class ModelCheckoutOrder extends Model {
 				currency_value = '" . (float)$data['currency_value'] . "', 
 				ip = '" . $this->db->escape($data['ip']) . "', 
 				date_added = NOW(), 
-				date_modified = NOW()"
-		);
+				date_modified = NOW()";
+        $this->log->write($sql);
+        $this->db->query($sql);
 		$order_id = $this->db->getLastId();
 
 		foreach ($data['products'] as $product) { 
