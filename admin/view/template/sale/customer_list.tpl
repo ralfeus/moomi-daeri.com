@@ -102,14 +102,12 @@
               <td></td>
               <td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td>
             </tr>
-            <?php if ($customers) { ?>
-            <?php foreach ($customers as $customer) { ?>
-            <tr>
-              <td style="text-align: center;"><?php if ($customer['selected']) { ?>
-                <input type="checkbox" name="selected[]" value="<?php echo $customer['customer_id']; ?>" checked="checked" />
-                <?php } else { ?>
-                <input type="checkbox" name="selected[]" value="<?php echo $customer['customer_id']; ?>" />
-                <?php } ?></td>
+<?php if ($customers):
+    foreach ($customers as $customer): ?>
+            <tr <?= $customer['highlighted'] ? 'class="highlight"' : '' ?>>
+              <td style="text-align: center;">
+                <input type="checkbox" name="selected[]" value="<?= $customer['customer_id'] ?>" <?= $customer['selected'] ? 'checked="checked"' : '' ?>/>
+              </td>
               <td class="left">
                   <?= $customer['name'] ?><br />
                   <?= $customer['nickname'] ?>
@@ -128,19 +126,19 @@
                   <?php } ?>
                 </select></td>
               <td class="right">
-<?php foreach ($customer['action'] as $action): ?>
+        <?php foreach ($customer['action'] as $action): ?>
                 [&nbsp;<a
                     <?= !empty($action['href']) ? 'href="' . $action['href'] . '"' : '' ?>
                     <?= !empty($action['onclick']) ? 'onclick="ajaxAction(this, \'' . $action['onclick'] . '\')"' : '' ?>><?= str_replace(' ', '&nbsp;', $action['text']) ?></a>&nbsp;]
-<?php endforeach; ?>
+        <?php endforeach; ?>
               </td>
             </tr>
-            <?php } ?>
-            <?php } else { ?>
+    <?php endforeach;
+else: ?>
             <tr>
               <td class="center" colspan="9"><?php echo $text_no_results; ?></td>
             </tr>
-            <?php } ?>
+<?php endif; ?>
           </tbody>
         </table>
       </form>

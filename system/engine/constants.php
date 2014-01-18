@@ -11,7 +11,7 @@ define('IS_AWAITING_PAYMENT', 2);
 define('IS_PAID', 3);
 
 /// Order statuses (since used by scripts should be hard coded. Visual presentation in different languages are in database)
-define('OS_IN_PROGRESS', 2);
+define('ORDER_STATUS_IN_PROGRESS', 2);
 define('ORDER_STATUS_FINISHED', 17);
 
 /// System messages identifiers
@@ -23,9 +23,9 @@ define('GROUP_ORDER_ITEM_STATUS', 0x0005);
 define('ORDER_ITEM_STATUS_WAITING', 0x00050001);
 define('ORDER_ITEM_STATUS_PREPARE', 0x00050002);
 define('ORDER_ITEM_STATUS_READY', 0x00050003);
+define('ORDER_ITEM_STATUS_FINISH', 0x00050004);
 define('ORDER_ITEM_STATUS_ORDERED', 0x00050005);
 define('ORDER_ITEM_STATUS_PACKED', 0x00050006);
-define('ORDER_ITEM_STATUS_FINISH', 0x00050004);
 define('ORDER_ITEM_STATUS_SOLDOUT', 0x00050064);
 define('ORDER_ITEM_STATUS_CANCELLED', 0x00050065);
 
@@ -59,6 +59,8 @@ define('CMS_SITE_GUIDE', 0x00070002);
 
 define('GROUP_ORDER_STATUS', 0x0008);
 define('ORDER_STATUS_FINISH', 0x00080011);
+define('ORDER_STATUS_READY_TO_SHIP', 0x00080012
+);
 
 //TODO: Replace attribute with field in `product` table
 define('ATTRIBUTE_KOREAN_NAME', 42); // Attribute ID of the attribute containing korean name of the product.

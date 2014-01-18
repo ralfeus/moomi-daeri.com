@@ -211,18 +211,18 @@ class ControllerAccountOrderItems extends Controller {
     private function initStatuses()
     {
         $this->data['statuses'] = array();
-        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $order_item_status)
+        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
             $this->data['statuses'][GROUP_ORDER_ITEM_STATUS][] = array(
-                'id'    => $order_item_status['status_id'],
-                'name' => $order_item_status['name'],
+                'id'    => $statusId,
+                'name' => $status,
                 'settable' => true,
                 'viewable' => true,
-                'set_status_url' => $this->url->link('sale/order_items/set_status', $this->buildUrlParameterString($this->parameters) . "&order_item_new_status=" . $order_item_status['status_id'], 'SSL')
+                'set_status_url' => $this->url->link('sale/order_items/set_status', $this->buildUrlParameterString($this->parameters) . "&order_item_new_status=$statusId", 'SSL')
             );
-        foreach (Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $repurchaseOrderStatus)
+        foreach (Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
             $this->data['statuses'][GROUP_REPURCHASE_ORDER_ITEM_STATUS][] = array(
-                'id' => $repurchaseOrderStatus['status_id'],
-                'name' => $repurchaseOrderStatus['name']
+                'id' => $statusId,
+                'name' => $status
             );
     }
 

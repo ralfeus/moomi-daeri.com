@@ -21,12 +21,12 @@
                     <td class="right" style="width: 100%;">
                         <?= $textStatus ?>
                         <select name="filterStatusId[]" multiple="true">
-                            <?php foreach ($statuses as $status):
-                                if (in_array($status['status_id'], $filterStatusId))
+                            <?php foreach ($statuses as $statusId => $status):
+                                if (in_array($statusId, $filterStatusId))
                                     $selected = "selected=\"selected\"";
                                 else
                                     $selected = ""; ?>
-                                <option value="<?= $status['status_id'] ?>" <?= $selected ?>><?= $status['name'] ?></option>
+                                <option value="<?= $statusId ?>" <?= $selected ?>><?= $status ?></option>
                             <?php endforeach; ?>
                         </select>
                     </td>

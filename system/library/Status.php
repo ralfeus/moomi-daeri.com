@@ -21,8 +21,7 @@ class Status extends LibraryClass
     {
 //        Status::$instance->log->write("$statusId, $languageId, $isPublic");
         $fieldName = $isPublic ? "public_name" : "name";
-        while (true)
-        {
+        while (true) {
             $sql = "
                 SELECT $fieldName
                 FROM " . DB_PREFIX . "statuses
@@ -50,11 +49,15 @@ class Status extends LibraryClass
                 WHERE group_id = " . (int)$statusGroupId . " AND language_id = " . (int)$languageId;
             $query = Status::$instance->db->query($sql);
 
-            if ($query->num_rows)
-                return $query->rows;
-            elseif ($languageId != 2)
-                $languageId = 2;
-            else
+            if ($query->num_rows) {
+                $result = array();
+                foreach ($query->rows as $row) {
+                    $result[$row['status_id']] = $row['name'];
+                }
+                return $result;
+            } elseif ($languageId != 2) {
+                $languageId = 2; /// English
+            } else
                 return array();
         }
     }

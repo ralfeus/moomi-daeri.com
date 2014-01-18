@@ -115,7 +115,7 @@ class ModelLocalisationOrderStatus extends Model {
             FROM " . DB_PREFIX . "statuses
             WHERE group_id = " . GROUP_ORDER_STATUS . " AND status_id = " . (int)$order_status_id
         );
-		
+
 		foreach ($query->rows as $result) {
 			$order_status_data[$result['language_id']] = array('name' => $result['name']);
 		}

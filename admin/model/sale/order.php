@@ -135,6 +135,33 @@ class ModelSaleOrder extends Model {
 		}
 	}
 
+    private function buildFilterString($data = array()) {
+        $filter = "";
+        if (isset($data['selected']) && count($data['selected']))
+            $filter = "o.order_id in (" . implode(', ', $data['selected']) . ")";
+        else
+        {
+            if (!empty($data['filter_date_added']))
+                $filter .= ($filter ? " AND " : "") . "DATE(o.date_added) = DATE('" . $this->db->escape($data['filter_date_added']) . "')";
+            if (!empty($data['filter_customer']))
+                $filter .= ($filter ? " AND " : "") . "LCASE(CONCAT(o.firstname, ' ', o.lastname)) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_customer'])) . "%'";
+            if (!empty($data['filter_order_id']))
+                $filter .= ($filter ? " AND " : "") . "o.order_id = " . (int)$data['filter_order_id'];
+            if (!empty($data['filter_order_status_id']))
+                $filter .= ($filter ? " AND " : "") . "o.order_status_id = " . (int)$data['filter_order_status_id'];
+            if (!empty($data['filter_total']))
+                $filter .= ($filter ? " AND " : "") . "o.total = '" . (float)$data['filter_total'] . "'";
+            if (!empty($data['filterCustomerId']))
+                $filter .= ($filter ? " AND " : "") . "o.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
+            if (!empty($data['filterStatusId']))
+                $filter .= ($filter ? " AND " : "") . "o.order_status_id IN (" . implode(', ', $data['filterStatusId']) . ")";
+            if (!empty($data['filterOrderId']))
+                $filter .= ($filter ? " AND " : "") . "o.order_id = " . (int)$data['filterOrderId'];
+        }
+        return $filter;
+    }
+
+
 	public function editOrder($order_id, $data) {
 		$this->db->query("UPDATE " . DB_PREFIX . "return SET order_id = '" . (int)$data['order_id'] . "', customer_id = '" . (int)$data['customer_id'] . "', invoice_no = '" . $this->db->escape($data['invoice_no']) . "', invoice_date = '" . $this->db->escape($data['invoice_date']) . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "', company = '" . $this->db->escape($data['company']) . "', address_1 = '" . $this->db->escape($data['address_1']) . "', address_2 = '" . $this->db->escape($data['address_2']) . "', city = '" . $this->db->escape($data['city']) . "', postcode = '" . $this->db->escape($data['postcode']) . "', country_id = '" . (int)$data['country_id'] . "', zone_id = '" . (int)$data['zone_id'] . "', return_status_id = '" . (int)$data['return_status_id'] . "', comment = '" . $this->db->escape($data['comment']) . "', date_modified = NOW() WHERE return_id = '" . (int)$return_id . "'");
 
@@ -334,29 +361,18 @@ class ModelSaleOrder extends Model {
 	}
 
 	public function getOrders($data = array()) {
-		$sql = "SELECT o.order_id, CONCAT(o.firstname, ' ', o.lastname) AS customer, (SELECT os.name FROM " . DB_PREFIX . "order_status os WHERE os.order_status_id = o.order_status_id AND os.language_id = '" . (int)$this->config->get('config_language_id') . "') AS status, o.total, o.currency_code, o.currency_value, o.date_added, o.date_modified FROM `" . DB_PREFIX . "order` o";
-
-		if (isset($data['filter_order_status_id']) && !is_null($data['filter_order_status_id'])) {
-			$sql .= " WHERE o.order_status_id = '" . (int)$data['filter_order_status_id'] . "'";
-		} else {
-			$sql .= " WHERE o.order_status_id > '0'";
-		}
-
-		if (!empty($data['filter_order_id'])) {
-			$sql .= " AND o.order_id = '" . (int)$data['filter_order_id'] . "'";
-		}
-
-		if (!empty($data['filter_customer'])) {
-			$sql .= " AND LCASE(CONCAT(o.firstname, ' ', o.lastname)) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_customer'])) . "%'";
-		}
-
-		if (!empty($data['filter_date_added'])) {
-			$sql .= " AND DATE(o.date_added) = DATE('" . $this->db->escape($data['filter_date_added']) . "')";
-		}
-
-		if (!empty($data['filter_total'])) {
-			$sql .= " AND o.total = '" . (float)$data['filter_total'] . "'";
-		}
+        $filter = $this->buildFilterString($data);
+		$sql = "
+		    SELECT
+		        o.order_id, CONCAT(o.firstname, ' ', o.lastname) AS customer,
+		        (
+		            SELECT os.name
+		            FROM " . DB_PREFIX . "order_status os
+		            WHERE os.order_status_id = o.order_status_id AND os.language_id = '" . (int)$this->config->get('config_language_id') . "'
+                ) AS status, o.order_status_id AS status_id, o.total, o.currency_code, o.currency_value, o.date_added, o.date_modified
+            FROM `" . DB_PREFIX . "order` AS o
+            " . ($filter ? "WHERE $filter" : "")
+        ;
 
 		$sort_data = array(
 			'o.order_id',
@@ -392,12 +408,6 @@ class ModelSaleOrder extends Model {
 		}
 //        $this->log->write($sql);
 		$query = $this->db->query($sql);
-
-		return $query->rows;
-	}
-
-	public function getOrderProducts($order_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_product WHERE order_id = '" . (int)$order_id . "'");
 
 		return $query->rows;
 	}
@@ -495,29 +505,13 @@ class ModelSaleOrder extends Model {
 	}
 
 	public function getTotalOrders($data = array()) {
-      	$sql = "SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "order`";
+        $filter = $this->buildFilterString($data);
+      	$sql = "
+      	    SELECT COUNT(*) AS total
+      	    FROM `" . DB_PREFIX . "order` AS o
+            " . ($filter ? "WHERE $filter" : "")
+        ;
 
-		if (isset($data['filter_order_status_id']) && !is_null($data['filter_order_status_id'])) {
-			$sql .= " WHERE order_status_id = '" . (int)$data['filter_order_status_id'] . "'";
-		} else {
-			$sql .= " WHERE order_status_id > '0'";
-		}
-
-		if (!empty($data['filter_order_id'])) {
-			$sql .= " AND order_id = '" . (int)$data['filter_order_id'] . "'";
-		}
-
-		if (!empty($data['filter_customer'])) {
-			$sql .= " AND CONCAT(firstname, ' ', lastname) LIKE '%" . $this->db->escape($data['filter_customer']) . "%'";
-		}
-
-		if (!empty($data['filter_date_added'])) {
-			$sql .= " AND DATE(date_added) = DATE('" . $this->db->escape($data['filter_date_added']) . "')";
-		}
-
-		if (!empty($data['filter_total'])) {
-			$sql .= " AND total = '" . (float)$data['filter_total'] . "'";
-		}
 
 		$query = $this->db->query($sql);
 
@@ -703,23 +697,9 @@ class ModelSaleOrder extends Model {
         }
 	}
 
-	public function getAllItems($order_id) {
-		$query = "SELECT * FROM " . DB_PREFIX . "order_product WHERE order_id = " . (int)$order_id;
-		$result = $this->db->query($query);
-
-		return $result->rows;
-	}
-
-	public function getAllCusmoterOrders($customer_id) {
+	public function getAllCustomerOrders($customer_id) {
 		$query = "SELECT * FROM `" . DB_PREFIX . "order` WHERE customer_id = " . (int)$customer_id;
 		$result = $this->db->query($query);
-		return $result->rows;
-	}
-
-	public function getAllItemsOfOrderByItem($order_item_id) {
-		$query = "SELECT * FROM " . DB_PREFIX . "order_product WHERE order_id IN (SELECT order_id FROM " . DB_PREFIX . "order_product WHERE order_product_id = " . (int)$order_item_id . ")";
-		$result = $this->db->query($query);
-
 		return $result->rows;
 	}
 
@@ -730,10 +710,44 @@ class ModelSaleOrder extends Model {
 		return $result->row;
 	}
 
+    public function getOrderProducts($order_id) {
+        $query = $this->db->query("
+		    SELECT *
+		    FROM " . DB_PREFIX . "order_product
+		    WHERE order_id = '" . (int)$order_id . "'
+        ");
+
+        return $query->rows;
+    }
+
 	public function setOrderStatus($order_id, $status_id) {
 		$query = "UPDATE `" . DB_PREFIX . "order` SET order_status_id = " . (int)$status_id . " WHERE order_id = " . (int)$order_id;
 		$result = $this->db->query($query);
 
 	}
+
+    /**
+     * @param $orderId int
+     * @return void
+     */
+    public function verifyOrderCompletion($orderId) {
+        $items = $this->getOrderProducts($orderId);
+        $isReadyToShip = true;
+        $finishStatuses = array(
+            ORDER_ITEM_STATUS_SOLDOUT,
+            ORDER_ITEM_STATUS_CANCELLED,
+            ORDER_ITEM_STATUS_FINISH,
+            ORDER_ITEM_STATUS_PACKED,
+            REPURCHASE_ORDER_ITEM_STATUS_SOLDOUT,
+            REPURCHASE_ORDER_ITEM_STATUS_REJECTED,
+            REPURCHASE_ORDER_ITEM_STATUS_FINISH,
+            REPURCHASE_ORDER_ITEM_STATUS_PACKED
+        );
+        foreach ($items as $item) {
+            $isReadyToShip &= in_array($item['status_id'], $finishStatuses);
+        }
+        if ($isReadyToShip) {
+            $this->setOrderStatus($orderId, ORDER_STATUS_READY_TO_SHIP);
+        }
+    }
 }
-?>

@@ -84,30 +84,30 @@
               <td><input type="text" name="filter_date_modified" value="<?php echo $filter_date_modified; ?>" size="12" class="date" /></td>
               <td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td>
             </tr>
-            <?php if ($orders) { ?>
-            <?php foreach ($orders as $order) { ?>
-            <tr>
-              <td style="text-align: center;"><?php if ($order['selected']) { ?>
-                <input type="checkbox" name="selected[]" value="<?php echo $order['order_id']; ?>" checked="checked" />
-                <?php } else { ?>
-                <input type="checkbox" name="selected[]" value="<?php echo $order['order_id']; ?>" />
-                <?php } ?></td>
-              <td class="right"><?php echo $order['order_id']; ?></td>
-              <td class="left"><?php echo $order['customer']; ?></td>
-              <td class="left"><?php echo $order['status']; ?></td>
-              <td class="right"><?php echo $order['total']; ?></td>
-              <td class="left"><?php echo $order['date_added']; ?></td>
-              <td class="left"><?php echo $order['date_modified']; ?></td>
-              <td class="right"><?php foreach ($order['action'] as $action) { ?>
+<?php if ($orders):
+    foreach ($orders as $order): ?>
+            <tr <?= $order['statusId'] == ORDER_STATUS_READY_TO_SHIP ? 'class="highlight"' : '' ?>>
+              <td style="text-align: center;">
+                <input type="checkbox" name="selected[]" value="<?php echo $order['order_id']; ?>" <?= $order['selected'] ? 'checked="checked"' : '' ?> />
+              </td>
+              <td class="right"><?= $order['order_id'] ?></td>
+              <td class="left"><?= $order['customer'] ?></td>
+              <td class="left"><?= $order['status'] ?></td>
+              <td class="right"><?= $order['total'] ?></td>
+              <td class="left"><?= $order['date_added'] ?></td>
+              <td class="left"><?= $order['date_modified'] ?></td>
+              <td class="right">
+        <?php foreach ($order['action'] as $action): ?>
                 [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]
-                <?php } ?></td>
+        <?php endforeach; ?>
+              </td>
             </tr>
-            <?php } ?>
-            <?php } else { ?>
+    <?php endforeach;
+else: ?>
             <tr>
-              <td class="center" colspan="8"><?php echo $text_no_results; ?></td>
+              <td class="center" colspan="8"><?= $text_no_results ?></td>
             </tr>
-            <?php } ?>
+<?php endif; ?>
           </tbody>
         </table>
       </form>

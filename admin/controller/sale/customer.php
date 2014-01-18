@@ -250,9 +250,9 @@ class ControllerSaleCustomer extends Controller {
 
         $this->data['customersToFilterBy'] = $this->getCustomers();
 		$customer_total = $this->model_sale_customer->getTotalCustomers($data);
-	
 		$results = $this->model_sale_customer->getCustomers($data);
- 
+        /** @var ModelSaleOrder $modelSaleOrder */
+        $modelSaleOrder = $this->load->model('sale/order');
     	foreach ($results as $result) {
 			$action = array();
 		
@@ -270,6 +270,10 @@ class ControllerSaleCustomer extends Controller {
             );
 			$this->data['customers'][] = array(
 				'customer_id'    => $result['customer_id'],
+                'highlighted' => $modelSaleOrder->getTotalOrders(array(
+                        'filterCustomerId' => array($result['customer_id']),
+                        'filterStatusId' => array(ORDER_STATUS_READY_TO_SHIP)
+                    )),
 				'name'           => $result['name'],
                 'nickname'       => $result['nickname'],
 				'email'          => $result['email'],

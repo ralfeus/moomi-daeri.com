@@ -299,6 +299,8 @@ class ControllerSaleOrder extends Controller {
 
 		$order_total = $this->model_sale_order->getTotalOrders($data);
 		$results = $this->model_sale_order->getOrders($data);
+        $this->load->library('Status');
+        $statuses = Status::getStatuses(GROUP_ORDER_STATUS, (int)$this->config->get('config_language_id'));
 
     	foreach ($results as $result) {
 //			$this->model_sale_order->updateOrderTotals($result['order_id']);
@@ -316,11 +318,12 @@ class ControllerSaleOrder extends Controller {
 				'href' => $this->url->link('sale/order/update', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
 			);
 			*/
-			
+
 			$this->data['orders'][] = array(
 				'order_id'      => $result['order_id'],
 				'customer'      => $result['customer'],
-				'status'        => $result['status'],
+				'status'        => $statuses[$result['status_id']] ? $statuses[$result['status_id']] : $result['status'],
+                'statusId' => $result['status_id'],
 				'total'         => $this->currency->format($result['total'], $result['currency_code'], $result['currency_value']),
 				'date_added'    => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
 				'date_modified' => date($this->language->get('date_format_short'), strtotime($result['date_modified'])),

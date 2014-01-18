@@ -505,6 +505,7 @@ table.list thead td a, .list thead td {
 	color: #222222;
 	font-weight: bold;
 }
+
 table.list tbody td a {
 	text-decoration: underline;
 }

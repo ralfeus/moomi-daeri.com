@@ -330,6 +330,11 @@ a.button, .list a.button {
 .list .filter td input {
     width: 100%;
 }
+
+.list tr.highlight td {
+    background-color: #00ffff;
+}
+
 .pagination {
 	border-top: 1px solid #DDDDDD;
 	display: inline-block;

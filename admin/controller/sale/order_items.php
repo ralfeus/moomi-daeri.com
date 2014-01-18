@@ -1,8 +1,10 @@
 <?php
 class ControllerSaleOrderItems extends Controller {
 	private $error = array();
+    /** @var \ModelSaleOrderItem */
     private $modelSaleOrderItem;
-    private $orderModel;
+    /** @var \ModelSaleOrder */
+    private $modelSaleOrder;
 
     public function __construct($registry)
     {
@@ -13,7 +15,7 @@ class ControllerSaleOrderItems extends Controller {
         $this->load->model('catalog/product');
         $this->load->model('catalog/supplier_group');
         $this->load->library('Status');
-        $this->orderModel = $this->load->model('sale/order');
+        $this->modelSaleOrder = $this->load->model('sale/order');
         $this->modelSaleOrderItem = $this->load->model('sale/order_item');
         $this->load->model('sale/order_item_history');
         $this->load->model('tool/image');
@@ -44,16 +46,16 @@ class ControllerSaleOrderItems extends Controller {
         foreach ($this->modelSaleOrderItem->getOrderItems($data) as $orderItem)
             //if (!in_array($orderItem['customer_id'], $tmpResult))
             if (!isset($tmpResult[$orderItem['customer_id']]))
-                $tmpResult[$orderItem['customer_id']] = array('nickname_name' => $orderItem['customer_name'] . ' / ' . $orderItem['customer_nick'], 'isCusmoterOrderReady' => $this->isCusmoterOrderReady($orderItem['customer_id']));
+                $tmpResult[$orderItem['customer_id']] = array('nickname_name' => $orderItem['customer_name'] . ' / ' . $orderItem['customer_nick'], 'isCustomerOrderReady' => $this->isCustomerOrderReady($orderItem['customer_id']));
         natcasesort($tmpResult);
- //var_dump($this->isCusmoterOrderReady($orderItem['customer_id']));die();
+ //var_dump($this->isCustomerOrderReady($orderItem['customer_id']));die();
         return $tmpResult;
     }
 
-    private function isCusmoterOrderReady($customer_id) {
+    private function isCustomerOrderReady($customer_id) {
 
       $this->load->model('sale/order');
-      $orders = $this->model_sale_order->getAllCusmoterOrders($customer_id);
+      $orders = $this->model_sale_order->getAllCustomerOrders($customer_id);
 
       foreach ($orders as $index => $order) {
         if($this->isOrderReady($order['order_id'])) {
@@ -292,7 +294,7 @@ class ControllerSaleOrderItems extends Controller {
 
     private function isOrderReady($order_id) {
       $this->load->model('sale/order');
-      $items = $this->model_sale_order->getAllItems($order_id);
+      $items = $this->model_sale_order->getOrderProducts($order_id);
       $isReady = true;
       $flagReady = false;
       foreach ($items as $index => $item) {
@@ -560,14 +562,14 @@ class ControllerSaleOrderItems extends Controller {
         $this->data['sort_supplier'] = $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . '&sort=supplier_name' . $url, 'SSL');
         $this->data['sort_supplier_group'] = $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . '&sort=supplier_group_id' . $url, 'SSL');
         $this->data['statuses'] = array();
-        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $order_item_status)
+        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
             $this->data['statuses'][] = array(
-                'id'    => $order_item_status['status_id'],
-                'name' => $order_item_status['name'],
+                'id'    =>  $statusId,
+                'name' => $status,
                 'settable' => true,
                 'viewable' => true,
-                'sort_url' => $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . '&sort=status_date&status_to_sort_by=' . $order_item_status['status_id'] . $url, 'SSL'),
-                'set_status_url' => $this->url->link('sale/order_items/set_status' . $url . "&order_item_new_status=" . $order_item_status['status_id'], 'token=' . $this->session->data['token'], 'SSL')
+                'sort_url' => $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . "&sort=status_date&status_to_sort_by=$statusId$url", 'SSL'),
+                'set_status_url' => $this->url->link('sale/order_items/set_status', "$url&order_item_new_status=$statusId&token=" . $this->session->data['token'], 'SSL')
             );
         $url = '';
 
@@ -672,20 +674,20 @@ class ControllerSaleOrderItems extends Controller {
     private function initStatuses()
     {
         $this->data['statuses'] = array();
-        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $order_item_status)
+        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
             $this->data['statuses'][GROUP_ORDER_ITEM_STATUS][] = array(
-                'id'    => $order_item_status['status_id'],
-                'name' => $order_item_status['name'],
+                'id'    => $statusId,
+                'name' => $status,
                 'settable' => true,
                 'viewable' => true,
                 'set_status_url' => $this->url->link('sale/order_items/set_status',
-                    "order_item_new_status=" . $order_item_status['status_id'] . '&token=' . $this->parameters['token'], 'SSL')
+                    "order_item_new_status=$status&token=" . $this->parameters['token'], 'SSL')
             );
 
-        foreach (Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $repurchaseOrderStatus)
+        foreach (Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
             $this->data['statuses'][GROUP_REPURCHASE_ORDER_ITEM_STATUS][] = array(
-                'id' => $repurchaseOrderStatus['status_id'],
-                'name' => $repurchaseOrderStatus['name']
+                'id' => $statusId,
+                'name' => $status
             );
     }
 
@@ -927,60 +929,25 @@ class ControllerSaleOrderItems extends Controller {
             $this->load->model('localisation/order_item_status');
 
             foreach ($order_items as $order_item_id) {
-              if ($this->modelSaleOrderItem->setOrderItemStatus($order_item_id, $order_item_new_status)) {
-                $this->session->data['success'] .= sprintf(
-                  $this->language->get("text_status_set"),
-                  $order_item_id,
-                  Status::getStatus($order_item_new_status, $this->config->get('language_id')));
-              }
-              else {
-                $this->error['warning'] .= sprintf(
-                  $this->language->get('error_status_already_set'),
-                  $order_item_id,
-                  Status::getStatus($order_item_new_status, $this->config->get('language_id')));
-              }
-
-              $this->changeOrderStatus($order_item_id);
-
+                if ($this->modelSaleOrderItem->setOrderItemStatus($order_item_id, $order_item_new_status)) {
+                    $this->session->data['success'] .= sprintf(
+                        $this->language->get("text_status_set"),
+                        $order_item_id,
+                        Status::getStatus($order_item_new_status, $this->config->get('language_id')));
+                }
+                else {
+                    $this->error['warning'] .= sprintf(
+                        $this->language->get('error_status_already_set'),
+                        $order_item_id,
+                        Status::getStatus($order_item_new_status, $this->config->get('language_id')));
+                }
+                $orderItem = $this->modelSaleOrderItem->getOrderItem($order_item_id);
+                $this->modelSaleOrder->verifyOrderCompletion($orderItem['order_id']);
             }
             $this->clearSelection();
         }
 
         $this->index();
-    }
-
-    public function changeOrderStatus($order_item_id) {
-      $this->load->model('sale/order');
-      $items = $this->model_sale_order->getAllItemsOfOrderByItem($order_item_id);
-
-      $isCompleted = true;
-      $isAllCancelled = false;
-      $flagFinish = false;
-      foreach ($items as $index => $item) {
-        if($item['status_id'] == 327684 || $item['status_id'] == 327780) {
-          $flagFinish = true;
-        }
-        else {
-          if($item['status_id'] == 327781) {
-            $isCompleted = $isCompleted & true;
-          }
-          else {
-            $isCompleted = $isCompleted & false;
-          }
-        }
-      }
-
-      $order_product = $this->model_sale_order->getOrderProduct($order_item_id);
-      if($flagFinish && $isCompleted) {
-        //$this->log->write(" -------------> " . print_r($order_product['order_id'], true));
-        $this->model_sale_order->setOrderStatus($order_product['order_id'], 5);
-      } elseif(!$flagFinish && $isCompleted) {
-        $this->model_sale_order->setOrderStatus($order_product['order_id'], 7);
-      } else {
-
-      }
-
-      //return $flagReady && $isCompleted;
     }
 
     public function save_comment() {

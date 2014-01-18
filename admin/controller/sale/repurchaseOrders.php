@@ -234,10 +234,10 @@ class ControllerSaleRepurchaseOrders extends Controller
         $this->data['statuses'] = array();
         foreach (Status::getStatuses(
                      GROUP_REPURCHASE_ORDER_ITEM_STATUS,
-                     $this->config->get('config_language_id')) as $order_item_status)
+                     $this->config->get('config_language_id')) as $statusId => $status)
             $this->data['statuses'][] = array(
-                'statusId'    => $order_item_status['status_id'],
-                'name' => $order_item_status['name']
+                'statusId'    => $statusId,
+                'name' => $status
             );
     }
 
@@ -357,9 +357,13 @@ class ControllerSaleRepurchaseOrders extends Controller
     {
         if (empty($_REQUEST['statusId']))
             return;
-
-        foreach ($this->parameters['selectedItems'] as $orderId)
+        /** @var ModelSaleOrder $modelSaleOrder */
+        $modelSaleOrder = $this->load->model('sale/order');
+        foreach ($this->parameters['selectedItems'] as $orderId) {
             $this->modelSaleRepurchaseOrder->setStatus($orderId, $_REQUEST['statusId']);
+            $repurchaseOrder = $this->modelSaleRepurchaseOrder->getOrder($orderId);
+            $modelSaleOrder->verifyOrderCompletion($repurchaseOrder['orderId']);
+        }
 
         $json['newStatusName'] = Status::getStatus(
             $_REQUEST['statusId'], $this->config->get('config_language_id'));

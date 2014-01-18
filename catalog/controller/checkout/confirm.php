@@ -11,7 +11,7 @@ class ControllerCheckoutConfirm extends Controller {
     public function confirm()
     {
 //        $this->log->write("ControllerPaymentDeposit::confirm()");
-        $this->modelCheckoutOrder->confirm($this->session->data['order_id'], OS_IN_PROGRESS);
+        $this->modelCheckoutOrder->confirm($this->session->data['order_id'], ORDER_STATUS_IN_PROGRESS);
         $this->redirect($this->url->link('checkout/success', '', 'SSL'));
         /// Decrease deposit amount
         //$this->load->model('account/customer_deposit');

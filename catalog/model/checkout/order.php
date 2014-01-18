@@ -286,8 +286,8 @@ class ModelCheckoutOrder extends Model {
 		}
 	}	
 
-	public function confirm($order_id, $order_status_id = OS_IN_PROGRESS, $comment = '', $notify = false) {
-        $order_status_id = OS_IN_PROGRESS; // TODO: In Progress. Will be fixed
+	public function confirm($order_id, $order_status_id = ORDER_STATUS_IN_PROGRESS, $comment = '', $notify = false) {
+        $order_status_id = ORDER_STATUS_IN_PROGRESS; // TODO: In Progress. Will be fixed
 		$orderInfo = $this->getOrder($order_id);
 		 
 		if ($orderInfo && !$orderInfo['order_status_id']) {
