@@ -562,7 +562,7 @@ class ControllerSaleOrderItems extends Controller {
         $this->data['sort_supplier'] = $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . '&sort=supplier_name' . $url, 'SSL');
         $this->data['sort_supplier_group'] = $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . '&sort=supplier_group_id' . $url, 'SSL');
         $this->data['statuses'] = array();
-        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
+        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status) {
             $this->data['statuses'][] = array(
                 'id'    =>  $statusId,
                 'name' => $status,
@@ -571,6 +571,7 @@ class ControllerSaleOrderItems extends Controller {
                 'sort_url' => $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . "&sort=status_date&status_to_sort_by=$statusId$url", 'SSL'),
                 'set_status_url' => $this->url->link('sale/order_items/set_status', "$url&order_item_new_status=$statusId&token=" . $this->session->data['token'], 'SSL')
             );
+        }
         $url = '';
 
         if (isset($_REQUEST['filter_customer'])) {
@@ -681,7 +682,7 @@ class ControllerSaleOrderItems extends Controller {
                 'settable' => true,
                 'viewable' => true,
                 'set_status_url' => $this->url->link('sale/order_items/set_status',
-                    "order_item_new_status=$status&token=" . $this->parameters['token'], 'SSL')
+                    "order_item_new_status=$statusId&token=" . $this->parameters['token'], 'SSL')
             );
 
         foreach (Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
