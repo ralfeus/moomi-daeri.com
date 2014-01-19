@@ -142,10 +142,8 @@ class ControllerSaleOrderItems extends Controller {
 
         $arrReady = array();
 
-        if ($orderItems)
-        {
-            foreach ($orderItems as $orderItem)
-            {
+        if ($orderItems) {
+            foreach ($orderItems as $orderItem) {
 
                 if(!isset($arrReady[$orderItem['order_id']])) {
                   $arrReady[$orderItem['order_id']] = $this->isOrderReady($orderItem['order_id']);

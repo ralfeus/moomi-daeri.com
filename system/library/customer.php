@@ -4,20 +4,24 @@ final class Customer {
 	private $firstname;
 	private $lastname;
 	private $email;
+    /** @var \Registry */
+    private $registry;
 	private $telephone;
 	private $fax;
 	private $newsletter;
 	private $customer_group_id;
 	private $address_id;
+    /** @var \Currency $baseCurrency */
     private $baseCurrency;
     private $balance;
 
   	public function __construct($registry) {
+        $this->registry = $registry;
 		$this->config = $registry->get('config');
 		$this->db = $registry->get('db');
 		$this->request = $registry->get('request');
 		$this->session = $registry->get('session');
-        $this->baseCurrency = new Currency($registry);
+        ///$this->baseCurrency = new Currency($registry);
 
           if (isset($this->session->data['customer_id'])) {
 			$customer_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$this->session->data['customer_id'] . "' AND status = '1'");
@@ -33,7 +37,7 @@ final class Customer {
 				$this->customer_group_id = $customer_query->row['customer_group_id'];
 				$this->address_id = $customer_query->row['address_id'];
                 $this->balance = $customer_query->row['balance'];
-                $this->baseCurrency->set($customer_query->row['base_currency_code']);
+                $this->getBaseCurrency()->set($customer_query->row['base_currency_code']);
                 $purgeCart = empty($customer_query->row['purge_cart']) ? 0 : $customer_query->row['purge_cart'];
 
                 if ($purgeCart)
@@ -107,7 +111,7 @@ final class Customer {
 			$this->customer_group_id = $customer_query->row['customer_group_id'];
 			$this->address_id = $customer_query->row['address_id'];
             $this->balance = $customer_query->row['balance'];
-            $this->baseCurrency->set($customer_query->row['base_currency_code']);
+            $this->getBaseCurrency()->set($customer_query->row['base_currency_code']);
           	
 			$this->db->query("UPDATE " . DB_PREFIX . "customer SET ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "' WHERE customer_id = '" . (int)$customer_query->row['customer_id'] . "'");
 			
@@ -137,8 +141,10 @@ final class Customer {
     	return $this->customer_id;
   	}
 
-    public function getBaseCurrency()
-    {
+    public function getBaseCurrency() {
+        if (empty($this->baseCurrency)) {
+            $this->baseCurrency = new Currency($this->registry);
+        }
         return $this->baseCurrency;
     }
 

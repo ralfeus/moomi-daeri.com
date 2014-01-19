@@ -70,6 +70,8 @@ $_['error_zone']            = 'Please select a region / state!';
 
 $_['EXPENSE_AMOUNT'] = 'Expense amount';
 $_['INCOME_AMOUNT'] = 'Income amount';
+$_['LOGON_AS_CUSTOMER'] = 'Log in to shop';
+$_['ORDER_ITEMS_HISTORY'] = 'Order items history';
 $_['PURGE_CART'] = 'Purge cart';
 $_['SUCCESS_CART_PURGED'] = 'The cart of customer <bold>%s</bold> is marked for purge. It will be purged once user refreshes the page';
 $_['SUCCESS_PAYMENT_ADDED'] = 'The payment is successfully added';

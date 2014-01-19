@@ -164,6 +164,7 @@ class ControllerSaleCustomer extends Controller {
         $this->parameters['customerId'] =
             empty($_REQUEST['customerId']) ? (empty($_REQUEST['customer_id']) ? array() : $_REQUEST['customer_id']) : $_REQUEST['customerId'];
         $this->parameters['creditRequestsPage'] = empty($_REQUEST['creditRequestsPage']) ? 1 : $_REQUEST['creditRequestsPage'];
+        $this->parameters['storeId'] = empty($_REQUEST['storeId']) ? 0 : $_REQUEST['storeId'];
         $this->parameters['transactionsPage'] = empty($_REQUEST['transactionsPage']) ? 1 : $_REQUEST['transactionsPage'];
         $this->parameters['token'] = $this->session->data['token'];
     }
@@ -262,11 +263,15 @@ class ControllerSaleCustomer extends Controller {
 			);
             $action[] = array(
                 'text' => $this->language->get('PURGE_CART'),
-                'onclick' => $this->url->link('sale/customer/purgeCart', 'token=' . $this->parameters['token'] . '&customerId=' . $result['customer_id'], 'SSL')
+                'onclick' => "ajaxAction(this, '" . $this->url->link('sale/customer/purgeCart', 'token=' . $this->parameters['token'] . '&customerId=' . $result['customer_id'], 'SSL') . "')"
             );
             $action[] = array(
                 'text' => $this->language->get('ORDER_ITEMS_HISTORY'),
-                'onclick' => $this->url->link('sale/customer/orderItemsHistory', 'token=' . $this->parameters['token'] . '&customerId=' . $result['customer_id'], 'SSL')
+                'onclick' => "ajaxAction(this, '" . $this->url->link('sale/customer/orderItemsHistory', 'token=' . $this->parameters['token'] . '&customerId=' . $result['customer_id'], 'SSL') . "')"
+            );
+            $action[] = array(
+                'text' => $this->language->get('LOGON_AS_CUSTOMER'),
+                'onclick' => 'showStores(this, \'#stores' . $result['customer_id'] . "')"
             );
 			$this->data['customers'][] = array(
 				'customer_id'    => $result['customer_id'],
@@ -312,6 +317,7 @@ class ControllerSaleCustomer extends Controller {
 		$this->data['button_delete'] = $this->language->get('button_delete');
 		$this->data['button_filter'] = $this->language->get('FILTER');
 
+        $this->data['urlCustomerLogin'] = $this->url->link('sale/customer/login', 'token=' . $this->parameters['token'], 'SSL');
         $this->data['urlSelf'] = $this->url->link($this->selfRoute, 'token=' . $this->parameters['token'], 'SSL');
 
         if (isset($this->error['warning'])) {
@@ -815,34 +821,20 @@ class ControllerSaleCustomer extends Controller {
 	
 	public function login() {
 		$json = array();
+		/** @var ModelSaleCustomer $modelSaleCustomer */
+		$modelSaleCustomer = $this->load->model('sale/customer');
 		
-		if (isset($_REQUEST['customer_id'])) {
-			$customer_id = $_REQUEST['customer_id'];
-		} else {
-			$customer_id = 0;
-		}
-		
-		$this->load->model('sale/customer');
-		
-		$customer_info = $this->model_sale_customer->getCustomer($customer_id);
+		$customer_info = $modelSaleCustomer->getCustomer($this->parameters['customerId']);
 				
 		if ($customer_info) {
 			$token = md5(mt_rand());
-			
-			$this->model_sale_customer->editToken($customer_id, $token);
-			
-			if (isset($_REQUEST['store_id'])) {
-				$store_id = $_REQUEST['store_id'];
-			} else {
-				$store_id = 0;
-			}
-					
-			$this->load->model('setting/store');
-			
-			$store_info = $this->model_setting_store->getStore($store_id);
-			
-			if ($store_info) {
-				$this->redirect($store_info['url'] . 'index.php?route=account/login&token=' . $token);
+			$modelSaleCustomer->editToken($this->parameters['customerId'], $token);
+
+			/** @var ModelSettingStore $modelSettingStore */
+			$modelSettingStore = $this->load->model('setting/store');
+			$storeInfo = $modelSettingStore->getStore($this->parameters['storeId']);
+			if ($storeInfo) {
+				$this->redirect($storeInfo['url'] . 'index.php?route=account/login&token=' . $token);
 			} else { 
 				$this->redirect(HTTP_CATALOG . 'index.php?route=account/login&token=' . $token);
 			}

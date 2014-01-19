@@ -115,8 +115,8 @@
             </tr>
           </thead>
           <tbody>
-            <?php if ($order_items): ?>
-				<?php foreach ($order_items as $order_item): ?>
+<?php if ($order_items): ?>
+    <?php foreach ($order_items as $order_item): ?>
 					<tr>
                         <td style="text-align: center;">
                             <input type="checkbox" id="selectedItems[]" name="selectedItems[]" value="<?php echo $order_item['id']; ?>" />
@@ -143,7 +143,7 @@
                                 value="<?= $order_item['quantity'] ?>" />
                             <?= $order_item['weight'] ?>
                         </td>
-                        <td class="left"><?php echo $order_item['status']; ?></td>
+                        <td class="left"><?= $order_item['status'] ?></td>
                         <td class="left">
                             Private<br />
                             <input
@@ -169,12 +169,12 @@
                             endforeach; ?>
                         </td>
 					</tr>
-				<?php endforeach; ?>
-            <?php else: ?>
+    <?php endforeach; ?>
+<?php else: ?>
 				<tr>
 				  <td class="center" colspan="11"><?php echo $text_no_results; ?></td>
 				</tr>
-            <?php endif; ?>
+<?php endif; ?>
           </tbody>
         </table>
       </form>

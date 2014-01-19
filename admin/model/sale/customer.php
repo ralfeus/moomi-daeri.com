@@ -121,7 +121,11 @@ class ModelSaleCustomer extends Model {
 	}
 
 	public function editToken($customer_id, $token) {
-		$this->getDb()->query("UPDATE " . DB_PREFIX . "customer SET token = '" . $this->getDb()->escape($token) . "' WHERE customer_id = '" . (int)$customer_id . "'");
+		$this->db->query("
+		    UPDATE " . DB_PREFIX . "customer
+		    SET token = '" . $this->db->escape($token) . "'
+		    WHERE customer_id = '" . (int)$customer_id . "'
+        ");
 	}
 	
 	public function deleteCustomer($customer_id) {

@@ -6,11 +6,9 @@ class ControllerAccountLogin extends Controller {
 		// Login override for admin users
 		if (!empty($_REQUEST['token'])) {
 			$this->customer->logout();
-			
-			$this->load->model('account/customer');
-			
-			$customer_info = $this->model_account_customer->getCustomerByToken($_REQUEST['token']);
-			
+			/** @var ModelAccountCustomer $modelAccountCustomer */
+			$modelAccountCustomer = $this->load->model('account/customer');
+			$customer_info = $modelAccountCustomer->getCustomerByToken($_REQUEST['token']);
 		 	if ($customer_info && $this->customer->login($customer_info['email'], '', true)) {
 				$this->redirect($this->url->link('account/account', '', 'SSL')); 
 			}

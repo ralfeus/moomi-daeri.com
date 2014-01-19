@@ -33,8 +33,13 @@ final class Currency extends OpenCartBase
       		$this->set($this->config->get('config_currency'));
     	}
   	}
-	
-  	public function set($currency) {
+
+    /**
+     * Sets base (default) currency
+     * @param \Currency $currency
+     * @return void
+     */
+    public function set($currency) {
     	$this->code = $currency;
 
     	if ((!isset($this->session->data['currency'])) || ($this->session->data['currency'] != $currency)) {

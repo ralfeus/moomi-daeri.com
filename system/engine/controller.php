@@ -4,6 +4,8 @@ abstract class Controller extends OpenCartBase
 {
     /** @var array */
     protected $children = array();
+    /** @var Customer $customer  */
+    protected $customer;
     /** @var array */
     protected $data = array(); // contains data for the template
     /** @var Document */
@@ -29,6 +31,7 @@ abstract class Controller extends OpenCartBase
      */
     public function __construct($registry) {
 		parent::__construct($registry);
+        $this->customer = $this->registry->get('customer');
         $this->document = $this->registry->get('document');
         $this->language = $this->registry->get('language');
         $this->request = $this->registry->get('request');

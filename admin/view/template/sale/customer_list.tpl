@@ -53,7 +53,6 @@
                 <?php } else { ?>
                 <a href="<?php echo $sort_date_added; ?>"><?php echo $column_date_added; ?></a>
                 <?php } ?></td>
-              <td class="left"><?php echo $column_login; ?></td>
               <td class="right"><?php echo $column_action; ?></td>
             </tr>
           </thead>
@@ -99,7 +98,6 @@
                 </select></td>
               <td><input type="text" name="filterIp" value="<?= $filterIp ?>" /></td>
               <td><input type="text" name="filterDateAdded" value="<?= $filterDateAdded ?>" size="12" id="date" /></td>
-              <td></td>
               <td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td>
             </tr>
 <?php if ($customers):
@@ -118,19 +116,22 @@
               <td class="left"><?php echo $customer['approved']; ?></td>
               <td class="left"><?php echo $customer['ip']; ?></td>
               <td class="left"><?php echo $customer['date_added']; ?></td>
-              <td class="left"><select onchange="((this.value !== '') ? window.open('index.php?route=sale/customer/login&token=<?= $token ?>&customer_id=<?= $customer['customer_id'] ?>&store_id=' + this.value) : null); this.value = '';">
-                  <option value=""><?php echo $text_select; ?></option>
-                  <option value="0"><?php echo $text_default; ?></option>
-                  <?php foreach ($stores as $store) { ?>
-                  <option value="<?php echo $store['store_id']; ?>"><?php echo $store['name']; ?></option>
-                  <?php } ?>
-                </select></td>
               <td class="right">
         <?php foreach ($customer['action'] as $action): ?>
                 [&nbsp;<a
                     <?= !empty($action['href']) ? 'href="' . $action['href'] . '"' : '' ?>
-                    <?= !empty($action['onclick']) ? 'onclick="ajaxAction(this, \'' . $action['onclick'] . '\')"' : '' ?>><?= str_replace(' ', '&nbsp;', $action['text']) ?></a>&nbsp;]
+                    <?= !empty($action['onclick']) ? 'onclick="' . $action['onclick'] . '"' : '' ?>><?= str_replace(' ', '&nbsp;', $action['text']) ?></a>&nbsp;]
         <?php endforeach; ?>
+                  <select
+                          id="stores<?= $customer['customer_id'] ?>"
+                          style="display: none"
+                          onchange="((this.value !== '') ? storeLogon(<?= $customer['customer_id'] ?>, this.value) : null); this.value = '';">
+                      <option value=""><?= $text_select ?></option>
+                      <option value="0"><?= $text_default ?></option>
+            <?php foreach ($stores as $store): ?>
+                      <option value="<?= $store['store_id'] ?>"><?= $store['name'] ?></option>
+            <?php endforeach; ?>
+                  </select>
               </td>
             </tr>
     <?php endforeach;
@@ -197,6 +198,15 @@ function ajaxAction(sender, url)
             $('.breadcrumb').after('<div class="error">Error</div>');
         }
     });
+}
+
+function showStores(sender, storesSelector) {
+    $(sender).replaceWith($(storesSelector));
+    $(storesSelector).show();
+}
+
+function storeLogon(customerId, storeId) {
+    window.open('<?= $urlCustomerLogin ?>&customerId='.replace('&amp;', '&') + customerId + '&storeId=' + storeId);
 }
 //--></script>
 <?php echo $footer; ?>
