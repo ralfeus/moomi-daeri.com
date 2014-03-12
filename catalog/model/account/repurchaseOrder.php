@@ -7,6 +7,7 @@
   */
 class ModelAccountRepurchaseOrder extends Model
 {
+    /** @var ModelAccountOrderItem  */
     private $modelAccountOrderItem;
 
     public function __construct($registry)

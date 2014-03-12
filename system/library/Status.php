@@ -39,14 +39,15 @@ class Status extends LibraryClass
         }
     }
 
-    public static function getStatuses($statusGroupId, $languageId)
+    public static function getStatuses($statusGroupId, $languageId, $public = false)
     {
         while (true)
         {
             $sql = "
-                SELECT group_id << 16 | status_id as status_id, name
+                SELECT group_id << 16 | status_id as status_id, " . ($public ? 'public_name' : 'name') . " AS name
                 FROM " . DB_PREFIX . "statuses
-                WHERE group_id = " . (int)$statusGroupId . " AND language_id = " . (int)$languageId;
+                WHERE group_id = " . (int)$statusGroupId . " AND language_id = " . (int)$languageId . "
+                ORDER BY name";
             $query = Status::$instance->db->query($sql);
 
             if ($query->num_rows) {

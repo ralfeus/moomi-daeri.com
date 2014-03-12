@@ -53,6 +53,14 @@ class ControllerSaleOrderItems extends Controller {
     }
 
     private function isCustomerOrderReady($customer_id) {
+        if (empty($customer_id)) {
+            return false;
+        }
+        $readyOrders = $this->modelSaleOrder->getTotalOrders(array(
+                'filterCustomerId' => array($customer_id),
+                'filterStatusId' => array(ORDER_STATUS_READY_TO_SHIP)
+        ));
+        return boolval($readyOrders);
 
       $this->load->model('sale/order');
       $orders = $this->model_sale_order->getAllCustomerOrders($customer_id);
@@ -291,7 +299,9 @@ class ControllerSaleOrderItems extends Controller {
   	}
 
     private function isOrderReady($order_id) {
-      $this->load->model('sale/order');
+        $order = $this->modelSaleOrder->getOrder($order_id);
+        return $order['order_status_id'] == ORDER_STATUS_READY_TO_SHIP;
+
       $items = $this->model_sale_order->getOrderProducts($order_id);
       $isReady = true;
       $flagReady = false;

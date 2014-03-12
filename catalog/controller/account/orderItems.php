@@ -211,7 +211,7 @@ class ControllerAccountOrderItems extends Controller {
     private function initStatuses()
     {
         $this->data['statuses'] = array();
-        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
+        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id'), true) as $statusId => $status)
             $this->data['statuses'][GROUP_ORDER_ITEM_STATUS][] = array(
                 'id'    => $statusId,
                 'name' => $status,
@@ -219,7 +219,7 @@ class ControllerAccountOrderItems extends Controller {
                 'viewable' => true,
                 'set_status_url' => $this->url->link('sale/order_items/set_status', $this->buildUrlParameterString($this->parameters) . "&order_item_new_status=$statusId", 'SSL')
             );
-        foreach (Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
+        foreach (Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id'), true) as $statusId => $status)
             $this->data['statuses'][GROUP_REPURCHASE_ORDER_ITEM_STATUS][] = array(
                 'id' => $statusId,
                 'name' => $status

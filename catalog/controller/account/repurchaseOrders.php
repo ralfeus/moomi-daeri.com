@@ -9,6 +9,7 @@
 class ControllerAccountRepurchaseOrders extends Controller
 {
     private $error = array();
+    /** @var ModelAccountRepurchaseOrder */
     private $modelAccountRepurchaseOrder;
 
     public function __construct($registry)
@@ -76,7 +77,7 @@ class ControllerAccountRepurchaseOrders extends Controller
         $this->data['start'] = ($page - 1) * $this->config->get("config_catalog_limit");
         $this->data['limit'] = $this->config->get("config_catalog_limit");
         $this->data['orders'] = array();
-        $this->data['statuses'] = Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id'));
+        $this->data['statuses'] = Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id'), true);
         $data = $this->parameters;
         $data['order'] = 'DESC';
         foreach ($this->modelAccountRepurchaseOrder->getOrders($data) as $repurchase_order)
