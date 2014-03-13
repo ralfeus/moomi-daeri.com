@@ -60,7 +60,7 @@ class ControllerSaleOrderItems extends Controller {
                 'filterCustomerId' => array($customer_id),
                 'filterStatusId' => array(ORDER_STATUS_READY_TO_SHIP)
         ));
-        return boolval($readyOrders);
+        return (bool)$readyOrders;
 
       $this->load->model('sale/order');
       $orders = $this->model_sale_order->getAllCustomerOrders($customer_id);
