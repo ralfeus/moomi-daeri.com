@@ -134,7 +134,7 @@ class ControllerSaleRepurchaseOrders extends Controller
         $pagination->page = $this->parameters['page'];
         $pagination->limit = $this->config->get('config_admin_limit');
         $pagination->text = $this->getLanguage()->get('text_pagination');
-        $pagination->url = $this->url->link('sale/order_items', $urlParameters . '&page={page}', 'SSL');
+        $pagination->url = $this->url->link('sale/repurchaseOrders', $urlParameters . '&page={page}', 'SSL');
 
         $this->data['pagination'] = $pagination->render();
         $this->data['currencyCode'] = $this->config->get('config_currency');

@@ -1,6 +1,19 @@
 <?php
 class ModelSaleOrderItem extends Model
 {
+    private $orderItemsFromQuery = "
+            order_product as op
+            JOIN `order` as o on o.order_id = op.order_id
+            JOIN product as p on op.product_id  = p.product_id
+            LEFT JOIN supplier as s on p.supplier_id = s.supplier_id
+            LEFT JOIN customer as c on o.customer_id = c.customer_id
+            JOIN
+                (
+                    SELECT order_item_id, MAX(date_added) as date_last_status_set
+                    FROM order_item_history
+                    GROUP BY order_item_id
+               ) as oils on op.order_product_id = oils.order_item_id";
+
 	public function getOrderItem($order_item_id) {
 		$result = $this->fetchOrderItems("order_product_id = $order_item_id");
         if ($result)
@@ -32,17 +45,7 @@ class ModelSaleOrderItem extends Model
 				s.name as supplier_name, s.supplier_group_id, s.internal_model as internal_model,
 				oils.date_last_status_set as status_date
 			FROM
-				" . DB_PREFIX . "order_product as op
-				JOIN `" . DB_PREFIX . "order` as o on o.order_id = op.order_id
-				JOIN " . DB_PREFIX . "product as p on op.product_id  = p.product_id
-				LEFT JOIN " . DB_PREFIX . "supplier as s on p.supplier_id = s.supplier_id
-				LEFT JOIN " . DB_PREFIX . "customer as c on o.customer_id = c.customer_id
-				JOIN
-				    (
-				        SELECT order_item_id, MAX(date_added) as date_last_status_set
-				        FROM order_item_history
-				        GROUP BY order_item_id
-                   ) as oils on op.order_product_id = oils.order_item_id
+				" . $this->orderItemsFromQuery . "
             " . ($filter ? "WHERE $filter" : "") . /*"
         	" . ($sort ? "ORDER BY $sort" : "") . */"
             ORDER BY supplier_name, op.model, op.order_product_id
@@ -75,11 +78,7 @@ class ModelSaleOrderItem extends Model
 		$query = "
 			SELECT COUNT(*) as total
 			FROM
-				" . DB_PREFIX . "order_product as op
-				JOIN " . DB_DATABASE . "." . DB_PREFIX . "order AS o ON o.order_id = op.order_id
-				JOIN " . DB_PREFIX . "customer AS c ON o.customer_id = c.customer_id
-				JOIN " . DB_PREFIX . "product AS p ON op.product_id  = p.product_id
-				LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
+				" . $this->orderItemsFromQuery . "
 			" . ($filter ? "WHERE $filter" : "");
 		$order_item_query = $this->db->query($query);
 
@@ -113,19 +112,20 @@ class ModelSaleOrderItem extends Model
 			$sort .= " ASC";
 		}
 
-		if (isset($data['start']) || isset($data['limit'])) {
-			if ($data['start'] < 0) {
-				$data['start'] = 0;
-			}
+        if (isset($data['page'])) {
+            $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
+            $data['limit']           = $this->config->get('config_admin_limit');
+        } else {
+            if (!isset($data['start']) || ($data['start'] < 0)) {
+                    $data['start'] = 0;
+            }
+            if (!isset($data['limit']) || ($data['limit'] < 1)) {
+                $data['limit'] = $this->config->get('config_admin_limit');
+            }
+        }
+        $limit = (int)$data['start'] . "," . (int)$data['limit'];
 
-			if ($data['limit'] < 1) {
-				$data['limit'] = 20;
-			}
-
-			$limit = (int)$data['start'] . "," . (int)$data['limit'];
-		}
-
-		return $this->fetchOrderItems($filter, $sort, $limit);
+        return $this->fetchOrderItems($filter, $sort, $limit);
 	}
 
 	public function getOrderItemsCount($data = array(), $filter = null)	{
