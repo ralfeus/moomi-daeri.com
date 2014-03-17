@@ -1,24 +1,26 @@
 <?php
 class ControllerCatalogInformation extends Controller { 
 	private $error = array();
+    /** @var  ModelCatalogInformation */
+    private $modelCatalogInformation;
+
+    public function __construct($registry) {
+        parent::__construct($registry);
+        $this->modelCatalogInformation = $this->load->model('catalog/information');
+        $this->load->language('catalog/information');
+        $this->document->setTitle($this->language->get('heading_title'));
+    }
 
 	public function index() {
-		$this->load->language('catalog/information');
-
-		$this->document->setTitle($this->language->get('heading_title'));
-		 
-		$this->load->model('catalog/information');
-
-		$this->getList();
+    	$this->getList();
 	}
 
-	public function insert() {
-		$this->load->language('catalog/information');
+    protected function initParameters() {
+        $this->parameters['id'] = empty($_REQUEST['information_id']) ? 0 : $_REQUEST['information_id'];
+        $this->parameters['parentId'] = isset($_REQUEST['parentId']) ? $_REQUEST['parentId'] : null;
+    }
 
-		$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/information');
-				
+	public function insert() {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_catalog_information->addInformation($this->request->post);
 			
@@ -45,14 +47,8 @@ class ControllerCatalogInformation extends Controller {
 	}
 
 	public function update() {
-		$this->load->language('catalog/information');
-
-		$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/information');
-		
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_catalog_information->editInformation($this->request->get['information_id'], $this->request->post);
+			$this->modelCatalogInformation->editInformation($this->request->get['information_id'], $this->request->post);
 			
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -262,11 +258,13 @@ class ControllerCatalogInformation extends Controller {
 	}
 
 	private function getForm() {
+        $this->data = $this->parameters;
 		$this->data['heading_title'] = $this->language->get('heading_title');
 
 		$this->data['text_default'] = $this->language->get('text_default');
 		$this->data['text_enabled'] = $this->language->get('text_enabled');
     	$this->data['text_disabled'] = $this->language->get('text_disabled');
+        $this->data['textParentNode'] = $this->language->get('PARENT_NODE');
 		
 		$this->data['entry_title'] = $this->language->get('entry_title');
 		$this->data['entry_description'] = $this->language->get('entry_description');
@@ -366,9 +364,20 @@ class ControllerCatalogInformation extends Controller {
 		} else {
 			$this->data['status'] = 1;
 		}
+
+        $this->data['potentialParents'] = array();
+        foreach ($this->modelCatalogInformation->getInformations() as $informationNode) {
+            if ($informationNode['information_id'] == $this->parameters['id']) {
+                continue;
+            }
+            $informationNodeInstance = new StdClass();
+            $informationNodeInstance->id = $informationNode['information_id'];
+            $informationNodeInstance->title = $informationNode['title'];
+            $this->data['potentialParents'][] = $informationNodeInstance;
+        }
+        $this->data['parentId'] = $information_info['parent_node_id'];
 		
 		$this->load->model('setting/store');
-		
 		$this->data['stores'] = $this->model_setting_store->getStores();
 		
 		if (isset($this->request->post['information_store'])) {

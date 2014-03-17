@@ -62,6 +62,18 @@
         <div id="tab-data">
           <table class="form">
             <tr>
+                <td><?= $textParentNode ?></td>
+                <td>
+                    <select name="parentId">
+                        <option value=""><?= $textNoParent ?></option>
+<?php foreach ($potentialParents as $parent):
+    $selected = ($parent->id == $parentId) ? "selected" : ""; ?>
+                        <option value="<?= $parent->id ?>" <?= $selected ?>><?= $parent->title ?></option>
+<?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
               <td><?php echo $entry_store; ?></td>
               <td><div class="scrollbox">
                   <?php $class = 'even'; ?>

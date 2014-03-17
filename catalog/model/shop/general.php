@@ -59,20 +59,47 @@ class ModelShopGeneral extends Model {
 		}
 	}
 
-	public function getPage($page_id = null, $lang = 'en') {
-		$pages = array();
+	public function getPage($page_id = null, $lang = 2) { // Default English
 		$children = array();
 		if($page_id == null) {
-			$query = "SELECT page_id, page_name_" . $lang . " AS page_title, page_content_" . $lang . " AS page_content FROM page WHERE parent_page_id IS NULL OR parent_page_id = 0";
+			$query = "
+			    SELECT i.information_id AS page_id, title AS page_title, description AS page_content
+			    FROM
+			        information AS i
+			        JOIN information_description AS id ON i.information_id = id.information_id
+			    WHERE
+			        parent_node_id IS NULL OR parent_node_id = 0
+			        AND language_id = " . (int)$lang
+            ;
 		}
 		else {
-			$query = "SELECT p.parent_page_id, page.page_name_" . $lang . " AS parent_page_title, p.page_name_" . $lang . " AS page_title, p.page_content_" . $lang . " AS page_content FROM page AS p LEFT JOIN page ON p.parent_page_id = page.page_id WHERE p.page_id = " . $page_id;
+			$query = "
+			    SELECT
+                    i.parent_node_id AS parent_page_id,
+                    parent_id.title AS parent_page_title,
+                    id.title AS page_title,
+                    id.description AS page_content
+                FROM
+                    information AS i
+                    JOIN information_description AS id ON i.information_id = id.information_id
+                    LEFT JOIN information AS parent ON i.parent_node_id = parent.information_id
+                    LEFT JOIN information_description AS parent_id ON parent.information_id = parent_id.information_id AND id.language_id = parent_id.language_id
+                WHERE
+                    i.information_id = " . (int)$page_id . "
+                    AND id.language_id = " . (int)$lang
+            ;
 		}
 
 		$pages = $this->db->query($query)->rows;
 
 		if($page_id != null) {
-			$query = "SELECT page_id, page_name_" . $lang . " AS page_title FROM page WHERE parent_page_id = " . $page_id;
+			$query = "
+			    SELECT i.information_id AS page_id, title AS page_title
+			    FROM
+			        information AS i
+			        JOIN information_description AS id ON i.information_id = id.information_id
+                WHERE parent_node_id = " . (int)$page_id . " AND language_id = " . (int)$lang
+            ;
 			$children = $this->db->query($query)->rows;
 		}
 

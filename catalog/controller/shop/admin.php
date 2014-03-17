@@ -1,5 +1,13 @@
 <?php
 class ControllerShopAdmin extends Controller {
+    /** @var ModelShopGeneral */
+    private $modelShopGeneral;
+
+    public function __construct($registry) {
+        parent::__construct($registry);
+        $this->modelShopGeneral = $this->load->model('shop/general');
+        $this->load->language('shop/general');
+    }
   public function getHolidays() {
     /*$modelData['photoID'] = isset($_POST['photoID']) ? $_POST['photoID'] : '';
     $modelData['photoType'] = isset($_POST['photoType']) ? $_POST['photoType'] : '';
@@ -25,25 +33,17 @@ class ControllerShopAdmin extends Controller {
   }
 
   public function getAllHolidaysForCalendar() {
-    $this->load->model('shop/general');
-
-    $json_holidays = $this->model_shop_general->getAllHolidaysForCalendar();
+    $json_holidays = $this->modelShopGeneral->getAllHolidaysForCalendar();
 
     echo $json_holidays;
-
   }
 
   public function showPage() {
     $page_id  = isset($this->request->get['page_id']) ? $this->request->get['page_id'] : null;
-    $lang = $this->language->get('code');
-
-    $this->load->model('shop/general');
-    $this->load->language('shop/general');
-
-    $result = $this->model_shop_general->getPage($page_id, $lang);
+    $lang = $this->config->get('config_language_id');
+    $result = $this->modelShopGeneral->getPage($page_id, $lang);
 
     $pages = $result['pages'];
-
     $children = $result['children'];
 
     $this->children = array(
