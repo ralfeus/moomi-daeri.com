@@ -65,7 +65,7 @@
                 <td><?= $textParentNode ?></td>
                 <td>
                     <select name="parentId">
-                        <option value=""><?= $textNoParent ?></option>
+                        <option value=""><?= $textNoParentNode ?></option>
 <?php foreach ($potentialParents as $parent):
     $selected = ($parent->id == $parentId) ? "selected" : ""; ?>
                         <option value="<?= $parent->id ?>" <?= $selected ?>><?= $parent->title ?></option>

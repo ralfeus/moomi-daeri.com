@@ -264,6 +264,7 @@ class ControllerCatalogInformation extends Controller {
 		$this->data['text_default'] = $this->language->get('text_default');
 		$this->data['text_enabled'] = $this->language->get('text_enabled');
     	$this->data['text_disabled'] = $this->language->get('text_disabled');
+        $this->data['textNoParentNode'] = $this->language->get('NO_PARENT_NODE');
         $this->data['textParentNode'] = $this->language->get('PARENT_NODE');
 		
 		$this->data['entry_title'] = $this->language->get('entry_title');
