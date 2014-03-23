@@ -1,6 +1,9 @@
 <?php
 class ControllerSaleOrderItems extends Controller {
 	private $error = array();
+    /** @var \StdClass */
+    private $filterLists;
+
     /** @var \ModelSaleOrderItem */
     private $modelSaleOrderItem;
     /** @var \ModelSaleOrder */
@@ -19,6 +22,7 @@ class ControllerSaleOrderItems extends Controller {
         $this->modelSaleOrderItem = $this->load->model('sale/order_item');
         $this->load->model('sale/order_item_history');
         $this->load->model('tool/image');
+        $this->setFilterLists();
     }
 
   	public function index()
@@ -29,27 +33,6 @@ class ControllerSaleOrderItems extends Controller {
     private function clearSelection()
     {
         //unset($this->session->data['selected_items']['sale/order_items']);
-    }
-
-    private function getCustomers()
-    {
-
-        foreach ($this->parameters as $key => $value)
-        {
-            if (strpos($key, 'filter') === false)
-                continue;
-            $data[$key] = $value;
-
-        }
-        unset($data['filterCustomerId']);
-        $result = array(); $tmpResult = array();
-        foreach ($this->modelSaleOrderItem->getOrderItems($data) as $orderItem)
-            //if (!in_array($orderItem['customer_id'], $tmpResult))
-            if (!isset($tmpResult[$orderItem['customer_id']]))
-                $tmpResult[$orderItem['customer_id']] = array('nickname_name' => $orderItem['customer_name'] . ' / ' . $orderItem['customer_nick'], 'isCustomerOrderReady' => $this->isCustomerOrderReady($orderItem['customer_id']));
-        natcasesort($tmpResult);
- //var_dump($this->isCustomerOrderReady($orderItem['customer_id']));die();
-        return $tmpResult;
     }
 
     private function isCustomerOrderReady($customer_id) {
@@ -84,7 +67,7 @@ class ControllerSaleOrderItems extends Controller {
                 continue;
             if ($key == 'filterCustomerId')
             {
-                $customers = $this->getCustomers();
+                $customers = $this->filterLists->customers; // $this->getCustomers();
                 $filterCustomerString = '';
                 foreach ($value as $customerId)
                     $filterCustomerString .= ',' . $customers[$customerId];
@@ -99,7 +82,7 @@ class ControllerSaleOrderItems extends Controller {
             }
             elseif ($key == 'filterSupplierId')
             {
-                $suppliers = $this->getSuppliers();
+                $suppliers = $this->filterLists->suppliers; // getSuppliers();
                 $filterSupplierString = '';
                 foreach ($value as $supplierId)
                     $filterSupplierString .= ',' . $suppliers[$supplierId];
@@ -134,8 +117,8 @@ class ControllerSaleOrderItems extends Controller {
         $this->data['invoice'] = $this->url->link('sale/invoice/showForm', $urlParameters, 'SSL');
         $this->data['print'] = $this->url->link('sale/order_items/print_page', $urlParameters, 'SSL');
         $this->data['printWithoutNick'] = $this->url->link('sale/order_items/print_page_removed_nickname', $urlParameters, 'SSL');
-        $this->data['customers'] = $this->getCustomers();
-        $this->data['suppliers'] = $this->getSuppliers();
+        $this->data['customers'] = $this->filterLists->customers; // getCustomers();
+        $this->data['suppliers'] = $this->filterLists->suppliers; // getSuppliers();
         /// Build sort URLs
         $this->data['sort_order_id'] = $this->url->link('sale/order_items', "$urlParameters&sort=order_id", 'SSL');
         $this->data['sort_order_item_id'] = $this->url->link('sale/order_items', "$urlParameters&sort=order_item_id", 'SSL');
@@ -322,315 +305,6 @@ class ControllerSaleOrderItems extends Controller {
       return $flagReady && $isReady;
     }
 
-    private function getListwithoutNickname() 	{
-        //$this->log->write(print_r($this->request,true));
-        $order = '';
-        $sort = "";
-        $status_to_sort_by = "";
-
-        $this->document->setTitle($this->language->get('heading_title'));
-
-        if (isset($_REQUEST['filter_customer']))
-            $filter_customer = $_REQUEST['filter_customer'];
-        else
-            $filter_customer = null;
-
-        if (isset($_REQUEST['filterStatusId']))
-            $filterStatusId = $_REQUEST['filterStatusId'];
-        else
-            $filterStatusId = array();
-        if (isset($_REQUEST['filter_supplier']))
-            $filter_supplier = $_REQUEST['filter_supplier'];
-        else
-            $filter_supplier = null;
-        if (isset($_REQUEST['filter_supplier_group']))
-            $filter_supplier_group = $_REQUEST['filter_supplier_group'];
-        else
-            $filter_supplier_group = null;
-
-        if (isset($_REQUEST['sort']))
-            $sort = $_REQUEST['sort'];
-        if (isset($sort) && ($sort == 'status_date') && isset($_REQUEST['status_to_sort_by']))
-            $status_to_sort_by = $_REQUEST['status_to_sort_by'];
-        if (isset($_REQUEST['order']))
-            $order = $_REQUEST['order'];
-
-        if (isset($_REQUEST['page']))
-            $page = $_REQUEST['page'];
-        else
-            $page = 1;
-
-        $url = '';
-
-        if (isset($_REQUEST['filter_customer'])) {
-            $url .= '&filter_customer=' . urlencode(html_entity_decode($_REQUEST['filter_customer'], ENT_QUOTES, 'UTF-8'));
-        }
-        if (isset($_REQUEST['filterStatusId']))
-            foreach ($_REQUEST['filterStatusId'] as $status_id_to_filter)
-                $url .= '&filterStatusId[]=' . urlencode(html_entity_decode($status_id_to_filter, ENT_QUOTES, 'UTF-8'));
-        if (isset($_REQUEST['filter_supplier'])) {
-            $url .= '&filter_supplier=' . urlencode(html_entity_decode($_REQUEST['filter_supplier'], ENT_QUOTES, 'UTF-8'));
-        }
-        if (isset($_REQUEST['filter_supplier_group']))
-            $url .= '&filter_supplier_group=' . urlencode(html_entity_decode($_REQUEST['filter_supplier_group'], ENT_QUOTES, 'UTF-8'));
-
-        if (isset($_REQUEST['sort'])) {
-            $url .= '&sort=' . $_REQUEST['sort'];
-        }
-
-        if (isset($_REQUEST['order'])) {
-            $url .= '&order=' . $_REQUEST['order'];
-        }
-
-        if (isset($_REQUEST['page'])) {
-            $url .= '&page=' . $_REQUEST['page'];
-        }
-
-        $this->data['breadcrumbs'] = array();
-
-        $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('text_home'),
-            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
-            'separator' => false
-        );
-        $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('heading_title'),
-            'href'      => $this->url->link('sale/order_items', 'token=' . $this->session->data['token'], 'SSL'),
-            'separator' => ' :: '
-        );
-        //print_r($url);print_r($this->url);exit();
-        $this->data['invoice'] = $this->url->link('sale/invoice/showForm' . $url, 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['print'] = $this->url->link('sale/order_items/print_page_removed_nickname' . $url, 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['order_items'] = array();
-
-        $data = array(
-            'filter_customer' => $filter_customer,
-            'filterStatusId'=> $filterStatusId,
-            'filter_supplier' => $filter_supplier,
-            'filter_supplier_group' => $filter_supplier_group,
-            'sort'            => $sort,
-            'order'           => $order,
-            'start'           => ($page - 1) * $this->config->get('config_admin_limit'),
-            'limit'           => $this->config->get('config_admin_limit'),
-            'status_to_sort_by' => $status_to_sort_by
-        );
-        //print_r($data);exit();
-        $order_items = $this->model_sale_order_item->getOrderItems($data);
-        if ($order_items)
-        {
-            foreach ($order_items as $order_item)
-            {
-                if ($order_item['image_path'] && file_exists(DIR_IMAGE . $order_item['image_path'])):
-                    $image = $this->model_tool_image->resize($order_item['image_path'], 100, 100);
-                else:
-                    $image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
-                endif;
-
-                $supplier_url = "";
-                foreach ($this->model_catalog_product->getProductAttributes($order_item['product_id']) as $attribute)
-                    if ($attribute['name'] == 'Supplier URL')
-                    {
-                        foreach ($attribute['product_attribute_description'] as $attribute_language_version)
-                            if ($attribute_language_version['text'])
-                            {
-                                $supplier_url = $attribute_language_version['text'];
-                                break;
-                            }
-                        break;
-                    }
-
-                //            $order_item_timeline = "";
-                //            foreach ($this->model_sale_order_item_history->getOrderItemHistory($order_item['order_product_id']) as $order_item_status)
-                //            {
-                //                $order_item_timeline .= $order_item_status['date_added'] . "<br />";
-                //            }
-
-                if ($order_item['supplier_group_id']):
-                    //$this->log->write(print_r($order_item, true));
-                    $order_item_supplier_group_id = $this->model_catalog_supplier_group->getSupplierGroup($order_item['supplier_group_id']);
-                    $order_item_supplier_group_id = $order_item_supplier_group_id['name'];
-                else:
-                    $order_item_supplier_group_id = "";
-                endif;
-
-                $action = array();
-
-                $action[] = array(
-                    'text' => $this->language->get('text_supplier_url'),
-                    'href' => $supplier_url
-                );
-                $action[] = array(
-                    'text' => $this->language->get('text_get_history'),
-                    'href' => 'javascript:getStatusHistory(' . $order_item['order_product_id'] . ')'
-                );
-                /// Build options string
-                $options = '';
-                foreach ($this->registry->get('model_sale_order_item')->getOrderItemOptions($order_item['order_product_id']) as $option)
-                    $options .= $option['name'] . ": " . $option['value'] . "\n";
-                $this->data['order_items'][] = array(
-                    'comment'                   => $order_item['comment'],
-                    'id'			            => $order_item['order_product_id'],
-                    'image_path'	            => $image,
-                    'name'			 => $order_item['name'],
-                    'model'                     => $order_item['model'],
-                    'name_korean'	            => $this->getProductAttribute($order_item['product_id'], "Name Korean"),
-                    'order_id'					=> $order_item['order_id'],
-                    'order_url'					=> $this->url->link('sale/order/info', 'order_id=' . $order_item['order_id'] . '&token=' . $this->session->data['token'], 'SSL'),
-                    // 'customer_name' => $order_item['customer_name'],
-                    // 'customer_nick' => $order_item['customer_nick'],
-                    'options'       => nl2br($options),
-                    'supplier_group'	        => $order_item_supplier_group_id,
-                    'supplier_name'	            => $order_item['supplier_name'],
-                    'supplier_url'	            => $supplier_url,
-                    'supplier_internal_model'   => $order_item['internal_model'],
-                    'status'       	=> $order_item['status'] ? Status::getStatus($order_item['status'], $this->config->get('language_id')) : "",
-                    'price'			=> $this->currency->format($order_item['price'], $this->config->get('config_currency')),
-                    'weight'		=> $this->weight->format($order_item['weight'],$order_item['weight_class_id']),
-                    'quantity'		=> $order_item['quantity'],
-                    //'timeline'    => $this->language->get("text_get_history"), //str_replace('-', '&#8209;', $order_item_timeline),
-                    'selected'      =>
-                    isset($_REQUEST['selectedItems'])
-                        && is_array($_REQUEST['selectedItems'])
-                        && in_array($order_item['order_product_id'], $_REQUEST['selectedItems']),
-                    'action'                    => $action
-                );
-            }
-        }
-
-        $this->data['heading_title'] = $this->language->get('heading_title');
-
-        $this->data['text_missing'] = $this->language->get('text_missing');
-        $this->data['text_no_results'] = $this->language->get('text_no_results');
-        $this->data['text_no_selected_items'] = $this->language->get('error_no_selected_items');
-
-        $this->data['column_item_image'] = $this->language->get('column_item_image');
-        $this->data['column_item_name'] = $this->language->get('field_item');
-        $this->data['field_order_id'] = $this->language->get('field_order_id');
-        $this->data['column_order_item_id'] = $this->language->get('field_order_item_id');
-        // $this->data['column_customer'] = $this->language->get('column_customer');
-        // $this->data['column_customer_nick'] = $this->language->get('field_customer_nick');
-        $this->data['column_supplier'] = $this->language->get('column_supplier');
-        $this->data['column_supplier_group'] = $this->language->get('field_supplier_group');
-        $this->data['column_internal_model'] = $this->language->get('field_internal_model');
-        $this->data['column_status'] = $this->language->get('field_status');
-        $this->data['column_price'] = $this->language->get('column_price');
-        $this->data['column_quantity'] = $this->language->get('column_quantity');
-        $this->data['column_timeline'] = $this->language->get('field_timeline');
-        $this->data['column_action'] = $this->language->get('column_action');
-        $this->data['columnWeight'] = $this->language->get('COLUMN_WEIGHT');
-
-        $this->data['button_cancel'] = $this->language->get('button_cancel');
-        $this->data['button_filter'] = $this->language->get('FILTER');
-        $this->data['button_invoice'] = $this->language->get('button_invoice');
-        $this->data['button_print'] = $this->language->get('button_print');
-        $this->data['button_ready'] = $this->language->get('button_ready');
-        $this->data['button_soldout'] = $this->language->get('button_soldout');
-
-        $this->data['token'] = $this->session->data['token'];
-
-        if (isset($this->error['warning'])) {
-            $this->data['error_warning'] = $this->error['warning'];
-        } else {
-            $this->data['error_warning'] = '';
-        }
-
-        if (isset($this->session->data['success'])) {
-            $this->data['success'] = $this->session->data['success'];
-
-            unset($this->session->data['success']);
-        } else {
-            $this->data['success'] = '';
-        }
-
-        $url = '';
-
-        if (isset($_REQUEST['filter_customer'])) {
-            $url .= '&filter_customer=' . urlencode(html_entity_decode($_REQUEST['filter_customer'], ENT_QUOTES, 'UTF-8'));
-        }
-        if (isset($_REQUEST['filterStatusId']))
-            foreach ($_REQUEST['filterStatusId'] as $status_id_to_filter)
-                $url .= '&filterStatusId[]=' . urlencode(html_entity_decode($status_id_to_filter, ENT_QUOTES, 'UTF-8'));
-        if (isset($_REQUEST['filter_supplier'])) {
-            $url .= '&filter_supplier=' . urlencode(html_entity_decode($_REQUEST['filter_supplier'], ENT_QUOTES, 'UTF-8'));
-        }
-        if (isset($_REQUEST['filter_supplier_group']))
-            $url .= '&filter_supplier_group=' . urlencode(html_entity_decode($_REQUEST['filter_supplier_group'], ENT_QUOTES, 'UTF-8'));
-
-        if ($order == 'DESC') {
-            $url .= '&order=DESC';
-        } else {
-            $url .= '&order=ASC';
-        }
-
-        if (isset($_REQUEST['page'])) {
-            $url .= '&page=' . $_REQUEST['page'];
-        }
-        $this->data['sort_order_id'] = $this->url->link('sale/order_items', 'token=' .$this->session->data['token'] . '&sort=order_id' . $url, 'SSL');
-        $this->data['sort_order_item_id'] = $this->url->link('sale/order_items', 'token=' .$this->session->data['token'] . '&sort=order_item_id' . $url, 'SSL');
-        $this->data['sort_supplier'] = $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . '&sort=supplier_name' . $url, 'SSL');
-        $this->data['sort_supplier_group'] = $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . '&sort=supplier_group_id' . $url, 'SSL');
-        $this->data['statuses'] = array();
-        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status) {
-            $this->data['statuses'][] = array(
-                'id'    =>  $statusId,
-                'name' => $status,
-                'settable' => true,
-                'viewable' => true,
-                'sort_url' => $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . "&sort=status_date&status_to_sort_by=$statusId$url", 'SSL'),
-                'set_status_url' => $this->url->link('sale/order_items/set_status', "$url&order_item_new_status=$statusId&token=" . $this->session->data['token'], 'SSL')
-            );
-        }
-        $url = '';
-
-        if (isset($_REQUEST['filter_customer'])) {
-            $url .= '&filter_customer=' . urlencode(html_entity_decode($_REQUEST['filter_customer'], ENT_QUOTES, 'UTF-8'));
-        }
-        if (isset($_REQUEST['filterStatusId']))
-            foreach ($_REQUEST['filterStatusId'] as $status_id_to_filter)
-                $url .= '&filterStatusId[]=' . urlencode(html_entity_decode($status_id_to_filter, ENT_QUOTES, 'UTF-8'));
-
-        if (isset($_REQUEST['filter_supplier'])) {
-            $url .= '&filter_supplier=' . urlencode(html_entity_decode($_REQUEST['filter_supplier'], ENT_QUOTES, 'UTF-8'));
-        }
-        if (isset($_REQUEST['filter_supplier_group']))
-            $url .= '&filter_supplier_group=' . urlencode(html_entity_decode($_REQUEST['filter_supplier_group'], ENT_QUOTES, 'UTF-8'));
-
-        if (isset($_REQUEST['sort'])) {
-            $url .= '&sort=' . $_REQUEST['sort'];
-        }
-
-        if (isset($_REQUEST['order'])) {
-            $url .= '&order=' . $_REQUEST['order'];
-        }
-
-        $pagination = new Pagination();
-        $pagination->total = $this->model_sale_order_item->getOrderItemsCount($data);
-        $pagination->page = $page;
-        $pagination->limit = $this->config->get('config_admin_limit');
-        $pagination->text = $this->language->get('text_pagination');
-        $pagination->url = $this->url->link('sale/order_items', 'token=' . $this->session->data['token'] . $url . '&page={page}', 'SSL');
-
-        $this->data['pagination'] = $pagination->render();
-
-        $this->data['filter_customer'] = $filter_customer;
-        $this->data['filterStatusId'] = $filterStatusId;
-        $this->data['filter_supplier'] = $filter_supplier;
-
-        $this->load->model('localisation/order_status');
-
-        ///$this->data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
-
-        $this->data['sort'] = $sort;
-        $this->data['order'] = $order;
-        $this->data['status_to_sort_by'] = $status_to_sort_by;
-
-        $this->template = 'sale/order_items_list_print_nickname_removed.tpl';
-        $this->children = array(
-            'common/header',
-            'common/footer'
-        );
-        $this->response->setOutput($this->render());
-    }
     private function getProductAttribute($product_id, $attribute_name)
     {
         foreach ($this->model_catalog_product->getProductAttributes($product_id) as $attribute)
@@ -641,23 +315,6 @@ class ControllerSaleOrderItems extends Controller {
                         return $attribute_language_version['text'];
             }
         return "";
-    }
-
-    private function getSuppliers()
-    {
-        foreach ($this->parameters as $key => $value)
-        {
-            if (strpos($key, 'filter') === false)
-                continue;
-            $data[$key] = $value;
-        }
-        unset($data['filterSupplierId']);
-        $result = array(); $tmpResult = array();
-        foreach ($this->modelSaleOrderItem->getOrderItems($data) as $orderItem)
-            if (!in_array($orderItem['supplier_id'], $tmpResult))
-                $tmpResult[$orderItem['supplier_id']] = $orderItem['supplier_name'];
-        natcasesort($tmpResult);
-        return $tmpResult;
     }
 
     protected function initParameters()
@@ -917,6 +574,7 @@ class ControllerSaleOrderItems extends Controller {
 
         $this->response->setOutput($this->render());
     }
+
     public function set_status() {
         $this->load->language('sale/order_items');
         $order_items = array();
@@ -957,6 +615,20 @@ class ControllerSaleOrderItems extends Controller {
         }
 
         $this->index();
+    }
+
+    private function setFilterLists() {
+        $this->filterLists = new StdClass();
+        $this->filterLists->customers = array();
+        $this->filterLists->suppliers = array();
+        foreach ($this->modelSaleOrderItem->getOrderItems(/*$data*/) as $orderItem) {
+            if (!isset($this->filterLists->customers[$orderItem['customer_id']]))
+                $this->filterLists->customers[$orderItem['customer_id']] = array('nickname_name' => $orderItem['customer_name'] . ' / ' . $orderItem['customer_nick'], 'isCustomerOrderReady' => $this->isCustomerOrderReady($orderItem['customer_id']));
+            if (!isset($this->filterLists->suppliers[$orderItem['supplier_id']]))
+                $this->filterLists->suppliers[$orderItem['supplier_id']] = $orderItem['supplier_name'];
+        }
+        natcasesort($this->filterLists->customers);
+        natcasesort($this->filterLists->suppliers);
     }
 
     public function save_comment() {
