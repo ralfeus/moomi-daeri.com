@@ -1,9 +1,6 @@
 <?php
 class ControllerSaleOrderItems extends Controller {
 	private $error = array();
-    /** @var \StdClass */
-    private $filterLists;
-
     /** @var \ModelSaleOrderItem */
     private $modelSaleOrderItem;
     /** @var \ModelSaleOrder */
@@ -22,7 +19,6 @@ class ControllerSaleOrderItems extends Controller {
         $this->modelSaleOrderItem = $this->load->model('sale/order_item');
         $this->load->model('sale/order_item_history');
         $this->load->model('tool/image');
-        $this->setFilterLists();
     }
 
   	public function index()
@@ -33,6 +29,45 @@ class ControllerSaleOrderItems extends Controller {
     private function clearSelection()
     {
         //unset($this->session->data['selected_items']['sale/order_items']);
+    }
+
+    private function getCustomers()
+    {
+        $data = array();
+        foreach ($this->parameters as $key => $value)
+        {
+            if (strpos($key, 'filter') === false)
+                continue;
+            $data[$key] = $value;
+
+        }
+        unset($data['filterCustomerId']);
+        $result = array(); $tmpResult = array();
+        foreach ($this->modelSaleOrderItem->getOrderItems($data) as $orderItem)
+            //if (!in_array($orderItem['customer_id'], $tmpResult))
+            if (!isset($tmpResult[$orderItem['customer_id']]))
+                $tmpResult[$orderItem['customer_id']] = array('nickname_name' => $orderItem['customer_name'] . ' / ' . $orderItem['customer_nick'], 'isCustomerOrderReady' => $this->isCustomerOrderReady($orderItem['customer_id']));
+        natcasesort($tmpResult);
+ //var_dump($this->isCustomerOrderReady($orderItem['customer_id']));die();
+        return $tmpResult;
+    }
+
+    private function getSuppliers()
+    {
+        $data = array();
+        foreach ($this->parameters as $key => $value)
+        {
+            if (strpos($key, 'filter') === false)
+                continue;
+            $data[$key] = $value;
+        }
+        unset($data['filterSupplierId']);
+        $result = array(); $tmpResult = array();
+        foreach ($this->modelSaleOrderItem->getOrderItems($data) as $orderItem)
+            if (!in_array($orderItem['supplier_id'], $tmpResult))
+                $tmpResult[$orderItem['supplier_id']] = $orderItem['supplier_name'];
+        natcasesort($tmpResult);
+        return $tmpResult;
     }
 
     private function isCustomerOrderReady($customer_id) {
@@ -67,7 +102,7 @@ class ControllerSaleOrderItems extends Controller {
                 continue;
             if ($key == 'filterCustomerId')
             {
-                $customers = $this->filterLists->customers; // $this->getCustomers();
+                $customers = $this->getCustomers();
                 $filterCustomerString = '';
                 foreach ($value as $customerId)
                     $filterCustomerString .= ',' . $customers[$customerId];
@@ -82,7 +117,7 @@ class ControllerSaleOrderItems extends Controller {
             }
             elseif ($key == 'filterSupplierId')
             {
-                $suppliers = $this->filterLists->suppliers; // getSuppliers();
+                $suppliers = $this->getSuppliers();
                 $filterSupplierString = '';
                 foreach ($value as $supplierId)
                     $filterSupplierString .= ',' . $suppliers[$supplierId];
@@ -117,8 +152,8 @@ class ControllerSaleOrderItems extends Controller {
         $this->data['invoice'] = $this->url->link('sale/invoice/showForm', $urlParameters, 'SSL');
         $this->data['print'] = $this->url->link('sale/order_items/print_page', $urlParameters, 'SSL');
         $this->data['printWithoutNick'] = $this->url->link('sale/order_items/print_page_removed_nickname', $urlParameters, 'SSL');
-        $this->data['customers'] = $this->filterLists->customers; // getCustomers();
-        $this->data['suppliers'] = $this->filterLists->suppliers; // getSuppliers();
+        $this->data['customers'] = $this->getCustomers();
+        $this->data['suppliers'] = $this->getSuppliers();
         /// Build sort URLs
         $this->data['sort_order_id'] = $this->url->link('sale/order_items', "$urlParameters&sort=order_id", 'SSL');
         $this->data['sort_order_item_id'] = $this->url->link('sale/order_items', "$urlParameters&sort=order_item_id", 'SSL');
@@ -574,7 +609,6 @@ class ControllerSaleOrderItems extends Controller {
 
         $this->response->setOutput($this->render());
     }
-
     public function set_status() {
         $this->load->language('sale/order_items');
         $order_items = array();
@@ -615,20 +649,6 @@ class ControllerSaleOrderItems extends Controller {
         }
 
         $this->index();
-    }
-
-    private function setFilterLists() {
-        $this->filterLists = new StdClass();
-        $this->filterLists->customers = array();
-        $this->filterLists->suppliers = array();
-        foreach ($this->modelSaleOrderItem->getOrderItems(/*$data*/) as $orderItem) {
-            if (!isset($this->filterLists->customers[$orderItem['customer_id']]))
-                $this->filterLists->customers[$orderItem['customer_id']] = array('nickname_name' => $orderItem['customer_name'] . ' / ' . $orderItem['customer_nick'], 'isCustomerOrderReady' => $this->isCustomerOrderReady($orderItem['customer_id']));
-            if (!isset($this->filterLists->suppliers[$orderItem['supplier_id']]))
-                $this->filterLists->suppliers[$orderItem['supplier_id']] = $orderItem['supplier_name'];
-        }
-        natcasesort($this->filterLists->customers);
-        natcasesort($this->filterLists->suppliers);
     }
 
     public function save_comment() {
