@@ -218,7 +218,7 @@ DD_belatedPNG.fix('#logo img');
 <div id="container">
   <div id="header"
 <?php if ($logo): ?>
-      style="background: url('<?php echo $logo; ?>');"
+      style="background: url('<?= $logo ?>')"
 <?php endif; ?>
       >
       <table style="width: 100%; height: 150px;">
@@ -313,7 +313,7 @@ DD_belatedPNG.fix('#logo img');
           </table>
       </div>
   </div>
-<?php /*if ($categories) { ?>
+<?php if ($categories) { ?>
   <div id="menu">
     <ul>
       <?php foreach ($categories as $category) { ?>
@@ -341,7 +341,7 @@ DD_belatedPNG.fix('#logo img');
       <?php } ?>
     </ul>
   </div>
-<?php }*/ ?>
+<?php } ?>
 <div id="notification"></div>
 <script type="text/javascript">//<!--
 function changeCurrency(code)

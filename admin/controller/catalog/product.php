@@ -570,8 +570,7 @@ class ControllerCatalogProduct extends Controller {
     	$this->data['tab_general'] = $this->language->get('tab_general');
     	$this->data['tab_data'] = $this->language->get('tab_data');
 		$this->data['tab_attribute'] = $this->language->get('tab_attribute');
-      	$this->data['tab_option'] = $this->language->get('tab_option');
-      	$this->data['tab_creat_option'] = $this->language->get('tab_creat_option');
+		$this->data['tab_option'] = $this->language->get('tab_option');		
 		$this->data['tab_discount'] = $this->language->get('tab_discount');
 		$this->data['tab_special'] = $this->language->get('tab_special');
     	$this->data['tab_image'] = $this->language->get('tab_image');		
@@ -987,10 +986,8 @@ class ControllerCatalogProduct extends Controller {
 				);				
 			}
 		}
-
-        $this->data['create_option_block'] = $this->getOptionForm();
-
-        $this->load->model('sale/customer_group');
+		
+		$this->load->model('sale/customer_group');
 		
 		$this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
 		
@@ -1496,175 +1493,5 @@ class ControllerCatalogProduct extends Controller {
             'type' => 'textarea'
         );
     }
-
-    private function getOptionForm() {
-    	$this->load->language('catalog/option');
-
-    	$this->data['text_create_option'] = $this->language->get('text_create_option');
-    	$this->data['text_choose'] = $this->language->get('text_choose');
-    	$this->data['text_option_select'] = $this->language->get('text_option_select');
-    	$this->data['text_radio'] = $this->language->get('text_radio');
-    	$this->data['text_checkbox'] = $this->language->get('text_checkbox');
-    	$this->data['text_image'] = $this->language->get('text_image');
-    	$this->data['text_input'] = $this->language->get('text_input');
-    	$this->data['text_text'] = $this->language->get('text_text');
-    	$this->data['text_textarea'] = $this->language->get('text_textarea');
-    	$this->data['text_file'] = $this->language->get('text_file');
-    	$this->data['text_date'] = $this->language->get('text_date');
-    	$this->data['text_datetime'] = $this->language->get('text_datetime');
-    	$this->data['text_time'] = $this->language->get('text_time');
-    	$this->data['text_image_manager'] = $this->language->get('text_image_manager');
-    	$this->data['text_browse'] = $this->language->get('text_browse');
-    	$this->data['text_clear'] = $this->language->get('text_clear');
-
-    	$this->data['entry_option_name'] = $this->language->get('entry_option_name');
-    	$this->data['entry_type'] = $this->language->get('entry_type');
-    	$this->data['entry_value'] = $this->language->get('entry_value');
-    	$this->data['entry_image'] = $this->language->get('entry_image');
-    	$this->data['entry_sort_order'] = $this->language->get('entry_sort_order');
-
-    	$this->data['button_add_option_value'] = $this->language->get('button_add_option_value');
-    	$this->data['button_remove'] = $this->language->get('button_remove');
-
-    	$this->data['token'] = $this->session->data['token'];
-
-    	if(isset($this->error['warning'])) {
-            $this->data['error_warning'] = $this->error['warning'];
-        } else {
-            $this->data['error_warning'] = '';
-        }
-
-    	if(isset($this->session->data['success'])) {
-            $this->data['success'] = $this->session->data['success'];
-
-            unset($this->session->data['success']);
-        } else {
-            $this->data['success'] = '';
-        }
-
-    	if(isset($this->error['name'])) {
-            $this->data['error_name'] = $this->error['name'];
-        } else {
-            $this->data['error_name'] = array();
-        }
-
-    	if(isset($this->error['option_value'])) {
-            $this->data['error_option_value'] = $this->error['option_value'];
-        } else {
-            $this->data['error_option_value'] = array();
-        }
-
-    	$this->load->model('localisation/language');
-
-    	$this->data['languages'] = $this->model_localisation_language->getLanguages();
-
-    	if(isset($this->request->post['option_description']) && !empty($this->error)) {
-            $this->data['option_description'] = $this->request->post['option_description'];
-        } else {
-            $this->data['option_description'] = array();
-        }
-
-    	if(isset($this->request->post['type']) && !empty($this->error)) {
-            $this->data['type'] = $this->request->post['type'];
-        } else {
-            $this->data['type'] = '';
-        }
-
-    	if(isset($this->request->post['sort_order']) && !empty($this->error)) {
-            $this->data['sort_order'] = $this->request->post['sort_order'];
-        } else {
-            $this->data['sort_order'] = '';
-        }
-
-    	if(isset($this->request->post['option_value'])  && !empty($this->error)) {
-            $option_values = $this->request->post['option_value'];
-        } else {
-            $option_values = array();
-        }
-
-    	$this->load->model('tool/image');
-
-    	$this->data['option_values'] = array();
-
-    	foreach($option_values as $option_value) {
-            if($option_value['image'] && file_exists(DIR_IMAGE . $option_value['image'])) {
-                $image = $option_value['image'];
-            } else {
-                $image = 'no_image.jpg';
-            }
-
-            $this->data['option_values'][] = array(
-                'option_value_id'          => $option_value['option_value_id'],
-                'option_value_description' => $option_value['option_value_description'],
-                'image'                    => $image,
-                'thumb'                    => $this->model_tool_image->resize($image, 100, 100),
-                'sort_order'               => $option_value['sort_order']
-            );
-	    }
-
-    	$this->error = array();
-
-    	$this->data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
-
-    	$this->template = 'catalog/product_option_form.tpl';
-
-    	return $this->render();
-    }
-
-    public function createOption() {
-    	$this->load->model('catalog/option');
-    	$this->load->language('catalog/option');
-
-    	if(($this->request->server['REQUEST_METHOD'] == 'POST') && !empty($this->request->post) && $this->validateOptionForm()) {
-            $this->model_catalog_option->addOption($this->request->post);
-
-            $this->session->data['success'] = $this->language->get('text_create_success');
-        }
-
-    	$json['data'] = $this->getOptionForm();
-
-    	$this->response->setOutput(json_encode($json));
-    }
-
-    private function validateOptionForm() {
-    	if(!$this->user->hasPermission('modify', 'catalog/option')) {
-            $this->error['warning'] = $this->language->get('error_permission');
-        }
-
-    	foreach($this->request->post['option_description'] as $language_id => $value) {
-            if((utf8_strlen($value['name']) < 1) || (utf8_strlen($value['name']) > 128)) {
-                $this->error['name'][$language_id] = $this->language->get('error_name');
-            }
-        }
-
-    	if((
-			$this->request->post['type'] == 'select' ||
-			$this->request->post['type'] == 'radio' ||
-			$this->request->post['type'] == 'checkbox'
-    		) &&
-		    !isset($this->request->post['option_value'])
-    	) {
-            $this->error['warning'] = $this->language->get('error_type');
-        }
-
-        if(isset($this->request->post['option_value'])) {
-            foreach($this->request->post['option_value'] as $option_value_id => $option_value) {
-                foreach($option_value['option_value_description'] as $language_id => $option_value_description) {
-                    if((utf8_strlen($option_value_description['name']) < 1) || (utf8_strlen($option_value_description['name']) > 128)) {
-                        $this->error['option_value'][$option_value_id][$language_id] = $this->language->get('error_option_value');
-                    }
-                }
-            }
-        }
-
-	    if($this->error && !isset($this->error['warning'])) {
-            $this->error['warning'] = $this->language->get('error_warning');
-        }
-
-	    if(!$this->error) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }
+?>
