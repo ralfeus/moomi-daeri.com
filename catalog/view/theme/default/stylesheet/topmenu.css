@@ -1,7 +1,7 @@
 #topmenu {
 	/*background: url('../image/topmenu.png') repeat;*/
 	/*border-bottom: 1px solid #000;*/
-	height: 34px;
+	/*height: 34px;*/
 	margin-bottom: 18px;
 	-webkit-border-radius: 5px 5px 5px 5px;
 	-moz-border-radius: 5px 5px 5px 5px;
@@ -13,21 +13,40 @@
 	padding: 0px 5px;
 }
 #topmenu > ul > li + li {
-	padding: 1px 2px 0px 4px;
+	/*padding: 1px 2px 0px 4px;*/
 	/*background: url('../image/topmenusplit.png') center left no-repeat;*/
 	z-index: 60;	
 }
-#topmenu > ul > li:hover,
+/*#topmenu > ul > li:hover,
 #topmenu .topactive:hover,
 #topmenu  > ul > li:hover .topactive {
 	background: url('../image/topmenu_h.png') repeat;
-}
+}*/
 
 #topmenu li ul {
 	padding-top: 5px;
 }
+
+#topmenu > ul > li > ul {
+    margin-top: -30px;
+    margin-left: 180px;
+}
+
+#topmenu > ul > li > a {
+    color: #000000 !important;
+}
+
+#topmenu > ul > li, #topmenu > ul > li:hover {
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAN0lEQVQYV2NkIBIwwtS1trb+h7Grq6vh4jAxDAFcGjAU4rIBp0J0DeSbSNCNJPsaV7AS9AxMIwATTBqZOKXIIAAAAABJRU5ErkJggg==') right 14px no-repeat;
+}
+
+#topmenu > ul > li > a:hover {
+    text-decoration: underline;
+}
+
 #topmenu li ul ul{
-	padding: 0px 3px;
+    /* 	padding: 0px 3px; */
+    padding: 5px 3px 0px;
 }
 /*** ESSENTIAL STYLES ***/
 .sf-menu, .sf-menu * {
@@ -47,7 +66,7 @@
 	visibility:		inherit; /* fixes IE7 'sticky bug' */
 }
 .sf-menu li {
-	float:			left;
+    /* 	float:			left; */
 	position:		relative;
 }
 .sf-menu a {
@@ -77,12 +96,14 @@ ul.sf-menu li li li.sfHover ul {
 
 /*** DEMO SKIN ***/
 .sf-menu a {
-	padding: 		.75em 1em;
-	text-decoration:none;
+    /* 	padding: 		.75em 1em; */
+    padding: 9px 5px;
+
+    text-decoration:none;
 }
 .sf-menu a, .sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
-	color:			#FFFFFF;
-}
+    color: #FFFFFF;
+    /* 	color: #000000; */}
 .sf-menu li li,
 .sf-menu li li li {
  	background: url('../image/topmenutr.png');
