@@ -1176,7 +1176,7 @@ function addCreatedOptionValue() {
     html += '<td class="left"><a onclick="$(\'#option-value-row' + option_value_row + '\').remove();" class="button"><?php echo $button_remove; ?></a></td>';
     html += '</tr>';
     html += '</tbody>';
-    <
+
     $('#option-value tfoot').before(html);
 
     option_value_row++;

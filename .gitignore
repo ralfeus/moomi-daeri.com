@@ -1,0 +1,6 @@
+admin/config.php
+config.php
+image/cache
+image/cache/*
+system/logs
+system/logs/*

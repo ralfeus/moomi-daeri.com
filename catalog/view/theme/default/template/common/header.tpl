@@ -215,13 +215,87 @@ DD_belatedPNG.fix('#logo img');
 </style>
 </head>
 <body>
+<div class="header-top-wrapper">
+	<div class="header-top">
+<div id="span-selectors">
+                          <form id="selectors" action="<?= $action ?>" method="post" enctype="multipart/form-data">
+                              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                  <tr>
+
+								  <td width="128">
+								  <table height="20" cellpadding="0" cellspacing="1"><tr>
+  <?php foreach ($currencies as $currency): ?>
+                                          <td class="currency-selector">
+      <?php
+      if ($currency['code'] == $currency_code):
+          $boldBegin = "<b>"; $boldEnd = "</b>";
+          $onClick = "";
+      else:
+          $boldBegin = ""; $boldEnd = "";
+          $onClick = 'onclick="changeCurrency(\'' . $currency['code'] . '\')"';
+      endif;
+      $symbol = $currency['symbol_left'] ? $currency['symbol_left'] : $currency['symbol_right'];
+      ?>
+                                              <a title="<?= $currency['title'] ?>" <?= $onClick ?>>
+                                                  <?= $boldBegin ?><?= $symbol ?> <?= $boldEnd ?>
+                                              </a>
+                                          </td>
+  <?php endforeach; ?>
+</tr></table></td>
+  
+  <td>
+      <div id="search">
+          <div class="button-search"></div>
+<?php if ($filter_name): ?>
+          <input type="text" name="filter_name" value="<?= $filter_name ?>" />
+<?php else: ?>
+          <input type="text" name="filter_name" value="<?/*= $text_search */?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
+<?php endif; ?>
+		<div class="styled-select-wrapper">
+		<select class="styled-select">
+		  <option>All Categories</option>
+		  <option>All Categories</option>
+		</select>
+		</div>
+      </div>   
+  <td>
+  
+  
+
+  <?php foreach ($languages as $language): ?>
+                                          <td style="width: 40px;text-align: center; vertical-align: middle;">
+                                            <input type="hidden" name="language_code" value="" />
+                                            <input type="hidden" name="currency_code" value="" />
+                                            <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
+                                              <div class="language-selector">
+                                                <a href="index.php?<?= unset_query_string_var('language', $_SERVER['QUERY_STRING']) ?>&amp;language=<?= $language['code'] ?>">
+                                                  <img
+                                                      src="image/flags/<?php echo $language['image'] ?>"
+                                                      alt="<?php echo $language['name'] ?>"
+                                                      title="<?= $language['name'] ?>" />
+                                                </a>
+                                              </div>
+                                          </td>
+  <?php endforeach; ?>  
+<td width="210"><div class="contact-header">Contact:<br />moomidae@gmail.com</div><td>
+                                  </tr>
+                              </table>
+                              <!--<input type="hidden" name="language_code" value="" />
+                              <input type="hidden" name="currency_code" value="" />
+                              <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />-->
+                          </form>
+                      </div>	
+	</div>
+</div>
+
 <div id="container">
   <div id="header"
 <?php if ($logo): ?>
       style="background: url('<?php echo $logo; ?>');"
 <?php endif; ?>
       >
-      <table style="width: 100%; height: 150px;">
+	  
+      <table style="display: none;width: 100%; height: 150px;">
           <tbody>
               <!--<tr>
                 <td colspan="2" style=""></td>
@@ -287,22 +361,18 @@ DD_belatedPNG.fix('#logo img');
           </div>
           <div class="content"></div>
       </div>
-      <div id="search">
-          <div class="button-search"></div>
-<?php if ($filter_name): ?>
-          <input type="text" name="filter_name" value="<?= $filter_name ?>" />
-<?php else: ?>
-          <input type="text" name="filter_name" value="<?= $text_search ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
-<?php endif; ?>
-      </div>
+
       <div id="welcome"><?= (!$logged) ? $text_welcome :$text_logged ?></div>
       <div class="links">
-          <table>
+	  			  <a class="account" href="<?= $account ?>"><span><?= $text_account ?></span></a> 
+				  
+                  <a class="home" href="<?= $home ?>"><span><?= $text_home ?></span></a>
+                  <a class="wishlist_total" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>
+				  <a class="cart" href="<?= $cart ?>"><span><?= $text_cart ?></span></a>
+				  
+          <table style="display: none;">
               <tr><td>
-                  <a class="button" href="<?= $home ?>"><span><?= $text_home ?></span></a>
-                  <a class="button" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>
-                  <a class="button" href="<?= $account ?>"><span><?= $text_account ?></span></a>
-                  <a class="button" href="<?= $cart ?>"><span><?= $text_cart ?></span></a>
+                                   
                   <a class="button" href="<?= $checkout ?>"><span><?= $text_checkout ?></span></a>
                   <a class="button" href="<?= $repurchase_order ?>"><span><?= $text_repurchase_order ?></span></a>
               </td></tr>

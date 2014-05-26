@@ -1,15 +1,10 @@
-<style>
-    .category_box_heading {
-        padding: 8px 10px 7px 10px;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 14px;
-        font-weight: bold;
-        line-height: 14px;
-        color: #333;
-        border-bottom: 2px solid #000000;
-    }
-</style>
 <div class="box">
+
+<div class="box-button">
+	<a class="info" href="index.php?route=shop/admin/showPage&page_id=15"><span><?= $textShoppingGuide ?>Information</span></a>
+	<a class="agent" href="index.php?route=product/repurchase"><span><?= $text_repurchase_order ?>Agent</span></a>
+</div>
+
 	<div class="category_box_heading"><?php echo $heading_title; ?></div>
     <!-- 	<div class="box-content"> -->
     <div>

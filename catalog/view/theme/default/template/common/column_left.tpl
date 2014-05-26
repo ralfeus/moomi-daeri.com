@@ -38,6 +38,9 @@
     $('.jcarousel-item-vertical').css('height', '140px');
   }
   </script>
+  
+  <a class="rev-gallery" href="index.php?route=product/gallery"></a>
+  
   <div style="margin-top: 20px; width: 185px: overflow: hidden;">
     <ul id='mycarousel' class='jcarousel-skin-tango' style="width: 140px;">
     	<?php

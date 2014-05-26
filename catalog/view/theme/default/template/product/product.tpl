@@ -192,7 +192,8 @@
             <div><?php echo $text_qty; ?>
                 <input type="text" name="quantity" size="2" value="<?php echo $minimum; ?>" />
                 <input type="hidden" name="product_id" size="2" value="<?php echo $product_id; ?>" />
-                &nbsp;<a id="button-cart" class="button"><span><?php echo $button_cart; ?></span></a></div>
+                &nbsp;<a id="button-cart" class="button"><span><?php echo $button_cart; ?></span></a>
+                <a onclick="addToWishList('<?php echo $product_id; ?>');" class="button"><span><?php echo $button_wishlist; ?></span></a></div>
             <?php if ($minimum > 1) { ?>
             <div class="minimum"><?php echo $text_minimum; ?></div>
             <?php } ?>
