@@ -12,17 +12,10 @@ $(document).ready(function() {
 		location = url;
 	});
 
-	$('#header input[name=\'filter_name\']').keydown(function(e) {
+	$('#search input[name=\'filter_name\']').keydown(function(e) {
 		if (e.keyCode == 13) {
-			url = $('base').attr('href') + 'index.php?route=product/search';
-
-			var filter_name = $('input[name=\'filter_name\']').attr('value')
-
-			if (filter_name) {
-				url += '&filter_name=' + encodeURIComponent(filter_name);
-			}
-
-			location = url;
+			$('.button-search').trigger('click');
+			return false;
 		}
 	});
 
