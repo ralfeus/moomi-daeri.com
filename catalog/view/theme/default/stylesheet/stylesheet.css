@@ -1808,6 +1808,8 @@ a.button-disabled span {
 	height: 274px;
 	background: #38b0e4;
 	position: relative;
+	display: table;
+	width: 100%;
 }
 
 #footer {
