@@ -86,6 +86,11 @@ class ControllerAccountRegister extends Controller {
 
 		$this->data['button_continue'] = $this->language->get('button_continue');
 
+		// loginza
+		$this->data['action_loginza'] = urlencode(HTTPS_SERVER . 'index.php?route=account/loginza');
+		$this->data['text_enter_with_loginza'] = $this->language->get('text_enter_with_loginza');
+		// loginza
+
 		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
 		} else {

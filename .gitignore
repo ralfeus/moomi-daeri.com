@@ -4,3 +4,4 @@ image/cache
 image/cache/*
 system/logs
 system/logs/*
+*.bak

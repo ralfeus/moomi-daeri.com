@@ -104,7 +104,8 @@ ul.sf-menu li li li.sfHover ul {
 .sf-menu a, .sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
     color: #FFFFFF;
     /* 	color: #000000; */}
-.sf-menu li li,
+	
+/*.sf-menu li li,
 .sf-menu li li li {
  	background: url('../image/topmenutr.png');
 	border-bottom: 1px solid #777;
@@ -113,15 +114,38 @@ ul.sf-menu li li li.sfHover ul {
 	-moz-border-radius: 10px 0px 10px 0px;
 	-khtml-border-radius: 10px 0px 10px 0px;
 	border-radius: 10px 0px 10px 0px;
+}*/	
+	
+.sf-menu li li,
+.sf-menu li li li {
+ 	background: #38B0E4;
+	opacity: 0.8;
+	border-bottom: 1px solid #777;
+	border-right: 1px solid #777;
+	-webkit-border-radius: 10px 0px 10px 0px;
+	-moz-border-radius: 10px 0px 10px 0px;
+	-khtml-border-radius: 10px 0px 10px 0px;
+	border-radius: 10px 0px 10px 0px;
 }
-.sf-menu ul li:hover, .sf-menu ul li.sfHover,
+/*.sf-menu ul li:hover, .sf-menu ul li.sfHover,
 .sf-menu ul a:focus, .sf-menu ul a:hover, .sf-menu ul a:active {
 	background:		#111;
 	-webkit-border-radius: 10px 0px 10px 0px;
 	-moz-border-radius: 10px 0px 10px 0px;
 	-khtml-border-radius: 10px 0px 10px 0px;
 	border-radius: 10px 0px 10px 0px;
+}*/
+
+.sf-menu ul li:hover, .sf-menu ul li.sfHover,
+.sf-menu ul a:focus, .sf-menu ul a:hover, .sf-menu ul a:active {
+	background:		#38B0E4;
+	opacity: inherit;
+	-webkit-border-radius: 10px 0px 10px 0px;
+	-moz-border-radius: 10px 0px 10px 0px;
+	-khtml-border-radius: 10px 0px 10px 0px;
+	border-radius: 10px 0px 10px 0px;
 }
+
 #topmenu .parent {
 	background: url('../image/topmenuarrow.png') 95% center no-repeat;
 	-webkit-border-radius: 10px 0px 10px 0px;
@@ -145,7 +169,8 @@ ul.sf-menu li li li.sfHover ul {
 	background-color: #222;
 }
 #topmenu .topactive	{
-	background: url('../image/topmenu_a.png') repeat;
+	/*background: url('../image/topmenu_a.png') repeat;*/
+	background: #38B0E4;
 }
 #topmenu .active:hover, #topmenu .activeparent:hover {
 	background-color: #000;

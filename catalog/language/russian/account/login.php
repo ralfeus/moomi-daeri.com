@@ -18,4 +18,8 @@ $_['entry_password']				= 'Пароль:';
 
 // Error
 $_['error_login']					= 'Неправильно заполнены поля E-Mail и/или пароль!';
+
+// loginza
+$_['text_enter_with_loginza']			= 'Вход\регистрация с помощью социальных сервисов';
+// loginza
 ?>

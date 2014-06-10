@@ -83,6 +83,12 @@ class ControllerCheckoutLogin extends Controller {
 			} else {
 				$this->data['account'] = 'register';
 			}
+
+			// loginza
+			$this->data['action_loginza'] = urlencode(HTTPS_SERVER . 'index.php?route=account/loginza');
+			$this->data['text_enter_with_loginza'] = $this->language->get('text_enter_with_loginza');
+			$this->session->data['loginza_redirect'] = $this->url->link('checkout/checkout');
+			// loginza
 			
 			$this->data['forgotten'] = $this->url->link('account/forgotten', '', 'SSL');
 			

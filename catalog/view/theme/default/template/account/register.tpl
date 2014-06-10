@@ -5,6 +5,15 @@
     <?php echo $breadcrumb['separator']; ?><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a>
     <?php } ?>
   </div>
+  <!-- loginza -->
+  <div style="clear: both;"></div>
+  <h2><?php echo $text_enter_with_loginza; ?></h2>
+  <div style="padding: 0 213px; border-top: 1px solid #eee;">
+    <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
+    <iframe src="http://loginza.ru/api/widget?overlay=loginza&token_url=<? echo $action_loginza; ?>" 
+style="width:359px;height:300px;" scrolling="no" frameborder="no"></iframe>
+  </div>
+  <!-- loginza -->
   <h1><?php echo $heading_title; ?></h1>
   <?php if ($error_warning) { ?>
   <div class="error"><?php echo $error_warning; ?></div>

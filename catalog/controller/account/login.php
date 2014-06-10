@@ -73,6 +73,11 @@ class ControllerAccountLogin extends Controller {
 		} else {
 			$this->data['error_warning'] = '';
 		}
+
+		// loginza
+		$this->data['action_loginza'] = urlencode(HTTPS_SERVER . 'index.php?route=account/loginza');
+		$this->data['text_enter_with_loginza'] = $this->language->get('text_enter_with_loginza');
+		// loginza
 		
 		$this->data['action'] = $this->url->link('account/login', '', 'SSL');
 		$this->data['register'] = $this->url->link('account/register', '', 'SSL');
