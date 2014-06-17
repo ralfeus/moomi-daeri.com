@@ -1,7 +1,7 @@
 <?php
 // Heading 
 $_['heading_title']                = 'Account Login';
-
+$_['text_enter_with_loginza']        = 'Login using Loginza';
 // Text
 $_['text_account']                 = 'Account';
 $_['text_login']                   = 'Login';
