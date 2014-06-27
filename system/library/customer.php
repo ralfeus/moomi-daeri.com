@@ -14,6 +14,7 @@ final class Customer {
     /** @var \Currency $baseCurrency */
     private $baseCurrency;
     private $balance;
+    private $affiliate_id;
 
   	public function __construct($registry) {
         $this->registry = $registry;
@@ -37,6 +38,7 @@ final class Customer {
 				$this->customer_group_id = $customer_query->row['customer_group_id'];
 				$this->address_id = $customer_query->row['address_id'];
                 $this->balance = $customer_query->row['balance'];
+                $this->affiliate_id = $customer_query->row['affiliate_id'];
                 $this->getBaseCurrency()->set($customer_query->row['base_currency_code']);
                 $purgeCart = empty($customer_query->row['purge_cart']) ? 0 : $customer_query->row['purge_cart'];
 
@@ -111,10 +113,11 @@ final class Customer {
 			$this->customer_group_id = $customer_query->row['customer_group_id'];
 			$this->address_id = $customer_query->row['address_id'];
             $this->balance = $customer_query->row['balance'];
+            $this->affiliate_id = $customer_query->row['affiliate_id'];
             $this->getBaseCurrency()->set($customer_query->row['base_currency_code']);
           	
 			$this->db->query("UPDATE " . DB_PREFIX . "customer SET ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "' WHERE customer_id = '" . (int)$customer_query->row['customer_id'] . "'");
-			
+			$this->setAffiliateId();
 	  		return true;
     	} else {
       		return false;
@@ -183,7 +186,30 @@ final class Customer {
   	public function getCustomerGroupId() {
 		return $this->customer_group_id;	
   	}
-	
+
+	public function getAffiliateId() {
+
+		return $this->affiliate_id;
+
+	}
+
+	public function setAffiliateId() {
+
+		if (!empty($this->customer_id) && !$this->affiliate_id) {
+			if (isset($this->request->cookie['tracking'])) {
+				$this->registry->get('load')->model('affiliate/affiliate');
+				$affiliate_info = $this->registry->get('model_affiliate_affiliate')->getAffiliateByCode($this->request->cookie['tracking']);
+				if ($affiliate_info) {
+					$this->affiliate_id = $affiliate_info['affiliate_id'];
+				}
+				$this->db->query("UPDATE " . DB_PREFIX . "customer SET affiliate_id = '" . (int)$this->affiliate_id . "' WHERE customer_id = '" . (int)$this->customer_id . "'");
+			}
+		}
+
+	}
+
+
+
   	public function getAddressId() {
 		return $this->address_id;	
   	}

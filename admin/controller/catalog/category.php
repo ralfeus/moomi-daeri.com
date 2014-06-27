@@ -310,7 +310,15 @@ class ControllerCatalogCategory extends Controller {
 		} else {
 			$this->data['status'] = 1;
 		}
-				
+
+		if (isset($this->request->post['affiliate_commission'])) {
+			$this->data['affiliate_commission'] = $this->request->post['affiliate_commission'];
+		} elseif (!empty($category_info)) {
+			$this->data['affiliate_commission'] = $category_info['affiliate_commission'];
+		} else {
+			$this->data['affiliate_commission'] = 0;
+		}
+
 		if (isset($this->request->post['category_layout'])) {
 			$this->data['category_layout'] = $this->request->post['category_layout'];
 		} elseif (isset($this->request->get['category_id'])) {

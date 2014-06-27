@@ -28,7 +28,9 @@ class ModelCatalogProduct extends Model {
 		        status = '" . (int)$data['status'] . "',
 		        tax_class_id = '" . $this->db->escape($data['tax_class_id']) . "',
 		        sort_order = '" . (int)$data['sort_order'] . "',
-		        date_added = NOW()");
+		        date_added = NOW()"
+		        . ", affiliate_commission = '" . (float)$data['affiliate_commission'] . "'"
+		        );
 		
 		$product_id = $this->db->getLastId();
 		
@@ -246,8 +248,9 @@ class ModelCatalogProduct extends Model {
 		        status = '" . (int)$data['status'] . "',
 		        tax_class_id = '" . $this->db->escape($data['tax_class_id']) . "',
 		        sort_order = '" . (int)$data['sort_order'] . "',
-		        date_modified = NOW()
-            WHERE product_id = '" . (int)$product_id . "'
+		        date_modified = NOW()"
+		        . ", affiliate_commission = '" . (float)$data['affiliate_commission'] . "'" .
+           " WHERE product_id = '" . (int)$product_id . "'
         ");
 
 		if (isset($data['image'])) {

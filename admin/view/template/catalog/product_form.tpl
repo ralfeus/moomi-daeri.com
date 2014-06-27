@@ -228,6 +228,11 @@
               <td><?php echo $entry_sort_order; ?></td>
               <td><input type="text" name="sort_order" value="<?php echo $sort_order; ?>" size="2" /></td>
             </tr>
+            <tr>
+              <td><?php echo $this->language->get('entry_commission'); ?></td>
+              <td><input type="text" name="affiliate_commission" value="<?php echo $affiliate_commission; ?>" size="4" /></td>
+            </tr>
+            <tr>
           </table>
         </div>
         <div id="tab-links">

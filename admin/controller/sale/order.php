@@ -1638,7 +1638,11 @@ class ControllerSaleOrder extends Controller {
 		
 	public function addCommission() {
 		$json = array();
-    	
+
+		$json['error'] = $this->language->get('error_action');
+		$this->response->setOutput(json_encode($json));
+		return;
+
      	if (!$this->user->hasPermission('modify', 'sale/order')) {
       		$json['error'] = $this->language->get('error_permission'); 
     	} elseif (isset($this->request->get['order_id'])) {
@@ -1666,7 +1670,11 @@ class ControllerSaleOrder extends Controller {
 	
 	public function removeCommission() {
 		$json = array(); 
-    	
+
+		$json['error'] = $this->language->get('error_action');
+		$this->response->setOutput(json_encode($json));
+		return;
+
      	if (!$this->user->hasPermission('modify', 'sale/order')) {
       		$json['error'] = $this->language->get('error_permission'); 
     	} elseif (isset($this->request->get['order_id'])) {

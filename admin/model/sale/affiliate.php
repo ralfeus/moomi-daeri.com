@@ -189,11 +189,13 @@ class ModelSaleAffiliate extends Model {
 		return $query->row['total'];
 	}
 		
-	public function addTransaction($affiliate_id, $description = '', $amount = '', $order_id = 0) {
+	public function addTransaction($affiliate_id, $description = '', $amount = '', $order_id = 0, $order_product_id = 0) {
 		$affiliate_info = $this->getAffiliate($affiliate_id);
 		
 		if ($affiliate_info) { 
-			$this->db->query("INSERT INTO " . DB_PREFIX . "affiliate_transaction SET affiliate_id = '" . (int)$affiliate_id . "', order_id = '" . (float)$order_id . "', description = '" . $this->db->escape($description) . "', amount = '" . (float)$amount . "', date_added = NOW()");
+			$this->db->query("INSERT INTO " . DB_PREFIX . "affiliate_transaction SET affiliate_id = '" . (int)$affiliate_id . "', order_id = '" . (float)$order_id . "', description = '" . $this->db->escape($description) . "', amount = '" . (float)$amount . "', date_added = NOW()"
+				. ", order_product_id = '" . (int)$order_product_id . "'"
+				);
 		
 			$this->language->load('mail/affiliate');
 							
@@ -217,8 +219,13 @@ class ModelSaleAffiliate extends Model {
 		}
 	}
 	
-	public function deleteTransaction($order_id) {
-		$this->db->query("DELETE FROM " . DB_PREFIX . "affiliate_transaction WHERE order_id = '" . (int)$order_id . "'");
+	public function deleteTransaction($order_id, $order_product_id = 0) {
+		$order_product_id = (int)$order_product_id;
+		if ($order_product_id) {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "affiliate_transaction WHERE order_product_id = '" . (int)$order_product_id . "'");
+		} elseif (null !== $order_id) {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "affiliate_transaction WHERE order_id = '" . (int)$order_id . "'");
+		}
 	}
 	
 	public function getTransactions($affiliate_id, $start = 0, $limit = 10) {
@@ -243,6 +250,62 @@ class ModelSaleAffiliate extends Model {
 		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "affiliate_transaction WHERE order_id = '" . (int)$order_id . "'");
 	
 		return $query->row['total'];
-	}		
+	}
+
+	public function getProductAffiliateCommission($product_id) {
+
+		$affiliate_commission = $this->getProductAffiliateCommissions($product_id);
+		if (!empty($affiliate_commission['pac'])) {
+			$affiliate_commission = $affiliate_commission['pac'];
+		} elseif (!empty($affiliate_commission['cac'])) {
+			$affiliate_commission = $affiliate_commission['cac'];
+		} else {
+			$affiliate_commission = $affiliate_commission['gac'];
+		}
+		return (float)$affiliate_commission;
+
+	}
+
+	public function getProductAffiliateCommissions($product_id) {
+
+		$query = $this->db->query(
+			"SELECT p.affiliate_commission AS pac, c.affiliate_commission AS cac FROM\n"
+			. DB_PREFIX . "product p\n"
+			. "INNER JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)\n"
+			. "INNER JOIN " . DB_PREFIX . "category c ON (c.category_id = p2c.category_id)\n"
+			. "WHERE p2c.main_category = 1 AND p.product_id = '" . (int)$product_id . "'"
+			);
+		$query->row['gac'] = $this->config->get('config_commission');
+		return $query->row;
+
+	}
+
+	public function setOrderProductAffiliateCommission($order_product_id) {
+
+		$order_product_id = (int)$order_product_id;
+		$query = $this->db->query(
+			"SELECT op.product_id, op.total, o.affiliate_id, o.order_id, at.affiliate_transaction_id FROM\n"
+			. DB_PREFIX . "order_product op\n"
+			. "INNER JOIN `" . DB_PREFIX . "order` o ON (o.order_id = op.order_id)\n"
+			. "LEFT JOIN " . DB_PREFIX . "affiliate_transaction at ON (op.order_product_id = at.order_product_id)\n"
+			. "WHERE op.order_product_id = '" . $order_product_id . "'"
+			);
+		if (!$query->row) {
+			return false;
+		}
+		if ($query->row['affiliate_transaction_id']) {
+			return false;
+		}
+		$this->addTransaction(
+			$query->row['affiliate_id'],
+			'Order Product ID: #' . $order_product_id,
+			round($this->getProductAffiliateCommission($query->row['product_id']) / 100 * $query->row['total'], 4),
+			$query->row['order_id'],
+			$order_product_id
+			);
+		return true;
+
+	}
+
 }
 ?>

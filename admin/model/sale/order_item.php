@@ -15,7 +15,7 @@ class ModelSaleOrderItem extends Model
                ) as oils on op.order_product_id = oils.order_item_id";
 
 	public function getOrderItem($order_item_id) {
-		$result = $this->fetchOrderItems("order_product_id = $order_item_id");
+		$result = $this->fetchOrderItems("op.order_product_id = $order_item_id");
         if ($result)
             return $result[0];
         else
@@ -37,7 +37,7 @@ class ModelSaleOrderItem extends Model
 
 	private function fetchOrderItems($filter = "", $sort = "", $limit = "") {
 		$query = "
-			SELECT
+			SELECT o.affiliate_id, at.affiliate_transaction_id ,
 				op.*, op.order_product_id as order_item_id, op.status_id as status,
 				concat(o.firstname, ' ', o.lastname) as customer_name, o.date_added,
 				c.customer_id, c.nickname as customer_nick,
@@ -45,8 +45,9 @@ class ModelSaleOrderItem extends Model
 				s.name as supplier_name, s.supplier_group_id, s.internal_model as internal_model,
 				oils.date_last_status_set as status_date
 			FROM
-				" . $this->orderItemsFromQuery . "
-            " . ($filter ? "WHERE $filter" : "") . /*"
+				" . $this->orderItemsFromQuery . 
+                " LEFT JOIN " . DB_PREFIX . "affiliate_transaction at ON op.order_product_id = at.order_product_id "
+             . ($filter ? "WHERE $filter" : "") . /*"
         	" . ($sort ? "ORDER BY $sort" : "") . */"
             ORDER BY supplier_name, op.model, op.order_product_id
 			" . ($limit ? "LIMIT $limit" : "");

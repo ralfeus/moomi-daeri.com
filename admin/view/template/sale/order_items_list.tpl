@@ -297,5 +297,34 @@ function submitForm(action) {
     else
         alert("<?= $text_no_selected_items ?>");
 }
+
+$(document).ready(function() {
+
+    $('a.commissionAction').click(function() {
+        eval($(this).attr('data-onclick'));
+        return false;
+    });
+
+});
+
+function commissionAction(action, id) {
+
+	$.get(
+		'index.php?route=sale/order_items/commission&token=<?= $token ?>&order_product_id=' + id + '&action=' + action,
+		function(data) {
+			if (typeof data.error !== "undefined") {
+				alert(data.error);
+			} else if (typeof data.success !== "undefined") {
+				alert(data.success);
+				$a = $('a[data-onclick="commissionAction(\'' + action + '\', ' + id + ')"]');
+				$a.html(data.text);
+				$a.attr('data-onclick', 'commissionAction(\'' + data.action + '\', ' + id + ')');
+			}
+		},
+	'json');
+	return false;
+
+}
+
 //--></script>
 <?php echo $footer; ?>

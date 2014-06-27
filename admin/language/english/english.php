@@ -172,3 +172,4 @@ $_['TRANSACTION'] = 'Transaction';
 $_['TRANSACTION_ID'] = 'Transaction ID';
 $_['VIEW'] = 'View';
 
+$_['entry_commission'] = 'Affiliate Commission (%):';

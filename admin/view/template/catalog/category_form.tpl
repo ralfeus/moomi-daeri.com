@@ -136,6 +136,11 @@
                   <?php } ?>
                 </select></td>
             </tr>
+            <tr>
+              <td><?php echo $this->language->get('entry_commission'); ?></td>
+              <td><input type="text" name="affiliate_commission" value="<?php echo $affiliate_commission; ?>" size="4" /></td>
+            </tr>
+            <tr>
           </table>
         </div>
         <div id="tab-design">

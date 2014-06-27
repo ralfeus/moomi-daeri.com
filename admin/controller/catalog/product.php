@@ -875,6 +875,14 @@ class ControllerCatalogProduct extends Controller {
       		$this->data['status'] = 1;
     	}
 
+		if (isset($this->request->post['affiliate_commission'])) {
+			$this->data['affiliate_commission'] = $this->request->post['affiliate_commission'];
+		} elseif (!empty($product_info)) {
+			$this->data['affiliate_commission'] = $product_info['affiliate_commission'];
+		} else {
+			$this->data['affiliate_commission'] = 0;
+		}
+
     	if (isset($this->request->post['weight'])) {
       		$this->data['weight'] = $this->request->post['weight'];
 		} else if (!empty($product_info)) {
