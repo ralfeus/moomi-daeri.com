@@ -6,6 +6,7 @@ $_['heading_title']       = 'Options';
 $_['text_success']        = 'Success: You have modified options!';
 $_['text_choose']         = 'Choose';
 $_['text_select']         = 'Select';
+$_['text_option_select'] = 'Select';
 $_['text_radio']          = 'Radio';
 $_['text_checkbox']       = 'Checkbox';
 $_['text_image']          = 'Image';
@@ -27,6 +28,7 @@ $_['column_action']       = 'Action';
 
 // Entry
 $_['entry_name']         = 'Option Name:';
+$_['entry_option_name']  = 'Option Name:';
 $_['entry_type']         = 'Type:';
 $_['entry_value']        = 'Option Value Name:';
 $_['entry_image']        = 'Image:';

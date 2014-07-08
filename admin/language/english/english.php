@@ -126,6 +126,8 @@ $_['tab_transaction']         = 'Transactions';
 $_['tab_voucher_history']     = 'Voucher History';
 $_['tab_sms']                 = 'SMS';
 
+$_['tab_creat_option']        = 'Creat option';
+
 // Error
 $_['error_upload_1']          = 'Warning: The uploaded file exceeds the upload_max_filesize directive in php.ini!';
 $_['error_upload_2']          = 'Warning: The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form!';
