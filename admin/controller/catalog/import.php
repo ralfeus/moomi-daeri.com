@@ -307,4 +307,56 @@ class ControllerCatalogImport extends Controller {
         }
         return $prices;
     }
+
+    public function parser() {
+
+        defined('DIR_AUTOMATION') || define('DIR_AUTOMATION', dirname(DIR_APPLICATION) . '/automation');
+
+        if (empty($this->request->get['a'])) {
+            $this->request->get['a'] = '';
+        }
+
+        switch ($this->request->get['a']) {
+            case 'run':
+                if ($this->parserStatus()) {
+                    echo 'cant';
+                } else {
+                    $this->parserStart();
+                    echo 'done';
+                }
+                break;
+
+            default:
+                $output = array('status' => false);
+                $status = $this->parserStatus();
+                if ($status) {
+                    $output['status'] = true;
+                    $output['stime'] = $status[4];
+                }
+                echo json_encode($output);
+        }
+
+    }
+
+    protected function parserStatus() {
+
+        $pid = (int)file_get_contents(DIR_AUTOMATION . '/crawler.cli.adapter.pid');
+        if ($pid) {
+            $status = shell_exec("ps -fp $pid | grep crawler.cli.adapter.php");
+            if ($status) {
+                return preg_split("/\s+/", $status, 8);
+            }
+        }
+        return false;
+
+    }
+
+    protected function parserStart() {
+
+        $pid = shell_exec(("nohup php -f " . DIR_AUTOMATION ."/crawler.cli.adapter.php > /dev/null 2>&1 & printf \"%u\" $!"));
+        file_put_contents(DIR_AUTOMATION . "/crawler.cli.adapter.pid", $pid);
+        return $pid;
+
+    }
+
 }

@@ -13,6 +13,7 @@
     <div class="heading">
       <h1><img src="view/image/error.png" alt="" /> <?= $headingTitle ?></h1>
       <div class="buttons">
+          <a id="startParsing" class="button">Loading...</a>
           <a onclick="submitForm('<?= $urlSyncSelected ?>');" class="button"><?= $textUpdateSelected ?></a>
           <a onclick="submitForm('<?= $urlDeleteSelected ?>');" class="button"><?= $textDeleteSelected ?></a>
           <a onclick="submitForm('<?= $urlSyncAll ?>');" class="button"><?= $textUpdateAll ?></a>
@@ -129,7 +130,34 @@
   </div>
 </div>
 <script type="text/javascript"><!--
+function parserStatus() {
+    $.ajax({
+        url: "index.php?route=catalog/import/parser&" + ("" + location).match(/token=[^&]+/)[0],
+        cache: false,
+        dataType: 'json'
+        }).done(function(data) {
+            if (data.status) {
+                $('#startParsing').html("Parsing is running - It was started at " + data.stime);
+            } else {
+                $('#startParsing').html('Start parsing');
+            }
+        });
+}
 $(document).ready(function() {
+
+    $('#startParsing').click(function() {
+        $.ajax({
+            url: "index.php?route=catalog/import/parser&a=run&" + ("" + location).match(/token=[^&]+/)[0],
+            cache: false,
+            dataType: 'html'
+            }).done(function(data) {
+                parserStatus();
+            });
+    });
+
+    setInterval(parserStatus, 60000*5);
+    parserStatus();
+
     $('.date').datepicker({dateFormat: 'yy-mm-dd'});
 
     $('[name=filterSourceSiteId\\[\\]]')
