@@ -188,12 +188,12 @@ class ControllerCatalogImport extends Controller {
         elseif ($this->parameters['what'] == 'all')
             $productsToSynchronize = $this->modelCatalogImport->getImportedProducts($this->parameters);
 
-        foreach ($productsToSynchronize as $productToSynchronize)
-        {
-            if ($productToSynchronize->getLocalProductId())
+        foreach ($productsToSynchronize as $productToSynchronize) {
+            if ($productToSynchronize->getLocalProductId()) {
                 $this->updateFromSource($productToSynchronize);
-            else
+            } else {
                 $this->addFromSource($productToSynchronize);
+            }
         }
 
         $this->redirect($this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters)));
@@ -230,6 +230,9 @@ class ControllerCatalogImport extends Controller {
             $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToUpdate->getSourceUrl() );
         }
 
+        /// Copying product options in order to preserve ones
+        $localProductOptions = $this->modelCatalogProduct->getProductOptions($productToUpdate->getLocalProductId());
+
         $this->modelCatalogProduct->editProduct($productToUpdate->getLocalProductId(), array(
             'date_available' => $localProduct['date_available'],
             'height' => null,
@@ -246,6 +249,7 @@ class ControllerCatalogImport extends Controller {
             'product_category' => $productToUpdate->getCategories(),
             'product_description' => null,
             'product_image' => $images,
+            'product_option' => $localProductOptions,
             'product_special' => $this->getSpecialPrices($productToUpdate),
             'product_store' => $productToUpdate->getSourceSite()->getDefaultStoreId(),
             'product_tag' => null,
@@ -255,6 +259,7 @@ class ControllerCatalogImport extends Controller {
             'sort_order' => null,
 //            'status' => 1,
             'stock_status_id' => 8,
+            'status' => $localProduct['status'],
             'subtract' => null,
             'supplier_id' => $productToUpdate->getSourceSite()->getDefaultSupplierId(),
             'tax_class' => null,

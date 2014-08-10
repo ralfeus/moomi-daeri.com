@@ -1,2 +1,0 @@
-ALTER TABLE order_product ADD COLUMN shipping DECIMAL(15,4) NOT NULL;
-ALTER TABLE order_product MODIFY shipping DECIMAL(15,4) NOT NULL;
