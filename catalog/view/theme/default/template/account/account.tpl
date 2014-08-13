@@ -11,6 +11,11 @@
     ?>
   <?php if ($success) { ?>
   <div class="success"><?php echo $success; ?></div>
+    <script type="text/javascript"><!--
+    $(document).ready(function(){
+	alert('<?php echo $success; ?>');
+	});
+    //--></script>
   <?php } ?>
   <div class="box">
       <div class="box-heading"><h2><?php echo $text_my_account; ?></h2></div>

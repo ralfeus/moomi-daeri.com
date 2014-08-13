@@ -9,6 +9,17 @@
   <?php if ($error_warning) { ?>
   <div class="error"><?php echo $error_warning; ?></div>
   <?php } ?>
+<!-- KBA -->
+    <?php if($this->request->get['token'] == 1) {?>
+	<h2><?php echo $text_edit_your_acc_plz; ?></h2>
+	<script type="text/javascript"><!--
+	    $(document).ready(function(){
+		alert('<?php echo $text_edit_your_acc_plz; ?>');
+	    });
+	//--></script>
+    <?php } ?>
+<!-- /KBA -->
+    
   <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="edit">
     <h2><?php echo $text_your_details; ?></h2>
     <div class="content">
@@ -80,7 +91,7 @@
         <script type="text/javascript"><!--
         $(document).ready(function(){
             $('#confirmationDialog').dialog({
-                buttons: {
+                buttons: [{
                     "Yes": function() {
                         $('<input>').attr({
                             type: 'hidden',
@@ -90,7 +101,7 @@
                         $('#edit').submit();
                     },
                     "No": function() { $(this).dialog('close'); }
-                }
+                }]
             });
         });
         //--></script>

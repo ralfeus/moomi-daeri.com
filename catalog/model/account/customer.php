@@ -82,6 +82,7 @@ class ModelAccountCustomer extends Model {
 	}
 	
 	public function editCustomer($data) {
+
 		$this->db->query("
 		    UPDATE " . DB_PREFIX . "customer
 		    SET
