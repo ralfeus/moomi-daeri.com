@@ -201,7 +201,7 @@ function showProgress() {
     $('#logContent').html(status.log);
     $('#importProgress').dialog({
         title: "Import is running: " + status.running,
-        width: 760,
+        width: 790,
         height: 590,
         modal: true
     });

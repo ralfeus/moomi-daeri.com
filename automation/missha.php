@@ -1,119 +1,21 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: dev
- * Date: 4.8.13
- * Time: 15:00
- * To change this template use File | Settings | File Templates.
- */
-
-class Missha extends ProductSource {
-    private function __construct() {}
-
-    private function fillDetails(Product $product) {
-        $html = $this->getHtmlDocument($product->url);
-        $matches = array();
-        /// Get images
-        $items = $html->find('td.M_s_img_b img');
-        foreach ($items as $item) {
-            if (preg_match('/(?<=loadImage\(\').+?(?=\'\))/', $item->attr['onmouseover'], $matches)) {
-                $product->images[] =  $matches[0];
-            }
-        }
-
-        /// Get description
-        $items = $html->find('td.M_g_detail');
-        $product->description = trim($items[0]->innertext);
-        /// Get price and promo price
-        if ($html->find('span.M_TT_s_t>del', 0)) {
-            $product->price = preg_replace('/\D+/', '', $html->find('span.M_TT_s_t>del', 0)->plaintext);
-            $product->promoPrice = preg_replace('/\D+/', '', $html->find('td.M_TT_13w', 0)->firstChild()->plaintext);
-        }
-        else {
-            $product->price = preg_replace('/\D+/', '', $html->find('td.M_TT_13w', 0)->firstChild()->plaintext);
-        }
-
-        $html->clear();
-    }
-
-    private function getCategoryProducts($categoryUrl)
-    {
-        $products = array();
-        echo $categoryUrl . "\n";
-        $html = $this->getHtmlDocument($categoryUrl);
-        $pages = $html->find('div.pg2', 0)->find('a[href*=category_large.php\?pagenum]');
-        $pagesNum =  sizeof($pages) + 1;
-        $matches = array();
-        for ($currPage = 1; $currPage <= $pagesNum; $currPage++)
-        {
-            echo "Page $currPage of $pagesNum\n"; $tmp = 1;
-            $items = $html->find('table#mainTable table.news03');
-            foreach ($items as $item) {
-                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . sizeof($items) . "\n";
-                $aElement = $item->find('a[href*=category_detail.php]', 0);
-                $product = new Product(
-                    $this,
-                    preg_match('/(?<=part_code=)\d+/', $categoryUrl, $matches) ? $matches[0] : null,
-                    preg_match('/(?<=id=)\d+/', $aElement->attr['href'], $matches) ? $matches[0] : null,
-                    trim($item->find('a[href*=category_detail.php]', 1)->plaintext),
-                    'http://shop.beautynet.co.kr/' . preg_replace('/^\/?\.\./', '', $aElement->attr['href']),
-                    $aElement->find('img', 0)->attr['src'],
-                    null,
-                    null,
-                    0.25
-                );
-                if ($this->addProductToList($product, $products)) {
-                    if (sizeof($item->find('strike')))
-                        $product->promoPrice = preg_replace('/\D+/', '', $item->find('strike', 0)->next_sibling()->plaintext);
-                    self::fillDetails($product);
-                }
-            }
-            $html->clear();
-            if ($currPage < $pagesNum)
-                $html = $this->getHtmlDocument($categoryUrl . '&pagenum=' . ($currPage + 1));
-        }
-        echo "Got " . sizeof($products) . " products\n";
-        return $products;
-    }
-
-    private function getCategoryUrls()
-    {
-        $categories = array();
-        $html = $this->getHtmlDocument(self::getUrl());
-        $items = $html->find('a[href*=\/missha\/category_large.php]');
-        foreach ($items as $categoryAElement)
-            $categories[] = 'http://shop.beautynet.co.kr/' . preg_replace('/^\/?\.\./', '', $categoryAElement->attr['href']);
-        $html->clear();
-        return array_unique($categories);
-    }
-
-    public function getProducts() {
-        echo date('Y-m-d H:i:s') . "\n";
-        $products = array();
-        $urls = self::getCategoryUrls(); $currCategory = 1;
-        foreach ($urls as $url) {
-            echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . "\n";
-            $products = array_merge($products, self::getCategoryProducts($url));
-//            break;
-        }
-        echo "Totally found " . sizeof($products) . " products\n";
-        echo date('Y-m-d H:i:s') . " --- Finished\n";
-        return $products;
+require_once('gmarket.co.kr.php');
+class Missha extends GMarketCoKr {
+    public function __construct() {
+        $this->shopId = 'TAzMR38TODMxME3zODg4NTkzMjR/Rw==';
     }
 
     /**
-     * @return ProductSource
+     * @return Missha
      */
     public static function getInstance() {
-        if (!self::$instance)
-            self::$instance = new Missha();
+        if (!self::$instance || !(self::$instance instanceof Missha))
+            self::$instance = new self();
         return self::$instance;
     }
 
     /**
      * @return stdClass
      */
-    public function getSite() { return (object)array( 'id' => 2, 'name' => 'shop.beautynet.co.kr/missha/'); }
-
-    public function getUrl() { return 'http://shop.beautynet.co.kr/missha/category_large.php?part_code=115001001000'; }
+    public function getSite() { return (object)array( 'id' => 2, 'name' => 'Missha'); }
 }

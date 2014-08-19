@@ -270,6 +270,7 @@ if ($sites = file_get_contents("crawler.lck")) {
         echo date('Y-m-d H:i:s') . " Crawling $className\n'";
         DatabaseManager::getInstance()->addProducts($className::getInstance());
     }
+    DatabaseManager::getInstance()->cleanup($startTime);
 }
 //    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
 //    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
@@ -277,4 +278,3 @@ if ($sites = file_get_contents("crawler.lck")) {
 //    DatabaseManager::getInstance()->addProducts(Mizon::getInstance());
 //    DatabaseManager::getInstance()->addProducts(HolikaHolika::getInstance());
 //    DatabaseManager::getInstance()->addProducts(EtudeHouse::getInstance());
-//    DatabaseManager::getInstance()->cleanup($startTime);

@@ -1,15 +1,15 @@
 <?php
 require_once('gmarket.co.kr.php');
-class Mizon extends GMarketCoKr {
+class Skinfod extends GMarketCoKr {
     public function __construct() {
-        $this->shopId = 'TI5MR38DMTUxNY1zOTUzMzUxNjB/Rw==';
+        $this->shopId = 'TE3NR38DNjExOk20MzY1MTc3ODl/Rw==';
     }
 
     /**
      * @return Mizon
      */
     public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof Mizon))
+        if (!self::$instance || !(self::$instance instanceof Skinfod))
             self::$instance = new self();
         return self::$instance;
     }
@@ -17,5 +17,5 @@ class Mizon extends GMarketCoKr {
     /**
      * @return stdClass
      */
-    public function getSite() { return (object)array( 'id' => 4, 'name' => 'Mizon'); }
+    public function getSite() { return (object)array( 'id' => 9, 'name' => 'Skinfod'); }
 }
