@@ -13,7 +13,8 @@
     <div class="heading">
       <h1><img src="view/image/error.png" alt="" /> <?= $headingTitle ?></h1>
       <div class="buttons">
-          <a id="startParsing" class="button">Loading...</a>
+          <a id="importButton" onclick="<?= $importAction ?>Import();" class="button"><?= $textToggleImport ?></a>
+          <a onclick="showProgress();" class="button"><?= $textViewImportStatus ?></a>
           <a onclick="submitForm('<?= $urlSyncSelected ?>');" class="button"><?= $textUpdateSelected ?></a>
           <a onclick="submitForm('<?= $urlDeleteSelected ?>');" class="button"><?= $textDeleteSelected ?></a>
           <a onclick="submitForm('<?= $urlSyncAll ?>');" class="button"><?= $textUpdateAll ?></a>
@@ -129,34 +130,22 @@
     </div>
   </div>
 </div>
+<div id="sourceSitesSelect" title="<?= $textSelectSourceSitesToImport ?>">
+<?php foreach ($sourceSites as $id => $name): ?>
+    <input id="sourceSiteId" type="checkbox" value="<?= $id ?>" />&nbsp;<label for="sourceSiteId"><?= $name ?></label><br />
+<?php endforeach; ?>
+    <input type="button" onclick="performImport();" value="Start" />
+</div>
+<div id="importProgress"
+    title="Import log">
+    <textarea
+        style="width: 100%; height: 100%; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;"
+        id="logContent"></textarea>
+</div>
 <script type="text/javascript"><!--
-function parserStatus() {
-    $.ajax({
-        url: "index.php?route=catalog/import/parser&" + ("" + location).match(/token=[^&]+/)[0],
-        cache: false,
-        dataType: 'json'
-        }).done(function(data) {
-            if (data.status) {
-                $('#startParsing').html("Parsing is running - It was started at " + data.stime);
-            } else {
-                $('#startParsing').html('Start parsing');
-            }
-        });
-}
 $(document).ready(function() {
-
-    $('#startParsing').click(function() {
-        $.ajax({
-            url: "index.php?route=catalog/import/parser&a=run&" + ("" + location).match(/token=[^&]+/)[0],
-            cache: false,
-            dataType: 'html'
-            }).done(function(data) {
-                parserStatus();
-            });
-    });
-
-    setInterval(parserStatus, 60000*5);
-    parserStatus();
+//    setInterval(updateProgress(), 300);
+//    getStatus();
 
     $('.date').datepicker({dateFormat: 'yy-mm-dd'});
 
@@ -191,12 +180,79 @@ function selectAll(control)
     $('input[name*=\'selectedItems\']').attr('checked', control.checked);
 }
 
+var globalIntervalId;
+function getStatus() {
+    var progress = null;
+    $.ajax({
+        url: "index.php?route=catalog/import/getStatus&token=<?= $token ?>",
+        cache: false,
+        dataType: 'json',
+        async: false
+    }).done(function(data) {
+        if (data) {
+            progress = data;
+        }
+    });
+    return progress;
+}
+
+function showProgress() {
+    var status = getStatus();
+    $('#logContent').html(status.log);
+    $('#importProgress').dialog({
+        title: "Import is running: " + status.running,
+        width: 760,
+        height: 590,
+        modal: true
+    });
+}
+
+function performImport() {
+    var sourceSites = '';
+    $('#sourceSiteId:checked').each(function() {
+        sourceSites += '&selectedItems[]=' + this.value;
+    });
+    $.ajax({
+        url: "index.php?route=catalog/import/start&token=<?= $token ?>" + sourceSites,
+        cache: false,
+        dataType: 'html',
+        complete: function() {
+            $('#importButton')
+                .attr('onclick', "stopImport();")
+                .html('Stop Import');
+            $('#sourceSitesSelect').dialog("close");
+        }
+    });
+}
+
+function startImport() {
+    var status = getStatus();
+    if (status.running) {
+        stopImport();
+    } else {
+        $('#sourceSitesSelect').dialog();
+    }
+}
+
+function stopImport() {
+    $.ajax({
+        url: "index.php?route=catalog/import/stop&token=<?= $token ?>",
+        cache: false,
+        complete: function() {
+            $('#importButton')
+                .attr('onclick', "startImport();")
+                .html('Start Import');
+        }
+    })
+}
+
 function submitForm(action)
 {
     if ($('[name^=selectedItems]:checked').length != 0)
     {
-        $('#form').attr('action', action);
-        $('#form').submit();
+        $('#form')
+            .attr('action', action)
+            .submit();
     }
     else
         alert("<?= $text_no_selected_items ?>");

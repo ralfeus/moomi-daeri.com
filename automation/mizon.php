@@ -9,7 +9,7 @@ class Mizon extends GMarketCoKr {
      * @return Mizon
      */
     public static function getInstance() {
-        if (!self::$instance)
+        if (!self::$instance || !(self::$instance instanceof Mizon))
             self::$instance = new self();
         return self::$instance;
     }

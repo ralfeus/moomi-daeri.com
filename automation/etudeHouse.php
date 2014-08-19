@@ -9,7 +9,7 @@ class EtudeHouse extends GMarketCoKr {
      * @return ProductSource
      */
     public static function getInstance() {
-        if (!self::$instance)
+        if (!self::$instance || !(self::$instance instanceof EtudeHouse))
             self::$instance = new self();
         return self::$instance;
     }

@@ -238,20 +238,43 @@ class DatabaseManager {
         ');
         $statement->execute(array(':lastUpdateTime' => date('Y-m-d H:i:s', $syncTime)));
     }
+
+    /**
+     * @param string $sourceSitesId
+     * @return array
+     */
+    public function getSourceSitesById($sourceSitesId) {
+        $sql = "
+            SELECT *
+            FROM imported_source_sites
+            WHERE imported_source_site_id IN ($sourceSitesId)
+        ";
+        $statement = $this->connection->query($sql);
+        return $statement->fetchAll(PDO::FETCH_CLASS);
+    }
 }
 
-//if (file_exists('start') && (shell_exec('ps axo cmd | grep -c "^php crawler.php"') == 1)) {
+if ($sites = file_get_contents("crawler.lck")) {
+    unlink("crawler.lck");
+    fclose(STDIN);
+    fclose(STDOUT);
+    fclose(STDERR);
+    $STDIN = fopen('/dev/null', 'r');
+    $STDOUT = fopen('import.log', 'wb');
+    $STDERR = fopen('import.error.log', 'wb');
+
     echo date('Y-m-d H:i:s') . " Starting\n";
     $startTime = time();
-    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
-    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
-    DatabaseManager::getInstance()->addProducts(TonyMoly::getInstance());
-    DatabaseManager::getInstance()->addProducts(Mizon::getInstance());
-    DatabaseManager::getInstance()->addProducts(HolikaHolika::getInstance());
-    DatabaseManager::getInstance()->addProducts(EtudeHouse::getInstance());
-    DatabaseManager::getInstance()->cleanup($startTime);
-//    unlink('start');
-//}
-//else {
-//    echo "Nothing to do\n";
-//}
+    foreach (DatabaseManager::getInstance()->getSourceSitesById($sites) as $sourceSite) {
+        $className = $sourceSite->class_name;
+        echo date('Y-m-d H:i:s') . " Crawling $className\n'";
+        DatabaseManager::getInstance()->addProducts($className::getInstance());
+    }
+}
+//    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
+//    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
+//    DatabaseManager::getInstance()->addProducts(TonyMoly::getInstance());
+//    DatabaseManager::getInstance()->addProducts(Mizon::getInstance());
+//    DatabaseManager::getInstance()->addProducts(HolikaHolika::getInstance());
+//    DatabaseManager::getInstance()->addProducts(EtudeHouse::getInstance());
+//    DatabaseManager::getInstance()->cleanup($startTime);

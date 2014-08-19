@@ -72,7 +72,7 @@ abstract class GMarketCoKr extends ProductSource {
                     null,
                     preg_match('/(?<=goodscode=)\d+/', $item->first_child()->first_child()->first_child()->attr['href'], $matches) ? $matches[0] : null,
                     $item->first_child()->first_child()->first_child()->first_child()->attr['alt'],
-                    $item->first_child()->first_child()->first_child()->attr['href'],
+                    preg_match('/\(\'(http.+)\'/', $item->first_child()->first_child()->first_child()->attr['href'], $matches) ? $matches[1] : null,
                     $item->first_child()->first_child()->first_child()->first_child()->attr['src'],
                     preg_replace('/\D+/', '', $item->find('li.discount_price', 0)->plaintext),
                     null,

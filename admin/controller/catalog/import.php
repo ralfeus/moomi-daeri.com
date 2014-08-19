@@ -1,9 +1,7 @@
 <?php
 class ControllerCatalogImport extends Controller {
     private $modelCatalogImport;
-    /**
-     *  @var ModelCatalogProduct
-     */
+    /** @var ModelCatalogProduct */
     private $modelCatalogProduct;
 
     public function __construct(Registry $registry) {
@@ -114,6 +112,16 @@ class ControllerCatalogImport extends Controller {
         foreach ($this->modelCatalogImport->getSourceSites() as $sourceSite)
             $this->data['sourceSites'][$sourceSite->getId()] = $sourceSite->getName();
 
+        /// Check import running status
+
+        if ($this->status()) {
+            $this->data['textToggleImport'] = $this->language->get('STOP_IMPORT');
+            $this->data['importAction'] = 'stop';
+        } else {
+            $this->data['textToggleImport'] = $this->language->get('START_IMPORT');
+            $this->data['importAction'] = 'start';
+        }
+
         $this->data['urlDeleteAll'] = $this->url->link('catalog/import/delete', $this->buildUrlParameterString($this->parameters) . '&what=all', 'SSL');
         $this->data['urlDeleteSelected'] = $this->url->link('catalog/import/delete', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
         $this->data['urlSyncAll'] = $this->url->link('catalog/import/synchronize', $this->buildUrlParameterString($this->parameters) . '&what=all', 'SSL');
@@ -171,12 +179,14 @@ class ControllerCatalogImport extends Controller {
         $this->data['textNoItems'] = $this->language->get('text_no_results');
         $this->data['textPrice'] = $this->language->get('PRICE');
         $this->data['textProductId'] = $this->language->get('PRODUCT_ID');
+        $this->data['textSelectSourceSitesToImport'] = $this->language->get('SELECT_SOURCE_SITES_TO_IMPORT');
         $this->data['textSource'] = $this->language->get('SOURCE');
         $this->data['textSourceSite'] = $this->language->get('SOURCE_SITE');
         $this->data['textStatus'] = $this->language->get('STATUS');
         $this->data['textTimeModified'] = $this->language->get('TIME_MODIFIED');
         $this->data['textUpdateAll'] = $this->language->get('UPDATE_ALL');
         $this->data['textUpdateSelected'] = $this->language->get('UPDATE_SELECTED');
+        $this->data['textViewImportStatus'] = $this->language->get('VIEW_IMPORT_STATUS');
     }
 
     public function synchronize() {
@@ -315,11 +325,7 @@ class ControllerCatalogImport extends Controller {
 
     public function parser() {
 
-        defined('DIR_AUTOMATION') || define('DIR_AUTOMATION', dirname(DIR_APPLICATION) . '/automation');
-
-        if (empty($this->request->get['a'])) {
-            $this->request->get['a'] = '';
-        }
+        defined('DIR_AUTOMATION') || define('DIR_AUTOMATION', dirname(DIR_APPLICATION) . '/automation/');
 
         switch ($this->request->get['a']) {
             case 'run':
@@ -336,32 +342,57 @@ class ControllerCatalogImport extends Controller {
                 $status = $this->parserStatus();
                 if ($status) {
                     $output['status'] = true;
-                    $output['stime'] = $status[4];
+                    $output['stime'] = $status;
                 }
                 echo json_encode($output);
         }
 
     }
 
-    protected function parserStatus() {
-
-        $pid = (int)file_get_contents(DIR_AUTOMATION . '/crawler.cli.adapter.pid');
-        if ($pid) {
-            $status = shell_exec("ps -fp $pid | grep crawler.cli.adapter.php");
-            if ($status) {
-                return preg_split("/\s+/", $status, 8);
-            }
-        }
-        return false;
-
+    /**
+     * Checks whether import process is running.
+     * If it's running returns time of start
+     * Otherwise returns false
+     * @return string
+     */
+    protected function status() {
+        return (bool)file_exists(DIR_AUTOMATION . '/crawler.lck') || (bool)shell_exec("ps ax | grep '[[:digit:]] php -f crawler.php'");
     }
 
-    protected function parserStart() {
+    public function getStatus() {
+        $status = array();
+        $status['running'] = (bool)$this->status();
+        if (file_exists(DIR_AUTOMATION . '/import.log')) {
+            $status['log'] = file_get_contents(DIR_AUTOMATION . '/import.log');
+        } else {
+            $status['log'] = '';
+        }
+        $this->response->setOutput(json_encode($status));
+    }
 
-        $pid = shell_exec(("nohup php -f " . DIR_AUTOMATION ."/crawler.cli.adapter.php > /dev/null 2>&1 & printf \"%u\" $!"));
-        file_put_contents(DIR_AUTOMATION . "/crawler.cli.adapter.pid", $pid);
-        return $pid;
+    public function start() {
+        if (!$this->status()) {
+            $sites = implode(',', $this->parameters['selectedItems']);
+            //$pid = shell_exec("nohup php -f " . DIR_AUTOMATION . "/crawler.cli.adapter.php $sites > /dev/null 2>&1 & printf \"%u\" $!");
+//            chdir(DIR_AUTOMATION);
+            //$pid = shell_exec("php -f crawler.php $sites > import.log 2>&1 & printf \"%u\" $!");
+            file_put_contents(DIR_AUTOMATION . '/crawler.lck', $sites);
+            $this->response->setOutput(json_encode(array(
+                'result' => 'started'
+            )));
+        }
+    }
 
+    public function stop() {
+        if ($this->status()) {
+            $process = shell_exec('ps ax | grep "[[:digit:]] php -f crawler.php"');
+            if ($process) {
+                $components = preg_split("/\s+/", $process);
+                $pid = $components[0];
+                shell_exec("kill $pid");
+            }
+        }
+        $this->response->setOutput(null);
     }
 
 }
