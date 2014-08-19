@@ -21,13 +21,16 @@ class ControllerAccountEdit extends Controller {
 		}
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+
 			$this->model_account_customer->editCustomer($this->request->post);
 			$this->session->data['success'] = $this->language->get('text_success');
 			$this->redirect($this->url->link('account/account', '', 'SSL'));
 		}
 
         $this->setBreadcrumbs();
-		
+// KBA		
+		$this->data['text_edit_your_acc_plz'] = $this->language->get('text_edit_your_acc_plz');
+// /KBA
 		$this->data['heading_title'] = $this->language->get('headingTitle');
 		$this->data['text_your_details'] = $this->language->get('text_your_details');
 		$this->data['entry_firstname'] = $this->language->get('entry_firstname');
@@ -81,6 +84,7 @@ class ControllerAccountEdit extends Controller {
 		$this->data['action'] = $this->url->link('account/edit', '', 'SSL');
 
         $customer_info = $this->model_account_customer->getCustomer($this->customer->getId());
+
 		if (isset($this->request->post['firstname'])) {
 			$this->data['firstname'] = $this->request->post['firstname'];
 		} elseif (isset($customer_info)) {
@@ -210,8 +214,7 @@ class ControllerAccountEdit extends Controller {
 			$this->error['telephone'] = $this->language->get('error_telephone');
 		}
 
-
-        if (($this->customer->getBaseCurrency()->getId() != $this->request->post['baseCurrency']) &&
+        if (($this->customer->getBaseCurrency()->getid() != $this->request->post['baseCurrency']) &&
             (!isset($this->request->post['confirm'])))
         {
             $this->data['confirmationRequired'] = true;
@@ -234,7 +237,7 @@ class ControllerAccountEdit extends Controller {
                         $this->request->post['baseCurrency']
                     )
                 );
-            $this->error = true;
+            $this->error['cur'] = true;
         }
 
 		if (!$this->error) {

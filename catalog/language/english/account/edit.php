@@ -7,6 +7,9 @@ $_['text_account']      = 'Account';
 $_['text_edit']         = 'Edit Information';
 $_['text_your_details'] = 'Your Personal Details';
 $_['text_success']      = 'Success: Your account has been successfully updated.';
+// KBA
+$_['text_edit_your_acc_plz'] = 'Fill required fields please!';
+// /KBA
 
 // Entry
 $_['entry_firstname']  = 'First Name:';
