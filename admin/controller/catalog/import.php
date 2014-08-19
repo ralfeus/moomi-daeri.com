@@ -8,7 +8,7 @@ class ControllerCatalogImport extends Controller {
         ini_set('max_execution_time', 3600);
         parent::__construct($registry);
         $this->load->language('catalog/import');
-        $this->document->setTitle($this->language->get('heading_title'));
+        $this->document->setTitle($this->language->get('headingTitle'));
         $this->modelCatalogImport = $this->load->model('catalog/import');
     }
 

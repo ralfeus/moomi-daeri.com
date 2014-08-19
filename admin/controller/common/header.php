@@ -205,7 +205,6 @@ class ControllerCommonHeader extends Controller {
             $this->data['urlSiteGuideText'] = $this->url->link(
                 'cms/text/edit',
                 'contentId=' . CMS_SITE_GUIDE . '&token=' . $this->session->data['token'], 'SSL');
-            $this->data['urlStartImportProducts'] = HTTP_CATALOG . 'automation/startImport.php';
 
 			$this->data['stores'] = array();
 

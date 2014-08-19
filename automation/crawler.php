@@ -1,12 +1,6 @@
 <?php
 require_once("simple_html_dom.php");
 require_once('../config.php');
-require_once('etudeHouse.php');
-require_once('holikaHolika.php');
-require_once('missha.php');
-require_once('mizon.php');
-require_once('natureRepublic.php');
-require_once('tonyMoly.php');
 
 function handleError($errno, $errstr, $errfile, $errline, array $errcontext)
 {
@@ -267,14 +261,9 @@ if ($sites = file_get_contents("crawler.lck")) {
     $startTime = time();
     foreach (DatabaseManager::getInstance()->getSourceSitesById($sites) as $sourceSite) {
         $className = $sourceSite->class_name;
-        echo date('Y-m-d H:i:s') . " Crawling $className\n'";
+        echo date('Y-m-d H:i:s') . " Crawling $className\n";
+        require_once("$className.php");
         DatabaseManager::getInstance()->addProducts($className::getInstance());
     }
     DatabaseManager::getInstance()->cleanup($startTime);
 }
-//    DatabaseManager::getInstance()->addProducts(NatureRepublic::getInstance());
-//    DatabaseManager::getInstance()->addProducts(Missha::getInstance());
-//    DatabaseManager::getInstance()->addProducts(TonyMoly::getInstance());
-//    DatabaseManager::getInstance()->addProducts(Mizon::getInstance());
-//    DatabaseManager::getInstance()->addProducts(HolikaHolika::getInstance());
-//    DatabaseManager::getInstance()->addProducts(EtudeHouse::getInstance());

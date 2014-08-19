@@ -84,7 +84,6 @@ $(document).ready(function(){
               <a class="parent" href="<?php echo $product; ?>"><?php echo $text_product; ?></a>
               <ul>
                   <li><a href="<?= $urlImportProducts ?>"><?= $textImportProducts ?></a></li>
-                  <li><a href="<?= $urlStartImportProducts ?>"><?= $textStartImportProducts ?></a></li>
               </ul>
           </li>
           <li><a class="parent"><?php echo $text_attribute; ?></a>
