@@ -23,7 +23,7 @@ class ModelToolImage extends Model {
     private function getImageFileName($fileName)
     {
         if (@exif_imagetype($fileName))
-            return time() . image_type_to_extension(exif_imagetype($fileName));
+            return sprintf("%f6", microtime(true)) . image_type_to_extension(exif_imagetype($fileName));
         else
             return '';
     }

@@ -1,5 +1,4 @@
 <?php
-
 abstract class GMarketCoKr extends ProductSource {
     protected $shopId;
 
@@ -18,7 +17,7 @@ abstract class GMarketCoKr extends ProductSource {
             array('Referer' => $product->url)
         );
         $descHtml = str_get_html($details);
-        $descNode = $descHtml->find('div#contents', 0);
+        $descNode = $descHtml->find('div.seller_goods', 0);
         if ($descNode) {
             $product->description = $descNode->outertext;
         }
@@ -30,7 +29,7 @@ abstract class GMarketCoKr extends ProductSource {
             array('Referer' => $product->url)
         );
         $descHtml = str_get_html($details);
-        $descNode = $descHtml->find('div#contents', 0);
+        $descNode = $descHtml->find('div.seller_goods', 0);
         if ($descNode) {
             $product->description .= $descNode->outertext;
         }

@@ -156,6 +156,7 @@ $_['INVOICE_ID'] = "Invoice ID";
 $_['ITEM'] = 'Item';
 $_['ITEM_IMAGE'] = "Item image";
 $_['NO_ITEMS'] = 'There are no items';
+$_['NO_ITEMS_SELECTED'] = 'No items are selected';
 $_['ORDER_ID'] = 'Order ID';
 $_['PRICE'] = 'Price';
 $_['PRINT'] = 'Print';

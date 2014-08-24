@@ -14,6 +14,7 @@ class ControllerCatalogImport extends Controller {
 
     private function addFromSource(ImportedProduct $productToAdd) {
         /// Downloading images
+        /** @var ModelToolImage $modelToolImage */
         $modelToolImage = $this->load->model('tool/image');
         $thumbnail = $modelToolImage->download($productToAdd->getThumbnailUrl());
         $images = array();
@@ -177,6 +178,7 @@ class ControllerCatalogImport extends Controller {
         $this->data['textItem'] = $this->language->get('ITEM');
         $this->data['textLocal'] = $this->language->get('LOCAL');
         $this->data['textNoItems'] = $this->language->get('text_no_results');
+        $this->data['textNoSelectedItems'] = $this->language->get('NO_ITEMS_SELECTED');
         $this->data['textPrice'] = $this->language->get('PRICE');
         $this->data['textProductId'] = $this->language->get('PRODUCT_ID');
         $this->data['textSelectSourceSitesToImport'] = $this->language->get('SELECT_SOURCE_SITES_TO_IMPORT');

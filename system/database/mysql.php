@@ -20,8 +20,7 @@ final class MySQL implements DBDriver{
   	}
 		
   	public function query($sql, $log = false) {
-          if ($log)
-          {
+          if ($log) {
               $log = new Log('error.log');
               $log->write($sql);
           }
@@ -52,7 +51,8 @@ final class MySQL implements DBDriver{
 				return $resource;
 			}
 		} else {
-			trigger_error('Error: ' . $this->connection->error . '<br />Error No: ' . $this->connection->errno . '<br />' . $sql);
+//			trigger_error('Error: ' . $this->connection->error . '<br />Error No: ' . $this->connection->errno . '<br />' . $sql);
+            throw new mysqli_sql_exception($this->connection->error, $this->connection->errno);
 			exit();
     	}
   	}

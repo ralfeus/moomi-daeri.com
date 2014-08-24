@@ -1,8 +1,8 @@
 <?php
 class ModelCatalogProduct extends Model {
 	public function addProduct($data) {
-		$this->db->query("
-		    INSERT INTO " . DB_PREFIX . "product
+        $this->db->query("
+		    INSERT INTO product
 		    SET
 		        model = '" . $this->db->escape($data['model']) . "',
 		        user_id = '" . (int)$data['user_id'] . "',
@@ -26,12 +26,11 @@ class ModelCatalogProduct extends Model {
 		        height = '" . (float)$data['height'] . "',
 		        length_class_id = '" . (int)$data['length_class_id'] . "',
 		        status = '" . (int)$data['status'] . "',
-		        tax_class_id = '" . $this->db->escape($data['tax_class_id']) . "',
+                tax_class_id = " . (isset($data['tax_class_id']) ? (int)($data['tax_class_id']) : 0) . ",
 		        sort_order = '" . (int)$data['sort_order'] . "',
-		        date_added = NOW()"
-		        . ", affiliate_commission = '" . (float)$data['affiliate_commission'] . "'"
-		        );
-		
+		        date_added = NOW(),
+		        affiliate_commission = " . (isset($data['affiliate_commission']) ? (float)$data['affiliate_commission'] : 0)
+        );
 		$product_id = $this->db->getLastId();
 		
 		if (isset($data['image'])) {
@@ -39,7 +38,18 @@ class ModelCatalogProduct extends Model {
 		}
 		
 		foreach ($data['product_description'] as $language_id => $value) {
-			$this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET product_id = '" . (int)$product_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', description = '" . $this->db->escape($value['description']) . "', seo_title = '" . $this->db->escape($value['seo_title']) . "', seo_h1 = '" . $this->db->escape($value['seo_h1']) . "'");
+			$this->db->query("
+			    INSERT INTO product_description
+			    SET
+			        product_id = '" . (int)$product_id . "',
+			        language_id = '" . (int)$language_id . "',
+			        name = '" . $this->db->escape($value['name']) . "',
+			        meta_keyword = '" . (isset($value['meta_keyword']) ? $this->db->escape($value['meta_keyword']) : '') . "',
+			        meta_description = '" . (isset($value['meta_description']) ? $this->db->escape($value['meta_description']) : '') . "',
+			        description = '" . $this->db->escape($value['description']) . "',
+			        seo_title = '" . (isset($value['seo_title']) ? $this->db->escape($value['seo_title']) : '') . "',
+			        seo_h1 = '" . (isset($value['seo_h1']) ? $this->db->escape($value['seo_h1']) : '') . "'
+            ", true);
 		}
 		
 		if (isset($data['product_store'])) {
@@ -80,7 +90,17 @@ class ModelCatalogProduct extends Model {
 		
 		if (isset($data['product_discount'])) {
 			foreach ($data['product_discount'] as $product_discount) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "product_discount SET product_id = '" . (int)$product_id . "', customer_group_id = '" . (int)$product_discount['customer_group_id'] . "', quantity = '" . (int)$product_discount['quantity'] . "', priority = '" . (int)$product_discount['priority'] . "', price = '" . (float)$product_discount['price'] . "', date_start = '" . $this->db->escape($product_discount['date_start']) . "', date_end = '" . $this->db->escape($product_discount['date_end']) . "'");
+				$this->db->query("
+				    INSERT INTO product_discount
+				    SET
+				        product_id = '" . (int)$product_id . "',
+				        customer_group_id = '" . (int)$product_discount['customer_group_id'] . "',
+				        quantity = '" . (int)$product_discount['quantity'] . "',
+				        priority = '" . (int)$product_discount['priority'] . "',
+				        price = '" . (float)$product_discount['price'] . "',
+				        date_start = '" . $this->db->escape($product_discount['date_start']) . "',
+				        date_end = '" . $this->db->escape($product_discount['date_end']) . "'
+                ");
 			}
 		}
 
@@ -92,7 +112,13 @@ class ModelCatalogProduct extends Model {
 		
 		if (isset($data['product_image'])) {
 			foreach ($data['product_image'] as $product_image) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "product_image SET product_id = '" . (int)$product_id . "', image = '" . $this->db->escape($product_image['image']) . "', sort_order = '" . (int)$product_image['sort_order'] . "'");
+				$this->db->query("
+				    INSERT INTO product_image
+				    SET
+				        product_id = '" . (int)$product_id . "',
+				        image = '" . $this->db->escape($product_image['image']) . "',
+				        sort_order = '" . (isset($product_image['sort_order']) ? (int)$product_image['sort_order'] : 0) . "'
+                ");
 			}
 		}
 		
@@ -137,18 +163,20 @@ class ModelCatalogProduct extends Model {
 				}
 			}
 		}
-		
-		foreach ($data['product_tag'] as $language_id => $value) {
-			if ($value) {
-				$tags = explode(',', $value);
-				
-				foreach ($tags as $tag) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_tag SET product_id = '" . (int)$product_id . "', language_id = '" . (int)$language_id . "', tag = '" . $this->db->escape(trim($tag)) . "'");
-				}
-			}
-		}
+
+        if (isset($data['product_tag'])) {
+            foreach ($data['product_tag'] as $language_id => $value) {
+                if ($value) {
+                    $tags = explode(',', $value);
+
+                    foreach ($tags as $tag) {
+                        $this->db->query("INSERT INTO " . DB_PREFIX . "product_tag SET product_id = '" . (int)$product_id . "', language_id = '" . (int)$language_id . "', tag = '" . $this->db->escape(trim($tag)) . "'");
+                    }
+                }
+            }
+        }
 						
-		if ($data['keyword']) {
+		if (isset($data['keyword'])) {
 			$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
 		}
 						

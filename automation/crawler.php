@@ -1,6 +1,7 @@
 <?php
 require_once("simple_html_dom.php");
 require_once('../config.php');
+//require_once('Missha.php');
 
 function handleError($errno, $errstr, $errfile, $errline, array $errcontext)
 {
@@ -262,7 +263,7 @@ if ($sites = file_get_contents("crawler.lck")) {
     foreach (DatabaseManager::getInstance()->getSourceSitesById($sites) as $sourceSite) {
         $className = $sourceSite->class_name;
         echo date('Y-m-d H:i:s') . " Crawling $className\n";
-        require_once("$className.php");
+        require_once("$className.php") || die("Couldn't find class file $className");
         DatabaseManager::getInstance()->addProducts($className::getInstance());
     }
     DatabaseManager::getInstance()->cleanup($startTime);

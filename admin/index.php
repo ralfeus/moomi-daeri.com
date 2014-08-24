@@ -83,7 +83,6 @@ function error_handler($errno, $errstr, $errfile, $errline) {
 	if ($config->get('config_error_log')) {
 		$log->write('PHP ' . $error . ':  ' . $errstr . ' in ' . $errfile . ' on line ' . $errline);
 	}
-
 	return true;
 }
 
