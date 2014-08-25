@@ -520,17 +520,13 @@ class ModelCatalogProduct extends Model {
 	public function getProduct($product_id) {
 		$query = $this->db->query("
 		    SELECT DISTINCT
-		        *,
-		        (
-                    SELECT keyword
-                    FROM " . DB_PREFIX . "url_alias
-                    WHERE query = 'product_id=" . (int)$product_id . "'
-                ) AS keyword
+		        *,ua.keyword
             FROM
-                " . DB_PREFIX . "product p
-                LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id)
-            WHERE p.product_id = '" . (int)$product_id . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
-        ");
+                product AS p
+                LEFT JOIN url_alias AS ua ON ua.query =  'product_id=' + p.product_id
+                LEFT JOIN product_description AS pd ON p.product_id = pd.product_id
+            WHERE p.product_id = " . (int)$product_id . " AND pd.language_id = " . (int)$this->config->get('config_language_id')
+        );
 				
 		return $query->row;
 	}
@@ -836,7 +832,11 @@ class ModelCatalogProduct extends Model {
 	public function getProductCategories($product_id) {
 		$product_category_data = array();
 		
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . (int)$product_id . "'");
+		$query = $this->db->query("
+		    SELECT *
+		    FROM product_to_category
+		    WHERE product_id = " . (int)$product_id
+        );
 		
 		foreach ($query->rows as $result) {
 			$product_category_data[] = $result['category_id'];

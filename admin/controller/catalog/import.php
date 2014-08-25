@@ -244,6 +244,8 @@ class ControllerCatalogImport extends Controller {
 
         /// Copying product options in order to preserve ones
         $localProductOptions = $this->modelCatalogProduct->getProductOptions($productToUpdate->getLocalProductId());
+        /// Copying product categories in order to preserve ones
+        $localProductCategories = $this->modelCatalogProduct->getProductCategories($productToUpdate->getLocalProductId());
 
         $this->modelCatalogProduct->editProduct($productToUpdate->getLocalProductId(), array(
             'date_available' => $localProduct['date_available'],
@@ -258,7 +260,7 @@ class ControllerCatalogImport extends Controller {
             'points' => null,
             'price' => $productToUpdate->getSourcePrice()->getPrice() * IMPORT_PRICE_RATE_NORMAL_CUSTOMERS,
             'product_attribute' => array($koreanName, $sourceUrl),
-            'product_category' => $productToUpdate->getCategories(),
+            'product_category' => $localProductCategories,
             'product_description' => null,
             'product_image' => $images,
             'product_option' => $localProductOptions,

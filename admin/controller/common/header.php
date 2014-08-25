@@ -91,8 +91,6 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_return_action'] = $this->language->get('text_return_action');
 		$this->data['text_return_reason'] = $this->language->get('text_return_reason');
 		$this->data['text_return_status'] = $this->language->get('text_return_status');
-        $this->data['text_select_all'] = $this->language->get('text_select_all');
-        $this->data['text_unselect_all'] = $this->language->get('text_unselect_all');
         $this->data['text_supplier'] = $this->language->get('text_supplier');
         $this->data['text_supplier_group'] = $this->language->get('text_supplier_group');
         $this->data['text_support'] = $this->language->get('text_support');
@@ -116,9 +114,11 @@ class ControllerCommonHeader extends Controller {
         $this->data['textCreditManagement'] = $this->language->get('CREDIT_MANAGEMENT');
         $this->data['textImportProducts'] = $this->language->get('IMPORT_PRODUCTS');
         $this->data['textStartImportProducts'] = $this->language->get('START_IMPORT_PRODUCTS');
+        $this->data['textSelectAll'] = $this->language->get('SELECT_ALL');
         $this->data['textSiteGuide'] = $this->language->get('SITE_GUIDE');
         $this->data['textOrderConfirmation'] = $this->language->get('ORDER_CONFIRMATION');
         $this->data['textRepurchaseOrders'] = $this->language->get('REPURCHASE_ORDERS');
+        $this->data['textUnselectAll'] = $this->language->get('UNSELECT_ALL');
 
 		if (!$this->user->isLogged() || !isset($_REQUEST['token']) || !isset($this->session->data['token']) || ($_REQUEST['token'] != $this->session->data['token'])) {
 			$this->data['logged'] = '';

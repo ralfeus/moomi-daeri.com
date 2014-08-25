@@ -282,7 +282,7 @@
               <td><?php echo $entry_store; ?></td>
               <td><div class="scrollbox">
                   <?php $class = 'even'; ?>
-                  <div class="<?php echo $class; ?>">
+                  <div class="<?= $class ?>">
                     <?php if (in_array(0, $product_store)) { ?>
                     <input type="checkbox" name="product_store[]" value="0" checked="checked" />
                     <?php echo $text_default; ?>
@@ -336,7 +336,9 @@
                             <?php } ?>
                         </tr>
                     </table>
-                    <a onclick="$(this).parent().find(':checkbox').attr('checked', true);"><?= $textSelectAll ?></a> / <a onclick="$(this).parent().find(':checkbox').attr('checked', false);"><?= $textUnselectAll ?></a>
+                    <a onclick="$(this).parent().find(':checkbox').attr('checked', true);"><?= $textSelectAll ?></a>
+                    &nbsp;/&nbsp;
+                    <a onclick="$(this).parent().find(':checkbox').attr('checked', false);"><?= $textUnselectAll ?></a>
                 </td>
 
             </tr>
@@ -780,7 +782,7 @@ $('input[name=\'related\']').autocomplete({
 	delay: 0,
 	source: function(request, response) {
 		$.ajax({
-			url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_name=' +  encodeURIComponent(request.term),
+			url: 'index.php?route=catalog/product/autocomplete&token=<?= $token ?>&filter_name=' +  encodeURIComponent(request.term),
 			dataType: 'json',
 			success: function(json) {		
 				response($.map(json, function(item) {
