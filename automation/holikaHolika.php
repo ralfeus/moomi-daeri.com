@@ -2,7 +2,7 @@
 require_once('gmarket.co.kr.php');
 class HolikaHolika extends GMarketCoKr {
     public function __construct() {
-        $this->shopId = 'zE4OR38TMjcxMI2wODU3ODcwNjR/Rw==';
+        $this->shopId = 'TE5NR38zOTgxOM32OTc0Mzk5NTJ/Rw==';
     }
 
     /**
