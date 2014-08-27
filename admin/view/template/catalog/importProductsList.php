@@ -130,7 +130,7 @@
     </div>
   </div>
 </div>
-<div id="sourceSitesSelect" title="<?= $textSelectSourceSitesToImport ?>" style="visibility: collapse;">
+<div id="sourceSitesSelect" title="<?= $textSelectSourceSitesToImport ?>" style="visibility: none;">
 <?php foreach ($sourceSites as $id => $name): ?>
     <input id="sourceSiteId" type="checkbox" value="<?= $id ?>" />&nbsp;<label for="sourceSiteId"><?= $name ?></label><br />
 <?php endforeach; ?>
