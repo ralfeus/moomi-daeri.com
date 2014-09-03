@@ -17,5 +17,5 @@ class Beyond extends GMarketCoKr {
     /**
      * @return stdClass
      */
-    public function getSite() { return (object)array( 'id' => 13, 'name' => 'Beyond'); }
+    public function getSite() { return (object)array( 'id' => 14, 'name' => 'Beyond'); }
 }
