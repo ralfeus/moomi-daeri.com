@@ -369,7 +369,7 @@ class ControllerCatalogImport extends Controller {
         if (file_exists(DIR_AUTOMATION . '/import.log')) {
             $status['log'] = file_get_contents(DIR_AUTOMATION . '/import.log');
         } else {
-            $status['log'] = '';
+            $status['log'] = 'No log file found';
         }
         $this->response->setOutput(json_encode($status));
     }
