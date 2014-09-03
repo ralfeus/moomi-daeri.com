@@ -136,7 +136,7 @@
 <?php endforeach; ?>
     <input type="button" onclick="performImport();" value="Start" />
 </div>
-<div id="importProgress" title="Import log" style="visibility: collapse;">
+<div id="importProgress" title="Import log" style="visibility: none;">
     <textarea
         style="width: 100%; height: 100%; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;"
         id="logContent"></textarea>
