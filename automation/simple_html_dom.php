@@ -276,8 +276,11 @@ class simple_html_dom_node
 		return null;
 	}
 
-	// returns the first child of node
-	function first_child()
+    /**
+     * @return simple_html_dom_node
+     * returns the first child of node
+     */
+    function first_child()
 	{
 		if (count($this->children)>0)
 		{
@@ -286,8 +289,11 @@ class simple_html_dom_node
 		return null;
 	}
 
-	// returns the last child of node
-	function last_child()
+    /**
+     * @return simple_html_dom_node
+     * returns the last child of node
+     */
+    function last_child()
 	{
 		if (($count=count($this->children))>0)
 		{
@@ -296,7 +302,10 @@ class simple_html_dom_node
 		return null;
 	}
 
-	// returns the next sibling of node
+    /**
+     * @return simple_html_dom_node
+     * returns the next sibling of node
+     */
 	function next_sibling()
 	{
 		if ($this->parent===null)
@@ -317,7 +326,10 @@ class simple_html_dom_node
 		return $this->parent->children[$idx];
 	}
 
-	// returns the previous sibling of node
+    /**
+     * @return simple_html_dom_node
+	 * returns the previous sibling of node
+     */
 	function prev_sibling()
 	{
 		if ($this->parent===null) return null;
@@ -503,7 +515,13 @@ class simple_html_dom_node
 
 	// find elements by css selector
 	//PaperG - added ability for find to lowercase the value of the selector.
-	function find($selector, $idx=null, $lowercase=false)
+    /**
+     * @param string $selector
+     * @param int $idx
+     * @param bool $lowercase
+     * @return array[simple_html_dom_node]|simple_html_dom_node
+     */
+    function find($selector, $idx = null, $lowercase=false)
 	{
 		$selectors = $this->parse_selector($selector);
 		if (($count=count($selectors))===0) return array();

@@ -52,10 +52,10 @@ class ModelCatalogImport extends Model{
         $sql = "
             SELECT
                 ip.*,
-                iss.imported_source_site_id, iss.name AS source_site_name, iss.default_category_id, iss.default_manufacturer_id, iss.default_store_id, iss.default_supplier_id
+                iss.imported_source_site_id, iss.name AS source_site_name, iss.default_category_id, iss.default_manufacturer_id, iss.default_store_id, iss.default_supplier_id, iss.regular_customer_price_rate, iss.wholesale_customer_price_rate
             FROM
-                " . DB_PREFIX . "imported_products AS ip
-                JOIN " . DB_PREFIX . "imported_source_sites AS iss ON ip.source_site_id = iss.imported_source_site_id
+                imported_products AS ip
+                JOIN imported_source_sites AS iss ON ip.source_site_id = iss.imported_source_site_id
             WHERE imported_product_id = $importedProductId
         ";
         $result = $this->db->query($sql);
@@ -77,7 +77,9 @@ class ModelCatalogImport extends Model{
                 $result->row['default_category_id'],
                 $result->row['default_manufacturer_id'],
                 $result->row['default_store_id'],
-                $result->row['default_supplier_id']
+                $result->row['default_supplier_id'],
+                $result->row['regular_customer_price_rate'],
+                $result->row['wholesale_customer_price_rate']
             ),
             $result->row['source_url'],
             $result->row['image_url'],
@@ -93,10 +95,10 @@ class ModelCatalogImport extends Model{
         $sql = "
             SELECT
                 ip.*,
-                iss.imported_source_site_id, iss.name AS source_site_name, iss.default_category_id, iss.default_manufacturer_id, iss.default_store_id, iss.default_supplier_id
+                iss.imported_source_site_id, iss.name AS source_site_name, iss.default_category_id, iss.default_manufacturer_id, iss.default_store_id, iss.default_supplier_id, iss.regular_customer_price_rate, iss.wholesale_customer_price_rate
             FROM
-                " . DB_PREFIX . "imported_products AS ip
-                JOIN " . DB_PREFIX . "imported_source_sites AS iss ON ip.source_site_id = iss.imported_source_site_id
+                imported_products AS ip
+                JOIN imported_source_sites AS iss ON ip.source_site_id = iss.imported_source_site_id
             " . ($filter ? "WHERE $filter" : '') . "
             LIMIT " . $data['start'] . ", " . $data['limit']
         ;
@@ -119,7 +121,9 @@ class ModelCatalogImport extends Model{
                     $row['default_category_id'],
                     $row['default_manufacturer_id'],
                     $row['default_store_id'],
-                    $row['default_supplier_id']
+                    $row['default_supplier_id'],
+                    $row['regular_customer_price_rate'],
+                    $row['wholesale_customer_price_rate']
                 ),
                 $row['source_url'],
                 $row['image_url'],
@@ -136,7 +140,7 @@ class ModelCatalogImport extends Model{
         $filter = $this->buildFilterString($data);
         $sql = "
             SELECT COUNT(*) AS quantity
-            FROM " . DB_PREFIX . "imported_products AS ip
+            FROM imported_products AS ip
             " . ($filter ? "WHERE $filter" : '')
         ;
         $result = $this->db->query($sql);
@@ -150,7 +154,7 @@ class ModelCatalogImport extends Model{
     private function getMatchingCategories($sourceCategoryId) {
         $sql = "
             SELECT local_category_id
-            FROM " . DB_PREFIX . "imported_product_categories
+            FROM imported_product_categories
             WHERE source_site_category_id = '" . $this->db->escape($sourceCategoryId) . "'
         ";
         $categories = array();
@@ -164,7 +168,7 @@ class ModelCatalogImport extends Model{
     private function getProductImages($productId) {
         $sql = "
             SELECT *
-            FROM " . DB_PREFIX . "imported_product_images
+            FROM imported_product_images
             WHERE imported_product_id = $productId
         ";
         $result = array();
@@ -176,7 +180,7 @@ class ModelCatalogImport extends Model{
     public function getSourceSites() {
         $sql = "
             SELECT *
-            FROM " . DB_PREFIX . "imported_source_sites
+            FROM imported_source_sites
         ";
         $result = array();
         foreach ($this->db->query($sql)->rows as $row)
@@ -186,7 +190,9 @@ class ModelCatalogImport extends Model{
                 $row['default_category_id'],
                 $row['default_manufacturer_id'],
                 $row['default_store_id'],
-                $row['default_supplier_id']
+                $row['default_supplier_id'],
+                $row['regular_customer_price_rate'],
+                $row['wholesale_customer_price_rate']
             );
         return $result;
     }
@@ -329,14 +335,19 @@ class SourceSite {
     private $defaultManufacturerId;
     private $defaultStoreId;
     private $defaultSupplierId;
+    private $regularCustomerPriceRate;
+    private $wholesaleCustomerPriceRate;
 
-    function __construct($id, $name, $defaultCategoryId, $defaultManufacturerId, $defaultStoreId, $defaultSupplierId) {
+    function __construct($id, $name, $defaultCategoryId, $defaultManufacturerId, $defaultStoreId, $defaultSupplierId,
+                         $regularCustomerPriceRate = null, $wholesaleCustomerPriceRate = null) {
         $this->defaultCategoryId = explode(',', $defaultCategoryId);
         $this->defaultManufacturerId = $defaultManufacturerId;
         $this->defaultStoreId = explode(',', $defaultStoreId);
         $this->defaultSupplierId = $defaultSupplierId;
         $this->id = $id;
         $this->name = $name;
+        $this->regularCustomerPriceRate = !floatval($regularCustomerPriceRate) ? IMPORT_PRICE_RATE_NORMAL_CUSTOMERS : $regularCustomerPriceRate;
+        $this->wholesaleCustomerPriceRate = !floatval($wholesaleCustomerPriceRate) ? IMPORT_PRICE_RATE_WHOLESALES_CUSTOMERS : $wholesaleCustomerPriceRate;
     }
 
     /**
@@ -369,6 +380,16 @@ class SourceSite {
      * @return string
      */
     public function getName() { return $this->name; }
+
+    /**
+     * @return float
+     */
+    public function getRegularCustomerPriceRate() { return $this->regularCustomerPriceRate; }
+
+    /**
+     * @return float
+     */
+    public function getWholesaleCustomerPriceRate() { return $this->wholesaleCustomerPriceRate; }
 }
 
 class Price
@@ -383,12 +404,12 @@ class Price
     }
 
     /**
-     * @return int
+     * @return float
      */
     public function getPrice() { return $this->price; }
 
     /**
-     * @return int
+     * @return float
      */
     public function getPromoPrice() { return $this->promoPrice; }
 }

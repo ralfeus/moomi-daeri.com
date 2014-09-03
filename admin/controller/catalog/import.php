@@ -1,5 +1,6 @@
 <?php
 class ControllerCatalogImport extends Controller {
+    /** @var ModelCatalogImport */
     private $modelCatalogImport;
     /** @var ModelCatalogProduct */
     private $modelCatalogProduct;
@@ -50,7 +51,7 @@ class ControllerCatalogImport extends Controller {
             'minimum' => 1,
             'model' => $productToAdd->getSourceProductId(),
             'points' => null,
-            'price' => $productToAdd->getSourcePrice()->getPrice() * IMPORT_PRICE_RATE_NORMAL_CUSTOMERS,
+            'price' => $productToAdd->getSourcePrice()->getPrice() * $productToAdd->getSourceSite()->getRegularCustomerPriceRate(),
             'product_attribute' => array($koreanName, $sourceUrl),
             'product_category' => $productToAdd->getCategories(),
             'product_description' => $product_description,
@@ -258,7 +259,7 @@ class ControllerCatalogImport extends Controller {
             'minimum' => null,
             'model' => $localProduct['model'],
             'points' => null,
-            'price' => $productToUpdate->getSourcePrice()->getPrice() * IMPORT_PRICE_RATE_NORMAL_CUSTOMERS,
+            'price' => $productToUpdate->getSourcePrice()->getPrice() * $productToUpdate->getSourceSite()->getRegularCustomerPriceRate(),
             'product_attribute' => array($koreanName, $sourceUrl),
             'product_category' => $localProductCategories,
             'product_description' => null,
@@ -297,12 +298,16 @@ class ControllerCatalogImport extends Controller {
         return $productOptions;
     }
 
+    /**
+     * @param ImportedProduct $product
+     * @return array
+     */
     private function getSpecialPrices($product) {
         $prices = array(
             array(
                 'customer_group_id' => 6, /* Wholesales customers group ID */
                 'priority' => 1, /// Highest priority
-                'price' => $product->getSourcePrice()->getPrice() * IMPORT_PRICE_RATE_WHOLESALES_CUSTOMERS,
+                'price' => $product->getSourcePrice()->getPrice() * $product->getSourceSite()->getWholeSaleCustomerPriceRate(),
                 'date_start' => date('Y-m-d'),
                 'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
             )
@@ -312,14 +317,14 @@ class ControllerCatalogImport extends Controller {
             $prices[] = array(
                 'customer_group_id' => 8, /* Default customer group ID */
                 'priority' => 0, /// Highest priority
-                'price' => $product->getSourcePrice()->getPromoPrice() * IMPORT_PRICE_RATE_NORMAL_CUSTOMERS,
+                'price' => $product->getSourcePrice()->getPromoPrice() * $product->getSourceSite()->getRegularCustomerPriceRate(),
                 'date_start' => date('Y-m-d'),
                 'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
             );
             $prices[] = array(
                 'customer_group_id' => 6, /* Wholesales customers group ID */
                 'priority' => 0, /// Highest priority
-                'price' => $product->getSourcePrice()->getPromoPrice() * IMPORT_PRICE_RATE_WHOLESALES_CUSTOMERS,
+                'price' => $product->getSourcePrice()->getPromoPrice() * $product->getSourceSite()->getWholeSaleCustomerPriceRate(),
                 'date_start' => date('Y-m-d'),
                 'date_end' => '2038-01-19' /// Maximum available date as a timestamp (limited by int type)
             );

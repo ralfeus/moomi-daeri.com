@@ -4,7 +4,7 @@ abstract class GMarketCoKr extends ProductSource {
 
     private function fillDetails(Product $product) {
         $html = $this->getHtmlDocument($product->url);
-        $matches = array();
+//        $matches = array();
         /// Get images
         $product->images[] = $product->thumbnail;
 
@@ -63,6 +63,7 @@ abstract class GMarketCoKr extends ProductSource {
             $json = json_decode($output);
             $htmlDom = str_get_html($json->message);
             $items = $htmlDom->find('tr');
+            /** @var simple_html_dom_node $item */
             foreach ($items as $item) {
                 echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount . "\n";
     //            $aElement = $item->find('a[href*=category_detail.php]', 0);
