@@ -10,6 +10,7 @@ require_once('Innisfree.php');
 require_once('Missha.php');
 require_once('Mizon.php');
 require_once('NatureRepublic.php');
+require_once('SecretKey.php');
 require_once('Skinfod.php');
 require_once('TheFaceshop.php');
 require_once('TheSaem.php');
