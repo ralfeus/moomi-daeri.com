@@ -1,21 +1,10 @@
 <?php
 require_once("simple_html_dom.php");
 require_once('../config.php');
-require_once('BanilaCO.php');
-require_once('Beyond.php');
-require_once('Ciracle.php');
-require_once('EtudeHouse.php');
-require_once('HolikaHolika.php');
-require_once('Innisfree.php');
-require_once('Missha.php');
-require_once('Mizon.php');
-require_once('NatureRepublic.php');
-require_once('SecretKey.php');
-require_once('Skinfod.php');
-require_once('TheFaceshop.php');
-require_once('TheSaem.php');
-require_once('TheSkinhouse.php');
-require_once('TonyMoly.php');
+
+spl_autoload_register(function($class) {
+   include("$class.php");
+});
 
 function handleError($errno, $errstr, $errfile, $errline, array $errcontext)
 {
