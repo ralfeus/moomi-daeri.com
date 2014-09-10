@@ -6,15 +6,6 @@ class SecretKey extends GMarketCoKr {
     }
 
     /**
-     * @return Beyond
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof SecretKey))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 15, 'name' => 'SecretKey'); }

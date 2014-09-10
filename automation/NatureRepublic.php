@@ -6,15 +6,6 @@ class NatureRepublic extends GMarketCoKr {
     }
 
     /**
-     * @return NatureRepublic
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof NatureRepublic))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 1, 'name' => 'NatureRepublic'); }

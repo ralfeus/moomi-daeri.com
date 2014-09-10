@@ -6,15 +6,6 @@ class Lush extends GMarketCoKr {
     }
 
     /**
-     * @return Lush
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof Lush))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 16, 'name' => 'Lush'); }
