@@ -54,7 +54,7 @@ class Messaging extends LibraryClass
     {
         $query = Messaging::$instance->db->query("
             SELECT *
-            FROM " . DB_PREFIX . "messages AS m
+            FROM messages AS m
             WHERE message_id = " . (int)$messageId
         );
         if ($query->num_rows)
@@ -77,7 +77,7 @@ class Messaging extends LibraryClass
         $limit = Messaging::$instance->buildLimitString($data);
         $sql = "
             SELECT *
-            FROM " . DB_PREFIX . "messages AS m
+            FROM messages AS m
             $filter
             ORDER BY time_added DESC
             $limit
@@ -108,7 +108,7 @@ class Messaging extends LibraryClass
     {
         $query = Messaging::$instance->db->query("
             SELECT count(*) as quantity
-            FROM " . DB_PREFIX . "messages
+            FROM messages
             WHERE
                 message_type_id = " . (int)$messageTypeId .
                 ($senderId ? " AND sender_id = " . (int)$senderId : '')
@@ -119,7 +119,7 @@ class Messaging extends LibraryClass
     public static function submitSystemMessage($senderId, $recipientId, $messageTypeId, $data)
     {
         Messaging::$instance->db->query("
-            INSERT INTO " . DB_PREFIX . "messages
+            INSERT INTO messages
             SET
                 sender_id = " . (int)$senderId . ",
                 recipient_id = " . (int)$recipientId . ",
@@ -136,7 +136,7 @@ class Messaging extends LibraryClass
 //        Messaging::$instance->log->write(print_r($data, true));
         $message = Messaging::getSystemMessage($messageId);
         Messaging::$instance->db->query("
-            UPDATE " . DB_PREFIX . "messages
+            UPDATE messages
             SET
                 message = '" . Messaging::$instance->db->escape(json_encode($data)) . "'
             WHERE message_id = " . (int)$messageId

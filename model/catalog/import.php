@@ -200,7 +200,7 @@ class ModelCatalogImport extends Model{
     public function pairImportedProduct($importedProductId, $productId)
     {
         $sql = "
-            UPDATE " . DB_PREFIX . "imported_products
+            UPDATE imported_products
             SET product_id = $productId
             WHERE imported_product_id = $importedProductId
         ";
@@ -209,7 +209,7 @@ class ModelCatalogImport extends Model{
 
     public function unpairImportedProduct($importedProductId) {
         $sql = "
-            UPDATE " . DB_PREFIX . "imported_products
+            UPDATE imported_products
             SET product_id = NULL
             WHERE imported_product_id = $importedProductId
         ";

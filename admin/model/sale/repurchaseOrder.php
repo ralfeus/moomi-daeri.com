@@ -29,7 +29,7 @@ class ModelSaleRepurchaseOrder extends Model
             if (!empty($data['filterItemName'])) {
                 $filter .= " AND EXISTS (
                     SELECT order_option_id
-                    FROM " . DB_PREFIX . "order_option
+                    FROM order_option
                     WHERE
                         order_product_id = op.order_product_id
                         AND product_option_id = " . REPURCHASE_ORDER_ITEM_NAME_OPTION_ID . "
@@ -38,7 +38,7 @@ class ModelSaleRepurchaseOrder extends Model
             if (!empty($data['filterShopName'])) {
                 $filter .= " AND EXISTS (
                     SELECT order_option_id
-                    FROM " . DB_PREFIX . "order_option
+                    FROM order_option
                     WHERE
                         order_product_id = op.order_product_id
                         AND product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID . "
@@ -47,7 +47,7 @@ class ModelSaleRepurchaseOrder extends Model
             if (!empty($data['filterSiteName'])) {
                 $filter .= " AND EXISTS (
                     SELECT order_option_id
-                    FROM " . DB_PREFIX . "order_option
+                    FROM order_option
                     WHERE
                         order_product_id = op.order_product_id
                         AND product_option_id = " . REPURCHASE_ORDER_ITEM_URL_OPTION_ID . "
@@ -62,7 +62,7 @@ class ModelSaleRepurchaseOrder extends Model
             if (!empty($data['filterStatusIdDateSet']) && !empty($data['filterStatusSetDate']))
                 $filter .= " AND EXISTS (
                     SELECT order_item_history_id
-                    FROM " . DB_PREFIX . "order_item_history
+                    FROM order_item_history
                     WHERE
                         order_item_id = op.order_product_id
                         AND order_item_status_id IN (" . implode(', ', $data['filterStatusIdDateSet']) . ")
@@ -80,7 +80,7 @@ class ModelSaleRepurchaseOrder extends Model
 
     public function deleteOrderItem($repurchase_order_item_id) {
         $this->db->query("
-            DELETE FROM " . DB_PREFIX . "repurchase_order_item
+            DELETE FROM repurchase_order_item
             WHERE repurchase_order_item_id = " . (int)$repurchase_order_item_id
         );
     }
@@ -180,7 +180,7 @@ class ModelSaleRepurchaseOrder extends Model
     {
         $query = $this->db->query("
             SELECT repurchase_order_status_id
-            FROM " . DB_PREFIX . "repurchase_order_statuses
+            FROM repurchase_order_statuses
             WHERE workflow_order = 1
         ");
         return $query->row['repurchase_order_status_id'];
@@ -190,7 +190,7 @@ class ModelSaleRepurchaseOrder extends Model
     {
         $query = $this->db->query("
             SELECT order_item_status_id
-            FROM " . DB_PREFIX . "order_item_status
+            FROM order_item_status
             WHERE workflow_order = 1
         ");
         return $query->row['order_item_status_id'];
@@ -226,14 +226,14 @@ class ModelSaleRepurchaseOrder extends Model
     public function setItemName($orderId, $itemName) {
         $testRow = $this->getDb()->query("
             SELECT order_option_id
-            FROM " . DB_PREFIX . "order_option
+            FROM order_option
             WHERE
                 order_product_id = " . (int)$orderId . "
                 AND product_option_id = " . REPURCHASE_ORDER_ITEM_NAME_OPTION_ID
         );
         if ($testRow->num_rows) {
             $this->getDb()->query("
-                UPDATE " . DB_PREFIX . "order_option
+                UPDATE order_option
                 SET value = '" . $this->getDb()->escape($itemName) . "'
                 WHERE
                     order_product_id = " . (int)$orderId . "
@@ -243,7 +243,7 @@ class ModelSaleRepurchaseOrder extends Model
         else {
             $orderItem = $this->modelOrderItem->getOrderItem($orderId);
             $this->getDb()->query("
-                INSERT INTO " . DB_PREFIX . "order_option
+                INSERT INTO order_option
                 SET
                     order_id = " . (int)$orderItem['order_id'] . ",
                     order_product_id = " . (int)$orderId . ",
@@ -267,14 +267,14 @@ class ModelSaleRepurchaseOrder extends Model
     public function setShopName($orderId, $shopName) {
         $testRow = $this->getDb()->query("
             SELECT order_option_id
-            FROM " . DB_PREFIX . "order_option
+            FROM order_option
             WHERE
                 order_product_id = " . (int)$orderId . "
                 AND product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID
         );
         if ($testRow->num_rows) {
             $this->getDb()->query("
-                UPDATE " . DB_PREFIX . "order_option
+                UPDATE order_option
                 SET value = '" . $this->getDb()->escape($shopName) . "'
                 WHERE
                     order_product_id = " . (int)$orderId . "
@@ -284,7 +284,7 @@ class ModelSaleRepurchaseOrder extends Model
         else {
             $orderItem = $this->modelOrderItem->getOrderItem($orderId);
             $this->getDb()->query("
-                INSERT INTO " . DB_PREFIX . "order_option
+                INSERT INTO order_option
                 SET
                     order_id = " . (int)$orderItem['order_id'] . ",
                     order_product_id = " . (int)$orderId . ",
@@ -302,7 +302,7 @@ class ModelSaleRepurchaseOrder extends Model
      * @return array
     */
     public function getPrices($orderId) {
-        $query = "SELECT * FROM " . DB_PREFIX . "order_product WHERE order_product_id = " . (int)$orderId;
+        $query = "SELECT * FROM order_product WHERE order_product_id = " . (int)$orderId;
         $result = $this->db->query($query);
         foreach (array_keys($result->row) as $key) {
             if (is_numeric($result->row[$key])) {
@@ -315,7 +315,7 @@ class ModelSaleRepurchaseOrder extends Model
     public function setImage($orderId, $imagePath)
     {
         $this->db->query("
-            UPDATE " . DB_PREFIX . "order_option
+            UPDATE order_option
             SET value = '" . $this->db->escape($imagePath) . "'
             WHERE
                 order_product_id = " . (int)$orderId . "
@@ -325,7 +325,7 @@ class ModelSaleRepurchaseOrder extends Model
         {
             $repurchaseOrder = $this->modelOrderItem->getOrderItem($orderId);
             $this->db->query("
-                INSERT INTO " . DB_PREFIX . "order_option
+                INSERT INTO order_option
                 SET
                     order_id = " . $repurchaseOrder['order_id'] . ",
                     order_product_id = " . (int)$orderId . ",
@@ -340,9 +340,9 @@ class ModelSaleRepurchaseOrder extends Model
 
     public function setQuantity($orderId, $quantity)
     {
-        $query = "UPDATE " . DB_PREFIX . "order_product SET quantity = " . (int)$quantity . " WHERE order_product_id = " . (int)$orderId;
+        $query = "UPDATE order_product SET quantity = " . (int)$quantity . " WHERE order_product_id = " . (int)$orderId;
         $this->db->query($query);
-        $query = "UPDATE " . DB_PREFIX . "order_product SET total = (quantity*price) + shipping WHERE order_product_id = " . (int)$orderId;
+        $query = "UPDATE order_product SET total = (quantity*price) + shipping WHERE order_product_id = " . (int)$orderId;
         $this->db->query($query);
     }
 }

@@ -1,13 +1,14 @@
 <?php 
 class ControllerLocalisationCurrency extends Controller {
 	private $error = array();
- 
+    /** @var ModelLocalisationCurrency */
+    private $modelLocalisationCurrency;
     public function __construct($registry)
     {
         parent::__construct($registry);
         $this->load->language('localisation/currency');
         $this->document->setTitle($this->language->get('heading_title'));
-        $this->load->model('localisation/currency');
+        $this->modelLocalisationCurrency = $this->load->model('localisation/currency');
     }
 
 	public function index() {
@@ -16,7 +17,7 @@ class ControllerLocalisationCurrency extends Controller {
 
 	public function insert() {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_localisation_currency->addCurrency($this->request->post);
+			$this->modelLocalisationCurrency->addCurrency($this->request->post);
 			
 			$this->session->data['success'] = $this->language->get('text_success');
 			
@@ -42,7 +43,7 @@ class ControllerLocalisationCurrency extends Controller {
 
 	public function update() {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_localisation_currency->editCurrency($this->request->get['currency_id'], $this->request->post);
+			$this->modelLocalisationCurrency->editCurrency($this->request->get['currency_id'], $this->request->post);
 			
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -69,7 +70,7 @@ class ControllerLocalisationCurrency extends Controller {
 	public function delete() {
 		if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $currency_id) {
-				$this->model_localisation_currency->deleteCurrency($currency_id);
+				$this->modelLocalisationCurrency->deleteCurrency($currency_id);
 			}
 			
 			$this->session->data['success'] = $this->language->get('text_success');

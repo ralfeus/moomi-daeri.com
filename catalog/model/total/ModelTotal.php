@@ -24,7 +24,7 @@ abstract class ModelTotal extends Model
         /// Order total (from database)
         $query = $this->db->query("
             SELECT *
-            FROM " . DB_PREFIX . "order_total
+            FROM order_total
             WHERE order_id = $orderId AND code = '$extension'
         ");
         if ($query->num_rows)
@@ -49,7 +49,7 @@ abstract class ModelTotal extends Model
     protected final function updateOrderExtensionTotal($orderId, $totalData, $extension)
     {
         $this->db->query("
-            UPDATE " . DB_PREFIX . "order_total
+            UPDATE order_total
             SET
                 text = '" . $totalData['text'] . "',
                 value = " . $totalData['value'] . "

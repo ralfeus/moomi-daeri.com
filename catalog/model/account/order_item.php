@@ -19,11 +19,11 @@ class ModelAccountOrderItem extends Model
 				s.name as supplier_name, s.supplier_group_id, s.internal_model as internal_model,
 				oils.date_last_status_set as status_date
 			FROM
-				" . DB_PREFIX . "order_product as op
-				JOIN `" . DB_PREFIX . "order` as o on o.order_id = op.order_id
-				JOIN " . DB_PREFIX . "product as p on op.product_id  = p.product_id
-				LEFT JOIN " . DB_PREFIX . "supplier as s on p.supplier_id = s.supplier_id
-				LEFT JOIN " . DB_PREFIX . "customer as c on o.customer_id = c.customer_id
+				order_product as op
+				JOIN `order` as o on o.order_id = op.order_id
+				JOIN product as p on op.product_id  = p.product_id
+				LEFT JOIN supplier as s on p.supplier_id = s.supplier_id
+				LEFT JOIN customer as c on o.customer_id = c.customer_id
 				JOIN
 				    (
 				        SELECT order_item_id, MAX(date_added) as date_last_status_set
@@ -46,16 +46,16 @@ class ModelAccountOrderItem extends Model
 		$query = "
 			SELECT COUNT(*) as total
 			FROM
-				" . DB_PREFIX . "order_product as op join " . DB_DATABASE . "." . DB_PREFIX . "order as o on o.order_id = op.order_id
-				join " . DB_PREFIX . "customer as c on o.customer_id = c.customer_id
-				join " . DB_PREFIX . "product as p on op.product_id  = p.product_id
-				left join " . DB_PREFIX . "supplier as s on p.supplier_id = s.supplier_id
+				order_product as op join " . DB_DATABASE . ".order as o on o.order_id = op.order_id
+				join customer as c on o.customer_id = c.customer_id
+				join product as p on op.product_id  = p.product_id
+				left join supplier as s on p.supplier_id = s.supplier_id
 				JOIN (SELECT order_item_id, order_item_status_id
                     FROM
                         (SELECT order_item_id, oih.order_item_status_id, workflow_order
                         FROM
-                            " . DB_PREFIX . "order_item_history as oih
-                            JOIN " . DB_PREFIX . "order_item_status as ois on oih.order_item_status_id = ois.order_item_status_id
+                            order_item_history as oih
+                            JOIN order_item_status as ois on oih.order_item_status_id = ois.order_item_status_id
                         ORDER BY order_item_id, workflow_order DESC) as statuses
                     GROUP BY order_item_id) as oih1 on op.order_product_id = oih1.order_item_id
 			" . ($filter ? "WHERE $filter" : "");
@@ -165,11 +165,11 @@ class ModelAccountOrderItem extends Model
                 ifnull(od.name, oo.name) as name,
                 ifnull(ovd.name, oo.value) as value
             FROM
-                " . DB_PREFIX . "order_option as oo
-                left join " . DB_PREFIX . "product_option as po on oo.product_option_id = po.product_option_id
-                left join " . DB_PREFIX . "option_description as od on po.option_id = od.option_id
-                left join " . DB_PREFIX . "product_option_value as pov on oo.product_option_value_id = pov.product_option_value_id
-                left join " . DB_PREFIX . "option_value_description as ovd on pov.option_value_id = ovd.option_value_id
+                order_option as oo
+                left join product_option as po on oo.product_option_id = po.product_option_id
+                left join option_description as od on po.option_id = od.option_id
+                left join product_option_value as pov on oo.product_option_value_id = pov.product_option_value_id
+                left join option_value_description as ovd on pov.option_value_id = ovd.option_value_id
             WHERE
                 oo.order_product_id = " . $orderItemId ."
                 and (od.language_id = $languageId or od.language_id is null)
@@ -199,7 +199,7 @@ class ModelAccountOrderItem extends Model
 
     public function setOrderItemComment($order_item_id, $comment) {
         $query = "
-                UPDATE " . DB_PREFIX . "order_product
+                UPDATE order_product
                 SET
                     comment = '" . $this->db->escape($comment) . "'
                 WHERE order_product_id = " . (int)$order_item_id
@@ -216,7 +216,7 @@ class ModelAccountOrderItem extends Model
         if ($order_item['status'] != $order_item_status_id)
         {
             $query = "
-                INSERT " . DB_PREFIX . "order_item_history
+                INSERT order_item_history
                 SET
                     order_item_id = " . (int)$order_item_id . ",
                     order_item_status_id = " . (int) $order_item_status_id . ",
@@ -225,7 +225,7 @@ class ModelAccountOrderItem extends Model
             //print_r($query);exit();
             $this->db->query($query);
             $this->db->query("
-                UPDATE " . DB_PREFIX . "order_product
+                UPDATE order_product
                 SET status_id = " . (int)$order_item_status_id . "
                 WHERE order_product_id = " . (int)$order_item_id
             );

@@ -24,17 +24,30 @@ final class Image {
       		exit('Error: Could not load image ' . $file . '!');
     	}
 	}
-		
-	private function create($image) {
+
+    /**
+     * @param \String $image
+     * @return resource
+     */
+    private function create($image) {
 		$mime = $this->info['mime'];
-		
-		if ($mime == 'image/gif') {
-			return imagecreatefromgif($image);
-		} elseif ($mime == 'image/png') {
-			return imagecreatefrompng($image);
-		} elseif ($mime == 'image/jpeg') {
-			return imagecreatefromjpeg($image);
-		}
+
+        try {
+            if ($mime == 'image/gif') {
+                $image = imagecreatefromgif($image);
+            } elseif ($mime == 'image/png') {
+                $image = @imagecreatefrompng($image);
+            } elseif ($mime == 'image/jpeg') {
+                $image = imagecreatefromjpeg($image);
+            }
+            return $image;
+        }
+        catch (Exception $exc) {
+            while ($exc != null) {
+                echo $exc->getMessage();
+                $exc = $exc->getPrevious();
+            }
+        }
     }
 
     public function save($file, $quality = 90) {
@@ -146,14 +159,14 @@ final class Image {
 		imagestring($this->image, $size, $x, $y, $text, imagecolorallocate($this->image, $rgb[0], $rgb[1], $rgb[2]));
     }
     
-    private function merge($file, $x = 0, $y = 0, $opacity = 100) {
-        $merge = $this->create($file);
-
-        $merge_width = imagesx($image);
-        $merge_height = imagesy($image);
-		        
-        imagecopymerge($this->image, $merge, $x, $y, 0, 0, $merge_width, $merge_height, $opacity);
-    }
+//    private function merge($file, $x = 0, $y = 0, $opacity = 100) {
+//        $merge = $this->create($file);
+//
+//        $merge_width = imagesx($image);
+//        $merge_height = imagesy($image);
+//
+//        imagecopymerge($this->image, $merge, $x, $y, 0, 0, $merge_width, $merge_height, $opacity);
+//    }
 			
 	private function html2rgb($color) {
 		if ($color[0] == '#') {

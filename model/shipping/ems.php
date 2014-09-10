@@ -39,9 +39,9 @@ class ModelShippingEMS extends ShippingMethodModel
         $sql = "
             SELECT gz.geo_zone_id, gz.name, gz.description
             FROM
-                " . DB_PREFIX . "setting AS s
-                JOIN " . DB_PREFIX . "geo_zone AS gz ON `key` = concat('ems_', gz.geo_zone_id, '_status') AND value = 1
-                JOIN " . DB_PREFIX . "zone_to_geo_zone AS ztgz ON gz.geo_zone_id = ztgz.geo_zone_id
+                setting AS s
+                JOIN geo_zone AS gz ON `key` = concat('ems_', gz.geo_zone_id, '_status') AND value = 1
+                JOIN zone_to_geo_zone AS ztgz ON gz.geo_zone_id = ztgz.geo_zone_id
             WHERE
                 ztgz.country_id = " . (int)$address['country_id'] . "
                 AND ztgz.zone_id IN (" . (int)$address['zone_id'] . ", 0)
@@ -73,11 +73,11 @@ class ModelShippingEMS extends ShippingMethodModel
 
 		$quote_data = array();
 
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "geo_zone ORDER BY name");
+		$query = $this->db->query("SELECT * FROM geo_zone ORDER BY name");
 
 		foreach ($query->rows as $result) {
 			if ($this->config->get('ems_' . $result['geo_zone_id'] . '_status')) {
-				$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "zone_to_geo_zone WHERE geo_zone_id = '" . (int)$result['geo_zone_id'] . "' AND country_id = '" . (int)$address['country_id'] . "' AND (zone_id = '" . (int)$address['zone_id'] . "' OR zone_id = '0')");
+				$query = $this->db->query("SELECT * FROM zone_to_geo_zone WHERE geo_zone_id = '" . (int)$result['geo_zone_id'] . "' AND country_id = '" . (int)$address['country_id'] . "' AND (zone_id = '" . (int)$address['zone_id'] . "' OR zone_id = '0')");
 
 				if ($query->num_rows) {
 					$status = true;

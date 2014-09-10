@@ -3,11 +3,11 @@ class ModelLocalisationOrderStatus extends Model {
 	public function addOrderStatus($data) {
         $query = $this->db->query("
             SELECT MAX(status_id) AS last_id
-            FROM " . DB_PREFIX . "statuses
+            FROM statuses
             WHERE group_id = " . GROUP_ORDER_STATUS
         );
         $newOrderStatusId = $query->row['last_id'] + 1;
-        $sql = "INSERT INTO " . DB_PREFIX . "statuses (group_id, status_id, language_id, name, public_name) VALUES";
+        $sql = "INSERT INTO statuses (group_id, status_id, language_id, name, public_name) VALUES";
 		foreach ($data['order_status'] as $language_id => $value) {
             $sql .= "
                 (" .
@@ -24,11 +24,11 @@ class ModelLocalisationOrderStatus extends Model {
 
 	public function editOrderStatus($order_status_id, $data) {
 		$this->db->query("
-		    DELETE FROM " . DB_PREFIX . "statuses
+		    DELETE FROM statuses
 		    WHERE group_id = " . GROUP_ORDER_STATUS . " AND status_id = " . (int)$order_status_id
         );
 
-        $sql = "INSERT INTO " . DB_PREFIX . "statuses (group_id, status_id, language_id, name, public_name) VALUES";
+        $sql = "INSERT INTO statuses (group_id, status_id, language_id, name, public_name) VALUES";
         foreach ($data['order_status'] as $language_id => $value) {
             $sql .= "
                 (" .
@@ -45,7 +45,7 @@ class ModelLocalisationOrderStatus extends Model {
 	
 	public function deleteOrderStatus($order_status_id) {
 		$this->db->query("
-		    DELETE FROM " . DB_PREFIX . "statuses
+		    DELETE FROM statuses
 		    WHERE group_id = " . GROUP_ORDER_STATUS . " AND status_id = " . (int)$order_status_id
         );
 		$this->cache->delete('order_status');
@@ -54,7 +54,7 @@ class ModelLocalisationOrderStatus extends Model {
 	public function getOrderStatus($order_status_id) {
 		$query = $this->db->query("
 		    SELECT status_id AS order_status_id, language_id, name
-		    FROM " . DB_PREFIX . "statuses
+		    FROM statuses
 		    WHERE
 		        group_id = " . GROUP_ORDER_STATUS . "
 		        AND status_id = " . (int)$order_status_id . "
@@ -69,12 +69,12 @@ class ModelLocalisationOrderStatus extends Model {
 //			foreach ($ORDER_STATUS as $order_status_name => $order_status_id)
 //			{
 //				$statuses['id'] = $order_status_id;
-//				$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_status WHERE order_status_id = $order_status_id");
+//				$query = $this->db->query("SELECT * FROM order_status WHERE order_status_id = $order_status_id");
 //
 //			}
 			$sql = "
 			    SELECT status_id AS order_status_id, language_id, name
-			    FROM " . DB_PREFIX . "statuses
+			    FROM statuses
 			    WHERE group_id = " . GROUP_ORDER_STATUS . " AND language_id = " . (int)$this->config->get('config_language_id')
             ;
 			
@@ -94,7 +94,7 @@ class ModelLocalisationOrderStatus extends Model {
 			if (!$order_status_data) {
                 $query = $this->db->query("
                     SELECT status_id AS order_status_id, name
-                    FROM " . DB_PREFIX . "statuses
+                    FROM statuses
                     WHERE group_id = " . GROUP_ORDER_STATUS . " AND language_id = " . (int)$this->config->get('config_language_id') . "
                     ORDER BY name
                 ");
@@ -112,7 +112,7 @@ class ModelLocalisationOrderStatus extends Model {
 		$order_status_data = array();
 		$query = $this->db->query("
 		    SELECT status_id AS order_status_id, language_id, name
-            FROM " . DB_PREFIX . "statuses
+            FROM statuses
             WHERE group_id = " . GROUP_ORDER_STATUS . " AND status_id = " . (int)$order_status_id
         );
 
@@ -126,7 +126,7 @@ class ModelLocalisationOrderStatus extends Model {
 	public function getTotalOrderStatuses() {
       	$query = $this->db->query("
       	    SELECT COUNT(*) AS total
-      	    FROM " . DB_PREFIX . "statuses
+      	    FROM statuses
       	    WHERE group_id = " . GROUP_ORDER_STATUS . " AND language_id = " . (int)$this->config->get('config_language_id')
         );
 		

@@ -24,7 +24,7 @@ class ModelTotalTotal extends ModelTotal
     {
         $this->updateOrderExtensionTotal($orderId, $totalData, 'total');
         $this->db->query("
-            UPDATE `" . DB_PREFIX . "order`
+            UPDATE `order`
             SET total = " . $totalData['value'] . "
             WHERE order_id = " . (int)$orderId
         );

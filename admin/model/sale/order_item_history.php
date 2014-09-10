@@ -13,7 +13,7 @@ class ModelSaleOrderItemHistory extends  Model
         if ($this->model_sale_order_item->getOrderItem($order_item_id) &&
             Status::getStatus($order_item_id, $this->config->get('language_id')))
             $this->db->query("
-                INSERT INTO " . DB_PREFIX . "order_item_history
+                INSERT INTO order_item_history
                 SET
                     order_item_id = " . (int)$order_item_id . ",
                     order_item_status_id = " . (int)$order_item_status_id . ",

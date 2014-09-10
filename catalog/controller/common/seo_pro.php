@@ -15,7 +15,7 @@ class ControllerCommonSeoPro extends Controller {
 			array_push($parts, $last_part);
 
 			$keyword_in = array_map(array($this->db, 'escape'), $parts);
-			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "url_alias WHERE keyword IN ('" . implode("', '", $keyword_in) . "')");
+			$query = $this->db->query("SELECT * FROM url_alias WHERE keyword IN ('" . implode("', '", $keyword_in) . "')");
 
 			if ($query->num_rows == sizeof($parts)) {
 				$queries = array();
@@ -146,7 +146,7 @@ class ControllerCommonSeoPro extends Controller {
 
 		if (!empty($queries)) {
 			$query_in = array_map(array($this->db, 'escape'), $queries);
-			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "url_alias WHERE `query` IN ('" . implode("', '", $query_in) . "')");
+			$query = $this->db->query("SELECT * FROM url_alias WHERE `query` IN ('" . implode("', '", $query_in) . "')");
 
 			if ($query->num_rows == count($queries)) {
 				$aliases = array();
@@ -193,7 +193,7 @@ class ControllerCommonSeoPro extends Controller {
 		}
 
 		if (!isset($path[$product_id])) {
-			$query = $this->db->query("SELECT category_id FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . $product_id . "' ORDER BY main_category DESC LIMIT 1");
+			$query = $this->db->query("SELECT category_id FROM product_to_category WHERE product_id = '" . $product_id . "' ORDER BY main_category DESC LIMIT 1");
 
 			$path[$product_id] = $this->getPathByCategory($query->num_rows ? (int)$query->row['category_id'] : 0);
 
@@ -220,9 +220,9 @@ class ControllerCommonSeoPro extends Controller {
 			for ($i = $max_level-1; $i >= 0; --$i) {
 				$sql .= ",t$i.category_id";
 			}
-			$sql .= ") AS path FROM " . DB_PREFIX . "category t0";
+			$sql .= ") AS path FROM category t0";
 			for ($i = 1; $i < $max_level; ++$i) {
-				$sql .= " LEFT JOIN " . DB_PREFIX . "category t$i ON (t$i.category_id = t" . ($i-1) . ".parent_id)";
+				$sql .= " LEFT JOIN category t$i ON (t$i.category_id = t" . ($i-1) . ".parent_id)";
 			}
 			$sql .= " WHERE t0.category_id = '" . $category_id . "'";
 

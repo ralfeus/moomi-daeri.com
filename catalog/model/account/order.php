@@ -3,7 +3,7 @@ class ModelAccountOrder extends Model {
 	public function getOrder($order_id) {
 		$order_query = $this->db->query("
 			SELECT * 
-			FROM `" . DB_PREFIX . "order` 
+			FROM `order`
 			WHERE 
 				order_id = '" . (int)$order_id . "' 
 				AND customer_id = '" . (int)$this->customer->getId() . "' 
@@ -11,7 +11,7 @@ class ModelAccountOrder extends Model {
 		");
 	
 		if ($order_query->num_rows) {
-			$country_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "country` WHERE country_id = '" . (int)$order_query->row['shipping_country_id'] . "'");
+			$country_query = $this->db->query("SELECT * FROM `country` WHERE country_id = '" . (int)$order_query->row['shipping_country_id'] . "'");
 			
 			if ($country_query->num_rows) {
 				$shipping_iso_code_2 = $country_query->row['iso_code_2'];
@@ -21,7 +21,7 @@ class ModelAccountOrder extends Model {
 				$shipping_iso_code_3 = '';				
 			}
 			
-			$zone_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "zone` WHERE zone_id = '" . (int)$order_query->row['shipping_zone_id'] . "'");
+			$zone_query = $this->db->query("SELECT * FROM `zone` WHERE zone_id = '" . (int)$order_query->row['shipping_zone_id'] . "'");
 			
 			if ($zone_query->num_rows) {
 				$shipping_zone_code = $zone_query->row['code'];
@@ -29,7 +29,7 @@ class ModelAccountOrder extends Model {
 				$shipping_zone_code = '';
 			}
 			
-			$country_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "country` WHERE country_id = '" . (int)$order_query->row['payment_country_id'] . "'");
+			$country_query = $this->db->query("SELECT * FROM `country` WHERE country_id = '" . (int)$order_query->row['payment_country_id'] . "'");
 			
 			if ($country_query->num_rows) {
 				$payment_iso_code_2 = $country_query->row['iso_code_2'];
@@ -39,7 +39,7 @@ class ModelAccountOrder extends Model {
 				$payment_iso_code_3 = '';				
 			}
 			
-			$zone_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "zone` WHERE zone_id = '" . (int)$order_query->row['payment_zone_id'] . "'");
+			$zone_query = $this->db->query("SELECT * FROM `zone` WHERE zone_id = '" . (int)$order_query->row['payment_zone_id'] . "'");
 			
 			if ($zone_query->num_rows) {
 				$payment_zone_code = $zone_query->row['code'];
@@ -116,8 +116,8 @@ class ModelAccountOrder extends Model {
 		$query = "
 			SELECT o.order_id, o.firstname, o.lastname, os.name as status, o.date_added, o.total, o.currency_code, o.currency_value, o.order_status_id 
 			FROM 
-				`" . DB_PREFIX . "order` o 
-				LEFT JOIN " . DB_PREFIX . "order_status os ON (o.order_status_id = os.order_status_id) 
+				`order` o
+				LEFT JOIN order_status os ON (o.order_status_id = os.order_status_id)
 			WHERE 
 				o.customer_id = '" . (int)$this->customer->getId() . "' 
 				AND o.order_status_id > '0' 
@@ -132,44 +132,44 @@ class ModelAccountOrder extends Model {
 	
 	public function getOrderProducts($order_id) {
 		$query = $this->db->query("
-		    SELECT * FROM " . DB_PREFIX . "order_product WHERE order_id = '" . (int)$order_id . "'
+		    SELECT * FROM order_product WHERE order_id = '" . (int)$order_id . "'
         ");
 	
 		return $query->rows;
 	}
 
 	public function getOrderOptions($order_id, $order_product_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_option WHERE order_id = '" . (int)$order_id . "' AND order_product_id = '" . (int)$order_product_id . "'");
+		$query = $this->db->query("SELECT * FROM order_option WHERE order_id = '" . (int)$order_id . "' AND order_product_id = '" . (int)$order_product_id . "'");
 	
 		return $query->rows;
 	}
 
 	public function getOrderTotals($order_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_total WHERE order_id = '" . (int)$order_id . "' ORDER BY sort_order");
+		$query = $this->db->query("SELECT * FROM order_total WHERE order_id = '" . (int)$order_id . "' ORDER BY sort_order");
 	
 		return $query->rows;
 	}	
 
 	public function getOrderHistories($order_id) {
-		$query = $this->db->query("SELECT date_added, os.name AS status, oh.comment, oh.notify FROM " . DB_PREFIX . "order_history oh LEFT JOIN " . DB_PREFIX . "order_status os ON oh.order_status_id = os.order_status_id WHERE oh.order_id = '" . (int)$order_id . "' AND oh.notify = '1' AND os.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY oh.date_added");
+		$query = $this->db->query("SELECT date_added, os.name AS status, oh.comment, oh.notify FROM order_history oh LEFT JOIN order_status os ON oh.order_status_id = os.order_status_id WHERE oh.order_id = '" . (int)$order_id . "' AND oh.notify = '1' AND os.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY oh.date_added");
 	
 		return $query->rows;
 	}	
 
 	public function getOrderDownloads($order_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_download WHERE order_id = '" . (int)$order_id . "' ORDER BY name");
+		$query = $this->db->query("SELECT * FROM order_download WHERE order_id = '" . (int)$order_id . "' ORDER BY name");
 	
 		return $query->rows; 
 	}	
 
 	public function getTotalOrders() {
-      	$query = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "order` WHERE customer_id = '" . (int)$this->customer->getId() . "' AND order_status_id > '0'");
+      	$query = $this->db->query("SELECT COUNT(*) AS total FROM `order` WHERE customer_id = '" . (int)$this->customer->getId() . "' AND order_status_id > '0'");
 		
 		return $query->row['total'];
 	}
 		
 	public function getTotalOrderProductsByOrderId($order_id) {
-		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "order_product WHERE order_id = '" . (int)$order_id . "'");
+		$query = $this->db->query("SELECT COUNT(*) AS total FROM order_product WHERE order_id = '" . (int)$order_id . "'");
 		
 		return $query->row['total'];
 	}

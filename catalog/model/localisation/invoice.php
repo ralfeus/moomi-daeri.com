@@ -11,7 +11,7 @@ class ModelLocalisationInvoice extends Model
     public function getInvoiceStatus($statusId, $languageId = 2)
     {
         $query = $this->db->query("
-            SELECT * FROM " . DB_PREFIX . "invoice_statuses
+            SELECT * FROM invoice_statuses
             WHERE
                 invoice_status_id = " . (int)$statusId . "
                 AND language_id = " . (int)$languageId

@@ -15,7 +15,7 @@ final class Affiliate {
 		$this->session = $registry->get('session');
 				
 		if (isset($this->session->data['affiliate_id'])) { 
-			$affiliate_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "affiliate WHERE affiliate_id = '" . (int)$this->session->data['affiliate_id'] . "' AND status = '1'");
+			$affiliate_query = $this->db->query("SELECT * FROM affiliate WHERE affiliate_id = '" . (int)$this->session->data['affiliate_id'] . "' AND status = '1'");
 			
 			if ($affiliate_query->num_rows) {
 				$this->affiliate_id = $affiliate_query->row['affiliate_id'];
@@ -26,7 +26,7 @@ final class Affiliate {
 				$this->fax = $affiliate_query->row['fax'];
 				$this->code = $affiliate_query->row['code'];
 							
-      			$this->db->query("UPDATE " . DB_PREFIX . "affiliate SET ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "' WHERE affiliate_id = '" . (int)$this->session->data['affiliate_id'] . "'");
+      			$this->db->query("UPDATE affiliate SET ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "' WHERE affiliate_id = '" . (int)$this->session->data['affiliate_id'] . "'");
 			} else {
 				$this->logout();
 			}
@@ -34,7 +34,7 @@ final class Affiliate {
 	}
 		
   	public function login($email, $password) {
-		$affiliate_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "affiliate WHERE email = '" . $this->db->escape($email) . "' AND password = '" . $this->db->escape(md5($password)) . "' AND status = '1' AND approved = '1'");
+		$affiliate_query = $this->db->query("SELECT * FROM affiliate WHERE email = '" . $this->db->escape($email) . "' AND password = '" . $this->db->escape(md5($password)) . "' AND status = '1' AND approved = '1'");
 		
 		if ($affiliate_query->num_rows) {
 			$this->session->data['affiliate_id'] = $affiliate_query->row['affiliate_id'];	

@@ -24,7 +24,7 @@ class Status extends LibraryClass
         while (true) {
             $sql = "
                 SELECT $fieldName
-                FROM " . DB_PREFIX . "statuses
+                FROM statuses
                 WHERE group_id << 16 | status_id = " . (int)$statusId . " AND language_id = " . (int)$languageId
             ;
 
@@ -45,7 +45,7 @@ class Status extends LibraryClass
         {
             $sql = "
                 SELECT group_id << 16 | status_id as status_id, " . ($public ? 'public_name' : 'name') . " AS name
-                FROM " . DB_PREFIX . "statuses
+                FROM statuses
                 WHERE group_id = " . (int)$statusGroupId . " AND language_id = " . (int)$languageId . "
                 ORDER BY name";
             $query = Status::$instance->db->query($sql);

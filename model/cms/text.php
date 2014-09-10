@@ -26,7 +26,7 @@ class ModelCmsText extends Model
         ));
         $sql = "
             SELECT *
-            FROM " . DB_PREFIX . "content
+            FROM content
             " . ($filter ? "WHERE $filter" : '')
         ;
         $query = $this->db->query($sql);
@@ -40,7 +40,7 @@ class ModelCmsText extends Model
     {
         $sql = "
             SELECT COUNT(*) AS amount
-            FROM " . DB_PREFIX . "content
+            FROM content
             WHERE content_id = " . (int)$contentId
         ;
         $query = $this->db->query($sql);
@@ -50,7 +50,7 @@ class ModelCmsText extends Model
     public function updateText($data = array())
     {
         $sql = "
-            INSERT INTO " . DB_PREFIX . "content
+            INSERT INTO content
             VALUES (
                 " . (int)$data['contentId'] . ",
                 " . (int)$data['languageId'] . ",

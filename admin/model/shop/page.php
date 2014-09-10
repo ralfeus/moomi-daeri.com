@@ -1,19 +1,19 @@
 <?php
 class ModelShopPage extends Model {
   public function getAllPages() {
-    $query = "SELECT * FROM " . DB_PREFIX . "page";
+    $query = "SELECT * FROM page";
     $result = $this->db->query($query);
     return $result->rows;
   }
 
   public function getPages($data) {
-    $query = "SELECT * FROM " . DB_PREFIX . "page ORDER BY " . $data['sort'] . " " . $data['order'] . " LIMIT " . $data['start'] . ", " . $data['limit'];
+    $query = "SELECT * FROM page ORDER BY " . $data['sort'] . " " . $data['order'] . " LIMIT " . $data['start'] . ", " . $data['limit'];
     $result = $this->db->query($query);
     return $result->rows;
   }
 
   public function getPage($page_id) {
-    $query = "SELECT * FROM " . DB_PREFIX . "page WHERE page_id = " . $page_id;
+    $query = "SELECT * FROM page WHERE page_id = " . $page_id;
     $result = $this->db->query($query);
     return $result->row;
   }
@@ -21,7 +21,7 @@ class ModelShopPage extends Model {
   public function editPage($page_id, $data) {
     $parent_id = isset($data['parent']) ? $data['parent'] : 'NULL';
     $parent_page_order = isset($data['parent_order']) ? $data['parent_order'] : 'NULL';
-    $query = "UPDATE " . DB_PREFIX . "page SET parent_page_id = '".$parent_id."', parent_page_order = '".$parent_page_order."', page_name_en = '" . $this->db->escape($data['title']['en']) . "', page_content_en = '" . $this->db->escape($data['content']['en']) . "', page_name_ru = '" . $this->db->escape($data['title']['ru']) . "', page_content_ru = '" . $this->db->escape($data['content']['ru']) . "', page_name_jp = '" . $this->db->escape($data['title']['jp']) . "', page_content_jp = '" . $this->db->escape($data['content']['jp']) . "' WHERE page_id = " . $page_id;
+    $query = "UPDATE page SET parent_page_id = '".$parent_id."', parent_page_order = '".$parent_page_order."', page_name_en = '" . $this->db->escape($data['title']['en']) . "', page_content_en = '" . $this->db->escape($data['content']['en']) . "', page_name_ru = '" . $this->db->escape($data['title']['ru']) . "', page_content_ru = '" . $this->db->escape($data['content']['ru']) . "', page_name_jp = '" . $this->db->escape($data['title']['jp']) . "', page_content_jp = '" . $this->db->escape($data['content']['jp']) . "' WHERE page_id = " . $page_id;
     //print_r($query); die();
     $result = $this->db->query($query);
   }
@@ -29,7 +29,7 @@ class ModelShopPage extends Model {
   public function addPage($data) {
     $parent_id = isset($data['parent']) ? $data['parent'] : 'NULL';
     $parent_page_order = isset($data['parent_order']) ? $data['parent_order'] : 'NULL';
-    $query = "INSERT INTO " . DB_PREFIX . "page(parent_page_id, parent_page_order, page_name_en, page_content_en, page_name_ru, page_content_ru, page_name_jp, page_content_jp) VALUES('".$parent_id."', '".$parent_page_order."', '" . $this->db->escape($data['title']['en']) . "', '" . $this->db->escape($data['content']['en']) . "', '" . $this->db->escape($data['title']['ru']) . "', '" . $this->db->escape($data['content']['ru']) . "', '" . $this->db->escape($data['title']['jp']) . "', '" . $this->db->escape($data['content']['jp']) . "')";
+    $query = "INSERT INTO page(parent_page_id, parent_page_order, page_name_en, page_content_en, page_name_ru, page_content_ru, page_name_jp, page_content_jp) VALUES('".$parent_id."', '".$parent_page_order."', '" . $this->db->escape($data['title']['en']) . "', '" . $this->db->escape($data['content']['en']) . "', '" . $this->db->escape($data['title']['ru']) . "', '" . $this->db->escape($data['content']['ru']) . "', '" . $this->db->escape($data['title']['jp']) . "', '" . $this->db->escape($data['content']['jp']) . "')";
     $result = $this->db->query($query);
   }
 }

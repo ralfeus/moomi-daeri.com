@@ -2,7 +2,7 @@
 class ModelLocalisationCurrency extends Model {
 	public function addCurrency($data) {
 		$this->db->query("
-		    INSERT INTO " . DB_PREFIX . "currency
+		    INSERT INTO currency
 		    SET
 		        title = '" . $this->db->escape($data['title']) . "',
 		        code = '" . $this->db->escape($data['code']) . "',
@@ -14,20 +14,21 @@ class ModelLocalisationCurrency extends Model {
 		        date_modified = NOW()"
         );
         $currencyId = $this->db->getLastId();
-        $this->db->query("
-            INSERT INTO " . DB_PREFIX . "currency_history
-            SET
-                date_added = NOW(),
-                currency_id = $currencyId,
-                rate = '" . $this->db->escape($data['value']) . "'
-       ");
+        /// Implemented by trigger on DB side
+//        $this->db->query("
+//            INSERT INTO currency_history
+//            SET
+//                date_added = NOW(),
+//                currency_id = $currencyId,
+//                rate = '" . $this->db->escape($data['value']) . "'
+//       ");
 
 		$this->cache->delete('currency');
 	}
 	
 	public function editCurrency($currency_id, $data) {
 		$this->db->query("
-		    UPDATE " . DB_PREFIX . "currency
+		    UPDATE currency
             SET
                 title = '" . $this->db->escape($data['title']) . "',
                 code = '" . $this->db->escape($data['code']) . "',
@@ -39,38 +40,39 @@ class ModelLocalisationCurrency extends Model {
                 date_modified = NOW()
             WHERE currency_id = " . (int)$currency_id
         );
-        $this->db->query("
-            INSERT INTO " . DB_PREFIX . "currency_history
-            SET
-                date_added = NOW(),
-                currency_id = " . (int)$currency_id . ",
-                rate = '" . $this->db->escape($data['value']) . "'
-       ");
+        /// Implemented by trigger on DB side
+//        $this->db->query("
+//            INSERT INTO currency_history
+//            SET
+//                date_added = NOW(),
+//                currency_id = " . (int)$currency_id . ",
+//                rate = '" . $this->db->escape($data['value']) . "'
+//       ");
 
 		$this->cache->delete('currency');
 	}
 	
 	public function deleteCurrency($currency_id) {
-		$this->db->query("DELETE FROM " . DB_PREFIX . "currency WHERE currency_id = '" . (int)$currency_id . "'");
+		$this->db->query("DELETE FROM currency WHERE currency_id = '" . (int)$currency_id . "'");
 	
 		$this->cache->delete('currency');
 	}
 
 	public function getCurrency($currency_id) {
-		$query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "currency WHERE currency_id = '" . (int)$currency_id . "'");
+		$query = $this->db->query("SELECT DISTINCT * FROM currency WHERE currency_id = '" . (int)$currency_id . "'");
 	
 		return $query->row;
 	}
 	
 	public function getCurrencyByCode($currency) {
-		$query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "currency WHERE code = '" . $this->db->escape($currency) . "'");
+		$query = $this->db->query("SELECT DISTINCT * FROM currency WHERE code = '" . $this->db->escape($currency) . "'");
 	
 		return $query->row;
 	}
 		
 	public function getCurrencies($data = array()) {
 		if ($data) {
-			$sql = "SELECT * FROM " . DB_PREFIX . "currency";
+			$sql = "SELECT * FROM currency";
 
 			$sort_data = array(
 				'title',
@@ -112,7 +114,7 @@ class ModelLocalisationCurrency extends Model {
 			if (!$currency_data) {
 				$currency_data = array();
 				
-				$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "currency ORDER BY title ASC");
+				$query = $this->db->query("SELECT * FROM currency ORDER BY title ASC");
 	
 				foreach ($query->rows as $result) {
       				$currency_data[$result['code']] = array(
@@ -139,7 +141,7 @@ class ModelLocalisationCurrency extends Model {
 		if (extension_loaded('curl')) {
 			$data = array();
 			
-			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "currency WHERE code != '" . $this->db->escape($this->config->get('config_currency')) . "' AND date_modified < '" .  $this->db->escape(date('Y-m-d H:i:s', strtotime('-1 day'))) . "'");
+			$query = $this->db->query("SELECT * FROM currency WHERE code != '" . $this->db->escape($this->config->get('config_currency')) . "' AND date_modified < '" .  $this->db->escape(date('Y-m-d H:i:s', strtotime('-1 day'))) . "'");
 
 			foreach ($query->rows as $result) {
 				$data[] = $this->config->get('config_currency') . $result['code'] . '=X';
@@ -173,7 +175,7 @@ class ModelLocalisationCurrency extends Model {
 	}
 	
 	public function getTotalCurrencies() {
-		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "currency");
+		$query = $this->db->query("SELECT COUNT(*) AS total FROM currency");
 		
 		return $query->row['total'];
 	}

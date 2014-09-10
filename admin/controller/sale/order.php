@@ -297,8 +297,8 @@ class ControllerSaleOrder extends Controller {
 			'limit'                  => $this->config->get('config_admin_limit')
 		);
 
-		$order_total = $this->model_sale_order->getTotalOrders($data);
-		$results = $this->model_sale_order->getOrders($data);
+		$order_total = $this->modelSaleOrder->getTotalOrders($data);
+		$results = $this->modelSaleOrder->getOrders($data);
         $this->load->library('Status');
         $statuses = Status::getStatuses(GROUP_ORDER_STATUS, (int)$this->config->get('config_language_id'));
 
@@ -991,7 +991,7 @@ class ControllerSaleOrder extends Controller {
 		if (isset($this->request->post['order_product'])) {
 			$order_products = $this->request->post['order_product'];
 		} elseif (isset($this->request->get['order_id'])) {
-			$order_products = $this->model_sale_order->getOrderProducts($this->request->get['order_id']);			
+			$order_products = $this->modelSaleOrder->getOrderProducts($this->request->get['order_id']);
 		} else {
 			$order_products = array();
 		}
@@ -1009,7 +1009,7 @@ class ControllerSaleOrder extends Controller {
 				if (isset($this->request->post['order_product'])) {
 					$order_option = $order_product['order_option'];
 				} else {
-					$order_option = $this->model_sale_order->getOrderOptions($this->request->get['order_id'], $order_product['order_product_id']);
+					$order_option = $this->modelSaleOrder->getOrderOptions($this->request->get['order_id'], $order_product['order_product_id']);
 				}
 								
 				$this->data['order_products'][] = array(
@@ -1030,7 +1030,7 @@ class ControllerSaleOrder extends Controller {
 		if (isset($this->request->post['order_total'])) {
       		$this->data['order_totals'] = $this->request->post['order_total'];
     	} elseif (isset($this->request->get['order_id'])) { 
-			$this->data['order_totals'] = $this->model_sale_order->getOrderTotals($this->request->get['order_id']);
+			$this->data['order_totals'] = $this->modelSaleOrder->getOrderTotals($this->request->get['order_id']);
 		} else {
       		$this->data['order_totals'] = array();
     	}	
@@ -1050,8 +1050,8 @@ class ControllerSaleOrder extends Controller {
 		} else {
 			$order_id = 0;
 		}
-		$this->model_sale_order->updateOrderTotals($order_id);
-		$order_info = $this->model_sale_order->getOrder($order_id);
+		$this->modelSaleOrder->updateOrderTotals($order_id);
+		$order_info = $this->modelSaleOrder->getOrder($order_id);
 		
 
 		if ($order_info) {
@@ -1284,12 +1284,12 @@ class ControllerSaleOrder extends Controller {
 
 			$this->data['products'] = array();
 
-			$products = $this->model_sale_order->getOrderProducts($this->request->get['order_id']);
+			$products = $this->modelSaleOrder->getOrderProducts($this->request->get['order_id']);
 
 			foreach ($products as $product) {
 				$option_data = array();
 
-				$options = $this->model_sale_order->getOrderOptions($this->request->get['order_id'], $product['order_product_id']);
+				$options = $this->modelSaleOrder->getOrderOptions($this->request->get['order_id'], $product['order_product_id']);
 
 				foreach ($options as $option) {
 					if ($option['type'] != 'file') {

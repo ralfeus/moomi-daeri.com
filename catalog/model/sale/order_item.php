@@ -32,11 +32,11 @@ class ModelSaleOrderItem extends Model
 				s.name as supplier_name, s.supplier_group_id, s.internal_model as internal_model,
 				oils.date_last_status_set as status_date
 			FROM
-				" . DB_PREFIX . "order_product as op
-				JOIN `" . DB_PREFIX . "order` as o on o.order_id = op.order_id
-				JOIN " . DB_PREFIX . "product as p on op.product_id  = p.product_id
-				LEFT JOIN " . DB_PREFIX . "supplier as s on p.supplier_id = s.supplier_id
-				LEFT JOIN " . DB_PREFIX . "customer as c on o.customer_id = c.customer_id
+				order_product as op
+				JOIN `order` as o on o.order_id = op.order_id
+				JOIN product as p on op.product_id  = p.product_id
+				LEFT JOIN supplier as s on p.supplier_id = s.supplier_id
+				LEFT JOIN customer as c on o.customer_id = c.customer_id
 				JOIN
 				    (
 				        SELECT order_item_id, MAX(date_added) as date_last_status_set
@@ -75,17 +75,17 @@ class ModelSaleOrderItem extends Model
 		$query = "
 			SELECT COUNT(*) as total
 			FROM
-				" . DB_PREFIX . "order_product as op
-				JOIN " . DB_DATABASE . "." . DB_PREFIX . "order AS o ON o.order_id = op.order_id
-				JOIN " . DB_PREFIX . "customer AS c ON o.customer_id = c.customer_id
-				JOIN " . DB_PREFIX . "product AS p ON op.product_id  = p.product_id
-				LEFT JOIN " . DB_PREFIX . "supplier AS s ON p.supplier_id = s.supplier_id
+				order_product as op
+				JOIN " . DB_DATABASE . ".order AS o ON o.order_id = op.order_id
+				JOIN customer AS c ON o.customer_id = c.customer_id
+				JOIN product AS p ON op.product_id  = p.product_id
+				LEFT JOIN supplier AS s ON p.supplier_id = s.supplier_id
 				JOIN (SELECT order_item_id, order_item_status_id
                     FROM
                         (SELECT order_item_id, oih.order_item_status_id, workflow_order
                         FROM
-                            " . DB_PREFIX . "order_item_history as oih
-                            JOIN " . DB_PREFIX . "order_item_status as ois on oih.order_item_status_id = ois.order_item_status_id
+                            order_item_history as oih
+                            JOIN order_item_status as ois on oih.order_item_status_id = ois.order_item_status_id
                         ORDER BY order_item_id, workflow_order DESC) as statuses
                     GROUP BY order_item_id) as oih1 on op.order_product_id = oih1.order_item_id
 			" . ($filter ? "WHERE $filter" : "");
@@ -201,11 +201,11 @@ class ModelSaleOrderItem extends Model
                 ifnull(od.name, oo.name) as name,
                 ifnull(ovd.name, oo.value) as value
             FROM
-                " . DB_PREFIX . "order_option as oo
-                left join " . DB_PREFIX . "product_option as po on oo.product_option_id = po.product_option_id
-                left join " . DB_PREFIX . "option_description as od on po.option_id = od.option_id
-                left join " . DB_PREFIX . "product_option_value as pov on oo.product_option_value_id = pov.product_option_value_id
-                left join " . DB_PREFIX . "option_value_description as ovd on pov.option_value_id = ovd.option_value_id
+                order_option as oo
+                left join product_option as po on oo.product_option_id = po.product_option_id
+                left join option_description as od on po.option_id = od.option_id
+                left join product_option_value as pov on oo.product_option_value_id = pov.product_option_value_id
+                left join option_value_description as ovd on pov.option_value_id = ovd.option_value_id
             WHERE
                 oo.order_product_id = " . $orderItemId ."
                 and (od.language_id = $languageId or od.language_id is null)
@@ -235,7 +235,7 @@ class ModelSaleOrderItem extends Model
         $this->log->write($isPrivate);
         $field = $isPrivate ? 'comment' : 'public_comment';
         $query = "
-                UPDATE " . DB_PREFIX . "order_product
+                UPDATE order_product
                 SET
                     $field = '" . $this->db->escape($comment) . "'
                 WHERE order_product_id = " . (int)$order_item_id
@@ -247,7 +247,7 @@ class ModelSaleOrderItem extends Model
     public function setOrderItemQuantity($orderItemId, $quantity)
     {
         $query = "
-                UPDATE " . DB_PREFIX . "order_product
+                UPDATE order_product
                 SET
                     quantity = " . (int)$quantity . ",
                     total = price * " . (int)$quantity . "
@@ -262,7 +262,7 @@ class ModelSaleOrderItem extends Model
         if ($order_item['status'] != $order_item_status_id)
         {
             $query = "
-                INSERT " . DB_PREFIX . "order_item_history
+                INSERT order_item_history
                 SET
                     order_item_id = " . (int)$order_item_id . ",
                     order_item_status_id = " . (int) $order_item_status_id . ",
@@ -271,7 +271,7 @@ class ModelSaleOrderItem extends Model
 
             $this->db->query($query);
             $this->db->query("
-                UPDATE " . DB_PREFIX . "order_product
+                UPDATE order_product
                 SET status_id = " . (int)$order_item_status_id . "
                 WHERE order_product_id = " . (int)$order_item_id
             );
@@ -284,7 +284,7 @@ class ModelSaleOrderItem extends Model
     public function setOrderItemTotal($orderItemId, $amount)
     {
       $this->db->query("
-        UPDATE " . DB_PREFIX . "order_product
+        UPDATE order_product
         SET total = " . (float)$amount . "
         WHERE order_product_id = " . (int)$orderItemId
       );
@@ -292,23 +292,23 @@ class ModelSaleOrderItem extends Model
 
     public function setOrderItemPrice($orderItemId, $amount)
     {
-      $query = "UPDATE " . DB_PREFIX . "order_product SET price = (total - shipping)/quantity WHERE order_product_id = " . (int)$orderItemId;
+      $query = "UPDATE order_product SET price = (total - shipping)/quantity WHERE order_product_id = " . (int)$orderItemId;
       $this->db->query($query);
     }
 
     public function setPrice($orderItemId, $amount)
     {
-      $query = "UPDATE " . DB_PREFIX . "order_product SET price = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
+      $query = "UPDATE order_product SET price = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
       $this->db->query($query);
-      $query = "UPDATE " . DB_PREFIX . "order_product SET total = (quantity*price) + shipping WHERE order_product_id = " . (int)$orderItemId;
+      $query = "UPDATE order_product SET total = (quantity*price) + shipping WHERE order_product_id = " . (int)$orderItemId;
       $this->db->query($query);
     }
 
     public function setShipping($orderItemId, $amount)
     {
-      $query = "UPDATE " . DB_PREFIX . "order_product SET shipping = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
+      $query = "UPDATE order_product SET shipping = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
       $this->db->query($query);
-      $query = "UPDATE " . DB_PREFIX . "order_product SET total = (quantity*price) + shipping WHERE order_product_id = " . (int)$orderItemId;
+      $query = "UPDATE order_product SET total = (quantity*price) + shipping WHERE order_product_id = " . (int)$orderItemId;
       $this->db->query($query);
     }
 }

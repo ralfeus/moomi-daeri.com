@@ -2,13 +2,13 @@
 class ModelGalleryPhoto extends Model {
 	public function addPhoto($data) {
 		
-		$this->db->query("INSERT INTO " . DB_PREFIX . "gallery_photo SET customer_id = " . $this->customer->getId() . ", name = '" . $data['name'] . "', `description` = '" . $data['description'] . "', `path` = '" . $data['path'] . "', uploaded_at = '" . $data['date'] . "'");
+		$this->db->query("INSERT INTO gallery_photo SET customer_id = " . $this->customer->getId() . ", name = '" . $data['name'] . "', `description` = '" . $data['description'] . "', `path` = '" . $data['path'] . "', uploaded_at = '" . $data['date'] . "'");
 	
 	}
 
 	public function addVote($data) {
 		
-		$query = "INSERT INTO " . DB_PREFIX . " gallery_photo_voting SET "; 
+		$query = "INSERT INTO  gallery_photo_voting SET ";
 		
 		if($data['photoType'] == 'gallery_photo') {
 			$query .= "photo_id = " . $data['photoID'];

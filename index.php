@@ -29,6 +29,24 @@ require_once(DIR_SYSTEM . 'library/weight.php');
 require_once(DIR_SYSTEM . 'library/length.php');
 require_once(DIR_SYSTEM . 'library/cart.php');
 
+/** Register loader for class files. The function is called when
+ * new operator is called but the class definition is not found.
+ */
+spl_autoload_register(function($class) {
+    if (strpos($class, '\\') !== false) {
+        $class = preg_replace('/\\\\/', '/', $class);
+        include(DIR_SYSTEM . "../$class.class.php");
+    }
+//    $directoryIterator = new RecursiveDirectoryIterator(DIR_SYSTEM . '/../', FilesystemIterator::SKIP_DOTS);
+//    foreach ($directoryIterator as $directory) {
+//        if (file_exists($directory . "/$class.class.php")) {
+//            include($directory . "/$class.class.php");
+//            break;
+//        }
+//    }
+});
+
+
 // Registry
 $registry = new Registry();
 
@@ -46,9 +64,9 @@ $registry->set('db', $db);
 
 // Store
 if (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) {
-	$store_query = $db->query("SELECT * FROM " . DB_PREFIX . "store WHERE REPLACE(`ssl`, 'www.', '') = '" . $db->escape('https://' . str_replace('www.', '', $_SERVER['HTTP_HOST']) . rtrim(dirname($_SERVER['PHP_SELF']), '/.\\') . '/') . "'");
+	$store_query = $db->query("SELECT * FROM store WHERE REPLACE(`ssl`, 'www.', '') = '" . $db->escape('https://' . str_replace('www.', '', $_SERVER['HTTP_HOST']) . rtrim(dirname($_SERVER['PHP_SELF']), '/.\\') . '/') . "'");
 } else {
-	$store_query = $db->query("SELECT * FROM " . DB_PREFIX . "store WHERE REPLACE(`url`, 'www.', '') = '" . $db->escape('http://' . str_replace('www.', '', $_SERVER['HTTP_HOST']) . rtrim(dirname($_SERVER['PHP_SELF']), '/.\\') . '/') . "'");
+	$store_query = $db->query("SELECT * FROM store WHERE REPLACE(`url`, 'www.', '') = '" . $db->escape('http://' . str_replace('www.', '', $_SERVER['HTTP_HOST']) . rtrim(dirname($_SERVER['PHP_SELF']), '/.\\') . '/') . "'");
 }
 if ($store_query->num_rows) {
 	$config->set('config_store_id', $store_query->row['store_id']);
@@ -57,7 +75,7 @@ if ($store_query->num_rows) {
 }
 
 // Settings
-$query = $db->query("SELECT * FROM " . DB_PREFIX . "setting WHERE store_id = '0' OR store_id = '" . (int)$config->get('config_store_id') . "' ORDER BY store_id ASC");
+$query = $db->query("SELECT * FROM setting WHERE store_id = '0' OR store_id = '" . (int)$config->get('config_store_id') . "' ORDER BY store_id ASC");
 
 foreach ($query->rows as $setting) {
 	if (!$setting['serialized']) {
@@ -136,7 +154,7 @@ $registry->set('session', $session);
 // Language Detection
 $languages = array();
 
-$query = $db->query("SELECT * FROM " . DB_PREFIX . "language");
+$query = $db->query("SELECT * FROM language");
 
 foreach ($query->rows as $result) {
 	$languages[$result['code']] = $result;
@@ -234,7 +252,6 @@ if (!$seo_type = $config->get('config_seo_url_type')) {
 	$seo_type = 'seo_url';
 }
 $controller->addPreAction(new Action('common/' . $seo_type));
-
 $controller->addPreAction(new Action('common/up/cc'));
 
 // Router
@@ -249,4 +266,3 @@ $controller->dispatch($action, new Action('error/not_found'));
 
 // Output
 $response->output();
-?>

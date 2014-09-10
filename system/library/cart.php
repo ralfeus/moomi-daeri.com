@@ -40,8 +40,8 @@ final class Cart extends OpenCartBase
       		$product_query = $this->db->query("
       		    SELECT *
       		    FROM
-      		        " . DB_PREFIX . "product p
-      		        LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id)
+      		        product p
+      		        LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
                 WHERE
                     p.product_id = '" . (int)$product_id . "'
                     AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
@@ -59,9 +59,9 @@ final class Cart extends OpenCartBase
 					$option_query = $this->db->query("
 					    SELECT po.product_option_id, po.option_id, od.name, o.type
 					    FROM
-					        " . DB_PREFIX . "product_option po
-					        LEFT JOIN `" . DB_PREFIX . "option` o ON (po.option_id = o.option_id)
-					        LEFT JOIN " . DB_PREFIX . "option_description od ON (o.option_id = od.option_id)
+					        product_option po
+					        LEFT JOIN `option` o ON (po.option_id = o.option_id)
+					        LEFT JOIN option_description od ON (o.option_id = od.option_id)
                         WHERE
                             po.product_option_id = '" . (int)$product_option_id . "'
                             AND po.product_id = '" . (int)$product_id . "'
@@ -73,9 +73,9 @@ final class Cart extends OpenCartBase
 							$option_value_query = $this->db->query("
 							    SELECT pov.option_value_id, ovd.name, pov.quantity, pov.subtract, pov.price, pov.price_prefix, pov.points, pov.points_prefix, pov.weight, pov.weight_prefix
 							    FROM
-							        " . DB_PREFIX . "product_option_value pov
-							        LEFT JOIN " . DB_PREFIX . "option_value ov ON (pov.option_value_id = ov.option_value_id)
-							        LEFT JOIN " . DB_PREFIX . "option_value_description ovd ON (ov.option_value_id = ovd.option_value_id)
+							        product_option_value pov
+							        LEFT JOIN option_value ov ON (pov.option_value_id = ov.option_value_id)
+							        LEFT JOIN option_value_description ovd ON (ov.option_value_id = ovd.option_value_id)
                                 WHERE
                                     pov.product_option_value_id = '" . (int)$option_value . "'
                                     AND pov.product_option_id = '" . (int)$product_option_id . "'
@@ -125,7 +125,7 @@ final class Cart extends OpenCartBase
 							}
 						} elseif ($option_query->row['type'] == 'checkbox' && is_array($option_value)) {
 							foreach ($option_value as $product_option_value_id) {
-								$option_value_query = $this->db->query("SELECT pov.option_value_id, ovd.name, pov.quantity, pov.subtract, pov.price, pov.price_prefix, pov.points, pov.points_prefix, pov.weight, pov.weight_prefix FROM " . DB_PREFIX . "product_option_value pov LEFT JOIN " . DB_PREFIX . "option_value ov ON (pov.option_value_id = ov.option_value_id) LEFT JOIN " . DB_PREFIX . "option_value_description ovd ON (ov.option_value_id = ovd.option_value_id) WHERE pov.product_option_value_id = '" . (int)$product_option_value_id . "' AND pov.product_option_id = '" . (int)$product_option_id . "' AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+								$option_value_query = $this->db->query("SELECT pov.option_value_id, ovd.name, pov.quantity, pov.subtract, pov.price, pov.price_prefix, pov.points, pov.points_prefix, pov.weight, pov.weight_prefix FROM product_option_value pov LEFT JOIN option_value ov ON (pov.option_value_id = ov.option_value_id) LEFT JOIN option_value_description ovd ON (ov.option_value_id = ovd.option_value_id) WHERE pov.product_option_value_id = '" . (int)$product_option_value_id . "' AND pov.product_option_id = '" . (int)$product_option_id . "' AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
 								
 								if ($option_value_query->num_rows) {
 									if ($option_value_query->row['price_prefix'] == '+') {
@@ -212,7 +212,7 @@ final class Cart extends OpenCartBase
 				
 				$product_discount_query = $this->db->query("
 				    SELECT price
-                    FROM " . DB_PREFIX . "product_discount
+                    FROM product_discount
                     WHERE
                         product_id = '" . (int)$product_id . "'
                         AND customer_group_id = '" . (int)$customer_group_id . "'
@@ -229,7 +229,7 @@ final class Cart extends OpenCartBase
 				// Product Specials
 				$product_special_query = $this->db->query("
 				    SELECT price
-				    FROM " . DB_PREFIX . "product_special
+				    FROM product_special
 				    WHERE
 				        product_id = '" . (int)$product_id . "'
 				        AND customer_group_id = '" . (int)$customer_group_id . "'
@@ -244,7 +244,7 @@ final class Cart extends OpenCartBase
 				}						
 		
 				// Reward Points
-				$query = $this->db->query("SELECT points FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int)$product_id . "' AND customer_group_id = '" . (int)$customer_group_id . "'");
+				$query = $this->db->query("SELECT points FROM product_reward WHERE product_id = '" . (int)$product_id . "' AND customer_group_id = '" . (int)$customer_group_id . "'");
 				
 				if ($query->num_rows) {	
 					$reward = $query->row['points'];
@@ -255,7 +255,7 @@ final class Cart extends OpenCartBase
 				// Downloads		
 				$download_data = array();     		
 				
-				$download_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_to_download p2d LEFT JOIN " . DB_PREFIX . "download d ON (p2d.download_id = d.download_id) LEFT JOIN " . DB_PREFIX . "download_description dd ON (d.download_id = dd.download_id) WHERE p2d.product_id = '" . (int)$product_id . "' AND dd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+				$download_query = $this->db->query("SELECT * FROM product_to_download p2d LEFT JOIN download d ON (p2d.download_id = d.download_id) LEFT JOIN download_description dd ON (d.download_id = dd.download_id) WHERE p2d.product_id = '" . (int)$product_id . "' AND dd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
 			
 				foreach ($download_query->rows as $download) {
         			$download_data[] = array(

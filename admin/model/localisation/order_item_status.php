@@ -24,7 +24,7 @@ class ModelLocalisationOrderItemStatus extends Model
             if (!$order_item_status_data)
             {
                 $query = $this->db->query("
-                    SELECT * FROM " . DB_PREFIX . "order_item_status
+                    SELECT * FROM order_item_status
                     ORDER BY workflow_order
                 ");
 

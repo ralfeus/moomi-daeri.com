@@ -3,7 +3,7 @@ class ModelCatalogSupplierGroup extends Model
 {
     public function addSupplierGroup($data) {
         $this->db->query("
-            INSERT INTO " . DB_PREFIX . "supplier_group
+            INSERT INTO supplier_group
             SET
                 name = '" . $this->db->escape($data['name']) . "'");
 
@@ -12,7 +12,7 @@ class ModelCatalogSupplierGroup extends Model
 
     public function editSupplierGroup($supplier_group_id, $data) {
         $this->db->query("
-		    UPDATE " . DB_PREFIX . "supplier_group
+		    UPDATE supplier_group
 		    SET
 		        name = '" . $this->db->escape($data['name']) . "'
             WHERE supplier_group_id = '" . (int)$supplier_group_id . "'");
@@ -21,27 +21,27 @@ class ModelCatalogSupplierGroup extends Model
     }
 
     public function deleteSupplierGroup($supplier_group_id) {
-        $this->db->query("DELETE FROM " . DB_PREFIX . "supplier_group WHERE supplier_group_id = '" . (int)$supplier_group_id . "'");
+        $this->db->query("DELETE FROM supplier_group WHERE supplier_group_id = '" . (int)$supplier_group_id . "'");
 
         $this->cache->delete('supplier_group');
     }
 
     public function getSupplierGroup($supplier_group_id) {
-        $query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "supplier_group WHERE supplier_group_id = '" . (int)$supplier_group_id . "'");
+        $query = $this->db->query("SELECT DISTINCT * FROM supplier_group WHERE supplier_group_id = '" . (int)$supplier_group_id . "'");
 
         return $query->row;
     }
 
     public function getSupplierGroupByName($supplier_group_name)
     {
-        $query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "supplier_group WHERE name = '$supplier_group_name'");
+        $query = $this->db->query("SELECT DISTINCT * FROM supplier_group WHERE name = '$supplier_group_name'");
 
         return $query->row;
     }
 
     public function getSupplierGroups($data = array()) {
         if ($data) {
-            $sql = "SELECT * FROM " . DB_PREFIX . "supplier_group";
+            $sql = "SELECT * FROM supplier_group";
 
             $sort_data = array(
                 'name'
@@ -78,7 +78,7 @@ class ModelCatalogSupplierGroup extends Model
             $supplier_group_data = $this->cache->get('supplier_group');
 
             if (!$supplier_group_data) {
-                $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "supplier_group ORDER BY name");
+                $query = $this->db->query("SELECT * FROM supplier_group ORDER BY name");
 
                 $supplier_group_data = $query->rows;
 
@@ -90,7 +90,7 @@ class ModelCatalogSupplierGroup extends Model
     }
 
     public function getTotalSupplierGroups() {
-        $query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "supplier_group");
+        $query = $this->db->query("SELECT COUNT(*) AS total FROM supplier_group");
 
         return $query->row['total'];
     }

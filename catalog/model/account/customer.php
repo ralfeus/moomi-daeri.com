@@ -2,7 +2,7 @@
 class ModelAccountCustomer extends Model {
 	public function addCustomer($data) {
       	$this->db->query("
-      	    INSERT INTO " . DB_PREFIX . "customer
+      	    INSERT INTO customer
       	    SET
       	        balance = 0,
       	        base_currency_code = '" . $this->db->escape($data['baseCurrency']) . "',
@@ -22,14 +22,14 @@ class ModelAccountCustomer extends Model {
       	
 		$customer_id = $this->db->getLastId();
 			
-      	$this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . (int)$customer_id . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', company = '" . $this->db->escape($data['company']) . "', address_1 = '" . $this->db->escape($data['address_1']) . "', address_2 = '" . $this->db->escape($data['address_2']) . "', city = '" . $this->db->escape($data['city']) . "', postcode = '" . $this->db->escape($data['postcode']) . "', country_id = '" . (int)$data['country_id'] . "', zone_id = '" . (int)$data['zone_id'] . "'");
+      	$this->db->query("INSERT INTO address SET customer_id = '" . (int)$customer_id . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', company = '" . $this->db->escape($data['company']) . "', address_1 = '" . $this->db->escape($data['address_1']) . "', address_2 = '" . $this->db->escape($data['address_2']) . "', city = '" . $this->db->escape($data['city']) . "', postcode = '" . $this->db->escape($data['postcode']) . "', country_id = '" . (int)$data['country_id'] . "', zone_id = '" . (int)$data['zone_id'] . "'");
 		
 		$address_id = $this->db->getLastId();
 
-      	$this->db->query("UPDATE " . DB_PREFIX . "customer SET address_id = '" . (int)$address_id . "' WHERE customer_id = '" . (int)$customer_id . "'");
+      	$this->db->query("UPDATE customer SET address_id = '" . (int)$address_id . "' WHERE customer_id = '" . (int)$customer_id . "'");
 		
 		if (!$this->config->get('config_customer_approval')) {
-			$this->db->query("UPDATE " . DB_PREFIX . "customer SET approved = '1' WHERE customer_id = '" . (int)$customer_id . "'");
+			$this->db->query("UPDATE customer SET approved = '1' WHERE customer_id = '" . (int)$customer_id . "'");
 		}	
 		
 		$this->language->load('mail/customer');
@@ -84,7 +84,7 @@ class ModelAccountCustomer extends Model {
 	public function editCustomer($data) {
 
 		$this->db->query("
-		    UPDATE " . DB_PREFIX . "customer
+		    UPDATE customer
 		    SET
 		        firstname = '" . $this->db->escape($data['firstname']) . "',
 		        lastname = '" . $this->db->escape($data['lastname']) . "',
@@ -110,15 +110,15 @@ class ModelAccountCustomer extends Model {
 	}
 
 	public function editPassword($email, $password) {
-      	$this->db->query("UPDATE " . DB_PREFIX . "customer SET password = '" . $this->db->escape(md5($password)) . "' WHERE email = '" . $this->db->escape($email) . "'");
+      	$this->db->query("UPDATE customer SET password = '" . $this->db->escape(md5($password)) . "' WHERE email = '" . $this->db->escape($email) . "'");
 	}
 
 	public function editNewsletter($newsletter) {
-		$this->db->query("UPDATE " . DB_PREFIX . "customer SET newsletter = '" . (int)$newsletter . "' WHERE customer_id = '" . (int)$this->customer->getId() . "'");
+		$this->db->query("UPDATE customer SET newsletter = '" . (int)$newsletter . "' WHERE customer_id = '" . (int)$this->customer->getId() . "'");
 	}
 					
 	public function getCustomer($customer_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "'");
+		$query = $this->db->query("SELECT * FROM customer WHERE customer_id = '" . (int)$customer_id . "'");
 		
 		return $query->row;
 	}
@@ -126,7 +126,7 @@ class ModelAccountCustomer extends Model {
     public function  getCustomerByNickname($nickname) {
         $query = $this->db->query("
             SELECT *
-            FROM " . DB_PREFIX . "customer
+            FROM customer
             WHERE nickname = '" . $this->db->escape($nickname) . "'
         ");
         if ($query)
@@ -136,15 +136,15 @@ class ModelAccountCustomer extends Model {
     }
 	
 	public function getCustomerByToken($token) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE token = '" . $this->db->escape($token) . "' AND token != ''");
+		$query = $this->db->query("SELECT * FROM customer WHERE token = '" . $this->db->escape($token) . "' AND token != ''");
 		
-		$this->db->query("UPDATE " . DB_PREFIX . "customer SET token = ''");
+		$this->db->query("UPDATE customer SET token = ''");
 		
 		return $query->row;
 	}
 		
 	public function getCustomers($data = array()) {
-		$sql = "SELECT *, CONCAT(c.firstname, ' ', c.lastname) AS name, cg.name AS customer_group FROM " . DB_PREFIX . "customer c LEFT JOIN " . DB_PREFIX . "customer_group cg ON (c.customer_group_id = cg.customer_group_id) ";
+		$sql = "SELECT *, CONCAT(c.firstname, ' ', c.lastname) AS name, cg.name AS customer_group FROM customer c LEFT JOIN customer_group cg ON (c.customer_group_id = cg.customer_group_id) ";
 
 		$implode = array();
 
@@ -169,7 +169,7 @@ class ModelAccountCustomer extends Model {
 		}
 
 		if (isset($data['filter_ip']) && !is_null($data['filter_ip'])) {
-			$implode[] = "c.customer_id IN (SELECT customer_id FROM " . DB_PREFIX . "customer_ip WHERE ip = '" . $this->db->escape($data['filter_ip']) . "')";
+			$implode[] = "c.customer_id IN (SELECT customer_id FROM customer_ip WHERE ip = '" . $this->db->escape($data['filter_ip']) . "')";
 		}
 
 		if (isset($data['filter_date_added']) && !is_null($data['filter_date_added'])) {
@@ -219,7 +219,7 @@ class ModelAccountCustomer extends Model {
 	}
 		
 	public function getTotalCustomersByEmail($email) {
-		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($email) . "'");
+		$query = $this->db->query("SELECT COUNT(*) AS total FROM customer WHERE email = '" . $this->db->escape($email) . "'");
 
 		return $query->row['total'];
 	}

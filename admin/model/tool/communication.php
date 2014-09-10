@@ -11,7 +11,7 @@ class ModelToolCommunication extends Model
     public function sendMessage($customerId, $message, $messageTypeId)
     {
         $this->db->query("
-            INSERT INTO " . DB_PREFIX . "messages
+            INSERT INTO messages
             SET
                 sender_id = 0,
                 recipient_id = " . (int)$customerId . ",

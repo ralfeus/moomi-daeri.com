@@ -14,7 +14,7 @@ class ModelTotalSubTotal extends ModelTotal {
 
         $query = $this->db->query("
             SELECT sum(total) AS total
-            FROM " . DB_PREFIX . "order_product
+            FROM order_product
             WHERE order_id = " . (int)$orderId
         );
         if ($query->num_rows)
@@ -24,7 +24,7 @@ class ModelTotalSubTotal extends ModelTotal {
 
         $query = $this->db->query("
             SELECT sum(amount) AS total
-            FROM " . DB_PREFIX . "voucher_history
+            FROM voucher_history
             WHERE order_id = " . (int)$orderId
         );
         if ($query->num_rows)

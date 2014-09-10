@@ -12,6 +12,23 @@ if (!defined('DIR_APPLICATION')) {
 	exit;
 }
 
+/** Register loader for class files. The function is called when
+ * new operator is called but the class definition is not found.
+ */
+spl_autoload_register(function($class) {
+    if (strpos($class, '\\') !== false) {
+        $class = preg_replace('/\\\\/', '/', $class);
+        include(DIR_SYSTEM . "../$class.class.php");
+    }
+//    $directoryIterator = new RecursiveDirectoryIterator(DIR_SYSTEM . '/../', FilesystemIterator::SKIP_DOTS);
+//    foreach ($directoryIterator as $directory) {
+//        if (file_exists($directory . "/$class.class.php")) {
+//            include($directory . "/$class.class.php");
+//            break;
+//        }
+//    }
+});
+
 // Startup
 require_once(DIR_SYSTEM . 'startup.php');
 
@@ -37,7 +54,7 @@ $db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 $registry->set('db', $db);
 		
 // Settings
-$query = $db->query("SELECT * FROM " . DB_PREFIX . "setting WHERE store_id = '0'");
+$query = $db->query("SELECT * FROM setting WHERE store_id = '0'");
  
 foreach ($query->rows as $setting) {
 	if (!$setting['serialized']) {
@@ -109,7 +126,7 @@ $registry->set('session', $session);
 // Language
 $languages = array();
 
-$query = $db->query("SELECT * FROM " . DB_PREFIX . "language"); 
+$query = $db->query("SELECT * FROM language");
 
 foreach ($query->rows as $result) {
 	$languages[$result['code']] = $result;

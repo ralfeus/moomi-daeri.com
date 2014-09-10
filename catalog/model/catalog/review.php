@@ -2,7 +2,7 @@
 class ModelCatalogReview extends Model {		
 	public function addReview($product_id, $data) {
 		$this->db->query("
-		    INSERT INTO " . DB_PREFIX . "review
+		    INSERT INTO review
 		    SET
 		        author = '" . $this->db->escape($data['name']) . "',
 		        customer_id = '" . (int)$this->customer->getId() . "',
@@ -29,7 +29,7 @@ class ModelCatalogReview extends Model {
                 $this->log->write(basename($fullFilePath));
                 copy($fullFilePath, DIR_IMAGE . '/reviews/' . basename($fullFilePath));
                 $this->db->query("
-                    INSERT INTO " . DB_PREFIX . "review_images
+                    INSERT INTO review_images
                     SET
                         review_id = " . (int)$reviewId . ",
                         image_path = '" . $this->db->escape('/reviews/' . basename($fullFilePath)) . "'
@@ -43,7 +43,7 @@ class ModelCatalogReview extends Model {
     {
         $query = $this->db->query("
             SELECT *
-            FROM " . DB_PREFIX . "review_images
+            FROM review_images
             WHERE review_id = " . (int)$reviewId
         );
         $result = array();
@@ -56,9 +56,9 @@ class ModelCatalogReview extends Model {
 		$query = $this->db->query("
 		    SELECT r.review_id, r.author, r.rating, r.text, p.product_id, pd.name, p.price, p.image, r.date_added
 		    FROM
-		        " . DB_PREFIX . "review r
-		        LEFT JOIN " . DB_PREFIX . "product p ON (r.product_id = p.product_id)
-		        LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id)
+		        review r
+		        LEFT JOIN product p ON (r.product_id = p.product_id)
+		        LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
             WHERE
                 p.product_id = '" . (int)$product_id . "'
                 AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
@@ -73,7 +73,7 @@ class ModelCatalogReview extends Model {
 	}
 	
 	public function getAverageRating($product_id) {
-		$query = $this->db->query("SELECT AVG(rating) AS total FROM " . DB_PREFIX . "review WHERE status = '1' AND product_id = '" . (int)$product_id . "' GROUP BY product_id");
+		$query = $this->db->query("SELECT AVG(rating) AS total FROM review WHERE status = '1' AND product_id = '" . (int)$product_id . "' GROUP BY product_id");
 		
 		if (isset($query->row['total'])) {
 			return (int)$query->row['total'];
@@ -86,8 +86,8 @@ class ModelCatalogReview extends Model {
 		$query = $this->db->query("
 		    SELECT COUNT(*) AS total
             FROM
-                " . DB_PREFIX . "review r
-                LEFT JOIN " . DB_PREFIX . "product p ON (r.product_id = p.product_id)
+                review r
+                LEFT JOIN product p ON (r.product_id = p.product_id)
             WHERE p.date_available <= '" . date('Y-m-d H:00:00') . "'
             AND p.status = '1'
             AND r.status = '1'
@@ -100,9 +100,9 @@ class ModelCatalogReview extends Model {
 		$query = $this->db->query("
 		    SELECT COUNT(*) AS total
 		    FROM
-		        " . DB_PREFIX . "review r
-		        LEFT JOIN " . DB_PREFIX . "product p ON (r.product_id = p.product_id)
-		        LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id)
+		        review r
+		        LEFT JOIN product p ON (r.product_id = p.product_id)
+		        LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
             WHERE
                 p.product_id = '" . (int)$product_id . "'
                 AND p.date_available <= '" . date('Y-m-d H:00:00') . "'

@@ -4,7 +4,7 @@ abstract class Controller extends OpenCartBase
 {
     /** @var array */
     protected $children = array();
-    /** @var Customer $customer  */
+    /** @var Customer */
     protected $customer;
     /** @var array */
     protected $data = array(); // contains data for the template
@@ -141,8 +141,7 @@ abstract class Controller extends OpenCartBase
         $this->data['breadcrumbs'] = array();
     }
 
-    private function setSelfRoutes()
-    {
+    private function setSelfRoutes() {
         $route = empty($_REQUEST['route']) ? 'common/home' : $_REQUEST['route'];
         $this->selfUrl = '/'. $_SERVER["PHP_SELF"];
         if (!empty($_REQUEST))

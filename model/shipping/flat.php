@@ -14,9 +14,9 @@ class ModelShippingFlat extends ShippingMethodModel
             $sql = "
                 SELECT gz.geo_zone_id, gz.name, gz.description
                 FROM
-                    " . DB_PREFIX . "setting AS s
-                    JOIN " . DB_PREFIX . "geo_zone AS gz ON s.key = 'flat_geo_zone_id' AND value IN (gz.geo_zone_id, 0)
-                    JOIN " . DB_PREFIX . "zone_to_geo_zone AS ztgz ON gz.geo_zone_id = ztgz.geo_zone_id
+                    setting AS s
+                    JOIN geo_zone AS gz ON s.key = 'flat_geo_zone_id' AND value IN (gz.geo_zone_id, 0)
+                    JOIN zone_to_geo_zone AS ztgz ON gz.geo_zone_id = ztgz.geo_zone_id
                 WHERE
                     ztgz.country_id = " . (int)$address['country_id'] . "
                     AND (ztgz.zone_id = " . (int)$address['zone_id'] . " OR ztgz.zone_id = 0)

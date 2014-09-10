@@ -1,45 +1,45 @@
 <?php
 class ModelDesignLayout extends Model {
 	public function addLayout($data) {
-		$this->db->query("INSERT INTO " . DB_PREFIX . "layout SET name = '" . $this->db->escape($data['name']) . "'");
+		$this->db->query("INSERT INTO layout SET name = '" . $this->db->escape($data['name']) . "'");
 	
 		$layout_id = $this->db->getLastId();
 		
 		if (isset($data['layout_route'])) {
 			foreach ($data['layout_route'] as $layout_route) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "layout_route SET layout_id = '" . (int)$layout_id . "', store_id = '" . (int)$layout_route['store_id'] . "', route = '" . $this->db->escape($layout_route['route']) . "'");
+				$this->db->query("INSERT INTO layout_route SET layout_id = '" . (int)$layout_id . "', store_id = '" . (int)$layout_route['store_id'] . "', route = '" . $this->db->escape($layout_route['route']) . "'");
 			}	
 		}
 	}
 	
 	public function editLayout($layout_id, $data) {
-		$this->db->query("UPDATE " . DB_PREFIX . "layout SET name = '" . $this->db->escape($data['name']) . "' WHERE layout_id = '" . (int)$layout_id . "'");
+		$this->db->query("UPDATE layout SET name = '" . $this->db->escape($data['name']) . "' WHERE layout_id = '" . (int)$layout_id . "'");
 		
-		$this->db->query("DELETE FROM " . DB_PREFIX . "layout_route WHERE layout_id = '" . (int)$layout_id . "'");
+		$this->db->query("DELETE FROM layout_route WHERE layout_id = '" . (int)$layout_id . "'");
 		
 		if (isset($data['layout_route'])) {
 			foreach ($data['layout_route'] as $layout_route) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "layout_route SET layout_id = '" . (int)$layout_id . "', store_id = '" . (int)$layout_route['store_id'] . "', route = '" . $this->db->escape($layout_route['route']) . "'");
+				$this->db->query("INSERT INTO layout_route SET layout_id = '" . (int)$layout_id . "', store_id = '" . (int)$layout_route['store_id'] . "', route = '" . $this->db->escape($layout_route['route']) . "'");
 			}
 		}
 	}
 	
 	public function deleteLayout($layout_id) {
-		$this->db->query("DELETE FROM " . DB_PREFIX . "layout WHERE layout_id = '" . (int)$layout_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "layout_route WHERE layout_id = '" . (int)$layout_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "category_to_layout WHERE layout_id = '" . (int)$layout_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_layout WHERE layout_id = '" . (int)$layout_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "information_to_layout WHERE layout_id = '" . (int)$layout_id . "'");		
+		$this->db->query("DELETE FROM layout WHERE layout_id = '" . (int)$layout_id . "'");
+		$this->db->query("DELETE FROM layout_route WHERE layout_id = '" . (int)$layout_id . "'");
+		$this->db->query("DELETE FROM category_to_layout WHERE layout_id = '" . (int)$layout_id . "'");
+		$this->db->query("DELETE FROM product_to_layout WHERE layout_id = '" . (int)$layout_id . "'");
+		$this->db->query("DELETE FROM information_to_layout WHERE layout_id = '" . (int)$layout_id . "'");
 	}
 	
 	public function getLayout($layout_id) {
-		$query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "layout WHERE layout_id = '" . (int)$layout_id . "'");
+		$query = $this->db->query("SELECT DISTINCT * FROM layout WHERE layout_id = '" . (int)$layout_id . "'");
 		
 		return $query->row;
 	}
 		 
 	public function getLayouts($data = array()) {
-		$sql = "SELECT * FROM " . DB_PREFIX . "layout";
+		$sql = "SELECT * FROM layout";
 		
 		$sort_data = array('name');	
 		
@@ -73,13 +73,13 @@ class ModelDesignLayout extends Model {
 	}
 	
 	public function getLayoutRoutes($layout_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "layout_route WHERE layout_id = '" . (int)$layout_id . "'");
+		$query = $this->db->query("SELECT * FROM layout_route WHERE layout_id = '" . (int)$layout_id . "'");
 		
 		return $query->rows;
 	}
 		
 	public function getTotalLayouts() {
-      	$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "layout");
+      	$query = $this->db->query("SELECT COUNT(*) AS total FROM layout");
 		
 		return $query->row['total'];
 	}	

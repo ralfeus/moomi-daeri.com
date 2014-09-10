@@ -51,29 +51,25 @@ class ControllerSaleInvoice extends Controller
         return true;
     }
 
-    public function create()
-    {
+    public function create() {
         $comment = isset($_REQUEST['comment']) ? $_REQUEST['comment'] : '';
-        if (!is_numeric($_REQUEST['discount']))
-        {
+        if (!is_numeric($_REQUEST['discount'])) {
             $this->data['notifications']['error'] = $this->language->get("ERROR_INVALID_DISCOUNT_VALUE");
             $this->showCreateForm();
             return;
-        }
-        else
+        } else {
             $discount = $_REQUEST['discount'];
+        }
         if (!isset($this->request->request['selectedItems']))
             return;
-        $total = isset($_REQUEST['total']) ? $_REQUEST['total'] : 0;
-        if (!is_numeric($this->request->request['totalWeight']))
-        {
+//        $total = isset($_REQUEST['total']) ? $_REQUEST['total'] : 0;
+        if (!is_numeric($this->request->request['totalWeight'])) {
             $this->data['notifications']['error'] = $this->language->get("error_invalid_weight_value");
             $this->showCreateForm();
             return;
-        }
-        else
+        } else {
             $totalWeight = $_REQUEST['totalWeight'];
-
+        }
         $orderItems = $this->modelSaleOrderItem->getOrderItems(array(
             'selected_items' => $_REQUEST['selectedItems']
         ));
@@ -84,7 +80,6 @@ class ControllerSaleInvoice extends Controller
             $totalWeight,
             $discount,
             $comment,
-            $total,
             $_POST['shippingDate']
         );
         $this->handleCredit($newInvoiceId);
@@ -121,14 +116,18 @@ class ControllerSaleInvoice extends Controller
         unset($data['filterCustomerId']);
         $tmpResult = array();
         foreach ($this->modelSaleInvoice->getInvoices($data) as $invoice)
-            if (!in_array($invoice['customer_id'], $tmpResult))
-                $tmpResult[$invoice['customer_id']] = $invoice['lastname'] . " " . $invoice['firstname'] . ' / ' . $invoice['nickname'];
+            if (!in_array($invoice->getCustomer()['customer_id'], $tmpResult))
+                $tmpResult[$invoice->getCustomer()['customer_id']] =
+                    $invoice->getCustomer()['lastname'] . " " .
+                    $invoice->getCustomer()['firstname'] . ' / ' .
+                    $invoice->getCustomer()['nickname'];
         natcasesort($tmpResult);
         return $tmpResult;
     }
 
     private function getData()
     {
+        /** @var ModelSaleInvoice $modelSaleInvoice */
         $modelSaleInvoice = $this->registry->get('model_sale_invoice');
 
         /// Initialize interface values
@@ -149,54 +148,51 @@ class ControllerSaleInvoice extends Controller
 
         $this->data['customers'] = $this->getCustomers();
         $data = $this->parameters;
-        foreach ($modelSaleInvoice->getInvoices($data) as $invoice)
-        {
-
+        foreach ($modelSaleInvoice->getInvoices($data) as $invoice) {
             $action = array();
             $action[] = array(
-                'text' => $this->language->get('VIEW'),
-                'href' => $this->url->link('sale/invoice/showForm', 'invoiceId=' . $invoice['invoice_id'] . '&token=' . $this->session->data['token'], 'SSL')
+                'text' => $this->getLanguage()->get('VIEW'),
+                'href' => $this->url->link('sale/invoice/showForm', 'invoiceId=' . $invoice->getId() . '&token=' . $this->session->data['token'], 'SSL')
             );
-            if (!$this->load->model('sale/transaction')->getTransactionByInvoiceId($invoice['invoice_id']))
+            if (!$this->load->model('sale/transaction')->getTransactionByInvoiceId($invoice->getId()))
                 $action[] = array(
-                    'text' => $this->language->get('DELETE'),
-                    'href' => $this->url->link('sale/invoice/delete', 'invoiceId=' . $invoice['invoice_id'] . '&token=' . $this->session->data['token'], 'SSL')
+                    'text' => $this->getLanguage()->get('DELETE'),
+                    'href' => $this->url->link('sale/invoice/delete', 'invoiceId=' . $invoice->getId() . '&token=' . $this->session->data['token'], 'SSL')
                 );
             else
                 $action[] = array(
-                    'text' => $this->language->get('DELETE'),
+                    'text' => $this->getLanguage()->get('DELETE'),
                     'onclick' => "confirmDeletion('" .
                         $this->url->link(
                             'sale/invoice/delete',
-                            'invoiceId=' . $invoice['invoice_id'] . '&token=' . $this->session->data['token'], 'SSL') .
+                            'invoiceId=' . $invoice->getId() . '&token=' . $this->session->data['token'], 'SSL') .
                         "')"
                 );
 
-            $arrTemp = explode(" ", $invoice['time_modified']);
+            $arrTemp = explode(" ", $invoice->getTimeModified());
             $invoiceDate = $arrTemp[0];
             $this->data['invoices'][] = array(
-                'invoiceId' => $invoice['invoice_id'],
+                'invoiceId' => $invoice->getId(),
                 'action' => $action,
-                'customer' => $invoice['lastname'] . ' ' . $invoice['firstname'],
-                'customerId' => $invoice['customer_id'],
-                'shippingCost' => $this->currency->format($invoice['shipping_cost'], $this->config->get('config_currency')),
-                'shippingMethod' => Shipping::getName($invoice['shipping_method'], $this->registry),
-                'status' => $this->load->model('localisation/invoice')->getInvoiceStatus($invoice['invoice_status_id']),
-                'subtotal' => $this->currency->format($invoice['subtotal'], $this->config->get('config_currency')),
-                'total' => $this->currency->format($invoice['total'], $this->config->get('config_currency')),
-                'totalCustomerCurrency' => $this->currency->format($invoice['total'], $invoice['base_currency_code']),
-                'weight' => $invoice['weight'],
+                'customer' => $invoice->getCustomer()['lastname'] . ' ' . $invoice->getCustomer()['firstname'],
+                'customerId' => $invoice->getCustomer()['customer_id'],
+                'shippingCost' => $this->getCurrency()->format($invoice->getShippingCost(), $this->config->get('config_currency')),
+                'shippingMethod' => Shipping::getName($invoice->getShippingMethod(), $this->registry),
+                'status' => $this->load->model('localisation/invoice')->getInvoiceStatus($invoice->getStatusId()),
+                'subtotal' => $this->getCurrency()->format($invoice->getSubtotal(), $this->config->get('config_currency')),
+                'total' => $this->getCurrency()->format($invoice->getTotal(), $this->config->get('config_currency')),
+                'totalCustomerCurrency' => $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1),
+                'weight' => $invoice->getWeight(),
                 'date' => $invoiceDate,
-                'package_number' => $invoice['package_number'],
-                'shipping_date' => $invoice['shipping_date']
+                'package_number' => $invoice->getPackageNumber(),
+                'shipping_date' => $invoice->getShippingDate()
             );
         }
         $this->data = array_merge($this->data, $this->parameters);
 //        $this->log->write(print_r($this->parameters, true));
     }
 
-    private function getOrderAddress($order)
-    {
+    private function getOrderAddress($order) {
 //        $this->log->write(print_r($order, true));
         if (isset($order['address_id']))
             return $this->modelReferenceAddress->getAddress($order['address_id']);
@@ -221,18 +217,14 @@ class ControllerSaleInvoice extends Controller
         return $this->modelReferenceAddress->toString($this->getOrderAddress($order));
     }
 
-    private function getOrderItemsHavingInvoice($orderItems)
-    {
+    private function getOrderItemsHavingInvoice($orderItems) {
         $result = "";
-        foreach ($orderItems as $orderItem)
-        {
-            $modelSaleInvoice = $this->load->model('sale/invoice');
-            $existingInvoices = $modelSaleInvoice->getInvoicesByOrderItem($orderItem['order_product_id']);
-            if ($existingInvoices)
-            {
+        foreach ($orderItems as $orderItem) {
+            $existingInvoices = $this->modelSaleInvoice->getInvoicesByOrderItem($orderItem['order_product_id']);
+            if ($existingInvoices) {
                 $result .= $orderItem['order_product_id'] . " ==> ";
                 foreach ($existingInvoices as $existingInvoice)
-                    $result .= $existingInvoice['invoice_id'] . ",";
+                    $result .= $existingInvoice->getId() . ",";
                 $result = rtrim($result, ',') . "\n";
             }
         }
@@ -254,43 +246,42 @@ class ControllerSaleInvoice extends Controller
         $this->response->setOutput(json_encode($json));
     }
 
-    private function handleCredit($invoiceId)
-    {
-        $modelTransaction = $this->load->model('sale/transaction');
+    private function handleCredit($invoiceId) {
+//        $modelTransaction = $this->load->model('sale/transaction');
         $invoice = $this->modelSaleInvoice->getInvoice($invoiceId);
-        $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
+//        $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
 
-        if ($customer['await_invoice_confirmation'])
+        if ($invoice->getCustomer()['await_invoice_confirmation'])
             $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_CUSTOMER_CONFIRMATION);
         else
         {
-            $totalToPay = $this->currency->convert(
-                $invoice['total'],
-                $this->config->get('config_currency'),
-                $customer['base_currency_code']);
-            if ($customer['balance'] < $totalToPay)
-                if ($customer['allow_overdraft'])
+            $totalToPay = $this->getCurrency()->convert(
+                $invoice->getTotalCustomerCurrency(),
+                $invoice->getCurrencyCode(),
+                $invoice->getCustomer()['base_currency_code']);
+            if ($invoice->getCustomer()['balance'] < $totalToPay)
+                if ($invoice->getCustomer()['allow_overdraft'])
                 {
-                    Transaction::addPayment($customer['customer_id'], $invoiceId, $this->registry);
+                    Transaction::addPayment($invoice->getCustomer()['customer_id'], $invoiceId, $this->registry);
                     $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_PAID);
                 }
                 else
                     $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
             else
             {
-                Transaction::addPayment($customer['customer_id'], $invoiceId, $this->registry);
+                Transaction::addPayment($invoice->getCustomer()['customer_id'], $invoiceId, $this->registry);
                 $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_PAID);
             }
         }
         $this->load->model('tool/communication')->sendMessage(
-            $customer['customer_id'],
+            $invoice->getCustomer()['customer_id'],
             sprintf(
-                $this->language->get('INVOICE_STATUS_NOTIFICATION'),
+                $this->getLanguage()->get('INVOICE_STATUS_NOTIFICATION'),
                 $this->load->model('localisation/invoice')->getInvoiceStatus($invoiceId),
-                $this->currency->format($invoice['total'], $customer['base_currency_code']),
-                $this->currency->format(
-                    $this->modelSaleCustomer->getCustomerBalance($customer['customer_id']),
-                    $customer['base_currency_code'],
+                $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1),
+                $this->getCurrency()->format(
+                    $this->modelSaleCustomer->getCustomerBalance($invoice->getCustomer()['customer_id']),
+                    $invoice->getCustomer()['base_currency_code'],
                     1)
             ),
             SYS_MSG_INVOICE_CREATED
@@ -405,32 +396,38 @@ class ControllerSaleInvoice extends Controller
         $this->validateInput($orderItems);
         /// Prepare list
         $totalWeight = 0;
-        $total = 0;
+        $total = 0; $totalCustomerCurrency = 0;
         $orderItemIdParam = '';
-        foreach ($orderItems as $orderItem)
-        {
-          $this->log->write("------------------------> " . print_r($orderItem['image_path'], true));
-          //echo "<img src='".$orderItem['image_path']."' />"; die();
-          $this->data['orderItems'][] = array(
-            'id' => $orderItem['order_product_id'],
-            'comment' => $orderItem['public_comment'],
-            'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
-            'model' => $orderItem['model'],
-            'name' => $orderItem['name'],
-            'order_id' => $orderItem['order_id'],
-            'options' => $this->modelSaleOrderItem->getOrderItemOptionsString($orderItem['order_item_id']),
-            'price' => $this->currency->format($orderItem['price'], $this->config->get('config_currency')),
-            'quantity' => $orderItem['quantity'],
-            'shipping' => $this->currency->format($orderItem['shipping'], $this->config->get('config_currency')),
-            'subtotal' => $this->currency->format($orderItem['price'] * $orderItem['quantity'] + $orderItem['shipping'], $this->config->get('config_currency'))
-          );
-          $totalWeight +=
+        foreach ($orderItems as $orderItem) {
+            $orderItemObject = new \model\sale\OrderItem($this->registry, $orderItem['affiliate_id'], 
+                $orderItem['affiliate_transaction_id'], $orderItem['comment'], $orderItem['customer_id'], 
+                $orderItem['customer_name'], $orderItem['customer_nick'], $orderItem['order_item_id'], 
+                $orderItem['image_path'], $orderItem['internal_model'], $orderItem['model'], $orderItem['name'], 
+                $orderItem['order_id'], $orderItem['price'], $orderItem['product_id'], $orderItem['public_comment'],
+                $orderItem['quantity'], $orderItem['shipping'], $orderItem['status_date'], $orderItem['status_id'],
+                $orderItem['supplier_group_id'], $orderItem['supplier_id'], $orderItem['supplier_name'], $orderItem['date_created'],
+                $orderItem['modified_date'], $orderItem['total'], $orderItem['weight'], $orderItem['weight_class_id']);
+            $this->data['orderItems'][] = array(
+                'id' => $orderItem['order_product_id'],
+                'comment' => $orderItem['public_comment'],
+                'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
+                'model' => $orderItem['model'],
+                'name' => $orderItem['name'],
+                'order_id' => $orderItem['order_id'],
+                'options' => $this->modelSaleOrderItem->getOrderItemOptionsString($orderItem['order_item_id']),
+                'price' => $this->getCurrency()->format($orderItem['price'], $this->config->get('config_currency')),
+                'quantity' => $orderItem['quantity'],
+                'shipping' => $this->getCurrency()->format($orderItem['shipping'], $this->config->get('config_currency')),
+                'subtotal' => $this->getCurrency()->format($orderItem['price'] * $orderItem['quantity'] + $orderItem['shipping'], $this->config->get('config_currency'))
+            );
+            $totalWeight +=
               $this->weight->convert(
                   $orderItem['weight'],
                   $orderItem['weight_class_id'],
                   $this->config->get('config_weight_class_id')) * $orderItem['quantity'];
-          $total += $orderItem['total']; //$orderItem['price'] * $orderItem['quantity'];
-          $orderItemIdParam .= '&orderItemId[]=' . $orderItem['order_product_id'];
+            $total += $orderItem['total']; //$orderItem['price'] * $orderItem['quantity'];
+            $totalCustomerCurrency += $orderItemObject->getTotalCustomerCurrency();
+            $orderItemIdParam .= '&orderItemId[]=' . $orderItem['order_product_id'];
         }
         /// Set invoice data
         $firstItemOrder = $this->modelSaleOrder->getOrder($orderItems[0]['order_id']);
@@ -442,7 +439,7 @@ class ControllerSaleInvoice extends Controller
         $this->data['packageNumber'] = '';
         $this->data['shippingAddress'] = nl2br($this->getOrderAddressString($firstItemOrder)) . " (" . $firstItemOrder['shipping_phone'] . ")";
         $this->data['shippingCost'] =
-            $this->currency->format(
+            $this->getCurrency()->format(
                 Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry),
                 $this->config->get('config_currency'));
         $this->data['shippingCostRoute'] =
@@ -454,20 +451,21 @@ class ControllerSaleInvoice extends Controller
         $this->data['shippingMethod'] = $firstItemOrder['shipping_method'];
         $this->data['shippingMethodCode'] = $firstItemOrder['shipping_method'];
 
-        $this->data['total'] = $this->currency->format($total, $this->config->get('config_currency'));
+        $this->data['total'] = $this->getCurrency()->format($total, $this->config->get('config_currency'));
         $this->data['totalRaw'] = $total;
         $this->data['totalWeight'] = $totalWeight;
         $this->data['grandTotal'] =
-            $this->currency->format(
+            $this->getCurrency()->format(
                 $total + Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry),
                 $this->config->get('config_currency'));
-        $this->data['totalCustomerCurrency'] = $this->currency->format(
-            $total + Shipping::getCost(
+        $this->data['totalCustomerCurrency'] = $this->getCurrency()->format(
+            $totalCustomerCurrency +
+            $this->getCurrency()->convert(Shipping::getCost(
                 $orderItems,
                 $firstItemOrder['shipping_method'],
                 array('weight' => $totalWeight),
-                $this->registry),
-            $customer['base_currency_code']);
+                $this->registry), $this->config->get('config_currency'), $customer['base_currency_code']),
+            $customer['base_currency_code'], 1);
         $this->data['shippingMethods'] = Shipping::getShippingMethods(
             $this->getOrderAddress($firstItemOrder), $this->registry);
         $this->log->write(print_r($this->data, true));
@@ -485,62 +483,59 @@ class ControllerSaleInvoice extends Controller
             return;
 
         $this->setBreadcrumbs();
-        $invoice = $this->modelSaleInvoice->getInvoice($this->request->request['invoiceId']);
+        $invoice = $this->modelSaleInvoice->getInvoice($this->parameters['invoiceId']);
 
         /// Initialize interface values
         $this->data['button_action'] = $this->language->get('button_close');
         $this->data['readOnly'] = "disabled";
         $this->data['shippingMethods'] = Shipping::getShippingMethods(
-            $this->modelReferenceAddress->getAddress($invoice['shipping_address_id']), $this->registry);
+            $this->modelReferenceAddress->getAddress($invoice->getShippingAddressId()), $this->registry);
 
         $orderItemIdParam = '';
-        foreach ($this->modelSaleInvoice->getInvoiceItems($invoice['invoice_id']) as $invoiceItem)
-        {
-            $orderItem = $this->modelSaleOrderItem->getOrderItem($invoiceItem['order_item_id']);
+        foreach ($invoice->getOrderItems() as $orderItem) {
             //print_r($orderItem); die();
             $this->data['orderItems'][] = array(
-                'id' => $orderItem['order_product_id'],
-                'comment' => $orderItem['public_comment'],
-                'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
-                'model' => $orderItem['model'],
-                'name' => $orderItem['name'],
-                'options' => $this->modelSaleOrderItem->getOrderItemOptionsString($invoiceItem['order_item_id']),
-                'order_id' => $orderItem['order_id'],
-                'price' => $this->currency->format($orderItem['price'], $this->config->get('config_currency')),
-                'quantity' => $orderItem['quantity'],
-                'subtotal' => $this->currency->format($orderItem['price'] * $orderItem['quantity'], $this->config->get('config_currency'))
+                'id' => $orderItem->getId(),
+                'comment' => $orderItem->getPublicComment(),
+                'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
+                'model' => $orderItem->getModel(),
+                'name' => $orderItem->getName(),
+                'options' => $this->modelSaleOrderItem->getOrderItemOptionsString($orderItem->getId()),
+                'order_id' => $orderItem->getOrderId(),
+                'price' => $this->getCurrency()->format($orderItem->getPrice(), $this->config->get('config_currency')),
+                'quantity' => $orderItem->getQuantity(),
+                'subtotal' => $this->getCurrency()->format($orderItem->getPrice() * $orderItem->getQuantity(), $this->config->get('config_currency'))
             );
-            $orderItemIdParam .= '&orderItemId[]=' . $invoiceItem['order_item_id'];
+            $orderItemIdParam .= '&orderItemId[]=' . $orderItem->getId();
         }
 
-        $add = $this->modelReferenceAddress->getAddress($invoice['shipping_address_id']);
+        $add = $this->modelReferenceAddress->getAddress($invoice->getShippingAddressId());
         $this->load->model('sale/order');
-        $order_info = $this->model_sale_order->getOrderByShippingAddressId($invoice['shipping_address_id']);
-//print_r($order_info); die();
+        $order_info = $this->model_sale_order->getOrderByShippingAddressId($invoice->getShippingAddressId());
         /// Set invoice data
-        $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
-        $this->data['comment'] = $invoice['comment'];
-        $this->data['discount'] = $invoice['discount'];
-        $this->data['invoiceId'] = $invoice['invoice_id'];
-        $this->data['packageNumber'] = $invoice['package_number'];
-        $this->data['shippingAddress'] = nl2br($this->modelReferenceAddress->toString($invoice['shipping_address_id'])) . "<br />" . $order_info['shipping_phone'];//$add['phone'];
-        $this->data['shippingCost'] = $this->currency->format($invoice['shipping_cost'], $this->config->get('config_currency'));
-        $this->data['shippingCostRaw'] = $invoice['shipping_cost'];
+//        $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
+        $this->data['comment'] = $invoice->getComment();
+        $this->data['discount'] = $invoice->getDiscount();
+        $this->data['invoiceId'] = $invoice->getId();
+        $this->data['packageNumber'] = $invoice->getPackageNumber();
+        $this->data['shippingAddress'] = nl2br($this->modelReferenceAddress->toString($invoice->getShippingAddressId())) . "<br />" . $order_info['shipping_phone'];//$add['phone'];
+        $this->data['shippingCost'] = $this->getCurrency()->format($invoice->getShippingCost(), $this->config->get('config_currency'));
+        $this->data['shippingCostRaw'] = $invoice->getShippingCost();
         $this->data['shippingCostRoute'] =
             $this->url->link(
                 'sale/invoice/getShippingCost',
                 'token=' . $this->parameters['token'] . $orderItemIdParam,
                 'SSL'
             );
-        $this->data['shippingMethod'] = $invoice['shipping_method'];
-        $this->data['shippingDate'] = $invoice['shipping_date'];
-        $this->data['total'] = $this->currency->format($invoice['subtotal'], $this->config->get('config_currency'));
-        $this->data['totalRaw'] = $invoice['subtotal'];
-        $this->data['totalCustomerCurrency'] = $this->currency->format($invoice['total'], $customer['base_currency_code']);
-        $this->data['totalWeight'] = $invoice['weight'];
+        $this->data['shippingMethod'] = $invoice->getShippingMethod();
+        $this->data['shippingDate'] = $invoice->getShippingDate();
+        $this->data['total'] = $this->getCurrency()->format($invoice->getSubtotal(), $this->config->get('config_currency'));
+        $this->data['totalRaw'] = $invoice->getSubtotal();
+        $this->data['totalCustomerCurrency'] = $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1);
+        $this->data['totalWeight'] = $invoice->getWeight();
         $this->data['grandTotal'] =
-            $this->currency->format(
-                $invoice['total'],
+            $this->getCurrency()->format(
+                $invoice->getTotal(),
                 $this->config->get('config_currency'));
 //        $this->log->write(print_r($this->data, true));
 

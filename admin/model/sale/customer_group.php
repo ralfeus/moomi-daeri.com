@@ -2,7 +2,7 @@
 class ModelSaleCustomerGroup extends Model {
 	public function addCustomerGroup($data) {
 		$this->db->query("
-		    INSERT INTO " . DB_PREFIX . "customer_group
+		    INSERT INTO customer_group
 		    SET
 		        name = '" . $this->db->escape($data['name']) . "',
 		        allow_overdraft = " . (int)(isset($data['allowOverdraft']) && $data['allowOverdraft']) . ",
@@ -12,7 +12,7 @@ class ModelSaleCustomerGroup extends Model {
 	
 	public function editCustomerGroup($customer_group_id, $data) {
 		$this->db->query("
-		    UPDATE " . DB_PREFIX . "customer_group
+		    UPDATE customer_group
 		    SET
 		        name = '" . $this->db->escape($data['name']) . "',
 		        allow_overdraft = " . (int)(isset($data['allowOverdraft']) && $data['allowOverdraft']) . ",
@@ -22,18 +22,18 @@ class ModelSaleCustomerGroup extends Model {
 	}
 	
 	public function deleteCustomerGroup($customer_group_id) {
-		$this->db->query("DELETE FROM " . DB_PREFIX . "customer_group WHERE customer_group_id = '" . (int)$customer_group_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_discount WHERE customer_group_id = '" . (int)$customer_group_id . "'");
+		$this->db->query("DELETE FROM customer_group WHERE customer_group_id = '" . (int)$customer_group_id . "'");
+		$this->db->query("DELETE FROM product_discount WHERE customer_group_id = '" . (int)$customer_group_id . "'");
 	}
 	
 	public function getCustomerGroup($customer_group_id) {
-		$query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "customer_group WHERE customer_group_id = '" . (int)$customer_group_id . "'");
+		$query = $this->db->query("SELECT DISTINCT * FROM customer_group WHERE customer_group_id = '" . (int)$customer_group_id . "'");
 		
 		return $query->row;
 	}
 	
 	public function getCustomerGroups($data = array()) {
-		$sql = "SELECT * FROM " . DB_PREFIX . "customer_group";
+		$sql = "SELECT * FROM customer_group";
 		
 		$sql .= " ORDER BY name";	
 			
@@ -61,7 +61,7 @@ class ModelSaleCustomerGroup extends Model {
 	}
 	
 	public function getTotalCustomerGroups() {
-		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "customer_group");
+		$query = $this->db->query("SELECT COUNT(*) AS total FROM customer_group");
 		
 		return $query->row['total'];
 	}

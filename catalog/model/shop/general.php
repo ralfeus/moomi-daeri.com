@@ -2,7 +2,7 @@
 class ModelShopGeneral extends Model {
 	public function getHolidays($data) {
 
-		$this->db->query("SELECT * FROM " . DB_PREFIX . "shop_holiday");
+		$this->db->query("SELECT * FROM shop_holiday");
 
     $holiday = array();
     foreach ($query->rows as $row) {
@@ -13,7 +13,7 @@ class ModelShopGeneral extends Model {
 
 	public function getAllHolidaysForCalendar() {
 
-		$query = "SELECT * FROM " . DB_PREFIX . "shop_holiday";
+		$query = "SELECT * FROM shop_holiday";
 		$result = $this->db->query($query);
 		$holidays = $result->rows;
 
@@ -49,7 +49,7 @@ class ModelShopGeneral extends Model {
 	public function isVip($customer_id) {
 		$today = date("Y-m-d");
 		$lastMonth = date("Y-m-d", mktime(0, 0, 0, date("m")-1, date("d"),   date("Y")));
-		$query = "SELECT * FROM `" . DB_PREFIX . "order` WHERE customer_id='" . $customer_id . "' AND date_added BETWEEN '" . $lastMonth . "' AND '" . $today . "'";
+		$query = "SELECT * FROM `order` WHERE customer_id='" . $customer_id . "' AND date_added BETWEEN '" . $lastMonth . "' AND '" . $today . "'";
 		$result = $this->db->query($query);
 		if(count($result->rows) >= 2){
 			return true;
@@ -107,13 +107,13 @@ class ModelShopGeneral extends Model {
 	}
 
 	public function getAction($data) {
-		$query = "SELECT * FROM " . DB_PREFIX . "action WHERE customer_group_id=".(int)$data['customer_group_id']." AND '".$data['current_date']."' BETWEEN start_date AND finish_date LIMIT 1";
+		$query = "SELECT * FROM action WHERE customer_group_id=".(int)$data['customer_group_id']." AND '".$data['current_date']."' BETWEEN start_date AND finish_date LIMIT 1";
 		$result = $this->db->query($query);
 		return $result->rows;
 	}
 
 	public function getOrderProduct($product_id) {
-		$query = "SELECT * FROM " . DB_PREFIX . "order_product WHERE product_id=".(int)$product_id;
+		$query = "SELECT * FROM order_product WHERE product_id=".(int)$product_id;
 		$result = $this->db->query($query);
 		return $result->rows[0];
 	}

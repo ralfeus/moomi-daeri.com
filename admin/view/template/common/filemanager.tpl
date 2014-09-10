@@ -148,7 +148,7 @@ $(document).ready(function () {
 			async: true, 
 			opts: { 
 				method: 'POST', 
-				url: 'index.php?route=common/filemanager/directory&token=<?php echo $token; ?>'
+				url: 'index.php?route=common/filemanager/directory&token=<?= $token ?>'
 			} 
 		},
 		
@@ -199,7 +199,7 @@ $(document).ready(function () {
 				window.dr = $(tree.selected).attr('directory');
 				
 				$.ajax({
-					url: 'index.php?route=common/filemanager/files&token=<?php echo $token; ?>',
+					url: 'index.php?route=common/filemanager/files&token=<?= $token ?>',
 					type: 'POST',
 					data: 'directory=' + encodeURIComponent($(NODE).attr('directory')),
 						
@@ -827,8 +827,7 @@ $(document).ready(function () {
     });
 });
 
-function showTextToCopy(text)
-{
+function showTextToCopy(text) {
     jQuery.fn.selectText = function(){
         var doc = document
                 , element = this[0]

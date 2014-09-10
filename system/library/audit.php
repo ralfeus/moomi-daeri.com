@@ -15,7 +15,7 @@ class Audit extends OpenCartBase implements ILibrary
     private function addEntry($userId, $userType, $eventId, $data)
     {
         $this->db->query("
-            INSERT INTO " . DB_PREFIX . "audit
+            INSERT INTO audit
             SET
                 data = '" . json_encode($data) . "',
                 date_added = NOW(),

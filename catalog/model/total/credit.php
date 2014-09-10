@@ -43,7 +43,7 @@ class ModelTotalCredit extends ModelTotal {
 		
 		if ($order_info['customer_id']) {
 			$this->db->query("
-			    INSERT INTO " . DB_PREFIX . "customer_transaction
+			    INSERT INTO customer_transaction
 			    SET
 			        customer_id = '" . (int)$order_info['customer_id'] . "',
 			        order_id = '" . (int)$order_info['order_id'] . "',
@@ -53,7 +53,7 @@ class ModelTotalCredit extends ModelTotal {
             ");
             /// Update customer's balance
             $this->db->query("
-                UPDATE " . DB_PREFIX . "customer
+                UPDATE customer
                 SET
                     balance = balance - " . (float)$order_total['value'] . "
                 WHERE customer_id = " . (int)$order_info['customer_id']

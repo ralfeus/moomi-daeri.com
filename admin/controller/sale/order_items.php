@@ -34,8 +34,7 @@ class ControllerSaleOrderItems extends Controller {
 	private function getCustomers()
 	{
 		$data = array();
-		foreach ($this->parameters as $key => $value)
-		{
+		foreach ($this->parameters as $key => $value) {
 			if (strpos($key, 'filter') === false)
 				continue;
 			$data[$key] = $value;
@@ -171,9 +170,10 @@ class ControllerSaleOrderItems extends Controller {
 		if ($orderItems) {
 
 			foreach ($orderItems as $orderItem) {
-			$this->load->model('sale/affiliate');
+                /** @var ModelSaleAffiliate $modelSaleAffiliate */
+			    $modelSaleAffiliate = $this->load->model('sale/affiliate');
 				if (!empty($orderItem['affiliate_id'])) {
-					$orderItem['affiliate_transaction_amount'] = $this->currency->format($orderItem['total'] * $this->model_sale_affiliate->getProductAffiliateCommission($orderItem['product_id']) / 100, $this->config->get('config_currency'));
+					$orderItem['affiliate_transaction_amount'] = $this->currency->format($orderItem['total'] * $modelSaleAffiliate->getProductAffiliateCommission($orderItem['product_id']) / 100, $this->config->get('config_currency'));
 				}
 
 				if(!isset($arrReady[$orderItem['order_id']])) {

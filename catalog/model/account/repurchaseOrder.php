@@ -20,7 +20,7 @@ class ModelAccountRepurchaseOrder extends Model
 //    {
 //        //print_r($repurchase_order_items);exit();
 //        $this->db->query("
-//            INSERT INTO " . DB_PREFIX . "repurchase_orders
+//            INSERT INTO repurchase_orders
 //            SET
 //                customer_id = " . (int)$customer_id . ",
 //                date_added = DATE(NOW())
@@ -96,7 +96,7 @@ class ModelAccountRepurchaseOrder extends Model
 //                *,
 //                roi.items AS items, roi.subtotal AS subtotal, roi.total AS total
 //            FROM
-//                " . DB_PREFIX . "repurchase_orders as ro
+//                repurchase_orders as ro
 //                JOIN (
 //                    SELECT
 //                        repurchase_order_id,
@@ -111,8 +111,8 @@ class ModelAccountRepurchaseOrder extends Model
 //                    FROM (
 //                        SELECT repurchase_order_id, roh.status, workflow_order
 //                        FROM
-//                            " . DB_PREFIX . "repurchase_orders_history as roh
-//                            JOIN " . DB_PREFIX . "repurchase_order_statuses as ros on roh.status = ros.repurchase_order_status_id
+//                            repurchase_orders_history as roh
+//                            JOIN repurchase_order_statuses as ros on roh.status = ros.repurchase_order_status_id
 //                        ORDER BY repurchase_order_id, workflow_order DESC
 //                        ) as statuses
 //                    GROUP BY repurchase_order_id

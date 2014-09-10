@@ -44,6 +44,13 @@ class OpenCartBase
     }
 
     /**
+     * @return \Customer
+     */
+    protected  function getCustomer() {
+        return $this->registry->get('customer');
+    }
+
+    /**
      * @return DBDriver
      */
     protected function getDb() {

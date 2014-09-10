@@ -10,7 +10,7 @@ final class Currency extends OpenCartBase
 		$this->request = $registry->get('request');
 		$this->session = $registry->get('session');
 		
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "currency");
+		$query = $this->db->query("SELECT * FROM currency");
 
     	foreach ($query->rows as $result) {
       		$this->currencies[$result['code']] = array(
@@ -89,7 +89,7 @@ final class Currency extends OpenCartBase
 		}
 		
 		if ($format) {
-			$thousand_point = $this->language->get('thousand_point');
+			$thousand_point = $this->getLanguage()->get('thousand_point');
 		} else {
 			$thousand_point = '';
 		}
@@ -103,37 +103,30 @@ final class Currency extends OpenCartBase
     	return $string;
   	}
 	
-    public function convert($value, $from, $to, $date = null)
-    {
-        if ($date != null)
-        {
-            $query = $this->db->query("
+    public function convert($value, $from, $to, $date = null) {
+        if ($date != null) {
+            $query = $this->getDb()->query("
                 SELECT ch.*, c.code
                 FROM
-                    " . DB_PREFIX . "currency_history AS ch
-                    JOIN " . DB_PREFIX . "currency AS c on c.currency_id = ch.currency_id
+                    currency_history AS ch
+                    JOIN currency AS c on c.currency_id = ch.currency_id
                     JOIN
                     (
                         SELECT currency_id, max(date_added) AS last_date_added
-                        FROM " . DB_PREFIX . "currency_history AS ch1
+                        FROM currency_history AS ch1
                         WHERE date_added <= '" . $this->db->escape($date) . "'
                         GROUP BY currency_id
                     ) AS lrm ON lrm.currency_id = ch.currency_id AND lrm.last_date_added = ch.date_added
                 WHERE c.code in ('" . $this->db->escape($from) . "', '" . $this->db->escape($to) . "')
             ");
-            if ($query->rows[0]['code'] == $from)
-            {
+            if ($query->rows[0]['code'] == $from) {
                 $fromValue = $query->rows[0]['rate'];
                 $toValue = $query->rows[1]['rate'];
-            }
-            else
-            {
+            } else {
                 $fromValue = $query->rows[1]['rate'];
                 $toValue = $query->rows[0]['rate'];
             }
-        }
-        else
-        {
+        } else {
             if (isset($this->currencies[$from]))
                 $fromValue = $this->currencies[$from]['value'];
             else
@@ -147,7 +140,8 @@ final class Currency extends OpenCartBase
 		
 		return round(
             $value * ($toValue / $fromValue),
-            $this->getDecimalPlace($to) ? $this->getDecimalPlace($to) : 2);
+            $this->getDecimalPlace($to) ? $this->getDecimalPlace($to) : 2
+        );
   	}
 	
   	public function getId($currency = '') {

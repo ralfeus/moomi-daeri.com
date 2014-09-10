@@ -13,7 +13,7 @@ class ModelSaleTransaction extends Model
 //        $this->log->write("Adding transaction");
 //        $this->log->write($description);
         $this->db->query("
-            INSERT INTO " . DB_PREFIX . "customer_transaction
+            INSERT INTO customer_transaction
             SET
                 customer_id = " . (int)$customerId . ",
                 invoice_id = " . (int)$invoiceId . ",
@@ -25,7 +25,7 @@ class ModelSaleTransaction extends Model
         $transactionId = $this->db->getLastId();
         /// Update customer's balance
         $this->db->query("
-                UPDATE " . DB_PREFIX . "customer
+                UPDATE customer
                 SET
                     balance = balance - " . (float)$amount . "
                 WHERE customer_id = " . (int)$customerId
@@ -38,11 +38,11 @@ class ModelSaleTransaction extends Model
         $customer = $this->load->model('sale/customer')->getCustomer($transaction['customer_id']);
         $amountToReturn = $this->currency->convert($transaction['amount'], $transaction['currency_code'], $customer['base_currency_code']);
         $this->db->query("
-            DELETE FROM " . DB_PREFIX . "customer_transaction
+            DELETE FROM customer_transaction
             WHERE customer_transaction_id = " . (int)$transactionId
         );
         $this->db->query("
-            UPDATE " . DB_PREFIX . "customer
+            UPDATE customer
             SET balance = balance + $amountToReturn
             WHERE customer_id = " . $transaction['customer_id']
         );
@@ -51,7 +51,7 @@ class ModelSaleTransaction extends Model
     public function getTransaction($transactionId) {
         $query = $this->db->query("
             SELECT *
-            FROM " . DB_PREFIX . "customer_transaction
+            FROM customer_transaction
             WHERE customer_transaction_id = " . (int)$transactionId
         );
 
@@ -65,7 +65,7 @@ class ModelSaleTransaction extends Model
     {
         $query = $this->db->query("
             SELECT *
-            FROM " . DB_PREFIX . "customer_transaction
+            FROM customer_transaction
             WHERE invoice_id = " . (int)$invoiceId
         );
 
@@ -79,7 +79,7 @@ class ModelSaleTransaction extends Model
     {
         $query = $this->db->query("
             SELECT *
-            FROM " . DB_PREFIX . "customer_transaction
+            FROM customer_transaction
             WHERE customer_id = " . (int)$customerId
         );
         if ($query->num_rows)

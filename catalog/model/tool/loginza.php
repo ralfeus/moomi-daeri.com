@@ -3,7 +3,7 @@ class ModelToolLoginza extends Model {
 	function check_identity($identity) {
 		$query = $this->db->query("
 			SELECT customer_id
-			FROM " . DB_PREFIX . "customer
+			FROM customer
 			WHERE identity = '". $this->db->escape($identity) ."'"
 		);
 
@@ -15,13 +15,13 @@ class ModelToolLoginza extends Model {
 	}
 	
 	public function add_customer($data) {
-		$this->db->query("INSERT INTO " . DB_PREFIX . "customer (identity, firstname, lastname, email, telephone, fax, newsletter, customer_group_id, password, status, date_added, approved) VALUES ('" . $this->db->escape($data['identity']) . "', '" . $this->db->escape($data['firstname']) . "', '" . $this->db->escape($data['lastname']) . "', '" . $this->db->escape($data['email']) . "', '', '', '0', '" . (int)$data['customer_group_id'] . "', '" . $this->db->escape(md5($data['password'])) . "', '1', NOW(), '1')");
+		$this->db->query("INSERT INTO customer (identity, firstname, lastname, email, telephone, fax, newsletter, customer_group_id, password, status, date_added, approved) VALUES ('" . $this->db->escape($data['identity']) . "', '" . $this->db->escape($data['firstname']) . "', '" . $this->db->escape($data['lastname']) . "', '" . $this->db->escape($data['email']) . "', '', '', '0', '" . (int)$data['customer_group_id'] . "', '" . $this->db->escape(md5($data['password'])) . "', '1', NOW(), '1')");
 
 		return $this->db->getLastId(); // customer_id
 	}
 	
 	public function login($customer_id) {
-		$customer_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "' AND status = '1'");
+		$customer_query = $this->db->query("SELECT * FROM customer WHERE customer_id = '" . (int)$customer_id . "' AND status = '1'");
 		
 		
 		if ($customer_query->num_rows) {

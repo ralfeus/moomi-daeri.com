@@ -6,15 +6,23 @@
  * Time: 21:43
  * To change this template use File | Settings | File Templates.
  */
-class ControllerAccountInvoice extends Controller
-{
+class ControllerAccountInvoice extends Controller {
+    /** @var \ModelSaleInvoice */
+    private $modelInvoice;
     public function __construct($registry)
     {
         parent::__construct($registry);
+
+        if (!$this->getCustomer()->isLogged()) {
+            $this->session->data['redirect'] = $this->selfUrl;
+
+            $this->redirect($this->url->link('account/login', '', 'SSL'));
+        }
+
         $this->load->language('account/invoice');
         $this->load->library('Transaction');
         $this->load->model('reference/address');
-        $this->load->model('account/invoice');
+        $this->modelInvoice = $this->load->model('sale/invoice');
         $this->load->model('account/order');
         $this->load->model('account/order_item');
         $this->load->model('tool/image');
@@ -24,8 +32,7 @@ class ControllerAccountInvoice extends Controller
         $this->data['headingTitle'] = $this->language->get('headingTitle');
     }
 
-    public function confirm()
-    {
+    public function confirm() {
         $this->log->write('Starting');
         if (!isset($this->request->request['invoiceId']))
             $json['error'] = "Unexpected error";
@@ -35,13 +42,13 @@ class ControllerAccountInvoice extends Controller
                 $this->customer->getId(),
                 $this->request->request['invoiceId'],
                 $this->registry);
-            $invoice = $this->load->model('account/invoice')->getInvoice($this->request->request['invoiceId']);
+            $invoice = $this->modelInvoice->getInvoice($this->request->request['invoiceId']);
             $json['newStatus'] = $this->load->model('localisation/invoice')->getInvoiceStatus(
-                $invoice['invoice_status_id'],
+                $invoice->getStatusId(),
                 $this->session->data['language_id']
             );
         }
-        $this->log->write(print_r($json, true));
+//        $this->log->write(print_r($json, true));
         $this->response->setOutput(json_encode($json));
     }
 
@@ -67,9 +74,9 @@ class ControllerAccountInvoice extends Controller
 
     public function index()
     {
-        $modelAccountInvoice = $this->registry->get('model_account_invoice');
+//        $modelAccountInvoice = $this->registry->get('model_account_invoice');
         //$modelSaleCustomer = $this->load->model('sale/customer');
-        $invoices = $modelAccountInvoice->getInvoices($this->customer->getId(), "DESC");
+        $invoices = $this->modelInvoice->getInvoices(array('filterCustomerId' => array($this->getCustomer()->getId())), "invoice_id DESC");
         if ($invoices)
         {
             foreach ($invoices as $invoice)
@@ -77,25 +84,25 @@ class ControllerAccountInvoice extends Controller
                 $action = array();
                 $action[] = array(
                     'text' => $this->language->get('textView'),
-                    'href' => $this->url->link('sale/invoice/showForm', 'invoiceId=' . $invoice['invoice_id'], 'SSL')
+                    'href' => $this->url->link('sale/invoice/showForm', 'invoiceId=' . $invoice->getId(), 'SSL')
                 );
                 $this->data['invoices'][] = array(
-                    'invoiceId' => $invoice['invoice_id'],
+                    'invoiceId' => $invoice->getId(),
                     'action' => $action,
                     'customer' => $this->customer->getLastName() . ' ' . $this->customer->getFirstname(),
-                    'timeModified' =>$invoice['time_modified'],
-                    'href' => $this->url->link('account/invoice/showForm', 'invoiceId=' . $invoice['invoice_id'], 'SSL'),
-                    'itemsCount' => $modelAccountInvoice->getInvoiceItemsCount($invoice['invoice_id']),
-                    'shippingCost' => $this->currency->format($invoice['shipping_cost']),
-                    'shippingMethod' => Shipping::getName($invoice['shipping_method'], $this->registry),
+                    'timeModified' =>$invoice->getTimeModified(),
+                    'href' => $this->url->link('account/invoice/showForm', 'invoiceId=' . $invoice->getId(), 'SSL'),
+                    'itemsCount' => $this->modelInvoice->getInvoiceItemsCount($invoice->getId()),
+                    'shippingCost' => $this->getCurrency()->format($invoice->getShippingCost()),
+                    'shippingMethod' => Shipping::getName($invoice->getShippingMethod(), $this->registry),
                     'status' => $this->load->model('localisation/invoice')->getInvoiceStatus(
-                        $invoice['invoice_status_id'],
+                        $invoice->getStatusId(),
                         $this->session->data['language_id']),
-                    'subtotal' => $this->currency->format($invoice['subtotal']),
-                    'total' => $this->currency->format($invoice['total']),
-                    'transaction' => $invoice['invoice_status_id'] == IS_PAID ? Transaction::getTransactionByInvoiceId($invoice['invoice_id']) : null,
-                    'weight' => $invoice['weight'],
-                    'package_number' => $invoice['package_number']
+                    'subtotal' => $this->getCurrency()->format($invoice->getSubtotal()),
+                    'total' => $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $this->getCurrency()->getCode(), 1),
+                    'transaction' => $invoice->getStatusId() == IS_PAID ? Transaction::getTransactionByInvoiceId($invoice->getId()) : null,
+                    'weight' => $invoice->getWeight(),
+                    'package_number' => $invoice->getPackageNumber()
                 );
             }
         }
@@ -153,17 +160,17 @@ class ControllerAccountInvoice extends Controller
 
     public function showForm()
     {
-        $this->log->write(print_r($this->session, true));
+//        $this->log->write(print_r($this->session, true));
         if (!isset($this->request->request['invoiceId']))
             return;
 
-        $modelInvoice = $this->load->model('account/invoice');
+//        $modelInvoice = $this->load->model('sale/invoice');
         $modelOrderItem = $this->load->model('account/order_item');
         $modelReferenceAddress = $this->load->model('reference/address');
-        $invoice = $modelInvoice->getInvoice($this->request->request['invoiceId']);
+        $invoice = $this->modelInvoice->getInvoice($this->request->request['invoiceId']);
 
         /// Initialize interface values
-        $this->data['headingTitle'] = sprintf($this->language->get('INVOICE'), $invoice['invoice_id']);
+        $this->data['headingTitle'] = sprintf($this->language->get('INVOICE'), $invoice->getId());
         $this->data['button_action'] = $this->language->get('button_close');
         $this->data['submit_action'] = $this->url->link('account/invoice/close', '', 'SSL');
         $this->data['textComment'] = $this->language->get('textComment');
@@ -183,45 +190,40 @@ class ControllerAccountInvoice extends Controller
         $this->data['textTotal'] = $this->language->get('TOTAL');
         $this->data['textWeight'] = $this->language->get('WEIGHT');
 
-        if ($invoice['customer_id'] != $this->customer->getId())
-        {
+        if ($invoice->getCustomer()['customer_id'] != $this->getCustomer()->getId()) {
             $invoice = null;
             $this->data['notifications']['error'] = $this->language->get('errorAccessDenied');
-        }
-        else
-        {
+        } else {
             /// Prepare list
-            //$this->log->write(print_r($modelSaleInvoice->getInvoiceItems($invoice['invoice_id']), true));
-            foreach ($modelInvoice->getInvoiceItems($invoice['invoice_id']) as $invoiceItem)
-            {
-                $orderItem = $modelOrderItem->getOrderItem($invoiceItem['order_item_id']);
-                //$this->log->write(print_r($orderItem, true));
+            foreach ($invoice->getOrderItems() as $orderItem) {
+//                $orderItem = $modelOrderItem->getOrderItem($invoiceItem['order_item_id']);
+//                $this->log->write(print_r($orderItem, true));
                 $this->data['orderItems'][] = array(
-                    'id' => $orderItem['order_product_id'],
-                    'comment' => $orderItem['public_comment'],
-                    'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
-                    'model' => $orderItem['model'],
-                    'name' => $orderItem['name'],
-                    'options' => $modelOrderItem->getOrderItemOptionsString($orderItem['order_item_id']),
-                    'order_id' => $orderItem['order_id'],
-                    'price' => $this->currency->format($orderItem['price']),
-                    'quantity' => $orderItem['quantity'],
-                    'subtotal' => $this->currency->format($orderItem['price'] * $orderItem['quantity'])
+                    'id' => $orderItem->getId(),
+                    'comment' => $orderItem->getPublicComment(),
+                    'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
+                    'model' => $orderItem->getModel(),
+                    'name' => $orderItem->getName(),
+                    'options' => $modelOrderItem->getOrderItemOptionsString($orderItem->getId()),
+                    'order_id' => $orderItem->getOrderId(),
+                    'price' => $this->getCurrency()->format($orderItem->getPrice()),
+                    'quantity' => $orderItem->getQuantity(),
+                    'subtotal' => $this->getCurrency()->format($orderItem->getPrice() * $orderItem->getQuantity())
                 );
             }
             /// Set invoice data
-            $this->data['invoiceId'] = $invoice['invoice_id'];
-            $this->data['packageNumber'] = $invoice['package_number'];
-            $this->data['shippingAddress'] = nl2br($modelReferenceAddress->toString($invoice['shipping_address_id']));
-            $this->data['shippingCost'] = $this->currency->format($invoice['shipping_cost']);
-            $this->data['shippingMethod'] = Shipping::getName($invoice['shipping_method'], $this->registry);
+            $this->data['invoiceId'] = $invoice->getId();
+            $this->data['packageNumber'] = $invoice->getPackageNumber();
+            $this->data['shippingAddress'] = nl2br($modelReferenceAddress->toString($invoice->getShippingAddressId()));
+            $this->data['shippingCost'] = $this->getCurrency()->format($invoice->getShippingCost());
+            $this->data['shippingMethod'] = Shipping::getName($invoice->getShippingMethod(), $this->registry);
             $this->data['status'] = $this->load->model('localisation/invoice')->getInvoiceStatus(
-                $invoice['invoice_status_id'],
+                $invoice->getStatusId(),
                 $this->session->data['language_id']);
-            $this->data['statusId'] = $invoice['invoice_status_id'];
-            $this->data['total'] = $this->currency->format($invoice['subtotal']);
-            $this->data['totalWeight'] = $invoice['weight'];
-            $this->data['grandTotal'] = $this->currency->format($invoice['total']);
+            $this->data['statusId'] = $invoice->getStatusId();
+            $this->data['total'] = $this->getCurrency()->format($invoice->getSubtotal());
+            $this->data['totalWeight'] = $invoice->getWeight();
+            $this->data['grandTotal'] = $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $this->getCustomer()->getBaseCurrency(), 1);
         }
         $templateName = '/template/account/invoiceForm.tpl';
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateName))

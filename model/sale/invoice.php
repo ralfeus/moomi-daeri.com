@@ -1,0 +1,275 @@
+<?php
+/**
+ * Created by JetBrains PhpStorm.
+ * User: dev
+ * Date: 18.7.12
+ * Time: 18:25
+ * To change this template use File | Settings | File Templates.
+ */
+class ModelSaleInvoice extends Model {
+    public function addInvoice($orderId, $order_items, $shippingMethod = null, $weight = 0, $discount = 0, $comment = "", $shippingDate = '') {
+        /** @var ModelSaleOrder $orderModel */
+        $orderModel = $this->load->model('sale/order');
+        /** @var ModelSaleCustomer $customerModel */
+        $customerModel = $this->load->model('sale/customer');
+        /** @var ModelSaleOrderItemHistory $orderItemHistoryModel */
+        $orderItemHistoryModel = $this->load->model('sale/order_item_history');
+        /// Get customer and shipping data from the primary order
+        $order = $orderModel->getOrder($orderId);
+        $customer = $customerModel->getCustomer($order['customer_id']);
+
+        /// Calculate total weight and price in shop currency and customer currency
+        $tmpWeight = 0; $tmpSubtotal = 0; $subtotalCustomerCurrency = 0;
+        foreach ($order_items as $orderItem) {
+            $orderItemObject = new \model\sale\OrderItem($this->registry, $orderItem['affiliate_id'],
+                $orderItem['affiliate_transaction_id'], $orderItem['comment'], $orderItem['customer_id'],
+                $orderItem['customer_name'], $orderItem['customer_nick'], $orderItem['order_item_id'],
+                $orderItem['image_path'], $orderItem['internal_model'], $orderItem['model'], $orderItem['name'],
+                $orderItem['order_id'], $orderItem['price'], $orderItem['product_id'], $orderItem['public_comment'],
+                $orderItem['quantity'], $orderItem['shipping'], $orderItem['status_date'], $orderItem['status_id'],
+                $orderItem['supplier_group_id'], $orderItem['supplier_id'], $orderItem['supplier_name'], $orderItem['date_created'],
+                $orderItem['modified_date'], $orderItem['total'], $orderItem['weight'], $orderItem['weight_class_id']);
+            /// If weight isn't defined by administrator it's calculated
+            if (!$weight)
+                $tmpWeight += $this->weight->format($orderItem['weight'], $this->config->get('config_weight_class_id')) * $orderItem['quantity'];
+            $itemCost = $orderItem['price'] * $orderItem['quantity'];
+            $tmpSubtotal += $itemCost;
+            $subtotalCustomerCurrency += $orderItemObject->getTotalCustomerCurrency();
+        }
+        $subtotal = $tmpSubtotal;
+        /// It seems to originate from time when subtotal could be edited manually.
+        /// Now it's done by specifying discount (I hope)
+//        if (!isset($subtotal)) {
+//            $subtotal = $tmpSubtotal;
+//        } else {
+//            $subtotalCustCurr = $this->getCurrency()->convert(
+//                $subtotal,
+//                $this->config->get('config_currency'),
+//                $customer['base_currency_code']
+//            );
+//        }
+        if (!$weight)
+            $weight = $tmpWeight;
+
+        /// Get shipping cost according to destination and order items
+        /// The shipping cost calculation can take different order items factors into account
+        /// Therefore it's better to pass whole items and let shipping calculation classes use it
+        if (empty($shippingMethod))
+            $shippingMethod = $order['shipping_method'];
+        $shippingCost = Shipping::getCost($order_items, $shippingMethod, array('weight' => $weight) ,$this->registry);
+
+        /// Calculate total. Currently it's subtotal, shipping and discount. In the future it can be something else
+        $total = $subtotal + $shippingCost - $discount;
+        $totalCustomerCurrency = $subtotalCustomerCurrency + $this->getCurrency()->convert(
+            $shippingCost - $discount,
+            $this->config->get('config_currency'),
+            $customer['base_currency_code']
+        );
+
+        /// Add invoice record to the database
+        $query = "
+            INSERT INTO invoices
+            SET
+                customer_id = " . (int)$order['customer_id'] . ",
+                comment = '" . $this->db->escape($comment) . "',
+                discount = " . (float)$discount . ",
+                shipping_address_id = " . $orderModel->getShippingAddressId($orderId) . ",
+                shipping_method = '" . $shippingMethod . "',
+                shipping_date = '" . $shippingDate . "',
+                shipping_cost = $shippingCost,
+                subtotal = $subtotal,
+                time_modified = NOW(),
+                total = $total,
+                total_customer_currency = $totalCustomerCurrency,
+                currency_code = '". $customer['base_currency_code'] . "',
+                weight = " . (float)$weight
+        ;
+//        $this->log->write($query);
+        $this->getDb()->query($query);
+        /// Add invoice items
+        $invoiceId = $this->getDb()->getLastId();
+        $this->addInvoiceItems($invoiceId, $order_items);
+        return $invoiceId;
+    }
+
+    private function addInvoiceItems($invoiceId, $order_items)
+    {
+        $query = "
+            INSERT INTO invoice_items
+            (invoice_id, order_item_id)
+            VALUES
+        ";
+        foreach ($order_items as $order_item)
+            $query .= "($invoiceId, " . (int)$order_item['order_product_id'] . "),\n";
+
+        //$this->log->write(substr($query, 0, strlen($query) - 2));
+        $this->db->query(substr($query, 0, strlen($query) - 2));
+    }
+
+    private function buildFilterString($data)
+    {
+        $filter = "";
+        if (!empty($data['filterCustomerId']))
+            $filter .= ($filter ? " AND" : "") . " i.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
+        if (!empty($data['filterInvoiceId']))
+        $filter .= ($filter ? " AND" : "") . " i.invoice_id IN (" . implode(', ', $data['filterInvoiceId']) . ")";
+        if (!empty($data['filterInvoiceStatusId']))
+            $filter .= ($filter ? " AND" : "") . " i.invoice_status_id IN (" . implode(', ', $data['filterInvoiceStatusId']) . ")";
+
+        return $filter;
+    }
+
+    public function deleteInvoice($invoiceId)
+    {
+        $this->db->query("DELETE FROM invoice_items WHERE invoice_id = " . (int)$invoiceId);
+        $this->db->query("DELETE FROM invoices WHERE invoice_id = " . (int)$invoiceId);
+    }
+
+    /**
+     * @param int $invoiceId
+     * @return \model\sale\Invoice
+     */
+    public function getInvoice($invoiceId) {
+        $query = $this->getDb()->query("SELECT * FROM invoices WHERE invoice_id = " . (int)$invoiceId);
+        if ($query->num_rows)
+            return new \model\sale\Invoice($this->registry,
+                $query->row['comment'], $query->row['currency_code'], $query->row['customer_id'], $query->row['discount'], $query->row['invoice_id'],
+                $query->row['invoice_status_id'], $query->row['package_number'], $query->row['shipping_address_id'], $query->row['shipping_cost'],
+                $query->row['shipping_date'], $query->row['shipping_method'], $query->row['subtotal'], $query->row['time_modified'], $query->row['total'],
+                $query->row['total_customer_currency'], $query->row['weight']);
+        else
+            return null;
+    }
+
+    /**
+     * @param int $customerId
+     * @return \model\sale\Invoice[]
+     */
+    public function getInvoicesByCustomerId($customerId) {
+        return $this->getInvoices(array("filterCustomerId" => array($customerId)));
+    }
+
+    /**
+     * @param int $orderItemId
+     * @return \model\sale\Invoice[]
+     */
+    public function getInvoicesByOrderItem($orderItemId)
+    {
+        $query = $this->db->query("
+            SELECT invoice_id
+            FROM invoice_items
+            WHERE order_item_id = " . (int)$orderItemId
+        );
+        //$this->log->write(print_r($query, true));
+        if (!$query->num_rows)
+            return array();
+        else {
+            foreach ($query->rows as $row)
+                $data['filterInvoiceId'][] = $row['invoice_id'];
+//            $this->log->write(print_r($this->buildFilterString($data), true));
+            return $this->getInvoices($data);
+        }
+    }
+
+    /**
+     * @param int $invoiceId
+     * @return array
+     */
+    public function getInvoiceItems($invoiceId) {
+        $query = $this->getDb()->query("SELECT * FROM invoice_items WHERE invoice_id = " . (int)$invoiceId);
+        if ($query->num_rows)
+            return $query->rows;
+        else
+            return array();
+    }
+
+    /**
+     * @param int $invoiceId
+     * @return int
+     */
+    public function getInvoiceItemsCount($invoiceId) {
+        $query = $this->getDb()->query("
+            SELECT COUNT(*) as total
+            FROM invoice_items
+            WHERE invoice_id = " . (int)$invoiceId
+        );
+        return (int)$query->row['total'];
+    }
+
+    /**
+     * @param array $data
+     * @param string $orderBy
+     * @return \model\sale\Invoice[]
+     */
+    public function getInvoices($data, $orderBy = 'time_modified DESC') {
+        $filter = $this->buildFilterString($data);
+        $query = $this->getDb()->query("
+            SELECT *
+            FROM
+                invoices AS i
+                JOIN customer AS c ON i.customer_id = c.customer_id
+            " . ($filter ? "WHERE $filter" : "") . "
+            ORDER BY " . $this->getDb()->escape($orderBy)
+        );
+        if ($query->num_rows) {
+            $result = array();
+            foreach ($query->rows as $row) {
+                $result[] = new \model\sale\Invoice($this->registry,
+                    $row['comment'], $row['currency_code'], $row['customer_id'], $row['discount'], $row['invoice_id'],
+                    $row['invoice_status_id'], $row['package_number'], $row['shipping_address_id'], $row['shipping_cost'],
+                    $row['shipping_date'], $row['shipping_method'], $row['subtotal'], $row['time_modified'], $row['total'],
+                    $row['total_customer_currency'], $row['weight']);
+            }
+            return $result;
+        } else
+            return array();
+    }
+
+    public function setComment($invoiceId, $comment)
+    {
+        $this->setTextField($invoiceId, 'comment', $comment);
+    }
+
+    public function setDiscount($invoiceId, $discount)
+    {
+        $this->db->query("
+            UPDATE invoices
+            SET
+                discount = " . (float)$discount . ",
+                time_modified = NOW()
+            WHERE invoice_id = " . (int)$invoiceId
+        );
+    }
+
+    public function setInvoiceStatus($invoiceId, $invoiceStatusId)
+    {
+        $this->db->query("
+            UPDATE invoices
+            SET
+                invoice_status_id = " . (int)$invoiceStatusId . ",
+                time_modified = NOW()
+            WHERE invoice_id = " . (int)$invoiceId
+        );
+    }
+
+    public function setPackageNumber($invoiceId, $packageNumber)
+    {
+        $this->setTextField($invoiceId, 'package_number', $packageNumber);
+    }
+
+    public function setShippingDate($invoiceId, $shippingDate)
+    {
+        $query = "UPDATE invoices SET shipping_date = '" . $shippingDate . "' WHERE invoice_id = " . (int)$invoiceId;
+        $this->db->query($query);
+    }
+
+    private function setTextField($invoiceId, $field, $data)
+    {
+        $this->db->query("
+            UPDATE invoices
+            SET
+                $field = '" . $this->db->escape($data) . "'
+            WHERE invoice_id = " . (int)$invoiceId
+        );
+    }
+}

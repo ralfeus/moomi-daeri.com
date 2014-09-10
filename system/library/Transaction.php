@@ -48,16 +48,23 @@ class Transaction extends OpenCartBase implements ILibrary {
     public static function addPayment($customerId, $invoiceId, $registry, $description = "") {
         Transaction::$instance->log->write("Starting");
         $modelCustomer = Transaction::$instance->load->model('sale/customer', 'admin');
+        /** @var \ModelSaleInvoice $modelInvoice */
         $modelInvoice = Transaction::$instance->load->model('sale/invoice', 'admin');
         $currency = $registry->get('currency');
         $config = $registry->get('config');
         $customer = $modelCustomer->getCustomer($customerId);
         $invoice = $modelInvoice->getInvoice($invoiceId);
-        $transactionAmount = $currency->convert($invoice['total'], $config->get('config_currency'), $customer['base_currency_code']);
+        $transactionAmount = $invoice->getTotalCustomerCurrency();
         if (($customer['balance'] < $transactionAmount) && !$customer['allow_overdraft']) {
             $modelInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
         } else {
-            Transaction::addTransaction($invoiceId, $customerId, $invoice['total'], $config->get('config_currency'), $description);
+            Transaction::addTransaction(
+                $invoiceId,
+                $customerId,
+                $invoice->getTotalCustomerCurrency(),
+                $invoice->getCustomer()['base_currency_code'],
+                $description
+            );
             $modelInvoice->setInvoiceStatus($invoiceId, IS_PAID);
         }
     }
@@ -73,7 +80,7 @@ class Transaction extends OpenCartBase implements ILibrary {
         $amountInCustomerCurrency = (float)$currency->convert($amount, $currency_code, $customer['base_currency_code']);
         $newCustomerBalance = $customer['balance'] - $amountInCustomerCurrency;
         Transaction::$instance->db->query("
-            INSERT INTO " . DB_PREFIX . "customer_transaction
+            INSERT INTO customer_transaction
             SET
                 customer_id = " . (int)$customer['customer_id'] . ",
                 invoice_id = " . (int)$invoiceId . ",
@@ -87,7 +94,7 @@ class Transaction extends OpenCartBase implements ILibrary {
         $transactionId = Transaction::$instance->db->getLastId();
         /// Update customer's balance
         Transaction::$instance->db->query("
-                UPDATE " . DB_PREFIX . "customer
+                UPDATE customer
                 SET
                     balance = $newCustomerBalance
                 WHERE customer_id = " . $customer['customer_id']
