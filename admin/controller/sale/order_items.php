@@ -1,4 +1,6 @@
 <?php
+use model\sale\OrderItemDAO;
+
 class ControllerSaleOrderItems extends Controller {
 	private $error = array();
 	/** @var \ModelSaleOrderItem */
@@ -414,7 +416,7 @@ class ControllerSaleOrderItems extends Controller {
 	}
 
 	private function isValidOrderItemId($order_item_id) {
-		return isset($order_item_id) && $this->model_sale_order_item->getOrderItem($order_item_id);
+		return isset($order_item_id) && OrderItemDAO::getInstance()->getOrderItem($order_item_id);
 	}
 
 	public function print_page() {
@@ -663,8 +665,8 @@ class ControllerSaleOrderItems extends Controller {
 						$order_item_id,
 						Status::getStatus($order_item_new_status, $this->config->get('language_id')));
 				}
-				$orderItem = $this->modelSaleOrderItem->getOrderItem($order_item_id);
-				$this->modelSaleOrder->verifyOrderCompletion($orderItem['order_id']);
+				$orderItem = OrderItemDAO::getInstance()->getOrderItem($order_item_id);
+				$this->modelSaleOrder->verifyOrderCompletion($orderItem->getOrderId());
 			}
 			$this->clearSelection();
 		}
