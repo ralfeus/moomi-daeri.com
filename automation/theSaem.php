@@ -6,15 +6,6 @@ class TheSaem extends GMarketCoKr {
     }
 
     /**
-     * @return TheSaem
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof TheSaem))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 10, 'name' => 'TheSaem'); }

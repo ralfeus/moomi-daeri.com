@@ -6,15 +6,6 @@ class TheFaceshop extends GMarketCoKr {
     }
 
     /**
-     * @return TheFaceshop
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof TheFaceshop))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 7, 'name' => 'The Faceshop'); }

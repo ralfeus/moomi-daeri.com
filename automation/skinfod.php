@@ -6,15 +6,6 @@ class Skinfod extends GMarketCoKr {
     }
 
     /**
-     * @return Mizon
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof Skinfod))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 9, 'name' => 'Skinfod'); }

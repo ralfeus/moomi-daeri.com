@@ -6,15 +6,6 @@ class Beyond extends GMarketCoKr {
     }
 
     /**
-     * @return Beyond
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof Beyond))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 14, 'name' => 'Beyond'); }

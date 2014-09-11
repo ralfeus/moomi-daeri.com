@@ -6,15 +6,6 @@ class Innisfree extends GMarketCoKr {
     }
 
     /**
-     * @return Innisfree
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof Innisfree))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 8, 'name' => 'Innisfree'); }

@@ -17,7 +17,20 @@ function handleError($errno, $errstr, $errfile, $errline, array $errcontext)
 }
 
 abstract class ProductSource {
-    protected static $instance;
+    /** @var ProductSource[] */
+    protected static $instances;
+
+    /**
+     * @return static
+     */
+    public static function getInstance() {
+        $class = get_called_class();
+
+        if (!isset(self::$instances[$class])) {
+            self::$instances[$class] = new static;
+        }
+        return self::$instances[$class];
+    }
 
     /**
      * @param Product $product
@@ -96,11 +109,6 @@ abstract class ProductSource {
     }
 
     public abstract function getProducts();
-
-    /**
-     * @return ProductSource
-     */
-    public abstract static function getInstance();
 
     /**
      * @return stdClass

@@ -6,15 +6,6 @@ class TheSkinhouse extends GMarketCoKr {
     }
 
     /**
-     * @return TheSkinhouse
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof TheSkinhouse))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 11, 'name' => 'TheSkinhouse'); }

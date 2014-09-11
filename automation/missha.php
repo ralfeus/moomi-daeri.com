@@ -6,15 +6,6 @@ class Missha extends GMarketCoKr {
     }
 
     /**
-     * @return Missha
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof Missha))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 2, 'name' => 'Missha'); }

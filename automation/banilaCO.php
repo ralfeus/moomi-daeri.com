@@ -6,15 +6,6 @@ class BanilaCO extends GMarketCoKr {
     }
 
     /**
-     * @return BanilaCO
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof BanilaCO))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 12, 'name' => 'BanilaCO'); }

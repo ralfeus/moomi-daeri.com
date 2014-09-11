@@ -6,15 +6,6 @@ class Ciracle extends GMarketCoKr {
     }
 
     /**
-     * @return Ciracle
-     */
-    public static function getInstance() {
-        if (!self::$instance || !(self::$instance instanceof Ciracle))
-            self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
      * @return stdClass
      */
     public function getSite() { return (object)array( 'id' => 13, 'name' => 'Ciracle'); }
