@@ -6,6 +6,8 @@
  * Time: 15:05
  * To change this template use File | Settings | File Templates.
  */
+use model\sale\InvoiceDAO;
+
 include_once("ILibrary.php");
 class Transaction extends OpenCartBase implements ILibrary {
     /** @var  Transaction */
@@ -27,8 +29,7 @@ class Transaction extends OpenCartBase implements ILibrary {
         Transaction::addTransaction(0, $customerId, -$amount, $currency, $description);
 
         /// Try to pay all payment awaiting invoices
-        $modelInvoice = Transaction::$instance->load->model('sale/invoice', 'admin');
-        $invoices = $modelInvoice->getInvoices(array(
+        $invoices = InvoiceDAO::getInstance()->getInvoices(array(
             "filterCustomerId" => array((int)$customerId),
             "filterInvoiceStatusId" => array(IS_AWAITING_PAYMENT))
         );
@@ -49,14 +50,13 @@ class Transaction extends OpenCartBase implements ILibrary {
         Transaction::$instance->log->write("Starting");
         $modelCustomer = Transaction::$instance->load->model('sale/customer', 'admin');
         /** @var \ModelSaleInvoice $modelInvoice */
-        $modelInvoice = Transaction::$instance->load->model('sale/invoice', 'admin');
         $currency = $registry->get('currency');
         $config = $registry->get('config');
         $customer = $modelCustomer->getCustomer($customerId);
-        $invoice = $modelInvoice->getInvoice($invoiceId);
+        $invoice = InvoiceDAO::getInstance()->getInvoice($invoiceId);
         $transactionAmount = $invoice->getTotalCustomerCurrency();
         if (($customer['balance'] < $transactionAmount) && !$customer['allow_overdraft']) {
-            $modelInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
+            InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
         } else {
             Transaction::addTransaction(
                 $invoiceId,
@@ -65,7 +65,7 @@ class Transaction extends OpenCartBase implements ILibrary {
                 $invoice->getCustomer()['base_currency_code'],
                 $description
             );
-            $modelInvoice->setInvoiceStatus($invoiceId, IS_PAID);
+            InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_PAID);
         }
     }
 

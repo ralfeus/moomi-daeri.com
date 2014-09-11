@@ -1,4 +1,6 @@
 <?php
+use model\sale\InvoiceDAO;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -7,8 +9,6 @@
  * To change this template use File | Settings | File Templates.
  */
 class ControllerAccountInvoice extends Controller {
-    /** @var \ModelSaleInvoice */
-    private $modelInvoice;
     public function __construct($registry)
     {
         parent::__construct($registry);
@@ -22,7 +22,6 @@ class ControllerAccountInvoice extends Controller {
         $this->load->language('account/invoice');
         $this->load->library('Transaction');
         $this->load->model('reference/address');
-        $this->modelInvoice = $this->load->model('sale/invoice');
         $this->load->model('account/order');
         $this->load->model('account/order_item');
         $this->load->model('tool/image');
@@ -42,7 +41,7 @@ class ControllerAccountInvoice extends Controller {
                 $this->customer->getId(),
                 $this->request->request['invoiceId'],
                 $this->registry);
-            $invoice = $this->modelInvoice->getInvoice($this->request->request['invoiceId']);
+            $invoice = InvoiceDAO::getInstance()->getInvoice($this->request->request['invoiceId']);
             $json['newStatus'] = $this->load->model('localisation/invoice')->getInvoiceStatus(
                 $invoice->getStatusId(),
                 $this->session->data['language_id']
@@ -76,7 +75,7 @@ class ControllerAccountInvoice extends Controller {
     {
 //        $modelAccountInvoice = $this->registry->get('model_account_invoice');
         //$modelSaleCustomer = $this->load->model('sale/customer');
-        $invoices = $this->modelInvoice->getInvoices(array('filterCustomerId' => array($this->getCustomer()->getId())), "invoice_id DESC");
+        $invoices = InvoiceDAO::getInstance()->getInvoices(array('filterCustomerId' => array($this->getCustomer()->getId())), "invoice_id DESC");
         if ($invoices)
         {
             foreach ($invoices as $invoice)
@@ -92,7 +91,7 @@ class ControllerAccountInvoice extends Controller {
                     'customer' => $this->customer->getLastName() . ' ' . $this->customer->getFirstname(),
                     'timeModified' =>$invoice->getTimeModified(),
                     'href' => $this->url->link('account/invoice/showForm', 'invoiceId=' . $invoice->getId(), 'SSL'),
-                    'itemsCount' => $this->modelInvoice->getInvoiceItemsCount($invoice->getId()),
+                    'itemsCount' => InvoiceDAO::getInstance()->getInvoiceItemsCount($invoice->getId()),
                     'shippingCost' => $this->getCurrency()->format($invoice->getShippingCost()),
                     'shippingMethod' => Shipping::getName($invoice->getShippingMethod(), $this->registry),
                     'status' => $this->load->model('localisation/invoice')->getInvoiceStatus(
@@ -164,10 +163,9 @@ class ControllerAccountInvoice extends Controller {
         if (!isset($this->request->request['invoiceId']))
             return;
 
-//        $modelInvoice = $this->load->model('sale/invoice');
         $modelOrderItem = $this->load->model('account/order_item');
         $modelReferenceAddress = $this->load->model('reference/address');
-        $invoice = $this->modelInvoice->getInvoice($this->request->request['invoiceId']);
+        $invoice = InvoiceDAO::getInstance()->getInvoice($this->request->request['invoiceId']);
 
         /// Initialize interface values
         $this->data['headingTitle'] = sprintf($this->language->get('INVOICE'), $invoice->getId());

@@ -1,4 +1,6 @@
 <?php
+use model\sale\InvoiceDAO;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -12,8 +14,6 @@ class ControllerSaleInvoice extends Controller
     private $modelReferenceAddress;
     /** @var ModelSaleCustomer */
     private $modelSaleCustomer;
-    /** @var ModelSaleInvoice */
-    private $modelSaleInvoice;
     /** @var ModelSaleOrder */
     private $modelSaleOrder;
     /** @var ModelSaleOrderItem */
@@ -26,7 +26,6 @@ class ControllerSaleInvoice extends Controller
         $this->load->library("Transaction");
         $this->modelReferenceAddress = $this->load->model('reference/address');
         $this->modelSaleCustomer = $this->load->model('sale/customer');
-        $this->modelSaleInvoice = $this->load->model('sale/invoice');
         $this->modelSaleOrder = $this->load->model('sale/order');
         $this->modelSaleOrderItem = $this->load->model('sale/order_item');
         $this->load->model('tool/image');
@@ -73,7 +72,7 @@ class ControllerSaleInvoice extends Controller
         $orderItems = $this->modelSaleOrderItem->getOrderItems(array(
             'selected_items' => $_REQUEST['selectedItems']
         ));
-        $newInvoiceId = $this->modelSaleInvoice->addInvoice(
+        $newInvoiceId = InvoiceDAO::getInstance()->addInvoice(
             $orderItems[0]['order_id'],
             $orderItems,
             $this->parameters['shippingMethod'],
@@ -97,7 +96,7 @@ class ControllerSaleInvoice extends Controller
             $relatedTransaction = Transaction::getTransactionByInvoiceId($this->parameters['invoiceId']);
             if (!empty($relatedTransaction))
                 Transaction::deleteTransaction($relatedTransaction['customer_transaction_id']);
-            $this->modelSaleInvoice->deleteInvoice($this->request->request['invoiceId']);
+            InvoiceDAO::getInstance()->deleteInvoice($this->request->request['invoiceId']);
             $this->data['notifications']['success'] = sprintf(
                 $this->language->get('SUCCESS_INVOICE_DELETED'), $this->request->request['invoiceId']);
             $this->index();
@@ -115,7 +114,7 @@ class ControllerSaleInvoice extends Controller
         }
         unset($data['filterCustomerId']);
         $tmpResult = array();
-        foreach ($this->modelSaleInvoice->getInvoices($data) as $invoice)
+        foreach (InvoiceDAO::getInstance()->getInvoices($data) as $invoice)
             if (!in_array($invoice->getCustomer()['customer_id'], $tmpResult))
                 $tmpResult[$invoice->getCustomer()['customer_id']] =
                     $invoice->getCustomer()['lastname'] . " " .
@@ -148,7 +147,7 @@ class ControllerSaleInvoice extends Controller
 
         $this->data['customers'] = $this->getCustomers();
         $data = $this->parameters;
-        foreach ($modelSaleInvoice->getInvoices($data) as $invoice) {
+        foreach (InvoiceDAO::getInstance()->getInvoices($data) as $invoice) {
             $action = array();
             $action[] = array(
                 'text' => $this->getLanguage()->get('VIEW'),
@@ -220,7 +219,7 @@ class ControllerSaleInvoice extends Controller
     private function getOrderItemsHavingInvoice($orderItems) {
         $result = "";
         foreach ($orderItems as $orderItem) {
-            $existingInvoices = $this->modelSaleInvoice->getInvoicesByOrderItem($orderItem['order_product_id']);
+            $existingInvoices = InvoiceDAO::getInstance()->getInvoicesByOrderItem($orderItem['order_product_id']);
             if ($existingInvoices) {
                 $result .= $orderItem['order_product_id'] . " ==> ";
                 foreach ($existingInvoices as $existingInvoice)
@@ -248,11 +247,11 @@ class ControllerSaleInvoice extends Controller
 
     private function handleCredit($invoiceId) {
 //        $modelTransaction = $this->load->model('sale/transaction');
-        $invoice = $this->modelSaleInvoice->getInvoice($invoiceId);
+        $invoice = InvoiceDAO::getInstance()->getInvoice($invoiceId);
 //        $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
 
         if ($invoice->getCustomer()['await_invoice_confirmation'])
-            $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_CUSTOMER_CONFIRMATION);
+            InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_CUSTOMER_CONFIRMATION);
         else
         {
             $totalToPay = $this->getCurrency()->convert(
@@ -263,14 +262,14 @@ class ControllerSaleInvoice extends Controller
                 if ($invoice->getCustomer()['allow_overdraft'])
                 {
                     Transaction::addPayment($invoice->getCustomer()['customer_id'], $invoiceId, $this->registry);
-                    $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_PAID);
+                    InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_PAID);
                 }
                 else
-                    $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
+                    InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
             else
             {
                 Transaction::addPayment($invoice->getCustomer()['customer_id'], $invoiceId, $this->registry);
-                $this->modelSaleInvoice->setInvoiceStatus($invoiceId, IS_PAID);
+                InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_PAID);
             }
         }
         $this->load->model('tool/communication')->sendMessage(
@@ -332,18 +331,18 @@ class ControllerSaleInvoice extends Controller
         }
         else
             $discount = $_REQUEST['discount'];
-        $this->modelSaleInvoice->setDiscount($invoiceId, $discount);
+        InvoiceDAO::getInstance()->setDiscount($invoiceId, $discount);
         $this->response->setOutput("");
     }
 
     public function saveTextField()
     {
         if ($this->parameters['param'] == 'comment')
-            $this->modelSaleInvoice->setComment($this->parameters['invoiceId'], $this->parameters['data']);
+            InvoiceDAO::getInstance()->setComment($this->parameters['invoiceId'], $this->parameters['data']);
         else if ($this->parameters['param'] == 'packageNumber')
-            $this->modelSaleInvoice->setPackageNumber($this->parameters['invoiceId'], $this->parameters['data']);
+            InvoiceDAO::getInstance()->setPackageNumber($this->parameters['invoiceId'], $this->parameters['data']);
         else if ($this->parameters['param'] == 'shippingDate')
-            $this->modelSaleInvoice->setShippingDate($this->parameters['invoiceId'], $this->parameters['data']);
+            InvoiceDAO::getInstance()->setShippingDate($this->parameters['invoiceId'], $this->parameters['data']);
         $this->response->setOutput('');
     }
 
@@ -483,7 +482,7 @@ class ControllerSaleInvoice extends Controller
             return;
 
         $this->setBreadcrumbs();
-        $invoice = $this->modelSaleInvoice->getInvoice($this->parameters['invoiceId']);
+        $invoice = InvoiceDAO::getInstance()->getInvoice($this->parameters['invoiceId']);
 
         /// Initialize interface values
         $this->data['button_action'] = $this->language->get('button_close');

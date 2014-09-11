@@ -6,15 +6,8 @@
  * Time: 17:12
  * To change this template use File | Settings | File Templates.
  */
-class TonyMoly extends ProductSource
-{
+class TonyMoly extends ProductSource {
     private function __construct() {}
-
-    public static function getInstance() {
-        if (!self::$instance)
-            self::$instance = new TonyMoly();
-        return self::$instance;
-    }
 
     private function fillDetails(Product $product) {
         $matches = array();

@@ -89,8 +89,7 @@ class InvoiceDAO extends DAO {
         return $invoiceId;
     }
 
-    private function addInvoiceItems($invoiceId, $order_items)
-    {
+    private function addInvoiceItems($invoiceId, $order_items) {
         $query = "
             INSERT INTO invoice_items
             (invoice_id, order_item_id)
