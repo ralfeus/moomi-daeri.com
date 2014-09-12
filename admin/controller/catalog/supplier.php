@@ -1,14 +1,13 @@
-<?php    
+<?php
+use model\catalog\SupplierDAO;
+
 class ControllerCatalogSupplier extends Controller { 
 	private $error = array();
   
   	public function index() {
 		$this->load->language('catalog/supplier');
-		
 		$this->document->setTitle($this->language->get('heading_title'));
-		 
-		$this->load->model('catalog/supplier');
-		
+
     	$this->getList();
   	}
   
@@ -17,10 +16,8 @@ class ControllerCatalogSupplier extends Controller {
 
     	$this->document->setTitle($this->language->get('heading_title'));
 
-          $this->load->model('catalog/supplier');
-
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateInsert() && $this->validateForm()) {
-            $this->model_catalog_supplier->addSupplier($this->request->post);
+            SupplierDAO::getInstance()->addSupplier($this->request->post);
             //print_r($this->error);exit();
 
               $this->session->data['success'] = $this->language->get('text_success');
@@ -52,7 +49,7 @@ class ControllerCatalogSupplier extends Controller {
 		$this->load->model('catalog/supplier');
 		
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_catalog_supplier->editSupplier($this->request->get['supplier_id'], $this->request->post);
+			SupplierDAO::getInstance()->editSupplier($this->request->get['supplier_id'], $this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -85,7 +82,7 @@ class ControllerCatalogSupplier extends Controller {
 			
     	if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $supplier_id) {
-				$this->model_catalog_supplier->deleteSupplier($supplier_id);
+				SupplierDAO::getInstance()->deleteSupplier($supplier_id);
 			}
 
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -169,9 +166,9 @@ class ControllerCatalogSupplier extends Controller {
 			'limit' => $this->config->get('config_admin_limit')
 		);
 		
-		$supplier_total = $this->model_catalog_supplier->getTotalSuppliers();
+		$supplier_total = SupplierDAO::getInstance()->getTotalSuppliers();
 	
-		$results = $this->model_catalog_supplier->getSuppliers($data);
+		$results = SupplierDAO::getInstance()->getSuppliers($data);
  
     	foreach ($results as $result) {
 			$action = array();
@@ -335,7 +332,7 @@ class ControllerCatalogSupplier extends Controller {
 		$this->data['token'] = $this->session->data['token'];
 		
     	if (isset($this->request->get['supplier_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
-      		$supplier_info = $this->model_catalog_supplier->getSupplier($this->request->get['supplier_id']);
+      		$supplier_info = SupplierDAO::getInstance()->getSupplier($this->request->get['supplier_id']);
     	}
 
 		$this->load->model('localisation/language');
@@ -395,7 +392,7 @@ class ControllerCatalogSupplier extends Controller {
   	}    
 
     private function validateInsert() {
-        $supplier_info = $this->model_catalog_supplier->getSupplierByName($this->request->post['name']);
+        $supplier_info = SupplierDAO::getInstance()->getSupplierByName($this->request->post['name']);
         if ($supplier_info)
         {
             $this->error['warning'] = $this->language->get('error_exists');

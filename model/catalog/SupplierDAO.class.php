@@ -3,49 +3,77 @@ namespace model\catalog;
 
 use model\DAO;
 class SupplierDAO extends DAO {
+    /**
+     * @param array $data
+     * @return void
+     */
     public function addSupplier($data) {
-        $this->db->query("
+        $this->getDb()->query("
             INSERT INTO supplier
             SET
-                supplier_group_id = " . (int)$data['supplier_group_id'] . ",
-                name = '" . $this->db->escape($data['name']) . "',
-                internal_model = '" . $this->db->escape($data['internal_model']) . "'");
-//		$supplier_id = $this->db->getLastId();
+                supplier_group_id = ?,
+                name = ?,
+                internal_model = ?
+            ", array("i:" . $data['supplier_group_id'], 's:' . $data['name'], 's:' . $data['internal_model'])
+        );
+//		$supplier_id = $this->getDb()->getLastId();
 
 		$this->cache->delete('supplier');
     }
 
-    public function editSupplier($supplier_id, $data) {
-		$this->db->query("
+    /**
+     * @param int $supplierId
+     * @param array $data
+     * @return void
+     */
+    public function editSupplier($supplierId, $data) {
+		$this->getDb()->query("
 		    UPDATE supplier
 		    SET
-                supplier_group_id = " . (int)$data['supplier_group_id'] . ",
-		        name = '" . $this->db->escape($data['name']) . "',
-                internal_model = '" . $this->db->escape($data['internal_model']) . "'
-            WHERE supplier_id = '" . (int)$supplier_id . "'");
+                supplier_group_id = ?,
+		        name = ?,
+                internal_model = ?
+            WHERE supplier_id = ?
+            ", array('i:' . $data['supplier_group_id'], 's:' . $data['name'], 's:' . $data['internal_model'], "i:$supplierId")
+        );
 
 		$this->cache->delete('supplier');
     }
 
-    public function deleteSupplier($supplier_id) {
-		$this->db->query("DELETE FROM supplier WHERE supplier_id = '" . (int)$supplier_id . "'");
+    /**
+     * @param int $supplierId
+     * @return void
+     */
+    public function deleteSupplier($supplierId) {
+		$this->getDb()->query("DELETE FROM supplier WHERE supplier_id = ?", array("i:$supplierId"));
 
 		$this->cache->delete('supplier');
     }
 
-    public function getSupplier($supplier_id) {
-		$query = $this->db->query("SELECT DISTINCT * FROM supplier WHERE supplier_id = '" . (int)$supplier_id . "'");
+    /**
+     * @param string $supplierId
+     * @return array
+     */
+    public function getSupplier($supplierId) {
+		$query = $this->getDb()->query("SELECT DISTINCT * FROM supplier WHERE supplier_id = ?", array("i:$supplierId"));
 
 		return $query->row;
     }
 
-    public function getSupplierByName($supplier_name)
-    {
-        $query = $this->db->query("SELECT DISTINCT * FROM supplier WHERE name = '$supplier_name'");
+    /**
+     * @param string $supplierName
+     * @return array
+     */
+    public function getSupplierByName($supplierName) {
+        $query = $this->getDb()->query("SELECT DISTINCT * FROM supplier WHERE name = ?", array("s:$supplierName"));
 
         return $query->row;
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
     public function getSuppliers($data = array()) {
 		if ($data) {
 			$sql = "SELECT * FROM supplier";
@@ -78,14 +106,14 @@ class SupplierDAO extends DAO {
 				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 			}
 
-			$query = $this->db->query($sql);
+			$query = $this->getDb()->query($sql);
 
 			return $query->rows;
 		} else {
 			$supplier_data = $this->cache->get('supplier');
 
 			if (!$supplier_data) {
-				$query = $this->db->query("SELECT * FROM supplier ORDER BY name");
+				$query = $this->getDb()->query("SELECT * FROM supplier ORDER BY name");
 
 				$supplier_data = $query->rows;
 
@@ -96,17 +124,19 @@ class SupplierDAO extends DAO {
 		}
     }
 
+    /**
+     * @return int
+     */
     public function getTotalSuppliers() {
-		$query = $this->db->query("SELECT COUNT(*) AS total FROM supplier");
-
-		return $query->row['total'];
+		return $this->getDb()->queryScalar("SELECT COUNT(*) AS total FROM supplier");
     }
 
-    public function getTotalSuppliersBySupplierGroupId($supplier_group_id)
-    {
-        $query = $this->db->query("SELECT COUNT(*) as total FROM supplier WHERE supplier_group_id = $supplier_group_id");
-
-        return $query->row['total'];
+    /**
+     * @param int $supplierGroupId
+     * @return int
+     */
+    public function getTotalSuppliersBySupplierGroupId($supplierGroupId) {
+        return $this->getDb()->queryScalar("SELECT COUNT(*) as total FROM supplier WHERE supplier_group_id = ?", array("i:$supplierGroupId"));
     }
 }
 ?>
