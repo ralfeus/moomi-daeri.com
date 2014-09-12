@@ -91,7 +91,7 @@ class OrderItemDAO extends DAO {
 			SELECT COUNT(*) as total
 			FROM
 				" . $this->orderItemsFromQuery . "
-			" . ($filter ? "WHERE" . $filter->filterString : "");
+			" . ($filter ? "WHERE " . $filter->filterString : "");
 		$order_item_query = $this->getDb()->query($query, $filter->params);
 
 		return $order_item_query->row['total'];
