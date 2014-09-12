@@ -15,7 +15,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->mpfilter["model"] = "";
         if (isset($this->request->post['model'])) {
             $this->mpfilter["model"] = $this->request->post['model'];
-            $data['filter_model'] = $this->mpfilter["model"];
+            $data['filterModel'] = $this->mpfilter["model"];
         }
 
         $this->mpfilter["change_all"] = false;

@@ -359,7 +359,7 @@ class ControllerCommonHome extends Controller {
 			$url .= '&filter_name=' . $this->request->get['filter_name'];
 		}
 		
-		if (isset($this->request->get['filter_model'])) {
+		if (isset($this->request->get['filterModel'])) {
 			$url .= '&filterModel=' . $this->request->get['filterModel'];
 		}
 		

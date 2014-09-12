@@ -1,4 +1,6 @@
 <?php
+use model\catalog\SupplierDAO;
+use model\sale\CustomerDAO;
 use model\sale\OrderItemDAO;
 
 class ControllerSaleOrderItems extends Controller {
@@ -25,20 +27,20 @@ class ControllerSaleOrderItems extends Controller {
 	}
 
 	private function getCustomers()	{
-		$data = array();
-		foreach ($this->parameters as $key => $value) {
-			if (strpos($key, 'filter') === false)
-				continue;
-			$data[$key] = $value;
-
-		}
-		unset($data['filterCustomerId']);
+//		$data = array();
+//		foreach ($this->parameters as $key => $value) {
+//			if (strpos($key, 'filter') === false)
+//				continue;
+//			$data[$key] = $value;
+//
+//		}
+//		unset($data['filterCustomerId']);
 		$result = array(); $tmpResult = array();
-		foreach (OrderItemDAO::getInstance()->getOrderItems($data) as $orderItem) {
-			//if (!in_array($orderItem['customer_id'], $tmpResult))
-			if (!isset($tmpResult[$orderItem['customer_id']])) {
-				$tmpResult[$orderItem['customer_id']] = array('nickname_name' => $orderItem['customer_name'] . ' / ' . $orderItem['customer_nick'], 'isCustomerOrderReady' => $this->isCustomerOrderReady($orderItem['customer_id']));
-            }
+		foreach (CustomerDAO::getInstance()->getCustomers() as $customer) {
+            $tmpResult[$customer['customer_id']] = array(
+                'nickname_name' => $customer['name'] . ' / ' . $customer['nickname']
+                //'isCustomerOrderReady' => $this->isCustomerOrderReady($customer['customer_id'])
+            );
         }
 		natcasesort($tmpResult);
  //var_dump($this->isCustomerOrderReady($orderItem['customer_id']));die();
@@ -47,44 +49,43 @@ class ControllerSaleOrderItems extends Controller {
 
 	private function getSuppliers()
 	{
-		$data = array();
-		foreach ($this->parameters as $key => $value)
-		{
-			if (strpos($key, 'filter') === false)
-				continue;
-			$data[$key] = $value;
-		}
-		unset($data['filterSupplierId']);
+//		$data = array();
+//		foreach ($this->parameters as $key => $value)
+//		{
+//			if (strpos($key, 'filter') === false)
+//				continue;
+//			$data[$key] = $value;
+//		}
+//		unset($data['filterSupplierId']);
 		$result = array(); $tmpResult = array();
-		foreach (OrderItemDAO::getInstance()->getOrderItems($data) as $orderItem)
-			if (!in_array($orderItem['supplier_id'], $tmpResult))
-				$tmpResult[$orderItem['supplier_id']] = $orderItem['supplier_name'];
+		foreach (SupplierDAO::getInstance()->getSuppliers() as $supplier)
+            $tmpResult[$supplier['supplier_id']] = $supplier['name'];
 		natcasesort($tmpResult);
 		return $tmpResult;
 	}
 
-	private function isCustomerOrderReady($customer_id) {
-		if (empty($customer_id)) {
-			return false;
-		}
-		$readyOrders = $this->modelSaleOrder->getTotalOrders(array(
-				'filterCustomerId' => array($customer_id),
-				'filterStatusId' => array(ORDER_STATUS_READY_TO_SHIP)
-		));
-		return (bool)$readyOrders;
-
-	  $this->load->model('sale/order');
-	  $orders = $this->model_sale_order->getAllCustomerOrders($customer_id);
-
-	  foreach ($orders as $index => $order) {
-		if($this->isOrderReady($order['order_id'])) {
-		  //var_dump($customer_id); echo "<br />";
-		  //var_dump($order['order_id']); echo "<br /><br />";
-		  return true;
-		}
-	  }
-	  return false;
-	}
+//	private function isCustomerOrderReady($customer_id) {
+//		if (empty($customer_id)) {
+//			return false;
+//		}
+//		$readyOrders = $this->modelSaleOrder->getTotalOrders(array(
+//				'filterCustomerId' => array($customer_id),
+//				'filterStatusId' => array(ORDER_STATUS_READY_TO_SHIP)
+//		));
+//		return (bool)$readyOrders;
+//
+//	  $this->load->model('sale/order');
+//	  $orders = $this->model_sale_order->getAllCustomerOrders($customer_id);
+//
+//	  foreach ($orders as $index => $order) {
+//		if($this->isOrderReady($order['order_id'])) {
+//		  //var_dump($customer_id); echo "<br />";
+//		  //var_dump($order['order_id']); echo "<br /><br />";
+//		  return true;
+//		}
+//	  }
+//	  return false;
+//	}
 
 	private function getFilterStrings()
 	{

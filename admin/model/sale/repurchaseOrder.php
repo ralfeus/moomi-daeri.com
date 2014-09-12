@@ -168,8 +168,8 @@ class ModelSaleRepurchaseOrder extends Model
     }
 
     public function getOrdersCount($data = array()) {
-        $data['filter_model'] = 'Repurchase agent';
-        return OrderItemDAO::getInstance()->getOrderItemsCount(null, $this->buildFilterString($data));
+        $data['filterModel'] = 'Repurchase agent';
+        return OrderItemDAO::getInstance()->getOrderItemsCount($this->buildFilterString($data));
     }
 
     private function getOrderInitialStatus()

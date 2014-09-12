@@ -155,7 +155,7 @@ class InvoiceDAO extends DAO {
         else {
             foreach ($query->rows as $row)
                 $data['filterInvoiceId'][] = $row['invoice_id'];
-//            $this->log->write(print_r($this->buildFilterString($data), true));
+//            $this->log->write(print_r($this->buildFilter($data), true));
             return $this->getInvoices($data);
         }
     }

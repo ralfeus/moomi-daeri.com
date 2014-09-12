@@ -17,7 +17,7 @@ class OrderItemDAO extends DAO {
      * @return OrderItem
      */
     public function getOrderItem($order_item_id) {
-        $result = $this->fetchOrderItems($this->buildFilterString(array('filterOrderItemId' => $order_item_id)));
+        $result = $this->fetchOrderItems($this->buildFilter(array('filterOrderItemId' => $order_item_id)));
         if ($result) {
             return new OrderItem($this->registry, $result[0]['affiliate_id'], $result[0]['affiliate_transaction_id'],
                 $result[0]['comment'], $result[0]['customer_id'], $result[0]['customer_name'], $result[0]['customer_nick'],
@@ -60,13 +60,13 @@ class OrderItemDAO extends DAO {
 			FROM
 				" . $this->orderItemsFromQuery .
             " LEFT JOIN affiliate_transaction at ON op.order_product_id = at.order_product_id "
-            . ($filter ? "WHERE " . $filter->filterString : "") . /*"
+            . (!is_null($filter) ? "WHERE " . $filter->filterString : "") . /*"
         	" . ($sort ? "ORDER BY $sort" : "") . */"
             ORDER BY supplier_name, op.model, op.order_product_id
 			" . ($limit ? "LIMIT $limit" : "");
 
 //        $this->getLogger()->write($query);
-        $order_item_query = $this->getDb()->query($query, isset($filter) && isset($filter->params) ? $filter->params : null);
+        $order_item_query = $this->getDb()->query($query, !is_null($filter) && isset($filter->params) ? $filter->params : null);
 
         if ($order_item_query->num_rows) {
             $response = $order_item_query->rows;
@@ -86,25 +86,29 @@ class OrderItemDAO extends DAO {
             return array();
     }
 
+    /**
+     * @param \stdClass $filter
+     * @return int
+     */
     private function fetchOrderItemsCount($filter = null)	{
         $query = "
 			SELECT COUNT(*) as total
 			FROM
 				" . $this->orderItemsFromQuery . "
-			" . ($filter ? "WHERE " . $filter->filterString : "");
-        $order_item_query = $this->getDb()->query($query, $filter->params);
+			" . (!is_null($filter) ? "WHERE " . $filter->filterString : "");
+        $order_item_query = $this->getDb()->query($query, !is_null($filter) && isset($filter->params) ? $filter->params : null);
 
         return $order_item_query->row['total'];
     }
 
     /**
      * @param array $data
-     * @param string $filter
+     * @param \stdClass $filter
      * @return array
      */
-    public function getOrderItems($data = array(), $filter = null) 	{
+    public function getOrderItems($data = array(), $filter = null) {
 
-        $filter = empty($filter) ? $this->buildFilterString($data) : $filter;
+        if (is_null($filter)) { $filter = $this->buildFilter($data); }
         $sort = "";
         $limit = "";
 
@@ -170,8 +174,13 @@ class OrderItemDAO extends DAO {
         }
     }
 
+    /**
+     * @param array $data
+     * @param \stdClass $filter
+     * @return int
+     */
     public function getOrderItemsCount($data = array(), $filter = null)	{
-        $filter = empty($filter) ? $this->buildFilterString($data) : $filter;
+        if (is_null($filter)) { $filter = $this->buildFilter($data); }
         return $this->fetchOrderItemsCount($filter);
     }
 
@@ -216,51 +225,59 @@ class OrderItemDAO extends DAO {
      * @param array $data
      * @return \stdClass
      */
-    private function buildFilterString($data = array()) {
+    private function buildFilter($data = array()) {
         $filter = ""; $params = array();
         if (isset($data['selected_items']) && count($data['selected_items'])) {
-            $filter = "op.order_product_id IN (" . substr(str_repeat(',?', sizeof($data['selected_items'])), 1) . ")";
-            foreach ($data['selected_items'] as $orderItemId) {
-                $params[] = "i:$orderItemId";
-            }
+            $this->buildSimpleFieldFilterEntry('i', 'op.order_product_id', $data['selected_items'], $filter, $params);
         } else {
-            if (!empty($data['filterCustomerId']))
-                $filter .= ($filter ? " AND " : "") . "c.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
-            if (!empty($data['filterItem']))
+            $this->buildSimpleFieldFilterEntry('i', 'c.customer_id', $data['filterCustomerId'], $filter, $params);
+            if (!empty($data['filterItem'])) {
                 $filter .= ($filter ? " AND " : "") . "
-                    LCASE(op.model) LIKE '%" . $this->db->escape(utf8_strtolower($data['filterItem'])) . "%'
-                    OR LCASE(op.name) LIKE '%" . $this->db->escape(utf8_strtolower($data['filterItem'])) . "%'";
-            if (!empty($data['filter_model']))
-                $filter .= ($filter ? " AND " : "") . "LCASE(op.model) LIKE '%" . $this->db->escape(utf8_strtolower($data['filter_model'])) . "%'";
-            if (!empty($data['filterStatusId'])) {
-                $filter .= ($filter ? " AND " : "") . "op.status_id IN (" . substr(str_repeat(',?', sizeof($data['filterStatusId'])), 1) . ")";
-                foreach ($data['filterStatusId'] as $statusId) {
-                    $params[] = "i:$statusId";
-                }
+                    LCASE(op.model) LIKE ?
+                    OR LCASE(op.name) LIKE ?";
+            $params[] = 's:%' . utf8_strtolower($data['filterItem']) . '%';
+            $params[] = 's:%' . utf8_strtolower($data['filterItem']) . '%';
             }
-            if (!empty($data['filterSupplierId']))
-                $filter .= ($filter ? " AND " : "") . "s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
-//            if (!empty($data['filter_supplier_group']))
-//                $filter .= ($filter ? " AND" : "") . " s.supplier_group_id = " . (int)$data['filter_supplier_group'];
-            if (!empty($data['filterOrderId']))
-                $filter .= ($filter ? " AND " : "") . "op.order_id = " . (int)$data['filterOrderId'];
-            if (!empty($data['filterOrderItemId'])) {
-                if (!is_array($data['filterOrderItemId'])) {
-                    $data['filterOrderItemId'] = array($data['filterOrderItemId']);
-                }
-                $filter .= ($filter ? " AND " : "") . "op.order_product_id IN (" . substr(str_repeat(',?', sizeof($data['filterOrderItemId'])), 1) . ")";
-                foreach ($data['filterOrderItemId'] as $orderItemId) {
-                    $params[] = "i:$orderItemId";
-                }
+            if (!empty($data['filterModel'])) {
+                $filter .= ($filter ? " AND " : "") . "LCASE(op.model) LIKE ?";
+                $params[] = 's:%' . utf8_strtolower($data['filterModel']) . '%';
             }
-            if (!empty($data['filterProductId']))
-                $filter .= ($filter ? " AND " : "") . "op.product_id IN (" . implode(', ', $data['filterProductId']) . ")";
+            $this->buildSimpleFieldFilterEntry('i', 'op.status_id', $data['filterStatusId'], $filter, $params);
+            $this->buildSimpleFieldFilterEntry('i', 's.supplier_id', $data['filterSupplierId'], $filter, $params);
+            $this->buildSimpleFieldFilterEntry('i', 'op.order_id', $data['filterOrderId'], $filter, $params);
+            $this->buildSimpleFieldFilterEntry('i', 'op.order_product_id', $data['filterOrderItemId'], $filter, $params);
+            $this->buildSimpleFieldFilterEntry('i', 'op.product_id', $data['filterProductId'], $filter, $params);
         }
 
+        if (!$filter) {
+            return null;
+        }
         $result = new \stdClass();
         $result->filterString = $filter;
         $result->params = $params;
         return $result;
+    }
+
+    /**
+     * @param string $entryType
+     * @param string $fieldName
+     * @param mixed $filterValues
+     * @param string &$filterString
+     * @param array &$params
+     * @return void
+     */
+    protected function buildSimpleFieldFilterEntry($entryType, $fieldName, $filterValues, &$filterString, &$params) {
+        if (isset($filterValues)) {
+            if (!is_array($filterValues)) {
+                $filterValues = array($filterValues);
+            } elseif (!sizeof($filterValues)) {
+                return;
+            }
+            $filterString .= ($filterString ? " AND " : "") . "$fieldName IN (" . substr(str_repeat(',?', sizeof($filterValues)), 1) . ")";
+            foreach ($filterValues as $filterValue) {
+                $params[] = $entryType . ':' . $filterValue;
+            }
+        }
     }
 
     public function getOrderItemOptions($orderItemId)
