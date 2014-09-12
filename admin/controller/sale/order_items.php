@@ -446,9 +446,9 @@ class ControllerSaleOrderItems extends Controller {
 				$image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
 			}
 
-			if ($this->model_catalog_supplier_group->getSupplierGroup($order_item['supplier_group_id']))
+			if (SupplierGroupDAO::getInstance()->getSupplierGroup($order_item['supplier_group_id']))
 			{
-				$supplier_group = $this->model_catalog_supplier_group->getSupplierGroup($order_item['supplier_group_id']);
+				$supplier_group = SupplierGroupDAO::getInstance()->getSupplierGroup($order_item['supplier_group_id']);
 				$supplier_group_name = $supplier_group['name'];
 			}
 			else
@@ -552,9 +552,9 @@ class ControllerSaleOrderItems extends Controller {
 				$image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
 			}
 
-			if ($this->model_catalog_supplier_group->getSupplierGroup($order_item['supplier_group_id']))
+			if (SupplierGroupDAO::getInstance()->getSupplierGroup($order_item['supplier_group_id']))
 			{
-				$supplier_group = $this->model_catalog_supplier_group->getSupplierGroup($order_item['supplier_group_id']);
+				$supplier_group = SupplierGroupDAO::getInstance()->getSupplierGroup($order_item['supplier_group_id']);
 				$supplier_group_name = $supplier_group['name'];
 			}
 			else

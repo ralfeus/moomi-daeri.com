@@ -1,26 +1,23 @@
-<?php    
+<?php
+use model\catalog\SupplierDAO;
+use model\catalog\SupplierGroupDAO;
+
 class ControllerCatalogSupplierGroup extends Controller {
 	private $error = array();
-  
+
+    public function __construct($registry) {
+        parent::__construct($registry);
+        $this->load->language('catalog/supplier_group');
+        $this->document->setTitle($this->language->get('heading_title'));
+    }
+
   	public function index() {
-		$this->load->language('catalog/supplier_group');
-		
-		$this->document->setTitle($this->language->get('heading_title'));
-		 
-		$this->load->model('catalog/supplier_group');
-		
     	$this->getList();
   	}
   
     public function insert() {
-          $this->load->language('catalog/supplier_group');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-
-          $this->load->model('catalog/supplier_group');
-
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-            $this->model_catalog_supplier_group->addSupplierGroup($this->request->post);
+            SupplierGroupDAO::getInstance()->addSupplierGroup($this->request->post);
             //print_r($this->error);exit();
 
               $this->session->data['success'] = $this->language->get('text_success');
@@ -45,14 +42,8 @@ class ControllerCatalogSupplierGroup extends Controller {
   	} 
    
   	public function update() {
-		$this->load->language('catalog/supplier_group');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/supplier_group');
-		
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_catalog_supplier_group->editSupplierGroup($this->request->get['supplier_group_id'], $this->request->post);
+			SupplierGroupDAO::getInstance()->editSupplierGroup($this->request->get['supplier_group_id'], $this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -77,15 +68,9 @@ class ControllerCatalogSupplierGroup extends Controller {
   	}   
 
   	public function delete() {
-		$this->load->language('catalog/supplier_group');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/supplier_group');
-			
     	if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $supplier_group_id) {
-				$this->model_catalog_supplier_group->deleteSupplierGroup($supplier_group_id);
+				SupplierGroupDAO::getInstance()->deleteSupplierGroup($supplier_group_id);
 			}
 
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -169,9 +154,8 @@ class ControllerCatalogSupplierGroup extends Controller {
 			'limit' => $this->config->get('config_admin_limit')
 		);
 		
-		$supplier_group_total = $this->model_catalog_supplier_group->getTotalSupplierGroups();
-	
-		$results = $this->model_catalog_supplier_group->getSupplierGroups($data);
+		$supplier_group_total = SupplierGroupDAO::getInstance()->getTotalSupplierGroups();
+		$results = SupplierGroupDAO::getInstance()->getSupplierGroups($data);
  
     	foreach ($results as $result) {
 			$action = array();
@@ -329,7 +313,7 @@ class ControllerCatalogSupplierGroup extends Controller {
 		$this->data['token'] = $this->session->data['token'];
 		
     	if (isset($this->request->get['supplier_group_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
-      		$supplier_group_info = $this->model_catalog_supplier_group->getSupplierGroup($this->request->get['supplier_group_id']);
+      		$supplier_group_info = SupplierGroupDAO::getInstance()->getSupplierGroup($this->request->get['supplier_group_id']);
     	}
 
 		$this->load->model('localisation/language');
@@ -358,7 +342,7 @@ class ControllerCatalogSupplierGroup extends Controller {
       		$this->error['warning'] = $this->language->get('error_permission');
     	}
 
-        $supplier_info = $this->model_catalog_supplier_group->getSupplierGroupByName($this->request->post['name']);
+        $supplier_info = SupplierGroupDAO::getInstance()->getSupplierGroupByName($this->request->post['name']);
         if ($supplier_info)
         {
             $this->error['warning'] = $this->language->get('error_exists');
@@ -380,10 +364,8 @@ class ControllerCatalogSupplierGroup extends Controller {
 			$this->error['warning'] = $this->language->get('error_permission');
     	}	
 		
-		$this->load->model('catalog/supplier');
-
 		foreach ($this->request->post['selected'] as $supplier_group_id) {
-  			$supplier_total = $this->model_catalog_supplier->getTotalSuppliersBySupplierGroupId($supplier_group_id);
+  			$supplier_total = SupplierDAO::getInstance()->getTotalSuppliersBySupplierGroupId($supplier_group_id);
 
 			if ($supplier_total) {
 	  			$this->error['warning'] = sprintf($this->language->get('error_supplier'), $supplier_total);
@@ -397,4 +379,3 @@ class ControllerCatalogSupplierGroup extends Controller {
 		}  
   	}
 }
-?>

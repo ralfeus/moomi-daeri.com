@@ -1,21 +1,21 @@
 <?php
 use model\catalog\SupplierDAO;
+use model\catalog\SupplierGroupDAO;
 
 class ControllerCatalogSupplier extends Controller { 
 	private $error = array();
+
+    public function __construct($registry) {
+        parent::__construct($registry);
+        $this->load->language('catalog/supplier');
+        $this->document->setTitle($this->language->get('heading_title'));
+    }
   
   	public function index() {
-		$this->load->language('catalog/supplier');
-		$this->document->setTitle($this->language->get('heading_title'));
-
     	$this->getList();
   	}
   
     public function insert() {
-          $this->load->language('catalog/supplier');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateInsert() && $this->validateForm()) {
             SupplierDAO::getInstance()->addSupplier($this->request->post);
             //print_r($this->error);exit();
@@ -42,12 +42,6 @@ class ControllerCatalogSupplier extends Controller {
   	} 
    
   	public function update() {
-		$this->load->language('catalog/supplier');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/supplier');
-		
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			SupplierDAO::getInstance()->editSupplier($this->request->get['supplier_id'], $this->request->post);
 
@@ -74,12 +68,6 @@ class ControllerCatalogSupplier extends Controller {
   	}   
 
   	public function delete() {
-		$this->load->language('catalog/supplier');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/supplier');
-			
     	if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $supplier_id) {
 				SupplierDAO::getInstance()->deleteSupplier($supplier_id);
@@ -167,7 +155,6 @@ class ControllerCatalogSupplier extends Controller {
 		);
 		
 		$supplier_total = SupplierDAO::getInstance()->getTotalSuppliers();
-	
 		$results = SupplierDAO::getInstance()->getSuppliers($data);
  
     	foreach ($results as $result) {
@@ -260,8 +247,6 @@ class ControllerCatalogSupplier extends Controller {
 	}
   
   	private function getForm() {
-        $this->data['heading_title'] = $this->language->get('heading_title');
-
         $this->data['text_amount'] = $this->language->get('text_amount');
     	$this->data['text_enabled'] = $this->language->get('text_enabled');
     	$this->data['text_disabled'] = $this->language->get('text_disabled');
@@ -308,13 +293,11 @@ class ControllerCatalogSupplier extends Controller {
 		}
 		
   		$this->data['breadcrumbs'] = array();
-
    		$this->data['breadcrumbs'][] = array(
        		'text'      => $this->language->get('text_home'),
 			'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
       		'separator' => false
    		);
-
    		$this->data['breadcrumbs'][] = array(
        		'text'      => $this->language->get('heading_title'),
 			'href'      => $this->url->link('catalog/supplier', 'token=' . $this->session->data['token'] . $url, 'SSL'),
@@ -347,8 +330,7 @@ class ControllerCatalogSupplier extends Controller {
       		$this->data['name'] = '';
     	}
 
-        $this->load->model('catalog/supplier_group');
-        $this->data['supplier_groups'] = $this->model_catalog_supplier_group->getSupplierGroups();
+        $this->data['supplier_groups'] = SupplierGroupDAO::getInstance()->getSupplierGroups();
 
         if (isset($this->request->post['supplier_group_id'])) {
               $this->data['supplier_group_id'] = $this->request->post['supplier_group_id'];
@@ -423,4 +405,3 @@ class ControllerCatalogSupplier extends Controller {
 		}  
   	}
 }
-?>
