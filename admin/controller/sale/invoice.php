@@ -1,5 +1,7 @@
 <?php
 use model\sale\InvoiceDAO;
+use model\sale\OrderItem;
+use model\sale\OrderItemDAO;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -69,7 +71,7 @@ class ControllerSaleInvoice extends Controller
         } else {
             $totalWeight = $_REQUEST['totalWeight'];
         }
-        $orderItems = $this->modelSaleOrderItem->getOrderItems(array(
+        $orderItems = OrderItemDAO::getInstance()->getOrderItems(array(
             'selected_items' => $_REQUEST['selectedItems']
         ));
         $newInvoiceId = InvoiceDAO::getInstance()->addInvoice(
@@ -176,7 +178,7 @@ class ControllerSaleInvoice extends Controller
                 'customer' => $invoice->getCustomer()['lastname'] . ' ' . $invoice->getCustomer()['firstname'],
                 'customerId' => $invoice->getCustomer()['customer_id'],
                 'shippingCost' => $this->getCurrency()->format($invoice->getShippingCost(), $this->config->get('config_currency')),
-                'shippingMethod' => Shipping::getName($invoice->getShippingMethod(), $this->registry),
+                'shippingMethod' => \Shipping::getName($invoice->getShippingMethod(), $this->registry),
                 'status' => $this->load->model('localisation/invoice')->getInvoiceStatus($invoice->getStatusId()),
                 'subtotal' => $this->getCurrency()->format($invoice->getSubtotal(), $this->config->get('config_currency')),
                 'total' => $this->getCurrency()->format($invoice->getTotal(), $this->config->get('config_currency')),
@@ -232,8 +234,8 @@ class ControllerSaleInvoice extends Controller
 
     public function getShippingCost() {
         $this->log->write(print_r($this->parameters, true));
-        $orderItems = $this->modelSaleOrderItem->getOrderItems(array('filterOrderItemId' => $this->parameters['orderItemId']));
-        $cost = Shipping::getCost(
+        $orderItems = OrderItemDAO::getInstance()->getOrderItems(array('filterOrderItemId' => $this->parameters['orderItemId']));
+        $cost =\Shipping::getCost(
             $orderItems,
             $this->parameters['method'],
             array('weight' => $this->parameters['weight']),
@@ -370,9 +372,9 @@ class ControllerSaleInvoice extends Controller
     {
         foreach ($orderItems as $orderItem)
             if ($orderItem['product_id'] == REPURCHASE_ORDER_PRODUCT_ID)
-                $this->modelSaleOrderItem->setOrderItemStatus($orderItem['order_product_id'], REPURCHASE_ORDER_ITEM_STATUS_PACKED);
+                OrderItemDAO::getInstance()->setOrderItemStatus($orderItem['order_product_id'], REPURCHASE_ORDER_ITEM_STATUS_PACKED);
             else
-                $this->modelSaleOrderItem->setOrderItemStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_PACKED);
+                OrderItemDAO::getInstance()->setOrderItemStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_PACKED);
     }
 
     private function showCreateForm()
@@ -381,7 +383,7 @@ class ControllerSaleInvoice extends Controller
         $this->setBreadcrumbs();
         if (!isset($this->request->request['selectedItems']))
             return;
-        $orderItems = $this->modelSaleOrderItem->getOrderItems(array(
+        $orderItems = OrderItemDAO::getInstance()->getOrderItems(array(
             'selected_items' => $this->request->request['selectedItems']
         ));
 
@@ -398,14 +400,14 @@ class ControllerSaleInvoice extends Controller
         $total = 0; $totalCustomerCurrency = 0;
         $orderItemIdParam = '';
         foreach ($orderItems as $orderItem) {
-            $orderItemObject = new \model\sale\OrderItem($this->registry, $orderItem['affiliate_id'], 
+            $orderItemObject = new OrderItem($this->registry, $orderItem['affiliate_id'],
                 $orderItem['affiliate_transaction_id'], $orderItem['comment'], $orderItem['customer_id'], 
                 $orderItem['customer_name'], $orderItem['customer_nick'], $orderItem['order_item_id'], 
                 $orderItem['image_path'], $orderItem['internal_model'], $orderItem['model'], $orderItem['name'], 
                 $orderItem['order_id'], $orderItem['price'], $orderItem['product_id'], $orderItem['public_comment'],
                 $orderItem['quantity'], $orderItem['shipping'], $orderItem['status_date'], $orderItem['status_id'],
-                $orderItem['supplier_group_id'], $orderItem['supplier_id'], $orderItem['supplier_name'], $orderItem['date_created'],
-                $orderItem['modified_date'], $orderItem['total'], $orderItem['weight'], $orderItem['weight_class_id']);
+                $orderItem['supplier_group_id'], $orderItem['supplier_id'], $orderItem['supplier_name'], $orderItem['total'],
+                $orderItem['weight'], $orderItem['weight_class_id']);
             $this->data['orderItems'][] = array(
                 'id' => $orderItem['order_product_id'],
                 'comment' => $orderItem['public_comment'],
@@ -439,7 +441,7 @@ class ControllerSaleInvoice extends Controller
         $this->data['shippingAddress'] = nl2br($this->getOrderAddressString($firstItemOrder)) . " (" . $firstItemOrder['shipping_phone'] . ")";
         $this->data['shippingCost'] =
             $this->getCurrency()->format(
-                Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry),
+               \Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry),
                 $this->config->get('config_currency'));
         $this->data['shippingCostRoute'] =
             $this->url->link(
@@ -455,7 +457,7 @@ class ControllerSaleInvoice extends Controller
         $this->data['totalWeight'] = $totalWeight;
         $this->data['grandTotal'] =
             $this->getCurrency()->format(
-                $total + Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry),
+                $total +\Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry),
                 $this->config->get('config_currency'));
         $this->data['totalCustomerCurrency'] = $this->getCurrency()->format(
             $totalCustomerCurrency +
@@ -465,7 +467,7 @@ class ControllerSaleInvoice extends Controller
                 array('weight' => $totalWeight),
                 $this->registry), $this->config->get('config_currency'), $customer['base_currency_code']),
             $customer['base_currency_code'], 1);
-        $this->data['shippingMethods'] = Shipping::getShippingMethods(
+        $this->data['shippingMethods'] =\Shipping::getShippingMethods(
             $this->getOrderAddress($firstItemOrder), $this->registry);
         $this->log->write(print_r($this->data, true));
         $this->template = 'sale/invoiceForm.tpl';
@@ -487,7 +489,7 @@ class ControllerSaleInvoice extends Controller
         /// Initialize interface values
         $this->data['button_action'] = $this->language->get('button_close');
         $this->data['readOnly'] = "disabled";
-        $this->data['shippingMethods'] = Shipping::getShippingMethods(
+        $this->data['shippingMethods'] =\Shipping::getShippingMethods(
             $this->modelReferenceAddress->getAddress($invoice->getShippingAddressId()), $this->registry);
 
         $orderItemIdParam = '';

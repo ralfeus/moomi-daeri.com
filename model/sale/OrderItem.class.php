@@ -4,8 +4,6 @@ namespace model\sale;
 class OrderItem {
     /** @var \Registry */
     private $registry;
-    /** @var \ModelSaleOrderItem */
-    private $orderItemModel;
     private $affiliateId;
     private $affiliateTransactionId;
     private $id;
@@ -60,8 +58,6 @@ class OrderItem {
      * @param int $supplierGroupId
      * @param int $supplierId
      * @param string $supplierName
-     * @param string $timeCreated
-     * @param string $timeModified
      * @param float $total
      * @param float $weight
      * @param int $weightClassId
@@ -69,10 +65,9 @@ class OrderItem {
     function __construct($registry, $affiliateId, $affiliateTransactionId, $comment, $customerId, $customerName,
                          $customerNick, $id, $imagePath, $internalModel, $model, $name, $orderId, $price, $productId,
                          $publicComment, $quantity, $shippingCost, $statusDate, $statusId, $supplierGroupId,
-                         $supplierId, $supplierName, $timeCreated, $timeModified, $total, $weight, $weightClassId)
+                         $supplierId, $supplierName, $total, $weight, $weightClassId)
     {
         $this->registry = $registry;
-        $this->orderItemModel = $registry->get('load')->model('sale/order_item');
         $this->affiliateId = $affiliateId;
         $this->affiliateTransactionId = $affiliateTransactionId;
         $this->comment = $comment;
@@ -95,8 +90,8 @@ class OrderItem {
         $this->supplierGroupId = $supplierGroupId;
         $this->supplierId = $supplierId;
         $this->supplierName = $supplierName;
-        $this->timeCreated = $timeCreated;
-        $this->timeModified = $timeModified;
+//        $this->timeCreated = $timeCreated;
+//        $this->timeModified = $timeModified;
         $this->total = $total;
         $this->weight = $weight;
         $this->weightClassId = $weightClassId;
@@ -291,16 +286,20 @@ class OrderItem {
     /**
      * @return string
      */
-    public function getTimeCreated()
-    {
+    public function getTimeCreated() {
+        if (!isset($this->timeCreated)) {
+            $this->timeCreated = OrderItemDAO::getInstance()->getTimeCreated($this->id);
+        }
         return $this->timeCreated;
     }
 
     /**
      * @return string
      */
-    public function getTimeModified()
-    {
+    public function getTimeModified() {
+        if (!isset($this->timeModified)) {
+            $this->timeModified = OrderItemDAO::getInstance()->getTimeModified($this->id);
+        }
         return $this->timeModified;
     }
 
@@ -333,7 +332,7 @@ class OrderItem {
      */
     public function getTotalCustomerCurrency() {
         if (!isset($this->totalCustomerCurrency)) {
-            $this->totalCustomerCurrency = $this->orderItemModel->getOrderItemTotalCustomerCurrency($this);
+            $this->totalCustomerCurrency = OrderItemDAO::getInstance()->getOrderItemTotalCustomerCurrency($this);
         }
         return $this->totalCustomerCurrency;
     }

@@ -1,4 +1,6 @@
-<?php    
+<?php
+use model\sale\OrderItemDAO;
+
 class ControllerSaleCustomer extends Controller {
 	private $error = array();
     private $modelLocalisationCurrency;
@@ -874,7 +876,7 @@ class ControllerSaleCustomer extends Controller {
     public function orderItemsHistory()
     {
         $modelSaleOrderItems = $this->load->model('sale/order_item');
-        $orderItems = $modelSaleOrderItems->getOrderItems(array(
+        $orderItems = OrderItemDAO::getInstance()->getOrderItems(array(
             'filterCustomerId' => array($this->parameters['customerId'])
         ));
 //        $this->log->write(print_r($orderItems, true));
@@ -882,7 +884,7 @@ class ControllerSaleCustomer extends Controller {
         $this->data['events'] = array();
         foreach ($orderItems as $orderItem)
         {
-            $orderItemHistory = $modelSaleOrderItems->getOrderItemHistory($orderItem['order_product_id']);
+            $orderItemHistory = OrderItemDAO::getInstance()->getOrderItemHistory($orderItem['order_product_id']);
 //            $this->log->write(print_r($orderItemHistory, true));
             foreach ($orderItemHistory as $orderItemHistoryEntry)
                 $this->data['events'][] = array(

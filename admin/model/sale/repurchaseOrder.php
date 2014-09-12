@@ -1,4 +1,6 @@
 <?php
+use model\sale\OrderItemDAO;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -90,8 +92,8 @@ class ModelSaleRepurchaseOrder extends Model
      * @return array
      */
     public function getOrder($orderId) {
-        $orderItem = $this->modelOrderItem->getOrderItem($orderId);
-        $options = $this->modelOrderItem->getOrderItemOptions($orderItem['order_item_id']);
+        $orderItem = OrderItemDAO::getInstance()->getOrderItem($orderId);
+        $options = OrderItemDAO::getInstance()->getOrderItemOptions($orderItem['order_item_id']);
         return array (
             'orderId' => $orderItem['order_id'],
             'orderItemId' => $orderItem['order_item_id'],
@@ -125,7 +127,7 @@ class ModelSaleRepurchaseOrder extends Model
     }
 
     public function getOrders($data = array()) {
-        $repurchaseOrderItems = $this->modelOrderItem->getOrderItems($data, $this->buildFilterString($data));
+        $repurchaseOrderItems = OrderItemDAO::getInstance()->getOrderItems($data, $this->buildFilterString($data));
 //        $this->log->write(print_r($repurchaseOrderItems, true));
         $items = array();
         if (!$repurchaseOrderItems)
@@ -241,7 +243,7 @@ class ModelSaleRepurchaseOrder extends Model
             );
         }
         else {
-            $orderItem = $this->modelOrderItem->getOrderItem($orderId);
+            $orderItem = OrderItemDAO::getInstance()->getOrderItem($orderId);
             $this->getDb()->query("
                 INSERT INTO order_option
                 SET
@@ -282,7 +284,7 @@ class ModelSaleRepurchaseOrder extends Model
             );
         }
         else {
-            $orderItem = $this->modelOrderItem->getOrderItem($orderId);
+            $orderItem = OrderItemDAO::getInstance()->getOrderItem($orderId);
             $this->getDb()->query("
                 INSERT INTO order_option
                 SET
@@ -323,7 +325,7 @@ class ModelSaleRepurchaseOrder extends Model
         );
         if (!$this->db->countAffected())
         {
-            $repurchaseOrder = $this->modelOrderItem->getOrderItem($orderId);
+            $repurchaseOrder = OrderItemDAO::getInstance()->getOrderItem($orderId);
             $this->db->query("
                 INSERT INTO order_option
                 SET

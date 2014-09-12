@@ -11,5 +11,6 @@ interface DBDriver {
     public function countAffected();
     public function escape($string);
     public function getLastId();
-    public function query($sql, $log = null);
+    public function query($sql, $params = array(), $log = false);
+    public function queryScalar($sql, $params = array(), $log = false);
 }

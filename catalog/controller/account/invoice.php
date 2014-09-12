@@ -93,7 +93,7 @@ class ControllerAccountInvoice extends Controller {
                     'href' => $this->url->link('account/invoice/showForm', 'invoiceId=' . $invoice->getId(), 'SSL'),
                     'itemsCount' => InvoiceDAO::getInstance()->getInvoiceItemsCount($invoice->getId()),
                     'shippingCost' => $this->getCurrency()->format($invoice->getShippingCost()),
-                    'shippingMethod' => Shipping::getName($invoice->getShippingMethod(), $this->registry),
+                    'shippingMethod' =>\Shipping::getName($invoice->getShippingMethod(), $this->registry),
                     'status' => $this->load->model('localisation/invoice')->getInvoiceStatus(
                         $invoice->getStatusId(),
                         $this->session->data['language_id']),
@@ -214,7 +214,7 @@ class ControllerAccountInvoice extends Controller {
             $this->data['packageNumber'] = $invoice->getPackageNumber();
             $this->data['shippingAddress'] = nl2br($modelReferenceAddress->toString($invoice->getShippingAddressId()));
             $this->data['shippingCost'] = $this->getCurrency()->format($invoice->getShippingCost());
-            $this->data['shippingMethod'] = Shipping::getName($invoice->getShippingMethod(), $this->registry);
+            $this->data['shippingMethod'] =\Shipping::getName($invoice->getShippingMethod(), $this->registry);
             $this->data['status'] = $this->load->model('localisation/invoice')->getInvoiceStatus(
                 $invoice->getStatusId(),
                 $this->session->data['language_id']);

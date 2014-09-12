@@ -1,4 +1,6 @@
 <?php
+use model\sale\OrderItemDAO;
+
 class ModelSaleOrderItemHistory extends  Model
 {
     public function __construct($registry)
@@ -10,7 +12,7 @@ class ModelSaleOrderItemHistory extends  Model
 
     public function addEntry($order_item_id, $order_item_status_id)
     {
-        if ($this->model_sale_order_item->getOrderItem($order_item_id) &&
+        if (OrderItemDAO::getInstance()->getOrderItem($order_item_id) &&
             Status::getStatus($order_item_id, $this->config->get('language_id')))
             $this->db->query("
                 INSERT INTO order_item_history

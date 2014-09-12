@@ -23,18 +23,11 @@ class ControllerSaleOrderItems extends Controller {
 		$this->load->model('tool/image');
 	}
 
-	public function index()
-	{
+	public function index() {
 		$this->getList();
 	}
 
-	private function clearSelection()
-	{
-		//unset($this->session->data['selected_items']['sale/order_items']);
-	}
-
-	private function getCustomers()
-	{
+	private function getCustomers()	{
 		$data = array();
 		foreach ($this->parameters as $key => $value) {
 			if (strpos($key, 'filter') === false)
@@ -44,10 +37,12 @@ class ControllerSaleOrderItems extends Controller {
 		}
 		unset($data['filterCustomerId']);
 		$result = array(); $tmpResult = array();
-		foreach ($this->modelSaleOrderItem->getOrderItems($data) as $orderItem)
+		foreach (OrderItemDAO::getInstance()->getOrderItems($data) as $orderItem) {
 			//if (!in_array($orderItem['customer_id'], $tmpResult))
-			if (!isset($tmpResult[$orderItem['customer_id']]))
+			if (!isset($tmpResult[$orderItem['customer_id']])) {
 				$tmpResult[$orderItem['customer_id']] = array('nickname_name' => $orderItem['customer_name'] . ' / ' . $orderItem['customer_nick'], 'isCustomerOrderReady' => $this->isCustomerOrderReady($orderItem['customer_id']));
+            }
+        }
 		natcasesort($tmpResult);
  //var_dump($this->isCustomerOrderReady($orderItem['customer_id']));die();
 		return $tmpResult;
@@ -64,7 +59,7 @@ class ControllerSaleOrderItems extends Controller {
 		}
 		unset($data['filterSupplierId']);
 		$result = array(); $tmpResult = array();
-		foreach ($this->modelSaleOrderItem->getOrderItems($data) as $orderItem)
+		foreach (OrderItemDAO::getInstance()->getOrderItems($data) as $orderItem)
 			if (!in_array($orderItem['supplier_id'], $tmpResult))
 				$tmpResult[$orderItem['supplier_id']] = $orderItem['supplier_name'];
 		natcasesort($tmpResult);
@@ -133,6 +128,8 @@ class ControllerSaleOrderItems extends Controller {
 	}
 
 	private function getList() 	{
+        /** @var ModelSaleAffiliate $modelSaleAffiliate */
+        $modelSaleAffiliate = $this->load->model('sale/affiliate');
 
 		$order = '';
 		$sort = "";
@@ -165,15 +162,13 @@ class ControllerSaleOrderItems extends Controller {
 		$data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
 		$data['limit']           = $this->config->get('config_admin_limit');
 
-		$orderItems = $this->modelSaleOrderItem->getOrderItems($data);
+		$orderItems = OrderItemDAO::getInstance()->getOrderItems($data);
 
 		$arrReady = array();
 
 		if ($orderItems) {
 
 			foreach ($orderItems as $orderItem) {
-                /** @var ModelSaleAffiliate $modelSaleAffiliate */
-			    $modelSaleAffiliate = $this->load->model('sale/affiliate');
 				if (!empty($orderItem['affiliate_id'])) {
 					$orderItem['affiliate_transaction_amount'] = $this->currency->format($orderItem['total'] * $modelSaleAffiliate->getProductAffiliateCommission($orderItem['product_id']) / 100, $this->config->get('config_currency'));
 				}
@@ -445,7 +440,7 @@ class ControllerSaleOrderItems extends Controller {
 			'order'             => $order
 		);
 
-		foreach ($this->modelSaleOrderItem->getOrderItems($data) as $order_item)
+		foreach (OrderItemDAO::getInstance()->getOrderItems($data) as $order_item)
 		{
 			if ($order_item['image_path'] && file_exists(DIR_IMAGE . $order_item['image_path'])) {
 				$image = $this->model_tool_image->resize($order_item['image_path'], 100, 100);
@@ -552,7 +547,7 @@ class ControllerSaleOrderItems extends Controller {
 			'order'             => $order
 		);
 
-		foreach ($this->modelSaleOrderItem->getOrderItems($data) as $order_item)
+		foreach (OrderItemDAO::getInstance()->getOrderItems($data) as $order_item)
 		{
 			if ($order_item['image_path'] && file_exists(DIR_IMAGE . $order_item['image_path'])) {
 				$image = $this->model_tool_image->resize($order_item['image_path'], 100, 100);

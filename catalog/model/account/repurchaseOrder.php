@@ -1,4 +1,6 @@
 <?php
+use model\sale\OrderItemDAO;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -123,7 +125,7 @@ class ModelAccountRepurchaseOrder extends Model
 //        );
         $data['filterProductId'] = REPURCHASE_ORDER_PRODUCT_ID;
         $data['filterOrderItemId'] = $data['filterOrderId'];
-        $repurchaseOrderItems = $this->modelAccountOrderItem->getOrderItems($data);
+        $repurchaseOrderItems = OrderItemDAO::getInstance()->getOrderItems($data);
         $items = array();
         foreach ($repurchaseOrderItems as $repurchaseOrderItem)
         {

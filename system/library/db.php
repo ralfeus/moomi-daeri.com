@@ -1,5 +1,6 @@
 <?php
 final class DB {
+    /** @var DBDriver */
 	private $driver;
 	
 	public function __construct($driver, $hostname, $username, $password, $database) {
@@ -12,9 +13,13 @@ final class DB {
 		$this->driver = new $driver($hostname, $username, $password, $database);
 	}
 		
-  	public function query($sql, $log = false) {
-		return $this->driver->query($sql, $log);
+  	public function query($sql, $params, $log) {
+		return $this->driver->query($sql, $params, $log);
   	}
+
+    public function queryScalar($sql, $params, $log) {
+        return $this->driver->queryScalar($sql, $params, $log);
+    }
 	
 	public function escape($value) {
 		return $this->driver->escape($value);

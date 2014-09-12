@@ -1,4 +1,6 @@
 <?php
+use model\sale\OrderItemDAO;
+
 class ControllerAccountOrder extends Controller {
 	private $error = array();
     private $modelAccountOrderItem;
@@ -232,7 +234,7 @@ class ControllerAccountOrder extends Controller {
 
 			$this->data['shipping_address'] = str_replace(array("\r\n", "\r", "\n"), '<br />', preg_replace(array("/\s\s+/", "/\r\r+/", "/\n\n+/"), '<br />', trim(str_replace($find, $replace, $format))));
 
-			$this->data['shipping_method'] = Shipping::getName($order_info['shipping_method'], $this->registry);
+			$this->data['shipping_method'] =\Shipping::getName($order_info['shipping_method'], $this->registry);
 
 			if ($order_info['payment_address_format']) {
       			$format = $order_info['payment_address_format'];
@@ -271,7 +273,7 @@ class ControllerAccountOrder extends Controller {
 
 			$this->data['products'] = array();
 
-			$products = $this->modelAccountOrderItem->getOrderItems(
+			$products = OrderItemDAO::getInstance()->getOrderItems(
                 array('filterOrderId' => $this->request->get['order_id'])
             );
       		foreach ($products as $product) {

@@ -1,4 +1,6 @@
 <?php
+use model\sale\OrderItemDAO;
+
 class ControllerAccountOrderItems extends Controller {
 	private $error = array();
     private $modelAccountOrderItem;
@@ -21,7 +23,7 @@ class ControllerAccountOrderItems extends Controller {
 
     public function cancel()
     {
-        $orderItem = $this->modelAccountOrderItem->getOrderItem($this->parameters['orderItemId']);
+        $orderItem = OrderItemDAO::getInstance()->getOrderItem($this->parameters['orderItemId']);
 //        $this->log->write(print_r($orderItem, true));
         $cancelledStatus =
             $orderItem['status'] // take original status
@@ -58,7 +60,7 @@ class ControllerAccountOrderItems extends Controller {
         $data['limit']           = $this->config->get('config_admin_limit');
         $data['order']           = 'DESC';
 //		$this->log->write(print_r($data, true));
-        $orderItems = $this->modelAccountOrderItem->getOrderItems($data);
+        $orderItems = OrderItemDAO::getInstance()->getOrderItems($data);
 //        $this->log->write(count($orderItems));
         if ($orderItems)
         {
@@ -227,7 +229,7 @@ class ControllerAccountOrderItems extends Controller {
     }
 
     private function isValidOrderItemId($order_item_id) {
-        return isset($order_item_id) && $this->model_sale_order_item->getOrderItem($order_item_id);
+        return isset($order_item_id) && OrderItemDAO::getInstance()->getOrderItem($order_item_id);
     }
 
     protected function setBreadcrumbs()

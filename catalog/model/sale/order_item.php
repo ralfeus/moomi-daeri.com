@@ -1,76 +1,6 @@
 <?php
 class ModelSaleOrderItem extends Model
 {
-	public function getOrderItem($order_item_id) {
-		$result = $this->fetchOrderItems("order_product_id = $order_item_id");
-        if ($result)
-            return $result[0];
-        else
-            return false;
-	}
-
-    public function getOrderItemHistory($orderItemId)
-    {
-        $sql = "
-            SELECT *
-            FROM order_item_history JOIN statuses ON order_item_status_id = group_id * 65536 + status_id
-            WHERE order_item_id = " . (int)$orderItemId . "
-            ORDER BY date_added
-        ";
-//        $this->log->write($sql);
-        $query = $this->db->query($sql);
-        return $query->rows;
-    }
-
-	private function fetchOrderItems($filter = "", $sort = "", $limit = "") {
-		$query = "
-			SELECT
-				op.*, op.order_product_id as order_item_id, op.status_id as status,
-				concat(o.firstname, ' ', o.lastname) as customer_name, o.date_added,
-				c.customer_id, c.nickname as customer_nick,
-				p.product_id, p.supplier_id as supplier_id, p.image as image_path, p.weight, p.weight_class_id,
-				s.name as supplier_name, s.supplier_group_id, s.internal_model as internal_model,
-				oils.date_last_status_set as status_date
-			FROM
-				order_product as op
-				JOIN `order` as o on o.order_id = op.order_id
-				JOIN product as p on op.product_id  = p.product_id
-				LEFT JOIN supplier as s on p.supplier_id = s.supplier_id
-				LEFT JOIN customer as c on o.customer_id = c.customer_id
-				JOIN
-				    (
-				        SELECT order_item_id, MAX(date_added) as date_last_status_set
-				        FROM order_item_history
-				        GROUP BY order_item_id
-                   ) as oils on op.order_product_id = oils.order_item_id
-            " . ($filter ? "WHERE $filter" : "") . /*"
-        	" . ($sort ? "ORDER BY $sort" : "") . */"
-            ORDER BY supplier_name, op.model, op.order_product_id
-			" . ($limit ? "LIMIT $limit" : "");
-
-        //print_r($query); die();
-		$order_item_query = $this->db->query($query);
-
-		if ($order_item_query->num_rows) {
-            $this->modelOrderItem = $this->load->model('sale/order_item');
-
-            $response = $order_item_query->rows;
-            foreach ($response as $index => $row) {
-                //$this->log->write("------?--------?-------- " . print_r($row['image_path'], true));
-                if($row['image_path'] == '' || $row['image_path'] == "data/event/agent-moomidae.jpg") {
-                    $options = $this->modelOrderItem->getOrderItemOptions($row['order_product_id']);
-                    $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
-                    ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
-                    $response[$index]['image_path'] = !empty($itemUrl) ? $itemUrl : $row['image_path'];
-                }
-            }
-
-            return $response;
-        }
-		else
-			return false;
-	}
-
 	private function fetchOrderItemsCount($filter = "")	{
 		$query = "
 			SELECT COUNT(*) as total
@@ -92,48 +22,6 @@ class ModelSaleOrderItem extends Model
 		$order_item_query = $this->db->query($query);
 
 		return $order_item_query->row['total'];
-	}
-
-	public function getOrderItems($data = array(), $filter = null) 	{
-
-		$filter = empty($filter) ? $this->buildFilterString($data) : $filter;
-		$sort = "";
-		$limit = "";
-
-		$sort_data = array(
-            'customer_name',
-			'order_id',
-            'order_item_id',
-			'status_date',
-			'supplier_name',
-            'supplier_group_id'
-		);
-
-		if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
-			$sort = $data['sort'];
-		} else {
-			$sort = "op.order_product_id";
-		}
-
-		if (isset($data['order']) && ($data['order'] == 'DESC')) {
-			$sort .= " DESC";
-		} else {
-			$sort .= " ASC";
-		}
-
-		if (isset($data['start']) || isset($data['limit'])) {
-			if ($data['start'] < 0) {
-				$data['start'] = 0;
-			}
-
-			if ($data['limit'] < 1) {
-				$data['limit'] = 20;
-			}
-
-			$limit = (int)$data['start'] . "," . (int)$data['limit'];
-		}
-
-		return $this->fetchOrderItems($filter, $sort, $limit);
 	}
 
 	public function getOrderItemsCount($data = array())	{

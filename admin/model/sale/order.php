@@ -1,4 +1,6 @@
 <?php
+use model\sale\OrderItemDAO;
+
 class ModelSaleOrder extends Model {
 	public function addOrder($data) { //echo "asdsadas"; die();
 		$invoice_no = '';
@@ -682,7 +684,7 @@ class ModelSaleOrder extends Model {
 
 			if ($orderItemStatus['workflow_order'] != 1000)
 			{
-				$orderItem = $orderItemModel->getOrderItem($order_item['order_product_id']);
+				$orderItem = OrderItemDAO::getInstance()->getOrderItem($order_item['order_product_id']);
 				$total_price += $order_item['total'];
 				$total_weight += $this->weight->convert($orderItem['weight'], $orderItem['weight_class_id'], $this->config->get('config_weight_class_id')) * $order_item['quantity'];
 			}

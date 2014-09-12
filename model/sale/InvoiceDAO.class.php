@@ -18,14 +18,7 @@ class InvoiceDAO extends DAO {
         /// Calculate total weight and price in shop currency and customer currency
         $tmpWeight = 0; $tmpSubtotal = 0; $subtotalCustomerCurrency = 0;
         foreach ($order_items as $orderItem) {
-            $orderItemObject = new \model\sale\OrderItem($this->registry, $orderItem['affiliate_id'],
-                $orderItem['affiliate_transaction_id'], $orderItem['comment'], $orderItem['customer_id'],
-                $orderItem['customer_name'], $orderItem['customer_nick'], $orderItem['order_item_id'],
-                $orderItem['image_path'], $orderItem['internal_model'], $orderItem['model'], $orderItem['name'],
-                $orderItem['order_id'], $orderItem['price'], $orderItem['product_id'], $orderItem['public_comment'],
-                $orderItem['quantity'], $orderItem['shipping'], $orderItem['status_date'], $orderItem['status_id'],
-                $orderItem['supplier_group_id'], $orderItem['supplier_id'], $orderItem['supplier_name'], $orderItem['date_created'],
-                $orderItem['modified_date'], $orderItem['total'], $orderItem['weight'], $orderItem['weight_class_id']);
+            $orderItemObject = OrderItemDAO::getInstance()->getOrderItem($orderItem['order_item_id']);
             /// If weight isn't defined by administrator it's calculated
             if (!$weight)
                 $tmpWeight += $this->weight->format($orderItem['weight'], $this->config->get('config_weight_class_id')) * $orderItem['quantity'];
@@ -53,7 +46,7 @@ class InvoiceDAO extends DAO {
         /// Therefore it's better to pass whole items and let shipping calculation classes use it
         if (empty($shippingMethod))
             $shippingMethod = $order['shipping_method'];
-        $shippingCost = Shipping::getCost($order_items, $shippingMethod, array('weight' => $weight) ,$this->registry);
+        $shippingCost = \Shipping::getCost($order_items, $shippingMethod, array('weight' => $weight) ,$this->registry);
 
         /// Calculate total. Currently it's subtotal, shipping and discount. In the future it can be something else
         $total = $subtotal + $shippingCost - $discount;
