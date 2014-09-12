@@ -310,7 +310,7 @@ class ControllerSaleOrderItems extends Controller {
 	$this->initStatuses();
 
 		$pagination = new Pagination();
-		$pagination->total = $this->model_sale_order_item->getOrderItemsCount($data);
+		$pagination->total = OrderItemDAO::getInstance()->getOrderItemsCount($data);
 		$pagination->page = $this->parameters['page'];
 		$pagination->limit = $this->config->get('config_admin_limit');
 		$pagination->text = $this->language->get('text_pagination');
