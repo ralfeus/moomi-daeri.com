@@ -658,7 +658,7 @@ class ControllerSaleOrderItems extends Controller {
 				$orderItem = OrderItemDAO::getInstance()->getOrderItem($order_item_id);
 				$this->modelSaleOrder->verifyOrderCompletion($orderItem->getOrderId());
 			}
-			$this->clearSelection();
+//			$this->clearSelection();
 		}
 
 		$this->index();
