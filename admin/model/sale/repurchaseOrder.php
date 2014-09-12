@@ -9,15 +9,9 @@ use model\sale\OrderItemDAO;
   */
 class ModelSaleRepurchaseOrder extends Model
 {
-    /**
-     * @var ModelSaleOrderItem
-     */
-    private $modelOrderItem;
-
     public function __construct($registry)
     {
         parent::__construct($registry);
-        $this->modelOrderItem = $this->load->model('sale/order_item');
     }
 
     private function buildFilterString($data = array()) {
@@ -77,7 +71,7 @@ class ModelSaleRepurchaseOrder extends Model
 
     public function setStatus($orderId, $statusId) {
 //        $this->log->write($statusId);
-        $this->load->model('sale/order_item')->setOrderItemStatus($orderId, $statusId);
+        OrderItemDAO::getInstance()->setOrderItemStatus($orderId, $statusId);
     }
 
     public function deleteOrderItem($repurchase_order_item_id) {
@@ -134,7 +128,7 @@ class ModelSaleRepurchaseOrder extends Model
             return $items;
         foreach ($repurchaseOrderItems as $repurchaseOrderItem)
         {
-            $options = $this->modelOrderItem->getOrderItemOptions($repurchaseOrderItem['order_item_id']);
+            $options = OrderItemDAO::getInstance()->getOrderItemOptions($repurchaseOrderItem['order_item_id']);
 //            $this->log->write(print_r($options, true));
             if (!empty($data['filterWhoOrders']) && !empty($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]))
                 if ($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value_id'] != $data['filterWhoOrders'])
@@ -175,7 +169,7 @@ class ModelSaleRepurchaseOrder extends Model
 
     public function getOrdersCount($data = array()) {
         $data['filter_model'] = 'Repurchase agent';
-        return $this->modelOrderItem->getOrderItemsCount(null, $this->buildFilterString($data));
+        return OrderItemDAO::getInstance()->getOrderItemsCount(null, $this->buildFilterString($data));
     }
 
     private function getOrderInitialStatus()
@@ -200,12 +194,12 @@ class ModelSaleRepurchaseOrder extends Model
 
     public function getOrderOptions($repurchaseOrderId)
     {
-        return $this->modelOrderItem->getOrderItemOptions($repurchaseOrderId);
+        return OrderItemDAO::getInstance()->getOrderItemOptions($repurchaseOrderId);
     }
 
     public function getOrderOptionsString($repurchaseOrderId)
     {
-        //return $this->modelOrderItem->getOrderItemOptionsString($repurchaseOrderId);
+        //return OrderItemDAO::getInstance()->getOrderItemOptionsString($repurchaseOrderId);
         $options = '';
         foreach ($this->getOrderOptions($repurchaseOrderId) as $option)
 //            $this->log->write(print_r($option, true));
@@ -221,8 +215,8 @@ class ModelSaleRepurchaseOrder extends Model
 
     public function setAmount($orderId, $amount)
     {
-        $this->modelOrderItem->setOrderItemTotal($orderId, $amount);
-        $this->modelOrderItem->setOrderItemPrice($orderId, $amount);
+        OrderItemDAO::getInstance()->setOrderItemTotal($orderId, $amount);
+        OrderItemDAO::getInstance()->setOrderItemPrice($orderId, $amount);
     }
 
     public function setItemName($orderId, $itemName) {
@@ -259,11 +253,11 @@ class ModelSaleRepurchaseOrder extends Model
     }
 
     public function setPrice($orderId, $amount) {
-        $this->modelOrderItem->setPrice($orderId, $amount);
+        OrderItemDAO::getInstance()->setPrice($orderId, $amount);
     }
 
     public function setShipping($orderId, $amount) {
-        $this->modelOrderItem->setShipping($orderId, $amount);
+        OrderItemDAO::getInstance()->setShipping($orderId, $amount);
     }
 
     public function setShopName($orderId, $shopName) {

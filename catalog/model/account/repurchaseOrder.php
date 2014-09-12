@@ -9,13 +9,9 @@ use model\sale\OrderItemDAO;
   */
 class ModelAccountRepurchaseOrder extends Model
 {
-    /** @var ModelAccountOrderItem  */
-    private $modelAccountOrderItem;
-
     public function __construct($registry)
     {
         parent::__construct($registry);
-        $this->modelAccountOrderItem = $this->load->model('account/order_item');
     }
 
 //    public function addOrder($customer_id, $repurchase_order_items = array())
@@ -88,7 +84,7 @@ class ModelAccountRepurchaseOrder extends Model
 
     public function deleteOrder($orderId)
     {
-        $this->modelAccountOrderItem->deleteOrderItem($orderId);
+        OrderItemDAO::getInstance()->deleteOrderItem($orderId);
     }
 
     public function getOrders($data = array(), $sort = "", $limit = "")
@@ -129,7 +125,7 @@ class ModelAccountRepurchaseOrder extends Model
         $items = array();
         foreach ($repurchaseOrderItems as $repurchaseOrderItem)
         {
-            $options = $this->modelAccountOrderItem->getOrderItemOptions($repurchaseOrderItem['order_item_id']);
+            $options = OrderItemDAO::getInstance()->getOrderItemOptions($repurchaseOrderItem['order_item_id']);
 //            $this->log->write(print_r($options, true));
             $items[] = array(
                 'comment' => !empty($repurchaseOrderItem['public_comment'])
@@ -160,12 +156,12 @@ class ModelAccountRepurchaseOrder extends Model
     public function getOrdersCount($data)
     {
         $data['filterProductId'] = REPURCHASE_ORDER_PRODUCT_ID;
-        return $this->modelAccountOrderItem->getOrderItemsCount($data);
+        return OrderItemDAO::getInstance()->getOrderItemsCount($data);
     }
 
     public function setStatus($orderId, $statusId)
     {
         $this->log->write($statusId);
-        $this->modelAccountOrderItem->setOrderItemStatus($orderId, $statusId);
+        OrderItemDAO::getInstance()->setOrderItemStatus($orderId, $statusId);
     }
 }

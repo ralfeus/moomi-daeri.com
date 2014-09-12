@@ -1,5 +1,6 @@
 <?php
 use model\sale\InvoiceDAO;
+use model\sale\OrderItemDAO;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -23,7 +24,6 @@ class ControllerAccountInvoice extends Controller {
         $this->load->library('Transaction');
         $this->load->model('reference/address');
         $this->load->model('account/order');
-        $this->load->model('account/order_item');
         $this->load->model('tool/image');
 
         $this->data['notifications'] = array();
@@ -163,7 +163,6 @@ class ControllerAccountInvoice extends Controller {
         if (!isset($this->request->request['invoiceId']))
             return;
 
-        $modelOrderItem = $this->load->model('account/order_item');
         $modelReferenceAddress = $this->load->model('reference/address');
         $invoice = InvoiceDAO::getInstance()->getInvoice($this->request->request['invoiceId']);
 
@@ -194,20 +193,18 @@ class ControllerAccountInvoice extends Controller {
         } else {
             /// Prepare list
             foreach ($invoice->getOrderItems() as $orderItem) {
-//                $orderItem = $modelOrderItem->getOrderItem($invoiceItem['order_item_id']);
-//                $this->log->write(print_r($orderItem, true));
-                $this->data['orderItems'][] = array(
+                $this->data['orderItems'][] = [
                     'id' => $orderItem->getId(),
                     'comment' => $orderItem->getPublicComment(),
                     'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
                     'model' => $orderItem->getModel(),
                     'name' => $orderItem->getName(),
-                    'options' => $modelOrderItem->getOrderItemOptionsString($orderItem->getId()),
+                    'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
                     'order_id' => $orderItem->getOrderId(),
                     'price' => $this->getCurrency()->format($orderItem->getPrice()),
                     'quantity' => $orderItem->getQuantity(),
                     'subtotal' => $this->getCurrency()->format($orderItem->getPrice() * $orderItem->getQuantity())
-                );
+                ];
             }
             /// Set invoice data
             $this->data['invoiceId'] = $invoice->getId();

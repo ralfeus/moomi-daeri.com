@@ -1,4 +1,6 @@
-<?php 
+<?php
+use model\sale\OrderItemDAO;
+
 class ControllerCatalogProduct extends Controller {
 	private $error = array();
     /** @var ModelCatalogProduct */
@@ -1231,9 +1233,8 @@ class ControllerCatalogProduct extends Controller {
     	if (!$this->user->hasPermission('modify', 'catalog/product')) {
             $this->session->data['notifications']['warning'] = $this->language->get('error_permission');
     	} elseif (!($this->parameters['confirm'])) {
-            $modelSaleOrderItem = $this->load->model('sale/order_item');
             foreach ($this->parameters['selectedItems'] as $productId) {
-                $productsCount = $modelSaleOrderItem->getOrderItemsCount(null, "op.product_id = " . (int)$productId);
+                $productsCount = OrderItemDAO::getInstance()->getOrderItemsCount(null, "op.product_id = " . (int)$productId);
                 if ($productsCount) {
                     $this->session->data['notifications']['confirm']['text'] .= "$productId => $productsCount";
                 }

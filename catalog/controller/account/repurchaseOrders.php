@@ -1,4 +1,6 @@
 <?php
+use model\sale\OrderItemDAO;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -106,7 +108,7 @@ class ControllerAccountRepurchaseOrders extends Controller
                 'imagePath' => $imagePath,
                 'imageUrl' => $repurchase_order['imagePath'],
                 'itemUrl' => $repurchase_order['itemUrl'],
-                'options' => $this->load->model('account/order_item')->getOrderItemOptions($repurchase_order['orderItemId']),
+                'options' => OrderItemDAO::getInstance()->getOrderItemOptions($repurchase_order['orderItemId']),
                 'price' => $this->currency->format($repurchase_order['price']),
                 'quantity' => $repurchase_order['quantity'],
                 'shipping' => $this->currency->format($repurchase_order['shipping']),

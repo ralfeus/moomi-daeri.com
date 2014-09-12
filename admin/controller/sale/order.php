@@ -1700,9 +1700,8 @@ class ControllerSaleOrder extends Controller {
 //            if ($this->parameters['orderStatusId'] == ORDER_STATUS_FINISHED)
 //            {
 //                $orderItems = $this->modelSaleOrder->getOrderProducts($this->parameters['orderId']);
-//                $modelSaleOrderItem = $this->load->model('sale/order_item');
 //                foreach ($orderItems as $orderItem)
-//                    $modelSaleOrderItem->setOrderItemStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_FINISH);
+//                    OrderItemDAO->setOrderItemStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_FINISH);
 //            }
 			$this->data['success'] = $this->language->get('text_success');
 		} else {

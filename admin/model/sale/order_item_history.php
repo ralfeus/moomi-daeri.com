@@ -6,7 +6,6 @@ class ModelSaleOrderItemHistory extends  Model
     public function __construct($registry)
     {
         parent::__construct($registry);
-        $this->load->model('sale/order_item');
         $this->load->model('localisation/order_item_status');
     }
 

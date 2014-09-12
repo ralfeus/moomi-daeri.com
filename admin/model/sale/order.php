@@ -673,7 +673,6 @@ class ModelSaleOrder extends Model {
 	public function updateOrderTotals($order_id)
 	{
 		$order = $this->getOrder($order_id);
-		$orderItemModel = $this->load->model('sale/order_item');
 		$orderItemStatusModel = $this->load->model('localisation/order_item_status');
 		$total_price = 0;
 		$total_weight = 0;

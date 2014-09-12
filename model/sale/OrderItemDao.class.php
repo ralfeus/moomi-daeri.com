@@ -10,16 +10,6 @@ class OrderItemDAO extends DAO {
         JOIN product as p on op.product_id  = p.product_id
         LEFT JOIN supplier as s on p.supplier_id = s.supplier_id
         LEFT JOIN customer as c on o.customer_id = c.customer_id
-        JOIN (
-            SELECT order_item_id, MAX(date_added) as date_last_status_set
-            FROM order_item_history
-            GROUP BY order_item_id
-        ) AS oils on op.order_product_id = oils.order_item_id
-        JOIN (
-            SELECT order_item_id, MIN(date_added) AS date_first_status_set
-            FROM order_item_history
-            GROUP BY order_item_id
-        ) AS oifs ON op.order_product_id = oifs.order_item_id
     ";
 
     /**
@@ -27,15 +17,15 @@ class OrderItemDAO extends DAO {
      * @return OrderItem
      */
     public function getOrderItem($order_item_id) {
-		$result = $this->fetchOrderItems("op.order_product_id = $order_item_id");
+		$result = $this->fetchOrderItems($this->buildFilterString(array('filterOrderItemId' => $order_item_id)));
         if ($result) {
             return new OrderItem($this->registry, $result[0]['affiliate_id'], $result[0]['affiliate_transaction_id'],
                 $result[0]['comment'], $result[0]['customer_id'], $result[0]['customer_name'], $result[0]['customer_nick'],
                 $result[0]['order_item_id'], $result[0]['image_path'], $result[0]['internal_model'], $result[0]['model'],
                 $result[0]['name'], $result[0]['order_id'], $result[0]['price'], $result[0]['product_id'], $result[0]['public_comment'],
                 $result[0]['quantity'], $result[0]['shipping'], $result[0]['status_date'], $result[0]['status_id'],
-                $result[0]['supplier_group_id'], $result[0]['supplier_id'], $result[0]['supplier_name'], $result[0]['date_created'],
-                $result[0]['modified_date'], $result[0]['total'], $result[0]['weight'], $result[0]['weight_class_id']);
+                $result[0]['supplier_group_id'], $result[0]['supplier_id'], $result[0]['supplier_name'], $result[0]['total'],
+                $result[0]['weight'], $result[0]['weight_class_id']);
         } else {
             return null;
         }
@@ -45,48 +35,45 @@ class OrderItemDAO extends DAO {
         $sql = "
             SELECT *
             FROM order_item_history JOIN statuses ON order_item_status_id = group_id * 65536 + status_id
-            WHERE order_item_id = " . (int)$orderItemId . "
+            WHERE order_item_id = ?
             ORDER BY date_added
         ";
 //        $this->log->write($sql);
-        $query = $this->getDb()->query($sql);
+        $query = $this->getDb()->query($sql, array("i:$orderItemId"));
         return $query->rows;
     }
 
     /**
-     * @param string $filter
+     * @param \stdClass $filter
      * @param string $sort
      * @param string $limit
      * @return array
      */
-    private function fetchOrderItems($filter = "", $sort = "", $limit = "") {
+    private function fetchOrderItems($filter = null, $sort = "", $limit = "") {
 		$query = "
 			SELECT o.affiliate_id, at.affiliate_transaction_id ,
 				op.*, op.order_product_id as order_item_id, op.status_id as status,
 				concat(o.firstname, ' ', o.lastname) as customer_name, o.date_added,
 				c.customer_id, c.nickname as customer_nick,
 				p.product_id, p.supplier_id as supplier_id, p.image as image_path, p.weight, p.weight_class_id,
-				s.name as supplier_name, s.supplier_group_id, s.internal_model as internal_model,
-				oils.date_last_status_set as status_date, oifs.date_first_status_set AS date_created
+				s.name as supplier_name, s.supplier_group_id, s.internal_model as internal_model
 			FROM
 				" . $this->orderItemsFromQuery . 
                 " LEFT JOIN affiliate_transaction at ON op.order_product_id = at.order_product_id "
-             . ($filter ? "WHERE $filter" : "") . /*"
+             . ($filter ? "WHERE " . $filter->filterString : "") . /*"
         	" . ($sort ? "ORDER BY $sort" : "") . */"
             ORDER BY supplier_name, op.model, op.order_product_id
 			" . ($limit ? "LIMIT $limit" : "");
 
 //        $this->getLogger()->write($query);
-		$order_item_query = $this->getDb()->query($query);
+		$order_item_query = $this->getDb()->query($query, isset($filter) && isset($filter->params) ? $filter->params : null);
 
 		if ($order_item_query->num_rows) {
-            $this->modelOrderItem = $this->load->model('sale/order_item');
-
             $response = $order_item_query->rows;
             foreach ($response as $index => $row) {
                 //$this->log->write("------?--------?-------- " . print_r($row['image_path'], true));
                 if($row['image_path'] == '' || $row['image_path'] == "data/event/agent-moomidae.jpg") {
-                    $options = $this->modelOrderItem->getOrderItemOptions($row['order_product_id']);
+                    $options = $this->getOrderItemOptions($row['order_product_id']);
                     $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
                     ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
                     $response[$index]['image_path'] = !empty($itemUrl) ? $itemUrl : $row['image_path'];
@@ -99,13 +86,13 @@ class OrderItemDAO extends DAO {
 			return array();
 	}
 
-	private function fetchOrderItemsCount($filter = "")	{
+	private function fetchOrderItemsCount($filter = null)	{
 		$query = "
 			SELECT COUNT(*) as total
 			FROM
 				" . $this->orderItemsFromQuery . "
-			" . ($filter ? "WHERE $filter" : "");
-		$order_item_query = $this->db->query($query);
+			" . ($filter ? "WHERE" . $filter->filterString : "");
+		$order_item_query = $this->getDb()->query($query, $filter->params);
 
 		return $order_item_query->row['total'];
 	}
@@ -166,17 +153,18 @@ class OrderItemDAO extends DAO {
      * @return float
      */
     public function getOrderItemTotalCustomerCurrency($orderItem) {
-        $result = $this->getDb()->query("
+        $rate = $this->getDb()->queryScalar("
             SELECT rate
             FROM
               currency AS c
               JOIN currency_history AS ch ON c.currency_id = ch.currency_id
-            WHERE c.code = '" . $orderItem->getCustomer()['base_currency_code'] . "' AND ch.date_added <= '" . $orderItem->getTimeCreated() . "'
+            WHERE c.code = ? AND ch.date_added <= ?
             ORDER BY ch.date_added DESC
             LIMIT 0,1
-        ");
-        if ($result->num_rows) {
-            return $orderItem->getTotal() * $result->row['rate'];
+        ", array("s:" . $orderItem->getCustomer()['base_currency_code'], "s:" . $orderItem->getTimeCreated())
+        );
+        if ($rate) {
+            return $orderItem->getTotal() * $rate;
         } else {
             return 0;
         }
@@ -205,12 +193,37 @@ class OrderItemDAO extends DAO {
             );
     }
 
-	private function buildFilterString($data = array()) {
-		$filter = "";
-        if (isset($data['selected_items']) && count($data['selected_items']))
-            $filter = "op.order_product_id in (" . implode(', ', $data['selected_items']) . ")";
-        else
-        {
+    public function getTimeCreated($orderItemId) {
+        $results = $this->getDb()->queryScalar("
+            SELECT MIN(date_added)
+            FROM order_item_history
+            WHERE order_item_id = ?
+        ", array("i:$orderItemId"));
+        return $results;
+    }
+
+    public function getTimeModified($orderItemId) {
+        $results = $this->getDb()->queryScalar("
+            SELECT MAX(date_added)
+            FROM order_item_history
+            WHERE order_item_id = ?
+        ", array("i:$orderItemId"));
+        return $results;
+    }
+
+    /**
+     * Returns filter string and parameters array
+     * @param array $data
+     * @return \stdClass
+     */
+    private function buildFilterString($data = array()) {
+		$filter = ""; $params = array();
+        if (isset($data['selected_items']) && count($data['selected_items'])) {
+            $filter = "op.order_product_id IN (" . substr(str_repeat(',?', sizeof($data['selected_items'])), 1) . ")";
+            foreach ($data['selected_items'] as $orderItemId) {
+                $params[] = "i:$orderItemId";
+            }
+        } else {
             if (!empty($data['filterCustomerId']))
                 $filter .= ($filter ? " AND " : "") . "c.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
             if (!empty($data['filterItem']))
@@ -219,24 +232,35 @@ class OrderItemDAO extends DAO {
                     OR LCASE(op.name) LIKE '%" . $this->db->escape(utf8_strtolower($data['filterItem'])) . "%'";
             if (!empty($data['filter_model']))
                 $filter .= ($filter ? " AND " : "") . "LCASE(op.model) LIKE '%" . $this->db->escape(utf8_strtolower($data['filter_model'])) . "%'";
-			if (!empty($data['filterStatusId']))
-				$filter .= ($filter ? " AND " : "") . "op.status_id IN (" . implode(', ', $data['filterStatusId']) . ")";
+			if (!empty($data['filterStatusId'])) {
+				$filter .= ($filter ? " AND " : "") . "op.status_id IN (" . substr(str_repeat(',?', sizeof($data['filterStatusId'])), 1) . ")";
+                foreach ($data['filterStatusId'] as $statusId) {
+                    $params[] = "i:$statusId";
+                }
+            }
             if (!empty($data['filterSupplierId']))
                 $filter .= ($filter ? " AND " : "") . "s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
 //            if (!empty($data['filter_supplier_group']))
 //                $filter .= ($filter ? " AND" : "") . " s.supplier_group_id = " . (int)$data['filter_supplier_group'];
             if (!empty($data['filterOrderId']))
                 $filter .= ($filter ? " AND " : "") . "op.order_id = " . (int)$data['filterOrderId'];
-            if (!empty($data['filterOrderItemId']))
-                if (is_array($data['filterOrderItemId']))
-                    $filter .= ($filter ? " AND " : "") . "op.order_product_id IN (" . implode(', ', $data['filterOrderItemId']) . ")";
-                else
-                    $filter .= ($filter ? " AND " : "") . "op.order_product_id = " . (int)$data['filterOrderItemId'];
+            if (!empty($data['filterOrderItemId'])) {
+                if (!is_array($data['filterOrderItemId'])) {
+                    $data['filterOrderItemId'] = array($data['filterOrderItemId']);
+                }
+                $filter .= ($filter ? " AND " : "") . "op.order_product_id IN (" . substr(str_repeat(',?', sizeof($data['filterOrderItemId'])), 1) . ")";
+                foreach ($data['filterOrderItemId'] as $orderItemId) {
+                    $params[] = "i:$orderItemId";
+                }
+            }
             if (!empty($data['filterProductId']))
                 $filter .= ($filter ? " AND " : "") . "op.product_id IN (" . implode(', ', $data['filterProductId']) . ")";
         }
 
-		return $filter;
+        $result = new \stdClass();
+        $result->filterString = $filter;
+        $result->params = $params;
+		return $result;
 	}
 
     public function getOrderItemOptions($orderItemId)
@@ -362,4 +386,3 @@ class OrderItemDAO extends DAO {
       $this->db->query($query);
     }
 }
-?>

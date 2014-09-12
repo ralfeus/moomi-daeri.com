@@ -875,7 +875,6 @@ class ControllerSaleCustomer extends Controller {
 
     public function orderItemsHistory()
     {
-        $modelSaleOrderItems = $this->load->model('sale/order_item');
         $orderItems = OrderItemDAO::getInstance()->getOrderItems(array(
             'filterCustomerId' => array($this->parameters['customerId'])
         ));

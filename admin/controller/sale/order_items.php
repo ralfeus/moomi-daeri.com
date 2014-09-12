@@ -3,8 +3,6 @@ use model\sale\OrderItemDAO;
 
 class ControllerSaleOrderItems extends Controller {
 	private $error = array();
-	/** @var \ModelSaleOrderItem */
-	private $modelSaleOrderItem;
 	/** @var \ModelSaleOrder */
 	private $modelSaleOrder;
 
@@ -18,7 +16,6 @@ class ControllerSaleOrderItems extends Controller {
 		$this->load->model('catalog/supplier_group');
 		$this->load->library('Status');
 		$this->modelSaleOrder = $this->load->model('sale/order');
-		$this->modelSaleOrderItem = $this->load->model('sale/order_item');
 		$this->load->model('sale/order_item_history');
 		$this->load->model('tool/image');
 	}
@@ -181,7 +178,7 @@ class ControllerSaleOrderItems extends Controller {
 				}
 				if ($orderItem['product_id'] == REPURCHASE_ORDER_PRODUCT_ID)
 				{
-					$productOptions = $this->modelSaleOrderItem->getOrderItemOptions($orderItem['order_product_id']);
+					$productOptions = OrderItemDAO::getInstance()->getOrderItemOptions($orderItem['order_product_id']);
 					if (!empty($productOptions[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]))
 					{
 						$orderItem['image_path'] = $productOptions[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'];
@@ -246,7 +243,7 @@ class ControllerSaleOrderItems extends Controller {
 							  'order_url'					        => $this->url->link('sale/order/info', 'order_id=' . $orderItem['order_id'] . '&token=' . $this->session->data['token'], 'SSL'),
 					'customer_name'             => $orderItem['customer_name'],
 					'customer_nick'             => $orderItem['customer_nick'],
-					'options'                   => nl2br($this->modelSaleOrderItem->getOrderItemOptionsString($orderItem['order_product_id'])),
+					'options'                   => nl2br(OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem['order_product_id'])),
 					'publicComment'             => $orderItem['public_comment'],
 					'supplier_name'	            => $orderItem['supplier_name'],
 					'supplier_url'	            => $supplier_url,
@@ -464,7 +461,7 @@ class ControllerSaleOrderItems extends Controller {
 				'image_path'	=> $image,
 				'name'			=> $order_item['name'],
 				'name_korean'	=> $this->getProductAttribute($order_item['product_id'], "Name Korean"),
-				'options'       => $this->modelSaleOrderItem->getOrderItemOptionsString($order_item['order_item_id']),
+				'options'       => OrderItemDAO::getInstance()->getOrderItemOptionsString($order_item['order_item_id']),
 				'order_id'      => $order_item['order_id'],
 				'quantity'		=> $order_item['quantity'],
 				'status'       	    => $order_item['status'],
@@ -526,7 +523,6 @@ class ControllerSaleOrderItems extends Controller {
 		$this->document->setTitle($this->language->get('heading_title'));
 		$this->load->model('catalog/product');
 		$this->load->model('catalog/supplier_group');
-		$this->load->model('sale/order_item');
 		$this->load->model('tool/image');
 
 		if (isset($_REQUEST['sort'])) {
@@ -571,7 +567,7 @@ class ControllerSaleOrderItems extends Controller {
 				'image_path'	=> $image,
 				'name'			=> $order_item['name'],
 				'name_korean'	=> $this->getProductAttribute($order_item['product_id'], "Name Korean"),
-				'options'       => $this->modelSaleOrderItem->getOrderItemOptionsString($order_item['order_item_id']),
+				'options'       => OrderItemDAO::getInstance()->getOrderItemOptionsString($order_item['order_item_id']),
 				'order_id'      => $order_item['order_id'],
 				'quantity'		=> $order_item['quantity'],
 				'status'       	    => $order_item['status'],
@@ -644,11 +640,10 @@ class ControllerSaleOrderItems extends Controller {
 		if (!isset($this->error['warning'])) {
 			$this->error['warning'] = '';
 			$this->session->data['success'] = '';
-			$this->load->model('sale/order_item');
 			$this->load->model('localisation/order_item_status');
 
 			foreach ($order_items as $order_item_id) {
-				if ($this->modelSaleOrderItem->setOrderItemStatus($order_item_id, $order_item_new_status)) {
+				if (OrderItemDAO::getInstance()->setOrderItemStatus($order_item_id, $order_item_new_status)) {
 					$this->session->data['success'] .= sprintf(
 						$this->language->get("text_status_set"),
 						$order_item_id,
@@ -674,7 +669,7 @@ class ControllerSaleOrderItems extends Controller {
 		if (!$this->isValidOrderItemId($this->parameters['orderItemId']))
 			$this->response->addHeader("HTTP/1.0 400 Bad request");
 		else
-			$this->modelSaleOrderItem->setOrderItemComment(
+			OrderItemDAO::getInstance()->setOrderItemComment(
 				$this->parameters['orderItemId'],
 				$this->parameters['comment'],
 				$this->parameters['private']
@@ -693,7 +688,7 @@ class ControllerSaleOrderItems extends Controller {
 		if (!$this->isValidOrderItemId($orderItemId))
 			$this->response->addHeader("HTTP/1.0 400 Bad request");
 		else
-			$this->modelSaleOrderItem->setOrderItemQuantity($orderItemId, $quantity);
+			OrderItemDAO::getInstance()->setOrderItemQuantity($orderItemId, $quantity);
 		$this->response->setOutput('');
 	}
 

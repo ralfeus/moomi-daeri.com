@@ -3,7 +3,6 @@ use model\sale\OrderItemDAO;
 
 class ControllerAccountOrderItems extends Controller {
 	private $error = array();
-    private $modelAccountOrderItem;
     private $orderModel;
 
     public function __construct($registry)
@@ -16,7 +15,6 @@ class ControllerAccountOrderItems extends Controller {
         $this->load->model('catalog/product');
         $this->load->library('Status');
         $this->orderModel = $this->load->model('account/order');
-        $this->modelAccountOrderItem = $this->load->model('account/order_item');
 //        $this->load->model('account/order_item_history');
         $this->load->model('tool/image');
     }
@@ -30,7 +28,7 @@ class ControllerAccountOrderItems extends Controller {
             & 0xFFFF0000 // clean up status value but keep group
             | (ORDER_ITEM_STATUS_CANCELLED & 0x0000FFFF); // set cancelled status
         $this->log->write($cancelledStatus);
-        $this->modelAccountOrderItem->setOrderItemStatus($this->parameters['orderItemId'], $cancelledStatus);
+        OrderItemDAO::getInstance()->setOrderItemStatus($this->parameters['orderItemId'], $cancelledStatus);
         $this->redirect($this->parameters['returnUrl']);
     }
 
@@ -68,8 +66,7 @@ class ControllerAccountOrderItems extends Controller {
             {
               //print_r($orderItem);
                 if($orderItem['image_path'] == '' || $orderItem['image_path'] == "data/event/agent-moomidae.jpg") {
-                  $this->modelOrderItem = $this->load->model('sale/order_item');
-                  $options = $this->modelOrderItem->getOrderItemOptions($orderItem['order_product_id']);
+                  $options = OrderItemDAO::getInstance()->getOrderItemOptions($orderItem['order_product_id']);
                   $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
                   ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
                   $orderItem['image_path'] = !empty($itemUrl) ? $itemUrl : $orderItem['image_path'];
@@ -103,7 +100,7 @@ class ControllerAccountOrderItems extends Controller {
                     'name_korean'	            => $this->getProductAttribute($orderItem['product_id'], "Name Korean"),
                     'order_id'					=> $orderItem['order_id'],
 					'order_url'					=> $this->url->link('sale/order/info', 'order_id=' . $orderItem['order_id'], 'SSL'),
-                    'options'       => nl2br($this->modelAccountOrderItem->getOrderItemOptionsString($orderItem['order_product_id'])),
+                    'options'       => nl2br(OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem['order_product_id'])),
                     'publicComment'                   => $orderItem['public_comment'],
 					'status'       	=> $orderItem['status'] ? Status::getStatus($orderItem['status'], $this->config->get('language_id'), true) : "",
                     'price'			=> $this->currency->format($orderItem['price']),
@@ -152,7 +149,7 @@ class ControllerAccountOrderItems extends Controller {
         $this->initStatuses();
         $this->setBreadcrumbs();
 		$pagination = new Pagination();
-		$pagination->total = $this->modelAccountOrderItem->getOrderItemsCount($data);
+		$pagination->total = OrderItemDAO::getInstance()->getOrderItemsCount($data);
 		$pagination->page = $this->parameters['page'];
 		$pagination->limit = $this->config->get('config_admin_limit');
 		$pagination->text = $this->language->get('text_pagination');
@@ -269,12 +266,11 @@ class ControllerAccountOrderItems extends Controller {
         if (!isset($this->error['warning'])) {
             $this->error['warning'] = '';
             $this->session->data['success'] = '';
-            $this->load->model('sale/order_item');
             $this->load->model('localisation/order_item_status');
             $this->log->write("Setting status '$order_item_new_status' to items:\n" . print_r($order_items, true));
 
             foreach ($order_items as $order_item_id)
-                if ($this->modelAccountOrderItem->setOrderItemStatus($order_item_id, $order_item_new_status))
+                if (OrderItemDAO::getInstance()->setOrderItemStatus($order_item_id, $order_item_new_status))
 					$this->session->data['success'] .= sprintf(
 						$this->language->get("text_status_set"),
 						$order_item_id,
@@ -296,7 +292,7 @@ class ControllerAccountOrderItems extends Controller {
         if (!$this->isValidOrderItemId($this->parameters['orderItemId']))
             $this->response->addHeader("HTTP/1.0 400 Bad request");
         else
-            $this->modelAccountOrderItem->setOrderItemComment(
+            OrderItemDAO::getInstance()->setOrderItemComment(
                 $this->parameters['orderItemId'],
                 $this->parameters['comment'],
                 $this->parameters['private']
@@ -315,7 +311,7 @@ class ControllerAccountOrderItems extends Controller {
 //        if (!$this->isValidOrderItemId($orderItemId))
 //            $this->response->addHeader("HTTP/1.0 400 Bad request");
 //        else
-//            $this->modelAccountOrderItem->setOrderItemQuantity($orderItemId, $quantity);
+//            OrderItemDAO::getInstance()->setOrderItemQuantity($orderItemId, $quantity);
 //        $this->response->setOutput('');
 //    }
 }

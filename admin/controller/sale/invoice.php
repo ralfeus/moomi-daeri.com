@@ -18,8 +18,6 @@ class ControllerSaleInvoice extends Controller
     private $modelSaleCustomer;
     /** @var ModelSaleOrder */
     private $modelSaleOrder;
-    /** @var ModelSaleOrderItem */
-    private $modelSaleOrderItem;
 
     public function __construct($registry)
     {
@@ -29,7 +27,6 @@ class ControllerSaleInvoice extends Controller
         $this->modelReferenceAddress = $this->load->model('reference/address');
         $this->modelSaleCustomer = $this->load->model('sale/customer');
         $this->modelSaleOrder = $this->load->model('sale/order');
-        $this->modelSaleOrderItem = $this->load->model('sale/order_item');
         $this->load->model('tool/image');
 
         $this->data['notifications'] = array();
@@ -415,7 +412,7 @@ class ControllerSaleInvoice extends Controller
                 'model' => $orderItem['model'],
                 'name' => $orderItem['name'],
                 'order_id' => $orderItem['order_id'],
-                'options' => $this->modelSaleOrderItem->getOrderItemOptionsString($orderItem['order_item_id']),
+                'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem['order_item_id']),
                 'price' => $this->getCurrency()->format($orderItem['price'], $this->config->get('config_currency')),
                 'quantity' => $orderItem['quantity'],
                 'shipping' => $this->getCurrency()->format($orderItem['shipping'], $this->config->get('config_currency')),
@@ -501,7 +498,7 @@ class ControllerSaleInvoice extends Controller
                 'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
                 'model' => $orderItem->getModel(),
                 'name' => $orderItem->getName(),
-                'options' => $this->modelSaleOrderItem->getOrderItemOptionsString($orderItem->getId()),
+                'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
                 'order_id' => $orderItem->getOrderId(),
                 'price' => $this->getCurrency()->format($orderItem->getPrice(), $this->config->get('config_currency')),
                 'quantity' => $orderItem->getQuantity(),
