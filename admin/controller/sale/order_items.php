@@ -179,7 +179,7 @@ class ControllerSaleOrderItems extends Controller {
 				}
 				if ($orderItem['product_id'] == REPURCHASE_ORDER_PRODUCT_ID)
 				{
-					$productOptions = OrderItemDAO::getInstance()->getOrderItemOptions($orderItem['order_product_id']);
+					$productOptions = OrderItemDAO::getInstance()->getOptions($orderItem['order_product_id']);
 					if (!empty($productOptions[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]))
 					{
 						$orderItem['image_path'] = $productOptions[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'];
@@ -644,7 +644,7 @@ class ControllerSaleOrderItems extends Controller {
 			$this->load->model('localisation/order_item_status');
 
 			foreach ($order_items as $order_item_id) {
-				if (OrderItemDAO::getInstance()->setOrderItemStatus($order_item_id, $order_item_new_status)) {
+				if (OrderItemDAO::getInstance()->setStatus($order_item_id, $order_item_new_status)) {
 					$this->session->data['success'] .= sprintf(
 						$this->language->get("text_status_set"),
 						$order_item_id,

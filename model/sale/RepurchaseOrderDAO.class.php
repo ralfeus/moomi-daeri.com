@@ -66,15 +66,11 @@ class RepurchaseOrderDAO extends OrderItemDAO {
         return $result;
     }
 
-    public function setStatus($orderId, $statusId) {
-//        $this->log->write($statusId);
-        OrderItemDAO::getInstance()->setOrderItemStatus($orderId, $statusId);
-    }
-
-    public function deleteOrderItem($repurchase_order_item_id) {
+    public function deleteOrderItem($repurchaseOrderItemId) {
         $this->db->query("
             DELETE FROM repurchase_order_item
-            WHERE repurchase_order_item_id = " . (int)$repurchase_order_item_id
+            WHERE repurchase_order_item_id = ?",
+            array("i:$repurchaseOrderItemId")
         );
     }
 
@@ -84,11 +80,11 @@ class RepurchaseOrderDAO extends OrderItemDAO {
      */
     public function getOrder($orderId) {
         $orderItem = OrderItemDAO::getInstance()->getOrderItem($orderId);
-        $options = OrderItemDAO::getInstance()->getOrderItemOptions($orderItem['order_item_id']);
+        $options = OrderItemDAO::getInstance()->getOptions($orderItem['order_item_id']);
         return array (
             'orderId' => $orderItem['order_id'],
             'orderItemId' => $orderItem['order_item_id'],
-            'comment' => $orderItem['comment'],
+            'privateComment' => $orderItem['comment'],
             'customerId' => $orderItem['customer_id'],
             'customerName' => $orderItem['customer_name'],
             'customerNick' => $orderItem['customer_nick'],
@@ -102,7 +98,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                 ? $options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'] : '',
             'orderItemStatusId' => $orderItem['status'],
             'price' => $orderItem['price'],
-            'publicComment' => !empty($orderItem['public_comment'])
+            'comment' => !empty($orderItem['public_comment'])
                 ? $orderItem['public_comment']
                 : (!empty($options[REPURCHASE_ORDER_COMMENT_OPTION_ID])
                     ? $options[REPURCHASE_ORDER_COMMENT_OPTION_ID]['value'] : ''),
@@ -118,14 +114,15 @@ class RepurchaseOrderDAO extends OrderItemDAO {
     }
 
     public function getOrders($data = array()) {
+        $data['filterProductId'] = REPURCHASE_ORDER_PRODUCT_ID;
+        $data['filterOrderItemId'] = $data['filterOrderId'];
         $repurchaseOrderItems = OrderItemDAO::getInstance()->getOrderItems($data, $this->buildFilter($data));
 //        $this->log->write(print_r($repurchaseOrderItems, true));
         $items = array();
         if (!$repurchaseOrderItems)
             return $items;
-        foreach ($repurchaseOrderItems as $repurchaseOrderItem)
-        {
-            $options = OrderItemDAO::getInstance()->getOrderItemOptions($repurchaseOrderItem['order_item_id']);
+        foreach ($repurchaseOrderItems as $repurchaseOrderItem) {
+            $options = $this->getOptions($repurchaseOrderItem['order_item_id']);
 //            $this->log->write(print_r($options, true));
             if (!empty($data['filterWhoOrders']) && !empty($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]))
                 if ($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value_id'] != $data['filterWhoOrders'])
@@ -133,7 +130,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
             $items[] = array(
                 'orderId' => $repurchaseOrderItem['order_id'],
                 'orderItemId' => $repurchaseOrderItem['order_item_id'],
-                'comment' => $repurchaseOrderItem['comment'],
+                'privateComment' => $repurchaseOrderItem['comment'],
                 'customerId' => $repurchaseOrderItem['customer_id'],
                 'customerName' => $repurchaseOrderItem['customer_name'],
                 'customerNick' => $repurchaseOrderItem['customer_nick'],
@@ -147,7 +144,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                     ? $options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'] : '',
                 'orderItemStatusId' => $repurchaseOrderItem['status'],
                 'price' => $repurchaseOrderItem['price'],
-                'publicComment' => !empty($repurchaseOrderItem['public_comment'])
+                'comment' => !empty($repurchaseOrderItem['public_comment'])
                     ? $repurchaseOrderItem['public_comment']
                     : (!empty($options[REPURCHASE_ORDER_COMMENT_OPTION_ID])
                         ? $options[REPURCHASE_ORDER_COMMENT_OPTION_ID]['value'] : ''),
@@ -165,40 +162,14 @@ class RepurchaseOrderDAO extends OrderItemDAO {
     }
 
     public function getOrdersCount($data = array()) {
-        $data['filterModel'] = 'Repurchase agent';
-        return OrderItemDAO::getInstance()->getOrderItemsCount($this->buildFilter($data));
+        $data['filterProductId'] = REPURCHASE_ORDER_PRODUCT_ID;
+        return OrderItemDAO::getInstance()->getOrderItemsCount($data);
     }
 
-    private function getOrderInitialStatus()
-    {
-        $query = $this->db->query("
-            SELECT repurchase_order_status_id
-            FROM repurchase_order_statuses
-            WHERE workflow_order = 1
-        ");
-        return $query->row['repurchase_order_status_id'];
-    }
-
-    private function getOrderItemInitialStatus()
-    {
-        $query = $this->db->query("
-            SELECT order_item_status_id
-            FROM order_item_status
-            WHERE workflow_order = 1
-        ");
-        return $query->row['order_item_status_id'];
-    }
-
-    public function getOrderOptions($repurchaseOrderId)
-    {
-        return OrderItemDAO::getInstance()->getOrderItemOptions($repurchaseOrderId);
-    }
-
-    public function getOrderOptionsString($repurchaseOrderId)
-    {
+    public function getOptionsString($repurchaseOrderId) {
         //return OrderItemDAO::getInstance()->getOrderItemOptionsString($repurchaseOrderId);
         $options = '';
-        foreach ($this->getOrderOptions($repurchaseOrderId) as $option)
+        foreach ($this->getOptions($repurchaseOrderId) as $option)
 //            $this->log->write(print_r($option, true));
             if (($option['product_option_id'] == REPURCHASE_ORDER_IMAGE_URL_OPTION_ID) ||
                 ($option['product_option_id'] == REPURCHASE_ORDER_SHOP_NAME_OPTION_ID))
@@ -210,8 +181,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
         return $options;
     }
 
-    public function setAmount($orderId, $amount)
-    {
+    public function setAmount($orderId, $amount) {
         OrderItemDAO::getInstance()->setOrderItemTotal($orderId, $amount);
         OrderItemDAO::getInstance()->setOrderItemPrice($orderId, $amount);
     }
@@ -221,16 +191,18 @@ class RepurchaseOrderDAO extends OrderItemDAO {
             SELECT order_option_id
             FROM order_option
             WHERE
-                order_product_id = " . (int)$orderId . "
+                order_product_id = ?
                 AND product_option_id = " . REPURCHASE_ORDER_ITEM_NAME_OPTION_ID
+            , array("i:$orderId")
         );
         if ($testRow->num_rows) {
             $this->getDb()->query("
                 UPDATE order_option
-                SET value = '" . $this->getDb()->escape($itemName) . "'
+                SET value = ?
                 WHERE
-                    order_product_id = " . (int)$orderId . "
+                    order_product_id = ?
                     AND product_option_id = " . REPURCHASE_ORDER_ITEM_NAME_OPTION_ID
+            , array("s:$itemName", "i:$orderId")
             );
         }
         else {
@@ -238,23 +210,16 @@ class RepurchaseOrderDAO extends OrderItemDAO {
             $this->getDb()->query("
                 INSERT INTO order_option
                 SET
-                    order_id = " . (int)$orderItem['order_id'] . ",
-                    order_product_id = " . (int)$orderId . ",
+                    order_id = ?,
+                    order_product_id = ?,
                     product_option_id = " . REPURCHASE_ORDER_ITEM_NAME_OPTION_ID . ",
                     product_option_value_id = 0,
                     name = 'Item Name',
-                    value = '" . $this->getDb()->escape($itemName) . "',
+                    value = ?,
                     type = 'text'
-            ");
+                ", array('i:' . $orderItem['order_id'], "i:$orderId", "s:$itemName")
+            );
         }
-    }
-
-    public function setPrice($orderId, $amount) {
-        OrderItemDAO::getInstance()->setPrice($orderId, $amount);
-    }
-
-    public function setShipping($orderId, $amount) {
-        OrderItemDAO::getInstance()->setShipping($orderId, $amount);
     }
 
     public function setShopName($orderId, $shopName) {
@@ -262,16 +227,18 @@ class RepurchaseOrderDAO extends OrderItemDAO {
             SELECT order_option_id
             FROM order_option
             WHERE
-                order_product_id = " . (int)$orderId . "
+                order_product_id = ?
                 AND product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID
+            , array("i:$orderId")
         );
         if ($testRow->num_rows) {
             $this->getDb()->query("
                 UPDATE order_option
-                SET value = '" . $this->getDb()->escape($shopName) . "'
+                SET value = ?
                 WHERE
-                    order_product_id = " . (int)$orderId . "
+                    order_product_id = ?
                     AND product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID
+                , array("s:$shopName", "i:$orderId")
             );
         }
         else {
@@ -279,14 +246,15 @@ class RepurchaseOrderDAO extends OrderItemDAO {
             $this->getDb()->query("
                 INSERT INTO order_option
                 SET
-                    order_id = " . (int)$orderItem['order_id'] . ",
-                    order_product_id = " . (int)$orderId . ",
+                    order_id = ?,
+                    order_product_id = ?,
                     product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID . ",
                     product_option_value_id = 0,
                     name = 'Shop Name',
-                    value = '" . $this->getDb()->escape($shopName) . "',
+                    value = ?,
                     type = 'text'
-            ");
+                ", array("i:" . $orderItem['order_id'], "i:$orderId", "s:$shopName")
+            );
         }
     }
 
@@ -295,8 +263,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
      * @return array
     */
     public function getPrices($orderId) {
-        $query = "SELECT * FROM order_product WHERE order_product_id = " . (int)$orderId;
-        $result = $this->db->query($query);
+        $result = $this->getDb()->query("SELECT * FROM order_product WHERE order_product_id = ?", array("i:$orderId"));
         foreach (array_keys($result->row) as $key) {
             if (is_numeric($result->row[$key])) {
                 $result->row[$key] = (float)$result->row[$key];
@@ -305,37 +272,35 @@ class RepurchaseOrderDAO extends OrderItemDAO {
         return $result->row;
     }
 
-    public function setImage($orderId, $imagePath)
-    {
-        $this->db->query("
+    public function setImage($orderId, $imagePath) {
+        $this->getDb()->query("
             UPDATE order_option
-            SET value = '" . $this->db->escape($imagePath) . "'
+            SET value = ?
             WHERE
-                order_product_id = " . (int)$orderId . "
+                order_product_id = ?
                 AND product_option_id = " . REPURCHASE_ORDER_IMAGE_URL_OPTION_ID
+            , array("s:$imagePath", "i:$orderId")
         );
-        if (!$this->db->countAffected())
+        if (!$this->getDb()->countAffected())
         {
             $repurchaseOrder = OrderItemDAO::getInstance()->getOrderItem($orderId);
-            $this->db->query("
+            $this->getDb()->query("
                 INSERT INTO order_option
                 SET
-                    order_id = " . $repurchaseOrder['order_id'] . ",
-                    order_product_id = " . (int)$orderId . ",
+                    order_id = ?,
+                    order_product_id = ?,
                     product_option_id = " . REPURCHASE_ORDER_IMAGE_URL_OPTION_ID . ",
                     product_option_value_id = 0,
                     name = 'Image URL',
-                    value = '" . $this->db->escape($imagePath) . "',
+                    value = ?,
                     type = 'text'
-            ");
+                ", array("i:" . $repurchaseOrder['order_id'], "i:$orderId", "s:$imagePath")
+            );
         }
     }
 
-    public function setQuantity($orderId, $quantity)
-    {
-        $query = "UPDATE order_product SET quantity = " . (int)$quantity . " WHERE order_product_id = " . (int)$orderId;
-        $this->db->query($query);
-        $query = "UPDATE order_product SET total = (quantity*price) + shipping WHERE order_product_id = " . (int)$orderId;
-        $this->db->query($query);
+    public function setQuantity($orderId, $quantity) {
+        $this->getDb()->query("UPDATE order_product SET quantity = ? WHERE order_product_id = ?", array("i:$quantity", "i:$orderId"));
+        $this->getDb()->query("UPDATE order_product SET total = (quantity*price) + shipping WHERE order_product_id = ?", array("i:$orderId"));
     }
 }

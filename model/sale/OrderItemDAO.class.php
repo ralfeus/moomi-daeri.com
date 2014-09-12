@@ -73,7 +73,7 @@ class OrderItemDAO extends DAO {
             foreach ($response as $index => $row) {
                 //$this->log->write("------?--------?-------- " . print_r($row['image_path'], true));
                 if($row['image_path'] == '' || $row['image_path'] == "data/event/agent-moomidae.jpg") {
-                    $options = $this->getOrderItemOptions($row['order_product_id']);
+                    $options = $this->getOptions($row['order_product_id']);
                     $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
                         ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
                     $response[$index]['image_path'] = !empty($itemUrl) ? $itemUrl : $row['image_path'];
@@ -280,8 +280,7 @@ class OrderItemDAO extends DAO {
         }
     }
 
-    public function getOrderItemOptions($orderItemId)
-    {
+    public function getOptions($orderItemId) {
         $languageId = $this->config->get('config_language_id');
         $query = "
             SELECT
@@ -311,7 +310,7 @@ class OrderItemDAO extends DAO {
     public function getOrderItemOptionsString($orderItemId)
     {
         $options = '';
-        foreach ($this->getOrderItemOptions($orderItemId) as $option)
+        foreach ($this->getOptions($orderItemId) as $option)
             if (preg_match(URL_PATTERN, $option['value']))
                 $options .= $option['name'] . ":" . '<a target="_blank" href="' . $option['value'] . '">hyperlink</a>' . "\n";
             else
@@ -345,27 +344,26 @@ class OrderItemDAO extends DAO {
     }
 
     /**
-     * @param int $order_item_id
-     * @param int $order_item_status_id
+     * @param int $orderItemId
+     * @param int $orderItemStatusId
      * @return bool
      */
-    public function setOrderItemStatus($order_item_id, $order_item_status_id) {
-        $orderItem = $this->getOrderItem($order_item_id);
-        if ($orderItem->getStatusId() != $order_item_status_id) {
-            $query = "
+    public function setStatus($orderItemId, $orderItemStatusId) {
+        $orderItem = $this->getOrderItem($orderItemId);
+        if ($orderItem->getStatusId() != $orderItemStatusId) {
+            $this->getDb()->query("
                 INSERT order_item_history
                 SET
-                    order_item_id = " . (int)$order_item_id . ",
-                    order_item_status_id = " . (int) $order_item_status_id . ",
+                    order_item_id = ?,
+                    order_item_status_id = ?,
                     date_added = NOW()
-            ";
+            ", array("i:$orderItemId", "i:$orderItemStatusId"));
 
-            $this->getDb()->query($query);
             $this->getDb()->query("
                 UPDATE order_product
-                SET status_id = " . (int)$order_item_status_id . "
-                WHERE order_product_id = " . (int)$order_item_id
-            );
+                SET status_id = ?
+                WHERE order_product_id = ?
+            ", array("i:$orderItemStatusId", "i:$orderItemId"));
             return true;
         }
         else

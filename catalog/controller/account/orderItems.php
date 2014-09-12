@@ -28,7 +28,7 @@ class ControllerAccountOrderItems extends Controller {
             & 0xFFFF0000 // clean up status value but keep group
             | (ORDER_ITEM_STATUS_CANCELLED & 0x0000FFFF); // set cancelled status
         $this->log->write($cancelledStatus);
-        OrderItemDAO::getInstance()->setOrderItemStatus($this->parameters['orderItemId'], $cancelledStatus);
+        OrderItemDAO::getInstance()->setStatus($this->parameters['orderItemId'], $cancelledStatus);
         $this->redirect($this->parameters['returnUrl']);
     }
 
@@ -66,7 +66,7 @@ class ControllerAccountOrderItems extends Controller {
             {
               //print_r($orderItem);
                 if($orderItem['image_path'] == '' || $orderItem['image_path'] == "data/event/agent-moomidae.jpg") {
-                  $options = OrderItemDAO::getInstance()->getOrderItemOptions($orderItem['order_product_id']);
+                  $options = OrderItemDAO::getInstance()->getOptions($orderItem['order_product_id']);
                   $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
                   ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
                   $orderItem['image_path'] = !empty($itemUrl) ? $itemUrl : $orderItem['image_path'];
@@ -270,7 +270,7 @@ class ControllerAccountOrderItems extends Controller {
             $this->log->write("Setting status '$order_item_new_status' to items:\n" . print_r($order_items, true));
 
             foreach ($order_items as $order_item_id)
-                if (OrderItemDAO::getInstance()->setOrderItemStatus($order_item_id, $order_item_new_status))
+                if (OrderItemDAO::getInstance()->setStatus($order_item_id, $order_item_new_status))
 					$this->session->data['success'] .= sprintf(
 						$this->language->get("text_status_set"),
 						$order_item_id,

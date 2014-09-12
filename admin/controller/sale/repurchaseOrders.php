@@ -1,4 +1,6 @@
 <?php
+use model\sale\RepurchaseOrderDAO;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -6,18 +8,11 @@
  * Time: 8:16
  * To change this template use File | Settings | File Templates.
  */
-class ControllerSaleRepurchaseOrders extends Controller
-{
-    /**
-     * @var ModelSaleRepurchaseOrder
-     */
-    private $modelSaleRepurchaseOrder;
-
+class ControllerSaleRepurchaseOrders extends Controller {
     public function __construct($registry)
     {
         parent::__construct($registry);
         $this->data['notifications'] = array();
-        $this->modelSaleRepurchaseOrder = $this->load->model('sale/repurchaseOrder');
         $this->load->language('sale/repurchaseOrders');
         $this->load->library('Status');
         $this->document->setTitle($this->getLanguage()->get('HEADING_TITLE'));
@@ -38,7 +33,7 @@ class ControllerSaleRepurchaseOrders extends Controller
         );
         $data = array_merge($data, $this->parameters);
 
-        $order_items = $this->modelSaleRepurchaseOrder->getOrders($data);
+        $order_items = RepurchaseOrderDAO::getInstance()->getOrders($data);
         $showedCustomerIds = array();
         $this->data['customers'] = array();
         foreach ($order_items as $order_item)
@@ -96,7 +91,7 @@ class ControllerSaleRepurchaseOrders extends Controller
                     'sale/customer/update',
                     'token=' . $this->session->data['token'] . '&customer_id=' . $order_item['customerId'],
                     'SSL'),
-                'options'       => nl2br($this->modelSaleRepurchaseOrder->getOrderOptionsString($order_item['orderItemId'])),
+                'options'       => nl2br(RepurchaseOrderDAO::getInstance()->getOptionsString($order_item['orderItemId'])),
                 'originalImagePath' => file_exists(DIR_IMAGE . $order_item['imagePath'])
                     ? HTTP_IMAGE . $order_item['imagePath']
                     : $order_item['imagePath'],
@@ -130,7 +125,7 @@ class ControllerSaleRepurchaseOrders extends Controller
         }
 
         $pagination = new Pagination();
-        $pagination->total = $this->modelSaleRepurchaseOrder->getOrdersCount($data);
+        $pagination->total = RepurchaseOrderDAO::getInstance()->getOrdersCount($data);
         $pagination->page = $this->parameters['page'];
         $pagination->limit = $this->config->get('config_admin_limit');
         $pagination->text = $this->getLanguage()->get('text_pagination');
@@ -288,10 +283,10 @@ class ControllerSaleRepurchaseOrders extends Controller
         $selectedOrdersShops = array();
         $json = array();
         foreach ($this->parameters['selectedItems'] as $selectedItemId) {
-            $repurchaseOrder = $this->modelSaleRepurchaseOrder->getOrder($selectedItemId);
+            $repurchaseOrder = RepurchaseOrderDAO::getInstance()->getOrder($selectedItemId);
             if (in_array($repurchaseOrder['shopName'], $selectedOrdersShops)) {
-                $this->modelSaleRepurchaseOrder->setShipping($selectedItemId, 0);
-                $newPrices = $this->modelSaleRepurchaseOrder->getPrices($selectedItemId);
+                RepurchaseOrderDAO::getInstance()->setShipping($selectedItemId, 0);
+                $newPrices = RepurchaseOrderDAO::getInstance()->getPrices($selectedItemId);
                 $newPrices['itemId'] = $selectedItemId;
                 $json[] = $newPrices;
             }
@@ -306,29 +301,29 @@ class ControllerSaleRepurchaseOrders extends Controller
 //        $this->log->write(print_r($_GET, true));
         switch ($this->parameters['propName']) {
             case 'amount':
-                $this->modelSaleRepurchaseOrder->setAmount($this->parameters['orderId'], $this->parameters['value']);
+                RepurchaseOrderDAO::getInstance()->setAmount($this->parameters['orderId'], $this->parameters['value']);
                 break;
             case 'image':
-                $this->modelSaleRepurchaseOrder->setImage($this->parameters['orderId'], $this->parameters['value']);
+                RepurchaseOrderDAO::getInstance()->setImage($this->parameters['orderId'], $this->parameters['value']);
                 $json['image'] = $this->load->model('tool/image')->resize($this->parameters['value'], 100, 100);
                 break;
             case 'itemName':
-                $this->modelSaleRepurchaseOrder->setItemName($this->parameters['orderId'], $this->parameters['value']);
+                RepurchaseOrderDAO::getInstance()->setItemName($this->parameters['orderId'], $this->parameters['value']);
                 break;
             case 'quantity':
-                $this->modelSaleRepurchaseOrder->setQuantity($this->parameters['orderId'], $this->parameters['value']);
+                RepurchaseOrderDAO::getInstance()->setQuantity($this->parameters['orderId'], $this->parameters['value']);
                 break;
             case 'price':
-                $this->modelSaleRepurchaseOrder->setPrice($this->parameters['orderId'], $this->parameters['value']);
+                RepurchaseOrderDAO::getInstance()->setPrice($this->parameters['orderId'], $this->parameters['value']);
                 break;
             case 'shipping':
-                $this->modelSaleRepurchaseOrder->setShipping($this->parameters['orderId'], $this->parameters['value']);
+                RepurchaseOrderDAO::getInstance()->setShipping($this->parameters['orderId'], $this->parameters['value']);
                 break;
             case 'shopName':
-                $this->modelSaleRepurchaseOrder->setShopName($this->parameters['orderId'], $this->parameters['value']);
+                RepurchaseOrderDAO::getInstance()->setShopName($this->parameters['orderId'], $this->parameters['value']);
                 break;
         }
-        $row = $this->modelSaleRepurchaseOrder->getPrices($this->parameters['orderId']);
+        $row = RepurchaseOrderDAO::getInstance()->getPrices($this->parameters['orderId']);
         $json['itemId'] = $row['order_product_id'];
         $json['price'] = $row['price'];
         $json['total'] = $row['total'];
@@ -360,8 +355,8 @@ class ControllerSaleRepurchaseOrders extends Controller
         /** @var ModelSaleOrder $modelSaleOrder */
         $modelSaleOrder = $this->load->model('sale/order');
         foreach ($this->parameters['selectedItems'] as $orderId) {
-            $this->modelSaleRepurchaseOrder->setStatus($orderId, $_REQUEST['statusId']);
-            $repurchaseOrder = $this->modelSaleRepurchaseOrder->getOrder($orderId);
+            RepurchaseOrderDAO::getInstance()->setStatus($orderId, $_REQUEST['statusId']);
+            $repurchaseOrder = RepurchaseOrderDAO::getInstance()->getOrder($orderId);
             $modelSaleOrder->verifyOrderCompletion($repurchaseOrder['orderId']);
         }
 

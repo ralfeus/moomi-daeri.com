@@ -1,5 +1,6 @@
 <?php
 use model\sale\OrderItemDAO;
+use model\sale\RepurchaseOrderDAO;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -11,13 +12,9 @@ use model\sale\OrderItemDAO;
 class ControllerAccountRepurchaseOrders extends Controller
 {
     private $error = array();
-    /** @var ModelAccountRepurchaseOrder */
-    private $modelAccountRepurchaseOrder;
 
-    public function __construct($registry)
-    {
+    public function __construct($registry) {
         parent::__construct($registry);
-        $this->modelAccountRepurchaseOrder = $this->load->model('account/repurchaseOrder');
         $this->language->load('account/repurchaseOrders');
         $this->document->setTitle($this->language->get('HEADING_TITLE'));
         $this->data['headingTitle'] = $this->language->get('HEADING_TITLE');
@@ -25,7 +22,7 @@ class ControllerAccountRepurchaseOrders extends Controller
     }
 
     public function index()
-    {
+    { $this->test = 0;
         if (!$this->customer->isLogged())
         {
             $this->session->data['redirect'] = $this->url->link('account/repurchaseOrders', '', 'SSL');
@@ -51,23 +48,23 @@ class ControllerAccountRepurchaseOrders extends Controller
         $this->setStatus($this->request->request['orderId'], REPURCHASE_ORDER_ITEM_STATUS_ACCEPTED);
     }
 
-    public function create()
-    {
-        if ($this->request->server['REQUEST_METHOD'] == 'POST')
-        {
-            //print_r($this->request->post);exit();
-            if ($this->customer->isLogged())
-            {
-                $this->modelAccountRepurchaseOrder->addOrder($this->customer->getId(), $this->request->post['order_items']);
-                $this->redirect($this->url->link('account/repurchaseOrders', '', 'SSL'));
-            }
-        }
-        else
-        {
-            $this->data['action'] = $this->url->link('account/repurchaseOrders/create', '', 'SSL');
-            $this->showForm();
-        }
-   }
+//    public function create()
+//    {
+//        if ($this->request->server['REQUEST_METHOD'] == 'POST')
+//        {
+//            //print_r($this->request->post);exit();
+//            if ($this->customer->isLogged())
+//            {
+//                RepurchaseOrderDAO::getInstance()->addOrder($this->customer->getId(), $this->request->post['order_items']);
+//                $this->redirect($this->url->link('account/repurchaseOrders', '', 'SSL'));
+//            }
+//        }
+//        else
+//        {
+//            $this->data['action'] = $this->url->link('account/repurchaseOrders/create', '', 'SSL');
+//            $this->showForm();
+//        }
+//   }
 
     private function getList()
     {
@@ -81,8 +78,9 @@ class ControllerAccountRepurchaseOrders extends Controller
         $this->data['orders'] = array();
         $this->data['statuses'] = Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id'), true);
         $data = $this->parameters;
+        $data['filterCustomerId'] = $this->getCustomer()->getId();
         $data['order'] = 'DESC';
-        foreach ($this->modelAccountRepurchaseOrder->getOrders($data) as $repurchase_order)
+        foreach (RepurchaseOrderDAO::getInstance()->getOrders($data) as $repurchase_order)
         {
             if (file_exists(DIR_IMAGE . $repurchase_order['imagePath']))
             {
@@ -108,7 +106,7 @@ class ControllerAccountRepurchaseOrders extends Controller
                 'imagePath' => $imagePath,
                 'imageUrl' => $repurchase_order['imagePath'],
                 'itemUrl' => $repurchase_order['itemUrl'],
-                'options' => OrderItemDAO::getInstance()->getOrderItemOptions($repurchase_order['orderItemId']),
+                'options' => OrderItemDAO::getInstance()->getOptions($repurchase_order['orderItemId']),
                 'price' => $this->currency->format($repurchase_order['price']),
                 'quantity' => $repurchase_order['quantity'],
                 'shipping' => $this->currency->format($repurchase_order['shipping']),
@@ -156,7 +154,7 @@ class ControllerAccountRepurchaseOrders extends Controller
         );
 
         $pagination = new Pagination();
-        $pagination->total = $this->modelAccountRepurchaseOrder->getOrdersCount($data);
+        $pagination->total = RepurchaseOrderDAO::getInstance()->getOrdersCount($data);
         $pagination->page = $page;
         $pagination->limit = $this->config->get("config_catalog_limit");
         $pagination->text = $this->language->get('text_pagination');
@@ -204,9 +202,8 @@ class ControllerAccountRepurchaseOrders extends Controller
         );
     }
 
-    private function setStatus($orderId, $statusId)
-    {
-        $this->modelAccountRepurchaseOrder->setStatus($orderId, $statusId);
+    private function setStatus($orderId, $statusId) {
+        RepurchaseOrderDAO::getInstance()->setStatus($orderId, $statusId);
 
         $json['newStatusName'] = Status::getStatus(
             $statusId, $this->config->get('config_language_id'));

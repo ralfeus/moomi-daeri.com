@@ -1701,7 +1701,7 @@ class ControllerSaleOrder extends Controller {
 //            {
 //                $orderItems = $this->modelSaleOrder->getOrderProducts($this->parameters['orderId']);
 //                foreach ($orderItems as $orderItem)
-//                    OrderItemDAO->setOrderItemStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_FINISH);
+//                    OrderItemDAO->setStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_FINISH);
 //            }
 			$this->data['success'] = $this->language->get('text_success');
 		} else {

@@ -284,7 +284,7 @@ class ControllerAccountOrder extends Controller {
                             'orderItemId=' . $product['order_product_id'] . '&returnUrl=' . urlencode($this->selfUrl))
                     );
                 $option_data = array();
-				$options = OrderItemDAO::getInstance()->getOrderItemOptions($product['order_product_id']);
+				$options = OrderItemDAO::getInstance()->getOptions($product['order_product_id']);
 //                $this->log->write(print_r($options, true));
 
          		foreach ($options as $option) {
@@ -304,7 +304,7 @@ class ControllerAccountOrder extends Controller {
         		}
             //print_r($product);
                   if($product['image_path'] == '' || $product['image_path'] == "data/event/agent-moomidae.jpg") {
-                    $options = OrderItemDAO::getInstance()->getOrderItemOptions($product['order_product_id']);
+                    $options = OrderItemDAO::getInstance()->getOptions($product['order_product_id']);
                     $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
                     ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
                     $product['image_path'] = !empty($itemUrl) ? $itemUrl : $product['image_path'];

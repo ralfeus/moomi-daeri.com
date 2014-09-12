@@ -369,9 +369,9 @@ class ControllerSaleInvoice extends Controller
     {
         foreach ($orderItems as $orderItem)
             if ($orderItem['product_id'] == REPURCHASE_ORDER_PRODUCT_ID)
-                OrderItemDAO::getInstance()->setOrderItemStatus($orderItem['order_product_id'], REPURCHASE_ORDER_ITEM_STATUS_PACKED);
+                OrderItemDAO::getInstance()->setStatus($orderItem['order_product_id'], REPURCHASE_ORDER_ITEM_STATUS_PACKED);
             else
-                OrderItemDAO::getInstance()->setOrderItemStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_PACKED);
+                OrderItemDAO::getInstance()->setStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_PACKED);
     }
 
     private function showCreateForm()

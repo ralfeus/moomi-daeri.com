@@ -134,7 +134,7 @@ class ControllerCheckoutCart extends Controller {
         //$this->load->model('shop/general');
         //$order_product = $this->model_shop_general->getOrderProduct($pro)
         /*if($product['image'] == '' || $product['image'] == "data/event/agent-moomidae.jpg") {
-          $options = $this->modelOrderItem->getOrderItemOptions($product['order_product_id']);
+          $options = $this->modelOrderItem->getOptions($product['order_product_id']);
           $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
           ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
           $product['image'] = !empty($itemUrl) ? $itemUrl : $product['image'];
