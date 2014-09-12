@@ -202,19 +202,6 @@ $(document).ready(function() {
             })
             .multiselectfilter();
     $('button.ui-multiselect').css('width', '110px');
-
-    var json = '<?php print(json_encode($customers)) ?>';
-    var customers = $.parseJSON(json);
-    for(var index in customers) {
-        var customer = customers[index];
-        if(customer['isCustomerOrderReady'] == true) {
-            var input = $('[title="'+customer['nickname_name']+'"]');
-            $(input).next('span').css('background-color', 'red');
-        }
-    }
-    //var html = $('[name="multiselect_customer"]');
-    //$(html).next('span').css('background-color', 'red');
-    //alert (html);
 });
 
 function filter() {
