@@ -83,6 +83,7 @@ final class MySQL implements DBDriver{
                     $fields[] = &$row[$field->name];
                 }
                 call_user_func_array(array($statement, 'bind_result'), $this->refValues($fields));
+                $result->rows = array();
                 while ($statement->fetch()) {
                     $currentRow = array();
                     foreach ($row as $key => $value) {
