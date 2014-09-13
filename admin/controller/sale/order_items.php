@@ -15,7 +15,6 @@ class ControllerSaleOrderItems extends Controller {
 		$this->load->language('sale/order_items');
 
 		$this->load->model('catalog/product');
-		$this->load->model('catalog/supplier_group');
 		$this->load->library('Status');
 		$this->modelSaleOrder = $this->load->model('sale/order');
 		$this->load->model('sale/order_item_history');
