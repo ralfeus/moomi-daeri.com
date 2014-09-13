@@ -10,6 +10,11 @@ class OrderItemDAO extends DAO {
         JOIN product as p on op.product_id  = p.product_id
         LEFT JOIN supplier as s on p.supplier_id = s.supplier_id
         LEFT JOIN customer as c on o.customer_id = c.customer_id
+        JOIN (
+            SELECT order_item_id, MAX(date_added) as date_last_status_set
+            FROM order_item_history
+            GROUP BY order_item_id
+        ) as oils on op.order_product_id = oils.order_item_id
     ";
 
     /**
