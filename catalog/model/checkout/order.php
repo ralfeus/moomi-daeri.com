@@ -306,12 +306,12 @@ class ModelCheckoutOrder extends Model {
 			foreach ($order_product_query->rows as $order_product) {
                 /// Add initial statuses of each ordered item
                 $this->db->query("
-                    INSERT INTO order_item_history
+                    UPDATE order_product
                     SET
-                        order_item_id = " . (int)$order_product['order_product_id'] . ",
-                        order_item_status_id = " . $this->getOrderItemInitialStatus($order_product) . ",
-                        date_added = DATE(NOW())
-                ");
+                        status_id = ?
+                    WHERE order_product_id = ?
+                    ", array("i:" . $this->getOrderItemInitialStatus($order_product), "i:" . $order_product['order_product_id'])
+                );
 
 				$this->db->query("UPDATE product SET quantity = (quantity - " . (int)$order_product['quantity'] . ") WHERE product_id = '" . (int)$order_product['product_id'] . "' AND subtract = '1'");
 				
@@ -785,20 +785,14 @@ class ModelCheckoutOrder extends Model {
         $sms->send();
     }
 
-    private function setOrderItemStatus($order_item_id, $order_item_status_id)
+    private function setOrderItemStatus($orderItemId, $orderItemStatusId)
     {
-        $this->log->write("$order_item_id, $order_item_status_id");
-        $this->db->query("
-            INSERT INTO order_item_history
-            SET
-                order_item_id = " . (int)$order_item_id . ",
-                order_item_status_id = " . (int)$order_item_status_id . ",
-                date_added = NOW()
-        ");
+//        $this->log->write("$order_item_id, $order_item_status_id");
         $this->db->query("
             UPDATE order_product
-            SET status_id = " . (int)$order_item_status_id . "
-            WHERE order_product_id = " . (int)$order_item_id
+            SET status_id = ?
+            WHERE order_product_id = ?
+            ", array("i:$orderItemStatusId", "i:$orderItemId")
         );
     }
 

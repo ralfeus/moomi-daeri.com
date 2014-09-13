@@ -274,6 +274,9 @@ class OrderItemDAO extends DAO {
     protected function buildSimpleFieldFilterEntry($entryType, $fieldName, $filterValues, &$filterString, &$params) {
         if (isset($filterValues)) {
             if (!is_array($filterValues)) {
+                if (empty($filterValues) && ($filterValues !== 0)) {
+                    return;
+                }
                 $filterValues = array($filterValues);
             } elseif (!sizeof($filterValues)) {
                 return;
@@ -356,14 +359,6 @@ class OrderItemDAO extends DAO {
     public function setStatus($orderItemId, $orderItemStatusId) {
         $orderItem = $this->getOrderItem($orderItemId);
         if ($orderItem->getStatusId() != $orderItemStatusId) {
-            $this->getDb()->query("
-                INSERT order_item_history
-                SET
-                    order_item_id = ?,
-                    order_item_status_id = ?,
-                    date_added = NOW()
-            ", array("i:$orderItemId", "i:$orderItemStatusId"));
-
             $this->getDb()->query("
                 UPDATE order_product
                 SET status_id = ?

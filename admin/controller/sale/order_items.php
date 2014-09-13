@@ -625,15 +625,15 @@ class ControllerSaleOrderItems extends Controller {
 	}
 	public function set_status() {
 		$this->load->language('sale/order_items');
-		$order_items = array();
+		$orderItems = array();
 
 		if (isset($this->parameters['selectedItems']))
-			$order_items = array_values($this->parameters['selectedItems']);
+			$orderItems = array_values($this->parameters['selectedItems']);
 		else
 			$this->error['warning'] = $this->language->get('error_no_selected_items');
-
+        $orderItemNewStatus = null;
 		if (isset($_REQUEST['order_item_new_status']))
-			$order_item_new_status = $_REQUEST['order_item_new_status'];
+            $orderItemNewStatus = $_REQUEST['order_item_new_status'];
 		else
 			$this->error['warning'] = $this->language->get('error_no_status_set');
 
@@ -642,20 +642,20 @@ class ControllerSaleOrderItems extends Controller {
 			$this->session->data['success'] = '';
 			$this->load->model('localisation/order_item_status');
 
-			foreach ($order_items as $order_item_id) {
-				if (OrderItemDAO::getInstance()->setStatus($order_item_id, $order_item_new_status)) {
+			foreach ($orderItems as $orderItemId) {
+				if (OrderItemDAO::getInstance()->setStatus($orderItemId, $orderItemNewStatus)) {
 					$this->session->data['success'] .= sprintf(
 						$this->language->get("text_status_set"),
-						$order_item_id,
-						Status::getStatus($order_item_new_status, $this->config->get('language_id')));
+						$orderItemId,
+						Status::getStatus($orderItemNewStatus, $this->config->get('language_id')));
 				}
 				else {
 					$this->error['warning'] .= sprintf(
 						$this->language->get('error_status_already_set'),
-						$order_item_id,
-						Status::getStatus($order_item_new_status, $this->config->get('language_id')));
+						$orderItemId,
+						Status::getStatus($orderItemNewStatus, $this->config->get('language_id')));
 				}
-				$orderItem = OrderItemDAO::getInstance()->getOrderItem($order_item_id);
+				$orderItem = OrderItemDAO::getInstance()->getOrderItem($orderItemId);
 				$this->modelSaleOrder->verifyOrderCompletion($orderItem->getOrderId());
 			}
 //			$this->clearSelection();
@@ -678,8 +678,7 @@ class ControllerSaleOrderItems extends Controller {
 		$this->response->setOutput('');
 	}
 
-	public function saveQuantity()
-	{
+	public function saveQuantity() {
 		if (isset($_REQUEST['orderItemId']))
 			$orderItemId = $_REQUEST['orderItemId'];
 		if (isset($_REQUEST['quantity']))
