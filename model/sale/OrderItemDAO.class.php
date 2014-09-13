@@ -157,6 +157,13 @@ class OrderItemDAO extends DAO {
         return $this->fetchOrderItems($filter, $sort, $limit);
     }
 
+    public function getOrderItemsCustomers($data = array()) {
+        $query = "
+            SELECT c.*
+            FROM " . $this->orderItemsFromQuery . "
+        ";
+    }
+
     /**
      * @param OrderItem $orderItem
      * @return float

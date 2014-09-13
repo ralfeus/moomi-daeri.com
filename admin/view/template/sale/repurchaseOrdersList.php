@@ -135,18 +135,18 @@
                             <td>
                                 Private<br />
                                 <input
-                                        alt="<?php echo $order['comment']; ?>"
+                                        alt="<?php echo $order['privateComment']; ?>"
                                         onblur="saveComment(<?= $order['orderId'] ?>, this, true);"
                                         onkeydown="if (event.keyCode == 13) saveComment(<?= $order['orderId'] ?>, this, true);"
                                         style="width: 100%"
-                                        value="<?php echo $order['comment']; ?>"/><br />
+                                        value="<?php echo $order['privateComment']; ?>"/><br />
                                 Public <span style="color: red; background-color: yellow">(this comment will see the customer)</span><br />
                                 <input
-                                        alt="<?php echo $order['publicComment']; ?>"
+                                        alt="<?php echo $order['comment']; ?>"
                                         onblur="saveComment(<?= $order['orderId'] ?>, this, false);"
                                         onkeydown="if (event.keyCode == 13) saveComment(<?= $order['orderId'] ?>, this, false);"
                                         style="width: 100%"
-                                        value="<?php echo $order['publicComment']; ?>"/><br />
+                                        value="<?php echo $order['comment']; ?>"/><br />
                                 <span style="color: red; "><?= $order['options'] ?></span>
                             </td>
                             <td>

@@ -73,7 +73,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
             }
 
             $this->data['orders'][] = array(
-                'comment'                   => $order_item['comment'],
+                'privateComment'                   => $order_item['privateComment'],
                 'orderId'			            => $order_item['orderItemId'],
                 'underlyingOrderId' => $order_item['orderId'],
                 'hint' => $hint,
@@ -92,7 +92,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
                 'originalImagePath' => file_exists(DIR_IMAGE . $order_item['imagePath'])
                     ? HTTP_IMAGE . $order_item['imagePath']
                     : $order_item['imagePath'],
-                'publicComment' => $order_item['publicComment'],
+                'comment' => $order_item['comment'],
                 'status'       	=> $order_item['status']
                     ? Status::getStatus(
                         $order_item['status'],
