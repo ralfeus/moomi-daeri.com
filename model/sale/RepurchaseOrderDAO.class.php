@@ -5,7 +5,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
     private function buildFilter($data = array()) {
         $filter = "op.product_id = " . REPURCHASE_ORDER_PRODUCT_ID;
         if (isset($data['selectedItems']) && count($data['selectedItems'])) {
-            $this->buildSimpleFieldFilterEntry('i', 'op.order_product_id', $data['selected_items'], $filter, $params);
+            $this->buildSimpleFieldFilterEntry('i', 'op.order_product_id', $data['selectedItems'], $filter, $params);
         } else {
             $this->buildSimpleFieldFilterEntry('d', 'op.total', $data['filterAmount'], $filter, $params);
             if (!empty($data['filterItemName'])) {

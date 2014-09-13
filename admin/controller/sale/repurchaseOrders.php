@@ -9,8 +9,7 @@ use model\sale\RepurchaseOrderDAO;
  * To change this template use File | Settings | File Templates.
  */
 class ControllerSaleRepurchaseOrders extends Controller {
-    public function __construct($registry)
-    {
+    public function __construct($registry) {
         parent::__construct($registry);
         $this->data['notifications'] = array();
         $this->load->language('sale/repurchaseOrders');
@@ -36,10 +35,8 @@ class ControllerSaleRepurchaseOrders extends Controller {
         $order_items = RepurchaseOrderDAO::getInstance()->getOrders($data);
         $showedCustomerIds = array();
         $this->data['customers'] = array();
-        foreach ($order_items as $order_item)
-        {
-            if (!in_array($order_item['customerId'], $showedCustomerIds))
-            {
+        foreach ($order_items as $order_item) {
+            if (!in_array($order_item['customerId'], $showedCustomerIds)) {
                 $this->data['customers'][] = array(
                     'id' => $order_item['customerId'],
                     'name' => $order_item['customerName'] . '/' . $order_item['customerNick']
@@ -257,8 +254,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
         return false;
     }
 
-    public function printPage()
-    {
+    public function printPage() {
         $this->getData();
 
         /// Set interface
