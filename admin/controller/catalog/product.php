@@ -780,7 +780,6 @@ class ControllerCatalogProduct extends Controller {
       		$this->data['manufacturer_id'] = 0;
     	}
 
-        $this->load->model('catalog/supplier');
         $this->data['suppliers'] = SupplierDAO::getInstance()->getSuppliers();
 
         if (isset($this->request->post['supplier_id'])) {
