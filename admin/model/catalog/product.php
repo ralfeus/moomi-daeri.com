@@ -49,7 +49,7 @@ class ModelCatalogProduct extends Model {
 			        description = '" . $this->db->escape($value['description']) . "',
 			        seo_title = '" . (isset($value['seo_title']) ? $this->db->escape($value['seo_title']) : '') . "',
 			        seo_h1 = '" . (isset($value['seo_h1']) ? $this->db->escape($value['seo_h1']) : '') . "'
-            ", true);
+            ");
 		}
 		
 		if (isset($data['product_store'])) {
