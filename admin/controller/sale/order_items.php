@@ -40,7 +40,7 @@ class ControllerSaleOrderItems extends Controller {
 
 	private function getSuppliers()	{
         $result = array();
-		foreach (OrderItemDAO::getInstance()->getOrderItemsSuppliers() as $supplier) {
+		foreach (OrderItemDAO::getInstance()->getOrderItemsSuppliers($this->parameters) as $supplier) {
             $result[$supplier->getId()] = $supplier->getName();
         }
 		natcasesort($result);
