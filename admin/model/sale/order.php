@@ -681,11 +681,10 @@ class ModelSaleOrder extends Model {
 		{
 			$orderItemStatus = $orderItemStatusModel->getOrderItemStatus($order_item['status_id']);
 
-			if ($orderItemStatus['workflow_order'] != 1000)
-			{
+			if ($orderItemStatus['workflow_order'] != 1000) {
 				$orderItem = OrderItemDAO::getInstance()->getOrderItem($order_item['order_product_id']);
 				$total_price += $order_item['total'];
-				$total_weight += $this->weight->convert($orderItem['weight'], $orderItem['weight_class_id'], $this->config->get('config_weight_class_id')) * $order_item['quantity'];
+				$total_weight += $this->weight->convert($orderItem->getWeight(), $orderItem->getWeightClassId(), $this->config->get('config_weight_class_id')) * $order_item['quantity'];
 			}
 		}
 		$shipping_cost = $this->getShippingCost($order['shipping_method'], $orderItems, array('weight' => $total_weight));
