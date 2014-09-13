@@ -1,4 +1,5 @@
 <?php
+use model\catalog\SupplierDAO;
 use model\sale\OrderItemDAO;
 
 class ControllerCatalogProduct extends Controller {
@@ -313,7 +314,6 @@ class ControllerCatalogProduct extends Controller {
 		$data['order']           = $order;
 
 		$this->load->model('tool/image');
-		$this->load->model('catalog/supplier');
 		$this->load->model('catalog/manufacturer');
 
 		$product_total = $this->model_catalog_product->getTotalProducts($data);
@@ -353,7 +353,7 @@ class ControllerCatalogProduct extends Controller {
 					break;
 				}					
 			}
-			$suppliers = $this->model_catalog_supplier->getSupplier($result['supplier_id']);
+			$suppliers = SupplierDAO::getInstance()->getSupplier($result['supplier_id']);
 			if (empty($suppliers))
 				$suppliers['name'] = "";
 
@@ -781,7 +781,7 @@ class ControllerCatalogProduct extends Controller {
     	}
 
         $this->load->model('catalog/supplier');
-        $this->data['suppliers'] = $this->model_catalog_supplier->getSuppliers();
+        $this->data['suppliers'] = SupplierDAO::getInstance()->getSuppliers();
 
         if (isset($this->request->post['supplier_id'])) {
             $this->data['supplier_id'] = $this->request->post['supplier_id'];
