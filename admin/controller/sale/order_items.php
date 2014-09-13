@@ -27,41 +27,24 @@ class ControllerSaleOrderItems extends Controller {
 	}
 
 	private function getCustomers()	{
-//		$data = array();
-//		foreach ($this->parameters as $key => $value) {
-//			if (strpos($key, 'filter') === false)
-//				continue;
-//			$data[$key] = $value;
-//
-//		}
-//		unset($data['filterCustomerId']);
-		$result = array(); $tmpResult = array();
-		foreach (CustomerDAO::getInstance()->getCustomers() as $customer) {
-            $tmpResult[$customer['customer_id']] = array(
-                'nickname_name' => $customer['name'] . ' / ' . $customer['nickname']
+		$result = array();
+		foreach (OrderItemDAO::getInstance()->getOrderItemsCustomers($this->parameters) as $customer) {
+            $result[$customer->getId()] = array(
+                'nickname_name' => $customer->getName() . ' / ' . $customer->getNickName()
                 //'isCustomerOrderReady' => $this->isCustomerOrderReady($customer['customer_id'])
             );
         }
-		natcasesort($tmpResult);
- //var_dump($this->isCustomerOrderReady($orderItem['customer_id']));die();
-		return $tmpResult;
+		natcasesort($result);
+		return $result;
 	}
 
-	private function getSuppliers()
-	{
-//		$data = array();
-//		foreach ($this->parameters as $key => $value)
-//		{
-//			if (strpos($key, 'filter') === false)
-//				continue;
-//			$data[$key] = $value;
-//		}
-//		unset($data['filterSupplierId']);
-		$result = array(); $tmpResult = array();
-		foreach (SupplierDAO::getInstance()->getSuppliers() as $supplier)
-            $tmpResult[$supplier['supplier_id']] = $supplier['name'];
-		natcasesort($tmpResult);
-		return $tmpResult;
+	private function getSuppliers()	{
+        $result = array();
+		foreach (OrderItemDAO::getInstance()->getOrderItemsSuppliers() as $supplier) {
+            $result[$supplier->getId()] = $supplier->getName();
+        }
+		natcasesort($result);
+		return $result;
 	}
 
 //	private function isCustomerOrderReady($customer_id) {
@@ -87,11 +70,9 @@ class ControllerSaleOrderItems extends Controller {
 //	  return false;
 //	}
 
-	private function getFilterStrings()
-	{
+	private function getFilterStrings()	{
 		$result = array();
-		foreach ($this->parameters as $key => $value)
-		{
+		foreach ($this->parameters as $key => $value) {
 			if ((strpos($key, 'filter') === false) || empty($value))
 				continue;
 			if ($key == 'filterCustomerId')
@@ -168,7 +149,7 @@ class ControllerSaleOrderItems extends Controller {
 
 			foreach ($orderItems as $orderItem) {
 				if (!empty($orderItem['affiliate_id'])) {
-					$orderItem['affiliate_transaction_amount'] = $this->currency->format($orderItem['total'] * $modelSaleAffiliate->getProductAffiliateCommission($orderItem['product_id']) / 100, $this->config->get('config_currency'));
+					$orderItem['affiliate_transaction_amount'] = $this->getCurrency()->format($orderItem['total'] * $modelSaleAffiliate->getProductAffiliateCommission($orderItem['product_id']) / 100, $this->config->get('config_currency'));
 				}
 
 				if(!isset($arrReady[$orderItem['order_id']])) {

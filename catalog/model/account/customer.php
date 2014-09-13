@@ -117,8 +117,8 @@ class ModelAccountCustomer extends Model {
 		$this->db->query("UPDATE customer SET newsletter = '" . (int)$newsletter . "' WHERE customer_id = '" . (int)$this->customer->getId() . "'");
 	}
 					
-	public function getCustomer($customer_id) {
-		$query = $this->db->query("SELECT * FROM customer WHERE customer_id = '" . (int)$customer_id . "'");
+	public function getCustomer($customerId) {
+		$query = $this->db->query("SELECT * FROM customer WHERE customer_id = '" . (int)$customerId . "'");
 		
 		return $query->row;
 	}

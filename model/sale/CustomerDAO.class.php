@@ -141,17 +141,18 @@ class CustomerDAO extends DAO {
 	}
 
     /**
-     * @param $customer_id
+     * @param $customerId
      * @return array
      */
-    public function getCustomer($customer_id) {
+    public function getCustomer($customerId) {
 		$query = $this->getDb()->query("
 		    SELECT DISTINCT *
 		    FROM
 		        customer AS c
 		        JOIN customer_group AS cg ON c.customer_group_id = cg.customer_group_id
-		    WHERE customer_id = '" . (int)$customer_id . "'
-        ");
+		    WHERE customer_id = ?
+          ", array("i:$customerId")
+        );
 	
 		return $query->row;
 	}

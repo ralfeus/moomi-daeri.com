@@ -1,6 +1,7 @@
 <?php
 namespace model\sale;
 
+use model\catalog\Supplier;
 use model\DAO;
 
 class OrderItemDAO extends DAO {
@@ -157,11 +158,48 @@ class OrderItemDAO extends DAO {
         return $this->fetchOrderItems($filter, $sort, $limit);
     }
 
+    /**
+     * @param array $data
+     * @return Customer[]
+     */
     public function getOrderItemsCustomers($data = array()) {
+        unset($data['filterCustomerId']);
+        $filter = $this->buildFilter($data);
         $query = "
-            SELECT c.*
-            FROM " . $this->orderItemsFromQuery . "
-        ";
+            SELECT DISTINCT c.*
+            FROM " . $this->orderItemsFromQuery
+            . (!is_null($filter) ? "WHERE " . $filter->filterString : "")
+        ;
+        $result = array();
+        foreach ($this->getDb()->query($query, $filter->params)->rows as $customerEntry) {
+            $result[] = new Customer($customerEntry['address_id'], $customerEntry['approved'], $customerEntry['balance'],
+                $customerEntry['base_currency_code'], $customerEntry['cart'], $customerEntry['customer_group_id'],
+                $customerEntry['date_added'], $customerEntry['email'], $customerEntry['fax'], $customerEntry['firstname'],
+                $customerEntry['customer_id'], $customerEntry['ip'], $customerEntry['lastname'], $customerEntry['newsletter'],
+                $customerEntry['nickname'], $customerEntry['password'], $customerEntry['telephone'], $customerEntry['status'],
+                $customerEntry['store_id'], $customerEntry['token'], $customerEntry['wishlist']);
+        }
+        return $result;
+    }
+
+    /**
+     * @param array $data
+     * @return Supplier[]
+     */
+    public function getOrderItemsSuppliers($data = array()) {
+        unset($data['filterSupplierId']);
+        $filter = $this->buildFilter($data);
+        $query = "
+            SELECT DISTINCT s.*
+            FROM " . $this->orderItemsFromQuery
+            . (!is_null($filter) ? "WHERE " . $filter->filterString : "")
+        ;
+        $result = array();
+        foreach ($this->getDb()->query($query, $filter->params)->rows as $supplierEntry) {
+            $result[] = new Supplier($supplierEntry['supplier_group_id'], $supplierEntry['supplier_id'],
+                $supplierEntry['internal_model'], $supplierEntry['name']);
+        }
+        return $result;
     }
 
     /**
