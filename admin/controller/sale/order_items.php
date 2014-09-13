@@ -1,5 +1,6 @@
 <?php
 use model\catalog\SupplierDAO;
+use model\catalog\SupplierGroupDAO;
 use model\sale\CustomerDAO;
 use model\sale\OrderItemDAO;
 
