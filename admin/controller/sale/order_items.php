@@ -416,7 +416,6 @@ class ControllerSaleOrderItems extends Controller {
 
 		$this->document->setTitle($this->language->get('heading_title'));
 		$this->load->model('catalog/product');
-		$this->load->model('catalog/supplier_group');
 		$this->load->model('tool/image');
 
 		if (isset($_REQUEST['sort'])) {
