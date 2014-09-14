@@ -84,7 +84,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
         return array (
             'orderId' => $orderItem->getOrderId(),
             'orderItemId' => $orderItem->getId(),
-            'privateComment' => $orderItem->getComment(),
+            'privateComment' => $orderItem->getPrivateComment(),
             'customerId' => $orderItem->getCustomerId(),
             'customerName' => $orderItem->getCustomerName(),
             'customerNick' => $orderItem->getCustomerNick(),

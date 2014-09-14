@@ -1,4 +1,5 @@
 ﻿<?php
+$_['DISCOUNT'] = 'Скидка';
 $_['INVOICE'] = 'Инвойс #%s';
 $_['PACKAGE_NUMBER'] = 'Номер посылки';
 $_['errorAccessDenied'] = 'У вас нет доступа к этому инвойсу';

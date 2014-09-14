@@ -18,7 +18,7 @@ class OrderItem {
     private $statusId;
     private $timeCreated;
     private $timeModified;
-    private $comment;
+    private $privateComment;
     private $publicComment;
     private $shippingCost;
     private $customer;
@@ -38,7 +38,7 @@ class OrderItem {
      * @param \Registry $registry
      * @param int $affiliateId
      * @param int $affiliateTransactionId
-     * @param string $comment
+     * @param string $privateComment
      * @param int $customerId
      * @param string $customerName
      * @param string $customerNick
@@ -62,7 +62,7 @@ class OrderItem {
      * @param float $weight
      * @param int $weightClassId
      */
-    function __construct($registry, $affiliateId, $affiliateTransactionId, $comment, $customerId, $customerName,
+    function __construct($registry, $affiliateId, $affiliateTransactionId, $privateComment, $customerId, $customerName,
                          $customerNick, $id, $imagePath, $internalModel, $model, $name, $orderId, $price, $productId,
                          $publicComment, $quantity, $shippingCost, $statusDate, $statusId, $supplierGroupId,
                          $supplierId, $supplierName, $total, $weight, $weightClassId)
@@ -70,7 +70,7 @@ class OrderItem {
         $this->registry = $registry;
         $this->affiliateId = $affiliateId;
         $this->affiliateTransactionId = $affiliateTransactionId;
-        $this->comment = $comment;
+        $this->privateComment = $privateComment;
         $this->customerId = $customerId;
         $this->customerName = $customerName;
         $this->customerNick = $customerNick;
@@ -116,9 +116,8 @@ class OrderItem {
     /**
      * @return string
      */
-    public function getComment()
-    {
-        return $this->comment;
+    public function getPrivateComment() {
+        return $this->privateComment;
     }
 
     /**

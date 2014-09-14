@@ -10,8 +10,7 @@ use model\sale\OrderItemDAO;
  * To change this template use File | Settings | File Templates.
  */
 class ControllerAccountInvoice extends Controller {
-    public function __construct($registry)
-    {
+    public function __construct($registry) {
         parent::__construct($registry);
 
         if (!$this->getCustomer()->isLogged()) {
@@ -172,6 +171,7 @@ class ControllerAccountInvoice extends Controller {
         $this->data['submit_action'] = $this->url->link('account/invoice/close', '', 'SSL');
         $this->data['textComment'] = $this->language->get('textComment');
         $this->data['textConfirm'] = $this->language->get('CONFIRM');
+        $this->data['textDiscount'] = $this->language->get('DISCOUNT');
         $this->data['textGrandTotal'] = $this->language->get('textGrandTotal');
         $this->data['textItemImage'] = $this->language->get('textItemImage');
         $this->data['textItemName'] = $this->language->get('textItemName');
@@ -208,6 +208,8 @@ class ControllerAccountInvoice extends Controller {
             }
             /// Set invoice data
             $this->data['invoiceId'] = $invoice->getId();
+            $this->data['comment'] = $invoice->getComment();
+            $this->data['discount'] = $this->getCurrency()->format($invoice->getDiscount(), $this->getCustomer()->getBaseCurrency());
             $this->data['packageNumber'] = $invoice->getPackageNumber();
             $this->data['shippingAddress'] = nl2br($modelReferenceAddress->toString($invoice->getShippingAddressId()));
             $this->data['shippingCost'] = $this->getCurrency()->format($invoice->getShippingCost());
@@ -220,7 +222,7 @@ class ControllerAccountInvoice extends Controller {
             $this->data['totalWeight'] = $invoice->getWeight();
             $this->data['grandTotal'] = $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $this->getCustomer()->getBaseCurrency(), 1);
         }
-        $templateName = '/template/account/invoiceForm.tpl';
+        $templateName = '/template/account/invoiceForm.tpl.php';
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateName))
             $this->template = $this->config->get('config_template') . $templateName;
         else
