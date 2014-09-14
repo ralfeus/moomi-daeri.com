@@ -54,6 +54,7 @@ class ControllerAccountOrderItems extends Controller {
 
         $this->data['order_items'] = array();
         $data = $this->parameters;
+        $data['filterCustomerId'] = $this->getCustomer()->getId();
         $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
         $data['limit']           = $this->config->get('config_admin_limit');
         $data['order']           = 'DESC';
