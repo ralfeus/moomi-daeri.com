@@ -65,10 +65,10 @@ class OrderItemDAO extends DAO {
 				s.name as supplier_name, s.supplier_group_id, s.internal_model as internal_model
 			FROM
 				" . $this->orderItemsFromQuery .
-            " LEFT JOIN affiliate_transaction at ON op.order_product_id = at.order_product_id "
-            . (!is_null($filter) ? "WHERE " . $filter->filterString : "") . /*"
-        	" . ($sort ? "ORDER BY $sort" : "") . */"
-            ORDER BY supplier_name, op.model, op.order_product_id
+            " LEFT JOIN affiliate_transaction at ON op.order_product_id = at.order_product_id
+            " . (!is_null($filter) ? "WHERE " . $filter->filterString : "") . "
+        	" . ($sort ? "ORDER BY $sort" : "") . "
+            /*ORDER BY supplier_name, op.model, op.order_product_id*/
 			" . ($limit ? "LIMIT $limit" : "");
 
 //        $this->getLogger()->write($query);

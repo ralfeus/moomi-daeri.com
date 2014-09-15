@@ -19,21 +19,19 @@ class ControllerAccountOrderItems extends Controller {
         $this->load->model('tool/image');
     }
 
-    public function cancel()
-    {
+    public function cancel() {
         $orderItem = OrderItemDAO::getInstance()->getOrderItem($this->parameters['orderItemId']);
 //        $this->log->write(print_r($orderItem, true));
         $cancelledStatus =
             $orderItem['status'] // take original status
             & 0xFFFF0000 // clean up status value but keep group
             | (ORDER_ITEM_STATUS_CANCELLED & 0x0000FFFF); // set cancelled status
-        $this->log->write($cancelledStatus);
+//        $this->log->write($cancelledStatus);
         OrderItemDAO::getInstance()->setStatus($this->parameters['orderItemId'], $cancelledStatus);
         $this->redirect($this->parameters['returnUrl']);
     }
 
-    public function index()
-    {
+    public function index() {
     	$this->getList();
   	}
 
@@ -61,10 +59,8 @@ class ControllerAccountOrderItems extends Controller {
 //		$this->log->write(print_r($data, true));
         $orderItems = OrderItemDAO::getInstance()->getOrderItems($data);
 //        $this->log->write(count($orderItems));
-        if ($orderItems)
-        {
-            foreach ($orderItems as $orderItem)
-            {
+        if ($orderItems) {
+            foreach ($orderItems as $orderItem) {
               //print_r($orderItem);
                 if($orderItem['image_path'] == '' || $orderItem['image_path'] == "data/event/agent-moomidae.jpg") {
                   $options = OrderItemDAO::getInstance()->getOptions($orderItem['order_product_id']);
