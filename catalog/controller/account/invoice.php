@@ -192,6 +192,7 @@ class ControllerAccountInvoice extends Controller {
             $this->data['notifications']['error'] = $this->language->get('errorAccessDenied');
         } else {
             /// Prepare list
+            $subTotalCustomerCurrency = 0;
             foreach ($invoice->getOrderItems() as $orderItem) {
                 $this->data['orderItems'][] = [
                     'id' => $orderItem->getId(),
@@ -201,11 +202,12 @@ class ControllerAccountInvoice extends Controller {
                     'name' => $orderItem->getName(),
                     'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
                     'order_id' => $orderItem->getOrderId(),
-                    'price' => $this->getCurrency()->format($orderItem->getPrice()),
+                    'price' => $orderItem->getCurrency()->getString($orderItem->getPrice(true)),
                     'quantity' => $orderItem->getQuantity(),
-                    'shipping' => $this->getCurrency()->format($orderItem->getShippingCost()),
-                    'subtotal' => $this->getCurrency()->format($orderItem->getTotal())
+                    'shipping' => $orderItem->getCurrency()->getString($orderItem->getShippingCost(true)),
+                    'subtotal' => $orderItem->getCurrency()->getString($orderItem->getTotal(true))
                 ];
+                $subTotalCustomerCurrency += $orderItem->getTotal(true);
             }
             /// Set invoice data
             $this->data['invoiceId'] = $invoice->getId();
@@ -219,7 +221,7 @@ class ControllerAccountInvoice extends Controller {
                 $invoice->getStatusId(),
                 $this->session->data['language_id']);
             $this->data['statusId'] = $invoice->getStatusId();
-            $this->data['total'] = $this->getCurrency()->format($invoice->getSubtotal());
+            $this->data['total'] = $this->getCurrency()->format($subTotalCustomerCurrency, $this->getCustomer()->getBaseCurrency(), 1);
             $this->data['totalWeight'] = $invoice->getWeight();
             $this->data['grandTotal'] = $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $this->getCustomer()->getBaseCurrency(), 1);
         }

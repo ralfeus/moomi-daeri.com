@@ -1,6 +1,9 @@
 <?php
 namespace model\sale;
 
+use model\core\Currency;
+use model\core\CurrencyDAO;
+
 class OrderItem {
     /** @var \Registry */
     private $registry;
@@ -33,6 +36,8 @@ class OrderItem {
     private $supplierGroupId;
     private $internalModel;
     private $statusDate;
+    /** @var Currency */
+    private $currency;
 
     /**
      * @param \Registry $registry
@@ -65,8 +70,7 @@ class OrderItem {
     function __construct($registry, $affiliateId, $affiliateTransactionId, $privateComment, $customerId, $customerName,
                          $customerNick, $id, $imagePath, $internalModel, $model, $name, $orderId, $price, $productId,
                          $publicComment, $quantity, $shippingCost, $statusDate, $statusId, $supplierGroupId,
-                         $supplierId, $supplierName, $total, $weight, $weightClassId)
-    {
+                         $supplierId, $supplierName, $total, $weight, $weightClassId) {
         $this->registry = $registry;
         $this->affiliateId = $affiliateId;
         $this->affiliateTransactionId = $affiliateTransactionId;
@@ -125,7 +129,7 @@ class OrderItem {
      */
     public function getCustomer() {
         if (!isset($this->customer)) {
-            $this->customer = $this->registry->get('load')->model('sale/customer')->getCustomer($this->customerId);
+            $this->customer = CustomerDAO::getInstance()->getCustomer($this->customerId);
         }
         return $this->customer;
     }
@@ -203,11 +207,15 @@ class OrderItem {
     }
 
     /**
+     * @param bool $customerCurrency
      * @return float
      */
-    public function getPrice()
-    {
-        return $this->price;
+    public function getPrice($customerCurrency = false) {
+        if ($customerCurrency) {
+            return $this->price * $this->getCurrency()->getRate($this->getTimeCreated());
+        } else {
+            return $this->price;
+        }
     }
 
     /**
@@ -235,11 +243,15 @@ class OrderItem {
     }
 
     /**
+     * @param bool $customerCurrency
      * @return float
      */
-    public function getShippingCost()
-    {
-        return $this->shippingCost;
+    public function getShippingCost($customerCurrency) {
+        if ($customerCurrency) {
+            return $this->shippingCost * $this->getCurrency()->getRate($this->getTimeCreated());
+        } else {
+            return $this->shippingCost;
+        }
     }
 
     /**
@@ -303,11 +315,15 @@ class OrderItem {
     }
 
     /**
+     * @param bool $customerCurrency
      * @return float
      */
-    public function getTotal()
-    {
-        return $this->total;
+    public function getTotal($customerCurrency) {
+        if ($customerCurrency) {
+            return $this->total * $this->getCurrency()->getRate($this->getTimeCreated());
+        } else {
+            return $this->total;
+        }
     }
 
     /**
@@ -334,5 +350,15 @@ class OrderItem {
             $this->totalCustomerCurrency = OrderItemDAO::getInstance()->getOrderItemTotalCustomerCurrency($this);
         }
         return $this->totalCustomerCurrency;
+    }
+
+    /**
+     * @return Currency
+     */
+    public function getCurrency() {
+        if (!isset($this->currency)) {
+            $this->currency = CurrencyDAO::getInstance()->getCurrency($this->getCustomer()['base_currency_code']);
+        }
+        return $this->currency;
     }
 }

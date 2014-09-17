@@ -1,16 +1,34 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: dev
- * Date: 21.11.13
- * Time: 22:04
- * To change this template use File | Settings | File Templates.
- */
-
 interface DBDriver {
+    /**
+     * @return int
+     */
     public function countAffected();
+
+    /**
+     * @param string $string
+     * @return string
+     */
     public function escape($string);
+
+    /**
+     * @return int
+     */
     public function getLastId();
+
+    /**
+     * @param string $sql
+     * @param array $params
+     * @param bool $log
+     * @return stdClass
+     */
     public function query($sql, $params = array(), $log = false);
+
+    /**
+     * @param string $sql
+     * @param array $params
+     * @param bool $log
+     * @return mixed
+     */
     public function queryScalar($sql, $params = array(), $log = false);
 }

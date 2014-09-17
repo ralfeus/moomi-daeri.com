@@ -145,13 +145,14 @@ class CustomerDAO extends DAO {
      * @return array
      */
     public function getCustomer($customerId) {
-		$query = $this->getDb()->query("
+		$query = $this->getDb()->query(<<<SQL
 		    SELECT DISTINCT *
 		    FROM
 		        customer AS c
 		        JOIN customer_group AS cg ON c.customer_group_id = cg.customer_group_id
 		    WHERE customer_id = ?
-          ", array("i:$customerId")
+SQL
+          , array("i:$customerId")
         );
 	
 		return $query->row;
