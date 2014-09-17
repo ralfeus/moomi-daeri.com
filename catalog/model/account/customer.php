@@ -82,7 +82,7 @@ class ModelAccountCustomer extends Model {
 	}
 	
 	public function editCustomer($data) {
-
+        /// Currency change is turned off temporary
 		$this->db->query("
 		    UPDATE customer
 		    SET
@@ -91,22 +91,22 @@ class ModelAccountCustomer extends Model {
                 nickname = '" . $this->db->escape($data['nickname']) . "',
 		        email = '" . $this->db->escape($data['email']) . "',
 		        telephone = '" . $this->db->escape($data['telephone']) . "',
-		        fax = '" . $this->db->escape($data['fax']) . "',
-		        base_currency_code = '" . $this->db->escape($data['baseCurrency']) . "'
+		        fax = '" . $this->db->escape($data['fax']) . "'/*,
+		        base_currency_code = '" . $this->db->escape($data['baseCurrency']) . "'*/
             WHERE customer_id = '" . (int)$this->customer->getId() . "'"
         );
-        if ($this->customer->getBaseCurrency()->getCode() != $data['baseCurrency'])
-        {
-            $this->customer->setBalance(round(
-                $this->currency->convert(
-                    $this->currency->convert(
-                        $this->customer->getBalance(),
-                        $this->customer->getBaseCurrency()->getCode(),
-                        $this->config->get('config_currency')),
-                    $this->config->get('config_currency'),
-                    $data['baseCurrency'])),
-                $this->currency->getDecimalPlace($data['baseCurrency']));
-        }
+//        if ($this->customer->getBaseCurrency()->getCode() != $data['baseCurrency'])
+//        {
+//            $this->customer->setBalance(round(
+//                $this->currency->convert(
+//                    $this->currency->convert(
+//                        $this->customer->getBalance(),
+//                        $this->customer->getBaseCurrency()->getCode(),
+//                        $this->config->get('config_currency')),
+//                    $this->config->get('config_currency'),
+//                    $data['baseCurrency'])),
+//                $this->currency->getDecimalPlace($data['baseCurrency']));
+//        }
 	}
 
 	public function editPassword($email, $password) {

@@ -4,8 +4,7 @@ class ControllerAccountEdit extends Controller {
     private $modelAccountCustomer;
     private $modelLocalisationCurrency;
 
-    public function __construct($registry)
-    {
+    public function __construct($registry) {
         parent::__construct($registry);
         $this->language->load('account/edit');
         $this->document->setTitle($this->language->get('headingTitle'));
