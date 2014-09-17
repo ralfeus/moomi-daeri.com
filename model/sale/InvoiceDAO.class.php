@@ -57,25 +57,38 @@ class InvoiceDAO extends DAO {
         );
 
         /// Add invoice record to the database
-        $query = "
+        $this->getDb()->query("
             INSERT INTO invoices
             SET
-                customer_id = " . (int)$order['customer_id'] . ",
-                comment = '" . $this->db->escape($comment) . "',
-                discount = " . (float)$discount . ",
-                shipping_address_id = " . $orderModel->getShippingAddressId($orderId) . ",
-                shipping_method = '" . $shippingMethod . "',
-                shipping_date = '" . $shippingDate . "',
-                shipping_cost = $shippingCost,
-                subtotal = $subtotal,
+                customer_id = ?,
+                comment = ?,
+                discount = ?,
+                shipping_address_id = ?,
+                shipping_method = ?,
+                shipping_date = ?,
+                shipping_cost = ?,
+                subtotal = ?,
                 time_modified = NOW(),
-                total = $total,
-                total_customer_currency = $totalCustomerCurrency,
-                currency_code = '". $customer['base_currency_code'] . "',
-                weight = " . (float)$weight
-        ;
-//        $this->log->write($query);
-        $this->getDb()->query($query);
+                total = ?,
+                total_customer_currency = ?,
+                currency_code = ?,
+                weight = ?
+            ", array(
+                "i:" . $order['customer_id'],
+                "s:$comment",
+                "d:$discount",
+                "i:" . $orderModel->getShippingAddressId($orderId),
+                "s:$shippingMethod",
+                "s:$shippingDate",
+                "d:$shippingCost",
+                "d:$subtotal",
+                "d:$total",
+                "d:$totalCustomerCurrency",
+                "s:" . $customer['base_currency_code'],
+                "d:$weight"
+            )
+        );
+
         /// Add invoice items
         $invoiceId = $this->getDb()->getLastId();
         $this->addInvoiceItems($invoiceId, $order_items);
@@ -88,6 +101,7 @@ class InvoiceDAO extends DAO {
             (invoice_id, order_item_id)
             VALUES
         ";
+
         foreach ($order_items as $order_item)
             $query .= "($invoiceId, " . (int)$order_item['order_product_id'] . "),\n";
 

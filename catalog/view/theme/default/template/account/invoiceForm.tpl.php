@@ -30,8 +30,8 @@
                                 <td><?= $textOrderId ?></td>
                                 <td><?= $textItemImage ?></td>
                                 <td><?= $textItemName ?></td>
-                                <td><?= $textPrice ?></td>
-                                <td><?= $textQuantity ?></td>
+                                <td><?= $textPrice ?> / <?= $textQuantity ?></td>
+                                <td><?= $textShippingCost ?></td>
                                 <td><?= $textSubtotal ?></td>
                                 <td><?= $textComment ?></td>
                             </tr>
@@ -48,8 +48,8 @@
                                             <tr><td><span style="color: red; "><?= $orderItem['options'] ?></span></td></tr>
                                         </table>
                                     </td>
-                                    <td><?= $orderItem['price'] ?></td>
-                                    <td><?= $orderItem['quantity'] ?></td>
+                                    <td><?= $orderItem['price'] ?> / <?= $orderItem['quantity'] ?></td>
+                                    <td><?= $orderItem['shipping'] ?></td>
                                     <td><?= $orderItem['subtotal'] ?></td>
                                     <td><?= $orderItem['comment'] ?></td>
                                 </tr>

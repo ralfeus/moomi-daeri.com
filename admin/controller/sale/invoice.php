@@ -123,11 +123,7 @@ class ControllerSaleInvoice extends Controller
         return $tmpResult;
     }
 
-    private function getData()
-    {
-        /** @var ModelSaleInvoice $modelSaleInvoice */
-        $modelSaleInvoice = $this->registry->get('model_sale_invoice');
-
+    private function getData() {
         /// Initialize interface values
         $this->data['textAction'] = $this->language->get('textAction');
         $this->data['textCustomer'] = $this->language->get('textCustomer');
@@ -467,7 +463,7 @@ class ControllerSaleInvoice extends Controller
         $this->data['shippingMethods'] =\Shipping::getShippingMethods(
             $this->getOrderAddress($firstItemOrder), $this->registry);
         $this->log->write(print_r($this->data, true));
-        $this->template = 'sale/invoiceForm.tpl';
+        $this->template = 'sale/invoiceForm.tpl.php';
         $this->children = array(
             'common/header',
             'common/footer'
@@ -502,7 +498,8 @@ class ControllerSaleInvoice extends Controller
                 'order_id' => $orderItem->getOrderId(),
                 'price' => $this->getCurrency()->format($orderItem->getPrice(), $this->config->get('config_currency')),
                 'quantity' => $orderItem->getQuantity(),
-                'subtotal' => $this->getCurrency()->format($orderItem->getPrice() * $orderItem->getQuantity(), $this->config->get('config_currency'))
+                'subtotal' => $this->getCurrency()->format($orderItem->getTotal(), $this->config->get('config_currency')),
+                'shipping' => $this->getCurrency()->format($orderItem->getShippingCost(), $this->config->get('config_currency'))
             );
             $orderItemIdParam .= '&orderItemId[]=' . $orderItem->getId();
         }
@@ -537,7 +534,7 @@ class ControllerSaleInvoice extends Controller
                 $this->config->get('config_currency'));
 //        $this->log->write(print_r($this->data, true));
 
-        $this->template = 'sale/invoiceForm.tpl';
+        $this->template = 'sale/invoiceForm.tpl.php';
         $this->children = array(
             'common/header',
             'common/footer'

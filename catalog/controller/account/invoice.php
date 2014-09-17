@@ -203,7 +203,8 @@ class ControllerAccountInvoice extends Controller {
                     'order_id' => $orderItem->getOrderId(),
                     'price' => $this->getCurrency()->format($orderItem->getPrice()),
                     'quantity' => $orderItem->getQuantity(),
-                    'subtotal' => $this->getCurrency()->format($orderItem->getPrice() * $orderItem->getQuantity())
+                    'shipping' => $this->getCurrency()->format($orderItem->getShippingCost()),
+                    'subtotal' => $this->getCurrency()->format($orderItem->getTotal())
                 ];
             }
             /// Set invoice data
