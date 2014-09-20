@@ -145,8 +145,7 @@ class OrderItem {
     /**
      * @return string
      */
-    public function getCustomerName()
-    {
+    public function getCustomerName() {
         return $this->customerName;
     }
 
@@ -318,7 +317,7 @@ class OrderItem {
      * @param bool $customerCurrency
      * @return float
      */
-    public function getTotal($customerCurrency) {
+    public function getTotal($customerCurrency = false) {
         if ($customerCurrency) {
             return $this->total * $this->getCurrency()->getRate($this->getTimeCreated());
         } else {

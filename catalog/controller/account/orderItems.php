@@ -61,7 +61,7 @@ class ControllerAccountOrderItems extends Controller {
 //        $this->log->write(count($orderItems));
         if ($orderItems) {
             foreach ($orderItems as $orderItem) {
-              //print_r($orderItem);
+                $orderItemObject = OrderItemDAO::getInstance()->getOrderItem($orderItem['order_item_id']);
                 if($orderItem['image_path'] == '' || $orderItem['image_path'] == "data/event/agent-moomidae.jpg") {
                   $options = OrderItemDAO::getInstance()->getOptions($orderItem['order_product_id']);
                   $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
@@ -89,7 +89,7 @@ class ControllerAccountOrderItems extends Controller {
 
                 $action = array();
 
-                $this->data['order_items'][] = array(
+                $this->data['order_items'][] = [
                     'id'			            => $orderItem['order_product_id'],
                     'image_path'	            => $image,
                     'name'			 => $orderItem['name'],
@@ -98,9 +98,9 @@ class ControllerAccountOrderItems extends Controller {
                     'order_id'					=> $orderItem['order_id'],
 					'order_url'					=> $this->url->link('sale/order/info', 'order_id=' . $orderItem['order_id'], 'SSL'),
                     'options'       => nl2br(OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem['order_product_id'])),
-                    'publicComment'                   => $orderItem['public_comment'],
+                    'publicComment'                   => $orderItemObject->getPublicComment(),
 					'status'       	=> $orderItem['status'] ? Status::getStatus($orderItem['status'], $this->config->get('language_id'), true) : "",
-                    'price'			=> $this->currency->format($orderItem['price']),
+                    'price'			=> $orderItemObject->getCurrency()->getString($orderItemObject->getPrice(true)),
 		            'weight'		=> $this->weight->format($orderItem['weight'],$orderItem['weight_class_id']),
                     'quantity'		=> $orderItem['quantity'],
 					'selected'      =>
@@ -108,7 +108,7 @@ class ControllerAccountOrderItems extends Controller {
                         && is_array($_REQUEST['selectedItems'])
                         && in_array($orderItem['order_product_id'], $_REQUEST['selectedItems']),
                     'action'                    => $action
-                );
+                ];
             }
 //            $this->data['customers'] = $this->getCustomers($data);
         }
@@ -155,7 +155,7 @@ class ControllerAccountOrderItems extends Controller {
 
         $this->data = array_merge($this->data, $this->parameters);
 
-        $template_name = '/template/account/orderItemsList.tpl';
+        $template_name = '/template/account/orderItemsList.tpl.php';
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $template_name))
             $this->template = $this->config->get('config_template') . $template_name;
         else
@@ -185,8 +185,7 @@ class ControllerAccountOrderItems extends Controller {
         return "";
     }
 
-    protected function initParameters()
-    {
+    protected function initParameters() {
         $this->log->write(print_r($_REQUEST, true));
         $this->parameters['comment'] = empty($_REQUEST['comment']) ? null : $_REQUEST['comment'];
         $this->parameters['filterStatusId'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
@@ -197,7 +196,7 @@ class ControllerAccountOrderItems extends Controller {
         $this->parameters['order'] = empty($_REQUEST['order']) ? null : $_REQUEST['order'];
         $this->parameters['orderItemId'] = empty($_REQUEST['orderItemId']) ? null : $_REQUEST['orderItemId'];
         $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
-        $this->parameters['private'] = empty($_REQUEST['private']) ? false : $_REQUEST['private'];
+        $this->parameters['private'] = empty($_REQUEST['private']) ? false : filter_var($_REQUEST['private'], FILTER_VALIDATE_BOOLEAN);
         $this->parameters['returnUrl'] = empty($_REQUEST['returnUrl']) ? null : urldecode($_REQUEST['returnUrl']);
         $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
         $this->parameters['sort'] = empty($_REQUEST['sort']) ? null : $_REQUEST['sort'];
@@ -285,7 +284,7 @@ class ControllerAccountOrderItems extends Controller {
     }
 
     public function saveComment() {
-        $this->log->write(print_r($this->parameters, true));
+//        $this->log->write(print_r($this->parameters, true));
         if (!$this->isValidOrderItemId($this->parameters['orderItemId']))
             $this->response->addHeader("HTTP/1.0 400 Bad request");
         else

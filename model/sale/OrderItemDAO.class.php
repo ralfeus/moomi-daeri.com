@@ -372,17 +372,22 @@ SQL
         return $options;
     }
 
+    /**
+     * @param int $order_item_id
+     * @param string $comment
+     * @param bool $isPrivate
+     */
     public function setOrderItemComment($order_item_id, $comment, $isPrivate = true) {
         $this->log->write($isPrivate);
         $field = $isPrivate ? 'comment' : 'public_comment';
         $query = "
             UPDATE order_product
             SET
-                $field = '" . $this->db->escape($comment) . "'
+                $field = '" . $this->getDb()->escape($comment) . "'
             WHERE order_product_id = " . (int)$order_item_id
         ;
         $this->log->write($query);
-        $this->db->query($query);
+        $this->getDb()->query($query);
     }
 
     public function setOrderItemQuantity($orderItemId, $quantity) {

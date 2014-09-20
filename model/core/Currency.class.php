@@ -19,6 +19,11 @@ class Currency {
         $this->title = $title;
     }
 
+    public function convertTo($value, $destinationCurrencyCode, $date = null) {
+        $destinationCurrency = CurrencyDAO::getInstance()->getCurrency($destinationCurrencyCode);
+        return  $value / $this->getRate($date) * $destinationCurrency->getRate($date);
+    }
+
     public function getRate($date = null) {
         if (!isset($this->rateHistory)) {
             $this->rateHistory = CurrencyDAO::GetInstance()->getCurrencyRateHistory($this->code);
