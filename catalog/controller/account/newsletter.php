@@ -1,5 +1,7 @@
-<?php 
-class ControllerAccountNewsletter extends Controller {  
+<?php
+use system\engine\CustomerZoneController;
+
+class ControllerAccountNewsletter extends CustomerZoneController {
 	public function index() {
 		if (!$this->customer->isLogged()) {
 	  		$this->session->data['redirect'] = $this->url->link('account/newsletter', '', 'SSL');

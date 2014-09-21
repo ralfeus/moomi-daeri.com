@@ -1,6 +1,7 @@
 <?php
 use model\sale\OrderItemDAO;
 use model\sale\RepurchaseOrderDAO;
+use system\engine\CustomerZoneController;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -9,7 +10,7 @@ use model\sale\RepurchaseOrderDAO;
  * Time: 19:28
  * To change this template use File | Settings | File Templates.
  */
-class ControllerAccountRepurchaseOrders extends Controller
+class ControllerAccountRepurchaseOrders extends CustomerZoneController
 {
     private $error = array();
 
@@ -21,14 +22,7 @@ class ControllerAccountRepurchaseOrders extends Controller
         $this->load->library('Status');
     }
 
-    public function index()
-    { $this->test = 0;
-        if (!$this->customer->isLogged())
-        {
-            $this->session->data['redirect'] = $this->url->link('account/repurchaseOrders', '', 'SSL');
-            $this->redirect($this->url->link('account/login', '', 'SSL'));
-        }
-
+    public function index() {
         if (isset($this->session->data['success'])) {
             $this->data['success'] = $this->session->data['success'];
 

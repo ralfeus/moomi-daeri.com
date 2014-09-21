@@ -1,4 +1,6 @@
 <?php
+use system\engine\CustomerZoneController;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -6,7 +8,7 @@
  * Time: 21:25
  * To change this template use File | Settings | File Templates.
  */
-class ControllerAccountAddCredit extends Controller
+class ControllerAccountAddCredit extends CustomerZoneController
 {
     public function __construct($registry)
     {

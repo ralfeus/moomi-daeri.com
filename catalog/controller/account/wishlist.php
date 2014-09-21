@@ -1,5 +1,7 @@
-<?php 
-class ControllerAccountWishList extends Controller {
+<?php
+use system\engine\CustomerZoneController;
+
+class ControllerAccountWishList extends CustomerZoneController {
 	public function index() {
     	if (!$this->customer->isLogged()) {
 	  		$this->session->data['redirect'] = $this->url->link('account/wishlist', '', 'SSL');

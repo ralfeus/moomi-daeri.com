@@ -1,18 +1,13 @@
-<?php 
-class ControllerAccountAccount extends Controller {
-    public function __construct($registry)
-    {
+<?php
+use system\engine\CustomerZoneController;
+
+class ControllerAccountAccount extends CustomerZoneController {
+    public function __construct($registry) {
         parent::__construct($registry);
         $this->takeSessionVariables();
     }
 
 	public function index() {
-		if (!$this->customer->isLogged()) {
-	  		$this->session->data['redirect'] = $this->url->link('account/account', '', 'SSL');
-	  
-	  		$this->redirect($this->url->link('account/login', '', 'SSL'));
-    	} 
-	
 		$this->language->load('account/account');
 
 		$this->document->setTitle($this->language->get('heading_title'));

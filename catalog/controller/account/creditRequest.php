@@ -1,4 +1,6 @@
 <?php
+use system\engine\CustomerZoneController;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: user
@@ -6,23 +8,17 @@
  * Time: 13:44
  * To change this template use File | Settings | File Templates.
  */
-class ControllerAccountCreditRequest extends Controller
-{
+class ControllerAccountCreditRequest extends CustomerZoneController {
     public function __construct($registry)
     {
         parent::__construct($registry);
-        if (!$this->customer->isLogged())
-        {
-            $this->session->data['redirect'] = $this->url->link('account/creditRequest/getList', '', 'SSL');
-            $this->redirect($this->url->link('account/login', '', 'SSL'));
-        }
+
         $this->takeSessionVariables();
         $this->load->library("Messaging");
         $this->load->library("Status");
     }
 
-    public function getList()
-    {
+    public function getList() {
         $addCreditRequests = Messaging::getSystemMessages(
             array(
                 'systemMessageType' => SYS_MSG_ADD_CREDIT,

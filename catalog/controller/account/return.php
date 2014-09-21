@@ -1,5 +1,7 @@
-<?php 
-class ControllerAccountReturn extends Controller { 
+<?php
+use system\engine\CustomerZoneController;
+
+class ControllerAccountReturn extends CustomerZoneController {
 	private $error = array();
 	
 	public function index() {

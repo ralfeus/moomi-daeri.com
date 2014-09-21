@@ -1,7 +1,8 @@
 <?php
 use model\sale\OrderItemDAO;
+use system\engine\CustomerZoneController;
 
-class ControllerAccountOrder extends Controller {
+class ControllerAccountOrder extends CustomerZoneController {
 	private $error = array();
     private $modelToolImage;
 

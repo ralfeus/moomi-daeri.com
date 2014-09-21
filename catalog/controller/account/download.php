@@ -1,12 +1,8 @@
 <?php
-class ControllerAccountDownload extends Controller {
-	public function index() {
-		if (!$this->customer->isLogged()) {
-			$this->session->data['redirect'] = $this->url->link('account/download', '', 'SSL');
+use system\engine\CustomerZoneController;
 
-			$this->redirect($this->url->link('account/login', '', 'SSL'));
-		}
-         		
+class ControllerAccountDownload extends CustomerZoneController {
+	public function index() {
 		$this->language->load('account/download');
 
 		$this->document->setTitle($this->language->get('heading_title'));

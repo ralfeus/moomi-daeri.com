@@ -1,5 +1,7 @@
 <?php
-class ControllerAccountPassword extends Controller {
+use system\engine\CustomerZoneController;
+
+class ControllerAccountPassword extends CustomerZoneController {
 	private $error = array();
 	     
   	public function index() {	

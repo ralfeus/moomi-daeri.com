@@ -1,12 +1,12 @@
 <?php
 use model\sale\OrderItemDAO;
+use system\engine\CustomerZoneController;
 
-class ControllerAccountOrderItems extends Controller {
+class ControllerAccountOrderItems extends CustomerZoneController {
 	private $error = array();
     private $orderModel;
 
-    public function __construct($registry)
-    {
+    public function __construct($registry) {
         parent::__construct($registry);
         $this->route = 'account/orderItems';
         $this->load->language($this->route);

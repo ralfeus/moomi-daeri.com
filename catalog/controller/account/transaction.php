@@ -1,5 +1,7 @@
 <?php
-class ControllerAccountTransaction extends Controller {
+use system\engine\CustomerZoneController;
+
+class ControllerAccountTransaction extends CustomerZoneController {
     public function __construct($registry)
     {
         parent::__construct($registry);

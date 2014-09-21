@@ -1,6 +1,7 @@
 <?php
 use model\sale\InvoiceDAO;
 use model\sale\OrderItemDAO;
+use system\engine\CustomerZoneController;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -9,15 +10,9 @@ use model\sale\OrderItemDAO;
  * Time: 21:43
  * To change this template use File | Settings | File Templates.
  */
-class ControllerAccountInvoice extends Controller {
+class ControllerAccountInvoice extends CustomerZoneController {
     public function __construct($registry) {
         parent::__construct($registry);
-
-        if (!$this->getCustomer()->isLogged()) {
-            $this->session->data['redirect'] = $this->selfUrl;
-
-            $this->redirect($this->url->link('account/login', '', 'SSL'));
-        }
 
         $this->load->language('account/invoice');
         $this->load->library('Transaction');

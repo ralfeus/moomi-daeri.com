@@ -1,5 +1,7 @@
 <?php
-class ControllerAccountEdit extends Controller {
+use system\engine\CustomerZoneController;
+
+class ControllerAccountEdit extends CustomerZoneController {
 	private $error = array();
     private $modelAccountCustomer;
     private $modelLocalisationCurrency;

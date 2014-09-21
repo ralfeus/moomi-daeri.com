@@ -1,5 +1,7 @@
 <?php
-class ControllerAccountForgotten extends Controller {
+use system\engine\CustomerZoneController;
+
+class ControllerAccountForgotten extends CustomerZoneController {
 	private $error = array();
 
 	public function index() {

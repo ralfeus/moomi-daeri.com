@@ -1,14 +1,14 @@
-<?php 
-class ControllerAccountAddress extends Controller {
-	private $error = array();
-	  
-  	public function index() {
-    	if (!$this->customer->isLogged()) {
-	  		$this->session->data['redirect'] = $this->url->link('account/address', '', 'SSL');
+<?php
+use system\engine\CustomerZoneController;
 
-	  		$this->redirect($this->url->link('account/login', '', 'SSL')); 
-    	}
-	
+class ControllerAccountAddress extends CustomerZoneController {
+	private $error = array();
+
+    public function __construct($registry) {
+        parent::__construct($registry);
+    }
+
+  	public function index() {
     	$this->language->load('account/address');
 
 		$this->document->setTitle($this->language->get('heading_title'));
