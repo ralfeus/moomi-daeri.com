@@ -60,8 +60,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
 //        }
 //   }
 
-    private function getList()
-    {
+    private function getList() {
         if (isset($this->request->request['page']))
             $page = $this->request->request['page'];
         else
@@ -131,7 +130,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
         $this->data['textTotal'] = $this->language->get('TOTAL');
         $this->data['urlRepurchaseOrders'] = $this->url->link('account/repurchaseOrders', '', 'SSL');
 
-        $template_name = '/template/account/repurchaseOrdersList.tpl';
+        $template_name = '/template/account/repurchaseOrdersList.tpl.php';
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $template_name)) {
             $this->template = $this->config->get('config_template') . $template_name;
         } else {
