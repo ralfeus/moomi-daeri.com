@@ -9,8 +9,7 @@ class ControllerSaleOrderItems extends Controller {
 	/** @var \ModelSaleOrder */
 	private $modelSaleOrder;
 
-	public function __construct($registry)
-	{
+	public function __construct($registry) {
 		parent::__construct($registry);
 
 		$this->load->language('sale/order_items');

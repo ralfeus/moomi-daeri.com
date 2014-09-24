@@ -130,7 +130,8 @@ class OrderItemDAO extends DAO {
         if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
             $sort = $data['sort'];
         } else {
-            $sort = "op.order_product_id";
+//            $sort = "op.order_product_id";
+            $sort = "supplier_name, op.name";
         }
 
         if (isset($data['order']) && ($data['order'] == 'DESC')) {
