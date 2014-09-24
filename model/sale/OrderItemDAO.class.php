@@ -127,7 +127,7 @@ class OrderItemDAO extends DAO {
             'supplier_group_id'
         );
 
-        if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+        if (isset($data['sort'])) { // && in_array($data['sort'], $sort_data)) {
             $sort = $data['sort'];
         } else {
 //            $sort = "op.order_product_id";
