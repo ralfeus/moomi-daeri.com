@@ -131,7 +131,8 @@ class OrderItemDAO extends DAO {
             $sort = $data['sort'];
         } else {
 //            $sort = "op.order_product_id";
-            $sort = "supplier_name, op.name";
+            $sort = "order_item_id";
+            $data['order'] = 'DESC';
         }
 
         if (isset($data['order']) && ($data['order'] == 'DESC')) {
@@ -282,13 +283,20 @@ SQL
         if (isset($data['selected_items']) && count($data['selected_items'])) {
             $this->buildSimpleFieldFilterEntry('i', 'op.order_product_id', $data['selected_items'], $filter, $params);
         } else {
+            if (!empty($data['filterComment'])) {
+                $filter .= ($filter ? " AND " : "") . "
+                    LCASE(op.comment) LIKE ?
+                    OR LCASE(op.public_comment) LIKE ?";
+                $params[] = 's:%' . utf8_strtolower($data['filterComment']) . '%';
+                $params[] = 's:%' . utf8_strtolower($data['filterComment']) . '%';
+            }
             $this->buildSimpleFieldFilterEntry('i', 'c.customer_id', $data['filterCustomerId'], $filter, $params);
             if (!empty($data['filterItem'])) {
                 $filter .= ($filter ? " AND " : "") . "
                     LCASE(op.model) LIKE ?
                     OR LCASE(op.name) LIKE ?";
-            $params[] = 's:%' . utf8_strtolower($data['filterItem']) . '%';
-            $params[] = 's:%' . utf8_strtolower($data['filterItem']) . '%';
+                $params[] = 's:%' . utf8_strtolower($data['filterItem']) . '%';
+                $params[] = 's:%' . utf8_strtolower($data['filterItem']) . '%';
             }
             if (!empty($data['filterModel'])) {
                 $filter .= ($filter ? " AND " : "") . "LCASE(op.model) LIKE ?";

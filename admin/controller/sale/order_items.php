@@ -289,7 +289,7 @@ class ControllerSaleOrderItems extends Controller {
 		}
 
 
-	$this->initStatuses();
+	    $this->initStatuses();
 
 		$pagination = new Pagination();
 		$pagination->total = OrderItemDAO::getInstance()->getOrderItemsCount($data);
@@ -299,7 +299,7 @@ class ControllerSaleOrderItems extends Controller {
 		$pagination->url = $this->url->link('sale/order_items', "$urlParameters&page={page}", 'SSL');
 		$this->data['pagination'] = $pagination->render();
 
-	$this->data = array_merge($this->data, $this->parameters);
+	    $this->data = array_merge($this->data, $this->parameters);
 
 //		$this->load->model('localisation/order_status');
 		///$this->data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
@@ -352,6 +352,7 @@ class ControllerSaleOrderItems extends Controller {
 	protected function initParameters()
 	{
 		$this->parameters['comment'] = empty($_REQUEST['comment']) ? null : $_REQUEST['comment'];
+        $this->parameters['filterComment'] = empty($_REQUEST['filterComment']) ? null : $_REQUEST['filterComment'];
 		$this->parameters['filterStatusId'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
 		$this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
 		$this->parameters['filterItem'] = empty($_REQUEST['filterItem']) ? null : $_REQUEST['filterItem'];

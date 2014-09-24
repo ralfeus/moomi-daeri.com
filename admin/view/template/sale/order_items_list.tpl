@@ -110,7 +110,7 @@
                         </optgroup>
                     </select>
                 </td>
-                <td />
+                <td><input name="filterComment" value="<?= $filterComment ?>" onkeydown="filterKeyDown(event)" /></td>
                 <td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td>
             </tr>
           </thead>

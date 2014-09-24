@@ -138,7 +138,6 @@ $(document).ready(function() {
 
 function filter() {
     $('#form').submit();
-    return;
 }
 
 function filterKeyDown(e) {
