@@ -37,6 +37,13 @@ class OpenCartBase
     }
 
     /**
+     * @return Cache
+     */
+    protected function getCache() {
+        return $this->registry->get('cache');
+    }
+
+    /**
      * @return Currency
      */
     protected function getCurrency() {

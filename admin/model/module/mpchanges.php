@@ -48,8 +48,8 @@ class ModelModuleMpchanges extends Model {
         $this->db->query($sql);
     }
     
-    public function cleanCache($cahe) {
-        $this->cache->delete($cahe);
+    public function cleanCache($cache) {
+        $this->cache->delete($cache);
     }
 
     public function addProductSpecial($product_special){
@@ -92,11 +92,11 @@ class ModelModuleMpchanges extends Model {
     }
 
     public function getStores($data = array()) {
-        $store_data = $this->cache->get('store-mpc');
+        $store_data = $this->getCache()->get('store-mpc');
         if (!$store_data) {
-            $query = $this->db->query("SELECT * FROM store ORDER BY url");
+            $query = $this->getDb()->query("SELECT * FROM store ORDER BY url");
             foreach ($query->rows as $row) {$store_data[$row['store_id']] = $row;}
-            $this->cache->set('store-mpc', $store_data);
+            $this->getCache()->set('store-mpc', $store_data);
         }
         return $store_data;
     }
@@ -220,6 +220,10 @@ class ModelModuleMpchanges extends Model {
     }
 
     public function getTotalProducts($data = array()) {
+        $count = $this->getCache()->get(md5(serialize($data)));
+        if (!is_null($count)) {
+            return $count;
+        }
         $sql = "SELECT COUNT(DISTINCT p.product_id) AS total FROM product p LEFT JOIN product_description pd ON (p.product_id = pd.product_id)";
 
         if (!empty($data['filter_category_id'])) {
@@ -276,7 +280,8 @@ class ModelModuleMpchanges extends Model {
         if (!empty($data['filter_store_id'])) {
             $sql .= " AND p2s.store_id = " . (int)$data['filter_store_id'];}
 
-        $query = $this->db->query($sql);
+        $query = $this->getDb()->query($sql);
+        $this->getCache()->set(md5(serialize($data)), $query->row['total']);
         return $query->row['total'];
     }
 
