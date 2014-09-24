@@ -137,6 +137,7 @@ class ControllerSaleOrderItems extends Controller {
 
 		$this->data['order_items'] = array();
 		$data = $this->parameters;
+        $data['sort'] = 'supplier_name, op.name';
 		$data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
 		$data['limit']           = $this->config->get('config_admin_limit');
 

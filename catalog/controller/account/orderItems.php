@@ -53,6 +53,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
         $this->data['order_items'] = array();
         $data = $this->parameters;
         $data['filterCustomerId'] = $this->getCustomer()->getId();
+        $data['sort'] = 'order_item_id';
         $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
         $data['limit']           = $this->config->get('config_admin_limit');
         $data['order']           = 'DESC';
@@ -75,18 +76,16 @@ class ControllerAccountOrderItems extends CustomerZoneController {
                 endif;
 
                 $supplier_url = "";
-                foreach ($this->model_catalog_product->getProductAttributes($orderItem['product_id']) as $attribute)
-                    if ($attribute['name'] == 'Supplier URL')
-                    {
+                foreach ($this->model_catalog_product->getProductAttributes($orderItem['product_id']) as $attribute) {
+                    if ($attribute['name'] == 'Supplier URL') {
                         foreach ($attribute['product_attribute_description'] as $attribute_language_version)
-                            if ($attribute_language_version['text'])
-                            {
+                            if ($attribute_language_version['text']) {
                                 $supplier_url = $attribute_language_version['text'];
                                 break;
                             }
                         break;
                     }
-
+                }
                 $action = array();
 
                 $this->data['order_items'][] = [
