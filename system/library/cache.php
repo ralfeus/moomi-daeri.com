@@ -31,8 +31,12 @@ final class Cache {
 
     /// New version with APC using
     public function get($key) {
-        if (apc_exists($key)) {
-            return unserialize(apc_fetch($key));
+        if (function_exists('apc_exists')) {
+            if (apc_exists($key)) {
+                return unserialize(apc_fetch($key));
+            }
+        } else {
+            trigger_error("No APC is installed on the server. No cache functionality is available");
         }
 //        else {
 //            return null;
@@ -53,7 +57,11 @@ final class Cache {
 
     /// New version with APC using
     public function set($key, $value) {
-        apc_store($key, serialize($value), $this->expire);
+        if (function_exists('apc_store')) {
+            apc_store($key, serialize($value), $this->expire);
+        } else {
+            trigger_error("No APC is installed on the server. No cache functionality is available");
+        }
     }
 	
 //  	public function delete($key) {
@@ -71,7 +79,10 @@ final class Cache {
 
     /// New version with APC using
     public function delete($key) {
-        apc_delete($key);
+        if (function_exists('apc_delete')) {
+            apc_delete($key);
+        } else {
+            trigger_error("No APC is installed on the server. No cache functionality is available");
+        }
     }
 }
-?>
