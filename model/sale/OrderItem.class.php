@@ -245,7 +245,7 @@ class OrderItem {
      * @param bool $customerCurrency
      * @return float
      */
-    public function getShippingCost($customerCurrency) {
+    public function getShippingCost($customerCurrency = false) {
         if ($customerCurrency) {
             return $this->shippingCost * $this->getCurrency()->getRate($this->getTimeCreated());
         } else {
