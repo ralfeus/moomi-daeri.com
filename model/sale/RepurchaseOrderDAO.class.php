@@ -217,7 +217,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                     name = 'Item Name',
                     value = ?,
                     type = 'text'
-                ", array('i:' . $orderItem['order_id'], "i:$orderId", "s:$itemName")
+                ", array('i:' . $orderItem->getId(), "i:$orderId", "s:$itemName")
             );
         }
     }
@@ -253,7 +253,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                     name = 'Shop Name',
                     value = ?,
                     type = 'text'
-                ", array("i:" . $orderItem['order_id'], "i:$orderId", "s:$shopName")
+                ", array("i:" . $orderItem->getId(), "i:$orderId", "s:$shopName")
             );
         }
     }
