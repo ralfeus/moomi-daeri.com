@@ -5,6 +5,8 @@ final class MySQL implements DBDriver{
 	private $connection;
     /** @var mysqli_stmt[] */
     private $statements = array();
+    /** @var string */
+    private static $queriesLog = "";
 	
 	public function __construct($hostname, $username, $password, $database) {
 		if (!$this->connection = new mysqli($hostname, $username, $password)) {
@@ -59,6 +61,8 @@ final class MySQL implements DBDriver{
         }
 
         $statement = $this->prepareQuery($sql);
+        self::$queriesLog .= "#PID: " . getmypid() . "\r\n";
+        self::$queriesLog .= "#Query: $sql\r\n";
         if (sizeof($params)) {
             $types = ''; $args = array(); $refArgs = array(); $i = 0;
             foreach ($params as $param) {
@@ -72,7 +76,9 @@ final class MySQL implements DBDriver{
                 throw new mysqli_sql_exception($statement->error, $statement->errno);
             }
         }
+        self::$queriesLog .= "#Start: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
         if ($statement->execute()) {
+            self::$queriesLog .= "#Stop: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
             if ($statement->affected_rows == -1) {
                 $statement->store_result();
                 $fields = array(); $row = null;
@@ -100,6 +106,7 @@ final class MySQL implements DBDriver{
                return $statement->affected_rows;
             }
         } else {
+            self::$queriesLog .= "#Stop: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
             throw new mysqli_sql_exception($statement->error, $statement->errno);
         }
   	}
@@ -149,5 +156,6 @@ final class MySQL implements DBDriver{
 	
 	public function __destruct() {
 		$this->connection->close();
+        file_put_contents(DIR_LOGS . '/sql.queries.log', self::$queriesLog, FILE_APPEND);
 	}
 }
