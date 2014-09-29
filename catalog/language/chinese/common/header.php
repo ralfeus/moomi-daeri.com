@@ -2,7 +2,7 @@
 // Text
 $_['text_home']             = '家';
 $_['text_wishlist']         = '願望清單 (%s)';
-$_['text_cart']             = '購物車';
+$_['text_cart']             = '購物車 (%s)';
 $_['text_items']            = '%s 項目 - %s';
 $_['text_search']           = '搜索';
 $_['text_welcome']          = '歡迎您，遊客. 您可以 <a href="%s">登錄</a> 或 <a href="%s">創建和賬戶</a>.';

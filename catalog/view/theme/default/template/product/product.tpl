@@ -344,7 +344,7 @@ $('#button-cart').bind('click', function() {
                 if (json['error']['warning']) {
                     $('#notification').html('<div class="error" style="display: none;">' + json['error']['warning'] + '<img src="catalog/view/theme/default/image/close.png" alt="" class="close" /></div>');
 
-                    $('.warning').fadeIn('slow');
+                    $('.warning').fadeIn('fast');
                 }
 
                 for (i in json['error']) {
@@ -358,6 +358,8 @@ $('#button-cart').bind('click', function() {
                 $('.success').fadeIn('slow');
 
                 $('#cart_total').html(json['total']);
+                
+                $('#cart_total_data').html(json['total_data']);
 
                 $('html, body').animate({ scrollTop: 0 }, 'slow');
             }

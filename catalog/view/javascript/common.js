@@ -117,6 +117,8 @@ function addToCart(product_id) {
 
 				$('#cart_total').html(json['total']);
 
+                $('#cart_total_data').html(json['total_data']);
+                
 				$('html, body').animate({ scrollTop: 0 }, 'slow');
 			}
 		}
@@ -176,6 +178,24 @@ function addToWishList(product_id) {
 				$('#wishlist_total').html(json['total']);
 
 				$('html, body').animate({ scrollTop: 0 }, 'slow');
+			}
+		}
+	});
+}
+
+function removeWishlist(key) {
+	$.ajax({
+		url: 'index.php?route=account/wishlist/update',
+		type: 'post',
+		data: 'remove=' + key,
+		dataType: 'json',
+		success: function(json) {
+			$('.success, .warning, .attention, .information').remove();
+
+			if (json['output']) {
+				$('#wishlist_total').html(json['total']);
+
+				$('#wishlist .content').html(json['output']);
 			}
 		}
 	});

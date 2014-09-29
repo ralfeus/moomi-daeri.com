@@ -12,19 +12,18 @@
       <table>
         <thead>
           <tr>
-            <td class="remove"><?php echo $column_remove; ?></td>
             <td class="image"><?php echo $column_image; ?></td>
             <td class="name"><?php echo $column_name; ?></td>
             <td class="model"><?php echo $column_model; ?></td>
             <td class="stock"><?php echo $column_stock; ?></td>
             <td class="price"><?php echo $column_price; ?></td>
-            <td class="cart"><?php echo $column_cart; ?></td>
+    <!--        <td class="cart"><?php echo $column_cart; ?></td>-->
+            <td class="remove"><?php echo $column_remove; ?></td>
           </tr>
         </thead>
         <tbody>
           <?php foreach ($products as $product) { ?>
           <tr>
-            <td class="remove"><input type="checkbox" name="remove[]" value="<?php echo $product['product_id']; ?>" /></td>
             <td class="image"><?php if ($product['thumb']) { ?>
               <a href="<?php echo $product['href']; ?>"><img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>" /></a>
               <?php } ?></td>
@@ -40,7 +39,10 @@
                 <?php } ?>
               </div>
               <?php } ?></td>
-            <td class="cart"><a onclick="addToCart('<?php echo $product['product_id']; ?>');" class="button"><span><?php echo $button_cart; ?></span></a></td>
+<!--            <td class="cart"><a onclick="addToCart('<?php echo $product['product_id']; ?>');" class="button"><span><?php echo $button_cart; ?></span></a></td>-->
+            <td class="remove"><a href="<?php echo $product['remove']; ?>">
+                <img src="catalog/view/theme/default/image/remove.png" alt="<?php echo $button_remove; ?>" title="<?php echo $button_remove; ?>" />
+            </a></td>
           </tr>
           <?php } ?>
         </tbody>

@@ -1,7 +1,14 @@
 <?php
 class ControllerCheckoutCart extends Controller {
+	private $error = array();
+
 	public function index() {
 		$this->language->load('checkout/cart');
+		// Remove
+		if (isset($this->request->get['remove'])) {
+			$this->cart->remove($this->request->get['remove']);
+			$this->redirect($this->url->link('checkout/cart'));
+		}
 
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
       		if (isset($this->request->post['quantity'])) {
@@ -80,7 +87,8 @@ class ControllerCheckoutCart extends Controller {
       		$this->data['column_total'] = $this->language->get('column_total');
 
       		$this->data['button_update'] = $this->language->get('button_update');
-      		$this->data['button_shopping'] = $this->language->get('button_shopping');
+     		$this->data['button_remove'] = $this->language->get('button_remove');
+     		$this->data['button_shopping'] = $this->language->get('button_shopping');
       		$this->data['button_checkout'] = $this->language->get('button_checkout');
             $this->data['textCheckoutSelected'] = $this->language->get('CHECKOUT_SELECTED');
 
@@ -192,7 +200,8 @@ class ControllerCheckoutCart extends Controller {
 					'reward'   => ($product['reward'] ? sprintf($this->language->get('text_reward'), $product['reward']) : ''),
 					'price'    => $price,
 					'total'    => $total,
-					'href'     => $this->url->link('product/product', 'product_id=' . $product['product_id'])
+					'href'     => $this->url->link('product/product', 'product_id=' . $product['product_id']),
+					'remove'   => $this->url->link('checkout/cart', 'remove=' . $product['key'])
         		);
       		}
 
