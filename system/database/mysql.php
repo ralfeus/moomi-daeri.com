@@ -61,8 +61,8 @@ final class MySQL implements DBDriver{
         }
 
         $statement = $this->prepareQuery($sql);
-        self::$queriesLog .= "#PID: " . getmypid() . "\r\n";
-        self::$queriesLog .= "#Query: $sql\r\n";
+//        self::$queriesLog .= "#PID: " . getmypid() . "\r\n";
+//        self::$queriesLog .= "#Query: $sql\r\n";
         if (sizeof($params)) {
             $types = ''; $args = array(); $refArgs = array(); $i = 0;
             foreach ($params as $param) {
@@ -76,9 +76,9 @@ final class MySQL implements DBDriver{
                 throw new mysqli_sql_exception($statement->error, $statement->errno);
             }
         }
-        self::$queriesLog .= "#Start: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
+//        self::$queriesLog .= "#Start: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
         if ($statement->execute()) {
-            self::$queriesLog .= "#Stop: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
+//            self::$queriesLog .= "#Stop: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
             if ($statement->affected_rows == -1) {
                 $statement->store_result();
                 $fields = array(); $row = null;
@@ -106,7 +106,7 @@ final class MySQL implements DBDriver{
                return $statement->affected_rows;
             }
         } else {
-            self::$queriesLog .= "#Stop: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
+//            self::$queriesLog .= "#Stop: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
             throw new mysqli_sql_exception($statement->error, $statement->errno);
         }
   	}
