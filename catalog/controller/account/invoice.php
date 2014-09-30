@@ -181,15 +181,15 @@ class ControllerAccountInvoice extends CustomerZoneController {
         $this->data['textSubtotal'] = $this->language->get('SUBTOTAL');
         $this->data['textTotal'] = $this->language->get('TOTAL');
         $this->data['textWeight'] = $this->language->get('WEIGHT');
-
-        if ($invoice->getCustomer()['customer_id'] != $this->getCustomer()->getId()) {
+$temp = $invoice->getCustomer();
+        if ($temp['customer_id'] != $this->getCustomer()->getId()) {
             $invoice = null;
             $this->data['notifications']['error'] = $this->language->get('errorAccessDenied');
         } else {
             /// Prepare list
             $subTotalCustomerCurrency = 0;
             foreach ($invoice->getOrderItems() as $orderItem) {
-                $this->data['orderItems'][] = [
+                $this->data['orderItems'][] = array(
                     'id' => $orderItem->getId(),
                     'comment' => $orderItem->getPublicComment(),
                     'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
@@ -201,7 +201,7 @@ class ControllerAccountInvoice extends CustomerZoneController {
                     'quantity' => $orderItem->getQuantity(),
                     'shipping' => $orderItem->getCurrency()->getString($orderItem->getShippingCost(true)),
                     'subtotal' => $orderItem->getCurrency()->getString($orderItem->getTotal(true))
-                ];
+                );
                 $subTotalCustomerCurrency += $orderItem->getTotal(true);
             }
             /// Set invoice data

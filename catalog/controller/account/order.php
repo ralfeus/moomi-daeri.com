@@ -275,6 +275,8 @@ class ControllerAccountOrder extends CustomerZoneController {
 			$products = OrderItemDAO::getInstance()->getOrderItems(
                 array('filterOrderId' => $this->request->get['order_id'])
             );
+$products = $this->model_account_order->getOrderProducts($this->request->get['order_id']);
+
       		foreach ($products as $product) {
                 $actions = array();
                 if (($product['status'] & 0x0000FFFF) <= 2)

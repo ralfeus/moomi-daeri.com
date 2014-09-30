@@ -58,11 +58,12 @@ class Transaction extends OpenCartBase implements ILibrary {
         if (($customer['balance'] < $transactionAmount) && !$customer['allow_overdraft']) {
             InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
         } else {
+        	$temp = $invoice->getCustomer();
             Transaction::addTransaction(
                 $invoiceId,
                 $customerId,
                 $invoice->getTotalCustomerCurrency(),
-                $invoice->getCustomer()['base_currency_code'],
+                $temp['base_currency_code'],
                 $description
             );
             InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_PAID);

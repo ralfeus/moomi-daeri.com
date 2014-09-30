@@ -1052,7 +1052,6 @@ class ControllerSaleOrder extends Controller {
 		}
 		$this->modelSaleOrder->updateOrderTotals($order_id);
 		$order_info = $this->modelSaleOrder->getOrder($order_id);
-		
 
 		if ($order_info) {
 			$this->document->setTitle($this->language->get('heading_title'));
@@ -1219,7 +1218,6 @@ class ControllerSaleOrder extends Controller {
 			$this->data['payment_method'] = $order_info['payment_method'];
 			$this->data['total'] = $this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value']);
 			$this->data['reward'] = $order_info['reward'];
-			
 			if ($order_info['total'] < 0) {
 				$this->data['credit'] = $order_info['total'];
 			} else {

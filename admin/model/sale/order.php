@@ -676,19 +676,25 @@ class ModelSaleOrder extends Model {
 		$orderItemStatusModel = $this->load->model('localisation/order_item_status');
 		$total_price = 0;
 		$total_weight = 0;
-        $orderItems = $this->getOrderProducts($order_id);
+		$orderItems = $this->getOrderProducts($order_id);
+		foreach ($orderItems as $item) {
+		    $query = $this->db->query("SELECT product_id FROM product WHERE product_id = '" . (int)$item['product_id'] . "'")->row['product_id'];
+		    if(empty($query)) $deleted = 1;
+		}
 		foreach ($orderItems as $order_item)
 		{
 			$orderItemStatus = $orderItemStatusModel->getOrderItemStatus($order_item['status_id']);
 
 			if ($orderItemStatus['workflow_order'] != 1000) {
 				$orderItem = OrderItemDAO::getInstance()->getOrderItem($order_item['order_product_id']);
-				$total_price += $order_item['total'];
-				$total_weight += $this->weight->convert($orderItem->getWeight(), $orderItem->getWeightClassId(), $this->config->get('config_weight_class_id')) * $order_item['quantity'];
+				if (!empty($orderItem)) {
+				    $total_price += $order_item['total'];
+				    $total_weight += $this->weight->convert($orderItem->getWeight(), $orderItem->getWeightClassId(), $this->config->get('config_weight_class_id')) * $order_item['quantity'];
+				}
 			}
 		}
 		$shipping_cost = $this->getShippingCost($order['shipping_method'], $orderItems, array('weight' => $total_weight));
-        if ($order['total'] != $total_price + $shipping_cost)
+        if ($order['total'] != $total_price + $shipping_cost && !$deleted)
         {
             $this->db->query("UPDATE order_total SET value = $total_price, text = '" . $this->currency->format($total_price). "' WHERE order_id = $order_id AND code = 'sub_total'");
             $this->db->query("UPDATE order_total SET value = $shipping_cost, text = '" . $this->currency->format($shipping_cost). "' WHERE order_id = $order_id AND code = 'shipping'");
