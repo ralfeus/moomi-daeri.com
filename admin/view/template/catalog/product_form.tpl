@@ -33,6 +33,9 @@
             <a href="#tab-image"><?php echo $tab_image; ?></a>
             <a href="#tab-reward"><?php echo $tab_reward; ?></a>
             <a href="#tab-design"><?php echo $tab_design; ?></a>
+            <?php if($this->config->get('wk_auction_timezone_set')){ ?>
+		<a href="#tab-auction"><?php echo $tab_auction; ?></a>
+            <?php } ?>
         </div>
 
 <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form">
@@ -717,6 +720,46 @@
             <?php } ?>
           </table>
         </div>
+
+ <?php if($this->config->get('wk_auction_timezone_set')){ ?>
+	    <div id="tab-auction">
+	    <table id="auction" class="form">
+		    <tr>
+		    <td><?php echo $entry_isacution; ?></td>
+		    <td class="left">
+			<input type="radio" name="isauction" value="1" <?php if($isauction) echo " checked" ?> /><label>Yes</label>
+			<input type="radio" name="isauction" value="0" <?php if(!$isauction) echo " checked" ?> /><label>No</label>
+		    </td>
+		    </tr>  
+		<tr>
+		    <td><?php echo $entry_auction; ?></td>
+		    <td class="left"><input type="text" name="auction_name" value="<?php echo $auction_name;?>" />
+		    </td>
+		    </tr>  
+		    <tr>
+		    <td ><?php echo $entry_min; ?></td>
+		    <td class="left"><input type="text" name="auction_min" value="<?php echo $auction_min;?>" />
+		    </tr>
+		    <tr>
+		    <td><?php echo $entry_max; ?></td>
+		    <td class="left"><input type="text" name="auction_max" value="<?php echo $auction_max;?>" />
+		</tr>
+		    <tr>
+		    <td><?php echo $entry_sdate; ?></td>
+		<td><input class="dates1"  type="text" name="auction_start" value="<?php echo $auction_start;?>" />
+		</tr>
+		    <tr>
+		    <td><?php echo $entry_date; ?></td>
+		<td><input class="dates1"  type="text" name="auction_end" value="<?php echo $auction_end;?>" />
+		</tr>
+	    </table>
+	    </div>
+    <script type="text/javascript">
+	$(function() { $(".dates1").datetimepicker({ dateFormat: "yy-mm-dd", timeFormat: "hh:mm:ss" }); });
+    </script> 
+<?php } ?>
+
+
         <div id="tab-design">
           <table class="list">
             <thead>

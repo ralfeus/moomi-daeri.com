@@ -126,7 +126,8 @@ final class MySQL implements DBDriver{
     public function queryScalar($sql, $params = array(), $log = false) {
         $result = $this->query($sql, $params, $log);
         if ($result->num_rows) {
-            return $result->row[array_keys($result->row)[0]];
+            $temp = array_keys($result->row);
+            return $result->row[$temp[0]];
         } else {
             return null;
         }

@@ -33,6 +33,11 @@
 <link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/nailthumb/jquery.nailthumb.1.1.min.css" />
 <link rel="stylesheet" href="catalog/view/theme/default/stylesheet/carousel/tango/skin.css" type="text/css" />
 <script type="text/javascript" src="catalog/view/javascript/jquery.jcarousel.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/wkauction.style.css" />
+<link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/wkauction/wkallauctions.css" />
+<script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/countdown.js"></script>
+
 <!--[if IE]>
 <script type="text/javascript" src="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4-iefix.js"></script>
 <![endif]-->
@@ -369,11 +374,13 @@ DD_belatedPNG.fix('#logo img');
 
       <div id="welcome"><?= (!$logged) ? $text_welcome :$text_logged ?></div>
       <div class="links">
-	  			  <a class="account" href="<?= $account ?>"><span><?= $text_account ?></span></a> 
-				  
+		  <a class="account" href="<?= $account ?>"><span><?= $text_account ?></span></a> 
+		  <?php if($this->config->get('wk_auction_timezone_set')){ ?>
+		    <a class="cart" style="right: 475px;" href="<?php echo $menuauction; ?>"><span>Auction</span></a>      
+		  <?php } ?>
                   <a class="home" href="<?= $home ?>"><span><?= $text_home ?></span></a>
                   <a class="wishlist_total" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>
-				  <a class="cart" href="<?= $cart ?>" id="cart_total_data>"<span><?= $text_cart ?></span></a>
+		  <a class="cart" href="<?= $cart ?>" id="cart_total_data>"<span><?= $text_cart ?></span></a>
 				  
           <table style="display: none;">
               <tr><td>

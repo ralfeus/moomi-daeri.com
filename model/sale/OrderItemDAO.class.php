@@ -209,6 +209,7 @@ class OrderItemDAO extends DAO {
      * @return float
      */
     public function getOrderItemTotalCustomerCurrency($orderItem) {
+	$temp = $orderItem->getCustomer();
         $rate = $this->getDb()->queryScalar(<<<SQL
             SELECT rate
             FROM
@@ -218,7 +219,7 @@ class OrderItemDAO extends DAO {
             ORDER BY ch.date_added DESC
             LIMIT 0,1
 SQL
-        , array("s:" . $orderItem->getCustomer()['base_currency_code'], "s:" . $orderItem->getTimeCreated())
+        , array("s:" . $temp['base_currency_code'], "s:" . $orderItem->getTimeCreated())
         );
         if ($rate) {
             return $orderItem->getTotal() * $rate;

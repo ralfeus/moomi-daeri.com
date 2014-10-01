@@ -111,6 +111,9 @@ class ControllerCommonHeader extends Controller {
 		$this->data['logged'] = $this->customer->isLogged();
 		$this->data['account'] = $this->url->link('account/account', '', 'SSL');
 		$this->data['cart'] = $this->url->link('checkout/cart');
+ if($this->config->get('wk_auction_timezone_set')){
+    $this->data['menuauction'] = $this->url->link('catalog/wkallauctions', '', 'SSL');
+}
 		$this->data['checkout'] = $this->url->link('checkout/checkout', '', 'SSL');
     $this->data['repurchase_order'] = $this->url->link('product/repurchase', '', 'SSL');
     $this->data['urlGallery'] = $this->url->link('product/gallery', '', 'SSL');

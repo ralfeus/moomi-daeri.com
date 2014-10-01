@@ -582,6 +582,74 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['tab_links'] = $this->language->get('tab_links');
 		$this->data['tab_reward'] = $this->language->get('tab_reward');
 		$this->data['tab_design'] = $this->language->get('tab_design');
+
+
+if($this->config->get('wk_auction_timezone_set')){
+              $this->data['tab_auction'] = $this->language->get('tab_auction');
+              $this->data['entry_min'] = $this->language->get('entry_min');
+              $this->data['entry_max'] = $this->language->get('entry_max');
+              $this->data['entry_date'] = $this->language->get('entry_date');
+              $this->data['entry_sdate'] = $this->language->get('entry_sdate');
+              $this->data['entry_auction'] = $this->language->get('entry_auction');
+              $this->data['entry_acution_button'] = $this->language->get('entry_acution_button');
+              $this->data['entry_isacution'] = $this->language->get('entry_isacution');
+
+              $product_auctions = array();
+              
+              
+              $this->data['isauction'] = 0;
+              $this->data['auction_min']='';
+              $this->data['auction_max']='';
+              $this->data['auction_end']='';
+              $this->data['auction_start']='';
+              $this->data['auction_name']='';
+              
+             if (isset($this->request->get['product_id'])) {
+                  $product_auctions = $this->model_catalog_product->getProductAuctions($this->request->get['product_id']);
+
+                  foreach ($product_auctions as $product_auction) {
+                           $this->data['isauction']=$product_auction['isauction'];
+                           $this->data['auction_min']=$product_auction['min'];
+                           $this->data['auction_max']= $product_auction['max'];
+                           $this->data['auction_end']=$product_auction['end_date'];
+                           $this->data['auction_name']=$product_auction['name'];
+                           $this->data['auction_start']=$product_auction['start_date'];
+                      }
+                 }
+              else{       
+                  if (isset($this->request->post['isauction'])) {
+                      $this->data['isauction'] = $this->request->post['isauction'];
+                  } else {
+                      $this->data['isauction'] = $this->config->get('isauction');
+                  }
+                  if (isset($this->request->post['auction_name'])) {
+                      $this->data['auction_name'] = $this->request->post['auction_name'];
+                  } else {
+                      $this->data['auction_name'] = $this->config->get('auction_name');
+                  }
+                  if (isset($this->request->post['auction_min'])) {
+                      $this->data['auction_min'] = $this->request->post['auction_min'];
+                  } else {
+                      $this->data['auction_min'] = $this->config->get('auction_min');
+                  }
+                  if (isset($this->request->post['auction_max'])) {
+                      $this->data['auction_max'] = $this->request->post['auction_max'];
+                  } else {
+                      $this->data['auction_max'] = $this->config->get('auction_max');
+                  }
+                  if (isset($this->request->post['auction_end'])) {
+                      $this->data['auction_end'] = $this->request->post['auction_end'];
+                  } else {
+                      $this->data['auction_end'] = $this->config->get('auction_end');
+                  }
+                  if (isset($this->request->post['auction_start'])) {
+                      $this->data['auction_start'] = $this->request->post['auction_start'];
+                  } else {
+                      $this->data['auction_start'] = $this->config->get('auction_start');
+                  }
+              }
+          }
+
 		 
  		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
@@ -1265,6 +1333,8 @@ class ControllerCatalogProduct extends Controller {
 	
 	public function option() {
 		$output = ''; 
+
+ 
 		
 		$this->load->model('catalog/option');
 		

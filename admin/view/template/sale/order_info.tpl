@@ -266,9 +266,10 @@
             </tr>
           </thead>
           <?php foreach ($products as $product) { ?>
+<?php $cuoponed = 0; if (in_array($product['product_id'],$coupon_products)){$cuoponed=1;} ?>
           <tbody id="product-row<?php echo $product['order_product_id']; ?>">
             <tr>
-              <td class="left"><?php if ($product['product_id']) { ?>
+              <td class="left" <?php if ($cuoponed || $couponed_order) { ?> style="background-color: rgb(255, 255, 203);" <?php } ?> ><?php if ($product['product_id']) { ?>
                 <a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a>
                 <?php } else { ?>
                 <?php echo $product['name']; ?>
