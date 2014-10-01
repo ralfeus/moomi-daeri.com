@@ -85,7 +85,7 @@ class ControllerCommonHeader extends Controller {
 
         $this->data['text_home'] = $this->language->get('text_home');
 		$this->data['text_wishlist'] = sprintf($this->language->get('text_wishlist'), (isset($this->session->data['wishlist']) ? count($this->session->data['wishlist']) : 0));
-		$this->data['text_cart'] = $this->language->get('text_cart');
+		$this->data['text_cart'] = sprintf($this->language->get('text_cart'),(isset($this->session->data['cart']) ? count($this->session->data['cart']) : 0));
 		$this->data['text_items'] = sprintf($this->language->get('text_items'), $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->currency->format($total));
    	$this->data['text_search'] = $this->language->get('text_search');
 		$this->data['text_welcome'] = sprintf($this->language->get('text_welcome'), $this->url->link('account/login', '', 'SSL'), $this->url->link('account/register', '', 'SSL'));

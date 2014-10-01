@@ -423,12 +423,6 @@ foreach ($temp as $v) {
 		$this->load->model('catalog/product');
 		$this->load->model('tool/image');
 
-		if (isset($_REQUEST['sort'])) {
-			$sort = $_REQUEST['sort'];
-		} else {
-			$sort = 'order_item_id';
-		}
-
 		if (isset($_REQUEST['order'])) {
 			$order = $_REQUEST['order'];
 		} else {
@@ -437,7 +431,7 @@ foreach ($temp as $v) {
 
 		$data = array(
 			'selected_items'    => $_REQUEST['selectedItems'],
-			'sort'              => $sort,
+			'sort'              => 'supplier_name, op.name',
 			'order'             => $order
 		);
 

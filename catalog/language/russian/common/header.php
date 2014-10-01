@@ -2,7 +2,7 @@
 // Text
 $_['text_home']             = 'Главная';
 $_['text_wishlist']         = 'Заметки (%s)';
-$_['text_cart']             = 'Корзина';
+$_['text_cart']             = 'Корзина (%s)';
 $_['text_items']            = '%s шт. - %s';
 $_['text_search']           = 'Поиск';
 $_['text_welcome']          = 'Войти в <a rel="nofollow" href="%s">личный кабинет</a> или <a rel="nofollow" href="%s">зарегистрироваться</a>.';

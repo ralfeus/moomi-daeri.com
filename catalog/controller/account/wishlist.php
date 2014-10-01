@@ -19,15 +19,15 @@ class ControllerAccountWishList extends CustomerZoneController {
 			$this->session->data['wishlist'] = array();
 		}
 		
-		if (isset($this->request->post['remove'])) {
-			foreach ($this->request->post['remove'] as $product_id) {
-				$key = array_search($product_id, $this->session->data['wishlist']);
-				
-				if ($key !== false) {
-					unset($this->session->data['wishlist'][$key]);
-				}
-			}			
+		if (isset($this->request->get['remove'])) {
+			$key = array_search($this->request->get['remove'], $this->session->data['wishlist']);
 			
+			if ($key !== false) {
+				unset($this->session->data['wishlist'][$key]);
+			}
+		
+			$this->session->data['success'] = $this->language->get('text_remove');
+		
 			$this->redirect($this->url->link('account/wishlist'));
 		}
 				
@@ -69,6 +69,7 @@ class ControllerAccountWishList extends CustomerZoneController {
 		$this->data['button_update'] = $this->language->get('button_update');
 		$this->data['button_continue'] = $this->language->get('button_continue');
 		$this->data['button_back'] = $this->language->get('button_back');
+		$this->data['button_remove'] = $this->language->get('button_remove');
 		
 		$this->data['action'] = $this->url->link('account/wishlist');	
 		
@@ -112,7 +113,8 @@ class ControllerAccountWishList extends CustomerZoneController {
 					'stock'      => $stock,
 					'price'      => $price,		
 					'special'    => $special,
-					'href'       => $this->url->link('product/product', 'product_id=' . $product_info['product_id'])
+					'href'       => $this->url->link('product/product', 'product_id=' . $product_info['product_id']),
+					'remove'     => $this->url->link('account/wishlist', 'remove=' . $product_info['product_id'])
 				);
 			}
 		}	

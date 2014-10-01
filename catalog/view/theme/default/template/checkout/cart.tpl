@@ -31,20 +31,17 @@
         <table>
           <thead>
             <tr>
-              <td class="remove"><input type="checkbox" /></td>
               <td class="image"><?php echo $column_image; ?></td>
               <td class="name"><?php echo $column_name; ?></td>
               <td class="model"><?php echo $column_model; ?></td>
               <td class="quantity"><?php echo $column_quantity; ?></td>
               <td class="price"><?php echo $column_price; ?></td>
               <td class="total"><?php echo $column_total; ?></td>
-              <td />
             </tr>
           </thead>
           <tbody>
             <?php foreach ($products as $product) { ?>
             <tr>
-              <td class="checkbox"><input type="checkbox" name="selected[]" value="<?= $product['key'] ?>"/></td>
               <td class="image"><?php if ($product['thumb']) { ?>
                 <a href="<?php echo $product['href']; ?>"><img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>" /></a>
                 <?php } ?></td>
@@ -61,23 +58,27 @@
                 <small><?php echo $product['reward']; ?></small>
                 <?php } ?></td>
               <td class="model"><?php echo $product['model']; ?></td>
-              <td class="quantity"><input type="text" name="quantity[<?php echo $product['key']; ?>]" value="<?php echo $product['quantity']; ?>" size="3" /></td>
+              <td class="quantity"><input type="text" name="quantity[<?php echo $product['key']; ?>]" value="<?php echo $product['quantity']; ?>" size="3" />
+                &nbsp;
+                <input type="image" src="catalog/view/theme/default/image/update.png" alt="<?php echo $button_update; ?>" title="<?php echo $button_update; ?>" />
+                &nbsp;
+                <a href="<?php echo $product['remove']; ?>">
+                <img src="catalog/view/theme/default/image/remove.png" alt="<?php echo $button_remove; ?>" title="<?php echo $button_remove; ?>" />
+                </a>
+              </td>
               <td class="price"><?php echo $product['price']; ?></td>
               <td class="total"><?php echo $product['total']; ?></td>
-              <td>
-                  <a href="<?= $product['actionDeleteUrl'] ?>"><img src="catalog/view/theme/default/image/crossmark.png" /></a>
-              </td>
             </tr>
             <?php } ?>
-            <?php foreach ($vouchers as $voucher) { ?>
+            <?php foreach ($vouchers as $vouchers) { ?>
             <tr>
-              <td class="remove"><input type="checkbox" name="voucher[]" value="<?php echo $voucher['key']; ?>" /></td>
               <td class="image"></td>
-              <td class="name"><?php echo $voucher['description']; ?></td>
+              <td class="name"><?php echo $vouchers['description']; ?></td>
               <td class="model"></td>
-              <td class="quantity">1</td>
-              <td class="price"><?php echo $voucher['amount']; ?></td>
-              <td class="total"><?php echo $voucher['amount']; ?></td>
+              <td class="quantity"><input type="text" name="" value="1" size="1" disabled="disabled" />
+              &nbsp;<a href="<?php echo $vouchers['remove']; ?>"><img src="catalog/view/theme/default/image/remove.png" alt="<?php echo $button_remove; ?>" title="<?php echo $button_remove; ?>" /></a></td>
+              <td class="price"><?php echo $vouchers['amount']; ?></td>
+              <td class="total"><?php echo $vouchers['amount']; ?></td>
             </tr>
             <?php } ?>
           </tbody>
