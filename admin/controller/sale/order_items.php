@@ -148,6 +148,28 @@ class ControllerSaleOrderItems extends Controller {
 		if ($orderItems) {
 
 			foreach ($orderItems as $orderItem) {
+
+$temp = $this->model_sale_order->getOrderTotals($orderItem['order_id']);
+
+$cuoponed = 0;
+foreach ($temp as $v) {
+    if ($v['code'] == 'coupon') {
+	$_code = explode('(',$v['title']);
+	$_code = explode(')',$_code[1]);
+	$code = $_code[0];
+	$coupon_products = $this->model_sale_order->getCouponProducts($code);
+	if ($coupon_products) {
+	    if (in_array($orderItem['product_id'],$coupon_products)){
+		$cuoponed = 1;
+	    } else {
+		$cuoponed = 0;
+	    }
+	} else {
+	    $cuoponed = 1;
+	}
+    }
+}
+
 				if (!empty($orderItem['affiliate_id'])) {
 					$orderItem['affiliate_transaction_amount'] = $this->getCurrency()->format($orderItem['total'] * $modelSaleAffiliate->getProductAffiliateCommission($orderItem['product_id']) / 100, $this->config->get('config_currency'));
 				}
@@ -238,12 +260,12 @@ class ControllerSaleOrderItems extends Controller {
 						isset($_REQUEST['selectedItems'])
 						&& is_array($_REQUEST['selectedItems'])
 						&& in_array($orderItem['order_product_id'], $_REQUEST['selectedItems']),
-					'action'                    => $action
-				);
+					'action'                    => $action,
+					'cuoponed'                    => $cuoponed
+				); 
 			}
-
 		}
-
+ 
 		$this->data['heading_title'] = $this->language->get('heading_title');
 		$this->data['text_missing'] = $this->language->get('text_missing');
 		$this->data['text_no_results'] = $this->language->get('text_no_results');

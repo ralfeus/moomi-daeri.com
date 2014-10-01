@@ -1321,6 +1321,21 @@ class ControllerSaleOrder extends Controller {
 
 			$this->data['totals'] = $this->model_sale_order->getOrderTotals($this->request->get['order_id']);
 
+$this->data['coupon_products'] = 0;
+foreach ($this->data['totals'] as $v) {
+    if ($v['code'] == 'coupon') {
+	$_code = explode('(',$v['title']);
+	$_code = explode(')',$_code[1]);
+	$code = $_code[0];
+	$coupon_products = $this->model_sale_order->getCouponProducts($code);
+	if ($coupon_products) {
+	    $this->data['coupon_products'] = $coupon_products;
+	} else {
+	    $this->data['couponed_order'] = 1;
+	}
+    }
+}
+
 			$this->data['downloads'] = array();
 
 			$results = $this->model_sale_order->getOrderDownloads($this->request->get['order_id']);

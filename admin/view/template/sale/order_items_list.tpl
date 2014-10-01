@@ -1,3 +1,8 @@
+<style>
+tr.couponed td {
+    background-color: rgb(255, 255, 203) !important;
+}
+</style>
 <?php echo $header; ?>
 <div id="content">
   <div class="breadcrumb">
@@ -117,11 +122,11 @@
           <tbody>
 <?php if ($order_items): ?>
     <?php foreach ($order_items as $order_item): ?>
-					<tr>
+					<tr <?php if ($order_item['cuoponed']) { ?> class="couponed" <?php } ?> >
                         <td style="text-align: center;">
                             <input type="checkbox" id="selectedItems[]" name="selectedItems[]" value="<?php echo $order_item['id']; ?>" />
                         </td>
-                        <td class="right"><?php echo $order_item['id']; ?></td>
+                        <td class="right" ><?php echo $order_item['id']; ?></td>
 						<td><a target="_blank" href="<?= $order_item['order_url'] ?>" <?php if($order_item['isOrderReady']) { echo 'class="boldRed"'; } ?>><?= $order_item['order_id'] ?></a></td>
                         <td class="left"><?php echo $order_item['customer_nick'] . "/<br />" . $order_item['customer_name']; ?></td>
                         <td class="right"><img src="<?php echo $order_item['image_path']; ?>" /></td>

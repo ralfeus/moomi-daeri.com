@@ -98,3 +98,27 @@ require_once(DIR_SYSTEM . 'library/session.php');
 require_once(DIR_SYSTEM . 'library/Shipping.php');
 require_once(DIR_SYSTEM . 'library/template.php');
 require_once(DIR_SYSTEM . 'library/Transaction.php');
+function p() {
+	$exit = false;
+	$args = func_get_args();
+	if(!empty($args)) {
+		$start = $args[0] === 'vd' ? 1 : 0;
+		$func = $args[0] === 'vd' ? 'var_dump' : 'print_r';
+		echo '<pre>';
+		for($i = $start, $i_size = count($args); $i < $i_size; $i++) {
+			if($args[$i] === 'iw_exit') $exit = true;
+
+			echo '<br /><br /><b>' . $i . ' arg:</b><br />';
+
+			$func($args[$i]);
+
+			if($args[$i] === 'vd') {
+				echo '<br /><i>(To use var_dump function, argument - <b>' . $args[$i] . '</b> - must be transmitted first)</i>';
+			}
+		}
+		echo '</pre>';
+	} else {
+		echo '<br /><br /><center>I need <b>some</b> argument. (<i>' . __FUNCTION__ . '</i>)</center>';
+	}
+	if(!$exit) die;
+}

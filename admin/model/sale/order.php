@@ -756,4 +756,15 @@ class ModelSaleOrder extends Model {
             $this->setOrderStatus($orderId, ORDER_STATUS_READY_TO_SHIP);
         }
     }
+
+    public function getCouponProducts($code) {
+	    
+	    $coupon_id = $this->db->query("SELECT coupon_id FROM " . DB_PREFIX . "coupon WHERE code='" . $this->db->escape($code) . "'")->row['coupon_id'];
+	    $_products = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "coupon_product WHERE coupon_id='" . (int)$coupon_id . "'")->rows;
+	    foreach ($_products as $k => $v) {
+		$products[] = $v['product_id'];
+	    }
+	    
+	    return $products;
+    }
 }
