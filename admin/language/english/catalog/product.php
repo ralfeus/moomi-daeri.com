@@ -79,6 +79,14 @@ $_['entry_seo_title']        = 'HTML Tag Title:';
 $_['entry_seo_h1']           = 'HTML Tag H1:';
 
 // Error
+$_['entry_auction']          = 'Auction';
+$_['tab_auction']            = 'Auction';
+$_['entry_min']              = 'Minimum Price';
+$_['entry_max']              = 'Maximum Price';
+$_['entry_date']             = 'End Date';
+$_['entry_sdate']            = 'Start Date';
+$_['entry_acution_button']   = 'Add Auction';
+$_['entry_isacution']        = 'Active';
 $_['error_warning']          = 'Warning: Please check the form carefully for errors!';
 $_['error_permission']       = 'Warning: You do not have permission to modify products!';
 $_['error_name']             = 'Product Name must be greater than 3 and less than 255 characters!';

@@ -86,6 +86,14 @@ $(document).ready(function(){
   <div id="menu">
     <ul class="left" style="display: none;">
       <li id="dashboard"><a href="<?php echo $home; ?>" class="top"><?php echo $text_dashboard; ?></a></li>
+<?php if($this->config->get('wk_auction_timezone_set')){ ?>
+	<li id="bids"><a class="top"><?php echo "Auction Bids"; ?></a>
+	    <ul>
+	    <li><a href="<?php echo $cp_bids ?>"><?php echo "Bid list"; ?></a></li>
+	    
+	    </ul> 
+	</li>
+<?php } ?>
       <li id="catalog"><a class="top"><?php echo $text_catalog; ?></a>
         <ul>
           <li><a href="<?php echo $category; ?>"><?php echo $text_category; ?></a></li>

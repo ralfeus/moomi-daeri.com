@@ -1,5 +1,11 @@
 <?php
 class ModelCatalogProduct extends Model {
+	public function getProductAuctions($product_id) {
+	    $data = $this->db->query("SELECT * FROM " . DB_PREFIX . "wkauction WHERE product_id = '" . (int)$product_id . "' GROUP BY id");
+
+	    return $data->rows;
+	}
+
 	public function addProduct($data) {
         $this->db->query("
 		    INSERT INTO product
@@ -32,7 +38,16 @@ class ModelCatalogProduct extends Model {
 		        affiliate_commission = " . (isset($data['affiliate_commission']) ? (float)$data['affiliate_commission'] : 0)
         );
 		$product_id = $this->db->getLastId();
-		
+
+		if($this->config->get('wk_auction_timezone_set')){      
+		    if (isset($data['auction_min']) && isset($data['auction_max']) && isset($data['auction_end'])) {
+		    
+			
+			    $this->db->query("INSERT INTO " . DB_PREFIX . "wkauction SET product_id = '" . (int)$product_id . "', name = '" .$data['auction_name']. "', min = '" .$data['auction_min'].  "', isauction = '" .$data['isauction'] ."', max = '" .$data['auction_max'] ."', start_date = '" .$data['auction_start'] . "', end_date = '" .$data['auction_end'] . "'");
+		    }         
+		}
+
+
 		if (isset($data['image'])) {
 			$this->db->query("UPDATE product SET image = '" . $this->db->escape($data['image']) . "' WHERE product_id = '" . (int)$product_id . "'");
 		}
@@ -250,6 +265,20 @@ class ModelCatalogProduct extends Model {
     }
 	
 	public function editProduct($product_id, $data) {
+		if($this->config->get('wk_auction_timezone_set')){
+		    if (isset($data['auction_min']) && isset($data['auction_max']) && isset($data['auction_end'])) {
+			    $auct=$this->db->query("SELECT * FROM " . DB_PREFIX . "wkauction WHERE product_id = '" . (int)$product_id . "'");
+			
+			    $auct=$auct->row;
+
+			    if(count($auct)!=0){
+			    $this->db->query("UPDATE " . DB_PREFIX . "wkauction SET product_id = '" . (int)$product_id . "', name = '" .$data['auction_name']. "', min = '" .$data['auction_min'].  "', isauction = '" .$data['isauction'] ."', start_date = '" .$data['auction_start']."', max = '" .$data['auction_max'] . "', end_date = '" .$data['auction_end'] . "' WHERE id ='" .(int)$auct['id'] . "'");
+				}
+			    else{
+				$this->db->query("INSERT INTO " . DB_PREFIX . "wkauction SET product_id = '" . (int)$product_id . "', name = '" .$data['auction_name']. "', min = '" .$data['auction_min'].  "', isauction = '" .$data['isauction'] ."', max = '" .$data['auction_max'] ."', start_date = '" .$data['auction_start'] . "', end_date = '" .$data['auction_end'] . "'");
+			    }
+			}
+		}
 		$this->db->query("
 		    UPDATE product
 		    SET

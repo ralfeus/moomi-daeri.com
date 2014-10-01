@@ -29,9 +29,9 @@ class ControllerModuleWkproductauction extends Controller {
       		
 		//LOAD MODEL FILES
 		$this->load->model('module/wkproduct_auction');
-	    $this->document->addScript('catalog/view/javascript/wkproduct_auction/countdown.js');  
-	    $this->document->addStyle('catalog/view/theme/default/stylesheet/wkauction.style.css');
-        $this->load->model('catalog/product');
+		$this->document->addScript('catalog/view/javascript/wkproduct_auction/countdown.js');  
+		$this->document->addStyle('catalog/view/theme/default/stylesheet/wkauction.style.css');
+		$this->load->model('catalog/product');
 		$results = array();
 		$this->data['winner']=0;
 		$this->data['timeout']=0;
@@ -62,15 +62,11 @@ class ControllerModuleWkproductauction extends Controller {
 				$this->data['start']=$result['start_date'];
           	     $dat = date('Y-m-d H:i:s');
           	     
-				  if($result['start_date']<=$dat && $result['end_date']>=$dat)
-				   {
-				   	//print_r($dat);
-          	     	//die();
-				   	$this->data['timeout']=1;
-                   }
-                   elseif ($count==0){
-                   $this->model_module_wkproduct_auction->updateAuctionbids($this->data['auction_id']);
-					 }
+		    if($result['start_date']<=$dat && $result['end_date']>=$dat) {
+			$this->data['timeout']=1;
+		    } elseif ($count==0) {
+			$this->model_module_wkproduct_auction->updateAuctionbids($this->data['auction_id']);
+		    }
                    
                    $count=$count+1;
 		}
