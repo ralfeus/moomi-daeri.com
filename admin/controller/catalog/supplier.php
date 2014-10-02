@@ -14,10 +14,23 @@ class ControllerCatalogSupplier extends Controller {
   	public function index() {
     	$this->getList();
   	}
+
+    protected function initParameters() {
+        global $_REQUEST;
+        $this->parameters['internalModel'] = !empty($_REQUEST['internalModel']) ? $_REQUEST['internalModel'] : '';
+        $this->parameters['name'] = !empty($_REQUEST['name']) ? $_REQUEST['name'] : '';
+        $this->parameters['order'] = !empty($_REQUEST['order']) ? $_REQUEST['order'] : 'ASC';
+        $this->parameters['page'] = !empty($_REQUEST['page']) ? $_REQUEST['page'] : '1';
+        $this->parameters['selected'] = !empty($_REQUEST['selected']) ? $_REQUEST['selected'] : array();
+        $this->parameters['shippingCost'] = !empty($_REQUEST['shippingCost']) ? $_REQUEST['shippingCost'] : 0;
+        $this->parameters['sort'] = !empty($_REQUEST['sort']) ? $_REQUEST['sort'] : 'name';
+        $this->parameters['supplierGroupId'] = !empty($_REQUEST['supplierGroupId']) ? $_REQUEST['supplierGroupId'] : null;
+        $this->parameters['supplierId'] = !empty($_REQUEST['supplierId']) ? $_REQUEST['supplierId'] : null;
+    }
   
     public function insert() {
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateInsert() && $this->validateForm()) {
-            SupplierDAO::getInstance()->addSupplier($this->request->post);
+            SupplierDAO::getInstance()->addSupplier($this->parameters);
             //print_r($this->error);exit();
 
               $this->session->data['success'] = $this->language->get('text_success');
@@ -43,7 +56,7 @@ class ControllerCatalogSupplier extends Controller {
    
   	public function update() {
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			SupplierDAO::getInstance()->editSupplier($this->request->get['supplier_id'], $this->request->post);
+			SupplierDAO::getInstance()->editSupplier($this->parameters['supplierId'], $this->parameters);
 
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -69,8 +82,8 @@ class ControllerCatalogSupplier extends Controller {
 
   	public function delete() {
     	if (isset($this->request->post['selected']) && $this->validateDelete()) {
-			foreach ($this->request->post['selected'] as $supplier_id) {
-				SupplierDAO::getInstance()->deleteSupplier($supplier_id);
+			foreach ($this->request->post['selected'] as $supplierId) {
+				SupplierDAO::getInstance()->deleteSupplier($supplierId);
 			}
 
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -96,24 +109,6 @@ class ControllerCatalogSupplier extends Controller {
   	}  
     
   	private function getList() {
-		if (isset($this->request->get['sort'])) {
-			$sort = $this->request->get['sort'];
-		} else {
-			$sort = 'name';
-		}
-		
-		if (isset($this->request->get['order'])) {
-			$order = $this->request->get['order'];
-		} else {
-			$order = 'ASC';
-		}
-		
-		if (isset($this->request->get['page'])) {
-			$page = $this->request->get['page'];
-		} else {
-			$page = 1;
-		}
-				
 		$url = '';
 			
 		if (isset($this->request->get['sort'])) {
@@ -148,29 +143,29 @@ class ControllerCatalogSupplier extends Controller {
 		$this->data['suppliers'] = array();
 
 		$data = array(
-			'sort'  => $sort,
-			'order' => $order,
-			'start' => ($page - 1) * $this->config->get('config_admin_limit'),
+			'sort'  => $this->parameters['sort'],
+			'order' => $this->parameters['order'],
+			'start' => ($this->parameters['page'] - 1) * $this->config->get('config_admin_limit'),
 			'limit' => $this->config->get('config_admin_limit')
 		);
 		
 		$supplier_total = SupplierDAO::getInstance()->getTotalSuppliers();
-		$results = SupplierDAO::getInstance()->getSuppliers($data);
+		$suppliers = SupplierDAO::getInstance()->getSuppliers($data);
  
-    	foreach ($results as $result) {
+    	foreach ($suppliers as $supplier) {
 			$action = array();
 			
 			$action[] = array(
 				'text' => $this->language->get('text_edit'),
-				'href' => $this->url->link('catalog/supplier/update', 'token=' . $this->session->data['token'] . '&supplier_id=' . $result['supplier_id'] . $url, 'SSL')
+				'href' => $this->url->link('catalog/supplier/update', 'token=' . $this->session->data['token'] . '&supplierId=' . $supplier->getId() . $url, 'SSL')
 			);
 						
 			$this->data['suppliers'][] = array(
-				'supplier_id' => $result['supplier_id'],
-                'supplier_group_id' => $result['supplier_group_id'],
-				'name'            => $result['name'],
-                'internal_model'    => $result['internal_model'],
-				'selected'        => isset($this->request->post['selected']) && in_array($result['supplier_id'], $this->request->post['selected']),
+				'supplierId' => $supplier->getId(),
+                'supplier_group_id' => $supplier->getGroupId(),
+				'name'            => $supplier->getName(),
+                'internal_model'    => $supplier->getInternalModel(),
+				'selected'        => isset($this->request->post['selected']) && in_array($supplier->getId(), $this->request->post['selected']),
 				'action'          => $action
 			);
 		}	
@@ -256,6 +251,7 @@ class ControllerCatalogSupplier extends Controller {
 		$this->data['text_clear'] = $this->language->get('text_clear');
         $this->data['text_none'] = $this->language->get('text_none');
 		$this->data['text_percent'] = $this->language->get('text_percent');
+        $this->data['textShippingCost'] = $this->language->get('textShippingCost');
 
 		$this->data['entry_name'] = $this->language->get('field_name') . ':';
         $this->data['entry_supplier_group'] = $this->language->get('field_supplier_group') . ':';
@@ -272,11 +268,9 @@ class ControllerCatalogSupplier extends Controller {
 			$this->data['error_warning'] = '';
 		}
 
- 		if (isset($this->error['name'])) {
-			$this->data['error_name'] = $this->error['name'];
-		} else {
-			$this->data['error_name'] = '';
-		}
+ 		foreach ($this->error as $key => $value) {
+            $this->data["error_$key"] = $value;
+        }
 		    
 		$url = '';
 			
@@ -304,79 +298,71 @@ class ControllerCatalogSupplier extends Controller {
       		'separator' => ' :: '
    		);
 							
-		if (!isset($this->request->get['supplier_id'])) {
+		if (!isset($this->request->get['supplierId'])) {
 			$this->data['action'] = $this->url->link('catalog/supplier/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		} else {
-			$this->data['action'] = $this->url->link('catalog/supplier/update', 'token=' . $this->session->data['token'] . '&supplier_id=' . $this->request->get['supplier_id'] . $url, 'SSL');
+			$this->data['action'] = $this->url->link('catalog/supplier/update', 'token=' . $this->session->data['token'] . '&supplierId=' . $this->request->get['supplierId'] . $url, 'SSL');
 		}
 		
 		$this->data['cancel'] = $this->url->link('catalog/supplier', 'token=' . $this->session->data['token'] . $url, 'SSL');
-
 		$this->data['token'] = $this->session->data['token'];
 		
-    	if (isset($this->request->get['supplier_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
-      		$supplier_info = SupplierDAO::getInstance()->getSupplier($this->request->get['supplier_id']);
-    	}
+    	if (isset($this->request->get['supplierId']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
+      		$supplier = SupplierDAO::getInstance()->getSupplier($this->request->get['supplierId']);
+    	} else {
+            $supplier = null;
+        }
 
 		$this->load->model('localisation/language');
 		
 		$this->data['languages'] = $this->model_localisation_language->getLanguages();
-
-    	if (isset($this->request->post['name'])) {
-      		$this->data['name'] = $this->request->post['name'];
-    	} elseif (!empty($supplier_info)) {
-			$this->data['name'] = $supplier_info['name'];
-		} else {	
-      		$this->data['name'] = '';
-    	}
-
         $this->data['supplier_groups'] = SupplierGroupDAO::getInstance()->getSupplierGroups();
+        $this->data = array_merge($this->data, $this->parameters);
 
-        if (isset($this->request->post['supplier_group_id'])) {
-              $this->data['supplier_group_id'] = $this->request->post['supplier_group_id'];
-        } elseif (!empty($supplier_info)) {
-              $this->data['supplier_group_id'] = $supplier_info['supplier_group_id'];
-        } else {
-              $this->data['supplier_group_id'] = '';
+    	if (empty($this->data['name']) && !is_null($supplier)) {
+            $this->data['name'] = $supplier->getName();
+        }
+        if (empty($this->data['supplierGroupId']) && !is_null($supplier)) {
+              $this->data['supplierGroupId'] = $supplier->getGroupId();
+        }
+        if (empty($this->data['internalModel']) && !is_null($supplier)) {
+            $this->data['internalModel'] = $supplier->getInternalModel();
+        }
+        if (empty($this->data['shippingCost']) && !is_null($supplier)) {
+            $this->data['shippingCost'] = $supplier->getShippingCost();
         }
 
-        if (isset($this->request->post['internal_model'])) {
-            $this->data['internal_model'] = $this->request->post['internal_model'];
-        } elseif (!empty($supplier_info)) {
-            $this->data['internal_model'] = $supplier_info['internal_model'];
-        } else {
-            $this->data['internal_model'] = '';
-        }
-		
-		$this->template = 'catalog/supplier_form.tpl';
+
+        $this->template = 'catalog/supplierForm.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'
 		);
 				
 		$this->response->setOutput($this->render());
-	}  
-	 
+	}
+
+    /**
+     * @return bool
+     */
   	private function validateForm() {
         if (!$this->user->hasPermission('modify', 'catalog/supplier')) {
       		$this->error['warning'] = $this->language->get('error_permission');
     	}
 
-    	if ((utf8_strlen($this->request->post['name']) < 3) || (utf8_strlen($this->request->post['name']) > 64)) {
+    	if ((utf8_strlen($this->parameters['name']) < 3) || (utf8_strlen($this->parameters['name']) > 64)) {
       		$this->error['name'] = $this->language->get('error_name');
     	}
+        if (!is_numeric($this->parameters['shippingCost'])) {
+            $this->error['shippingCost'] = $this->language->get('error_shippingCost');
+        }
 		
-		if (!$this->error) {
-	  		return true;
-		} else {
-	  		return false;
-		}
+		return empty($this->error);
   	}    
 
     private function validateInsert() {
-        $supplier_info = SupplierDAO::getInstance()->getSupplierByName($this->request->post['name']);
-        if ($supplier_info)
-        {
+        $supplier_info = SupplierDAO::getInstance()->getSupplierByName($this->parameters['name']);
+        if ($supplier_info) {
             $this->error['warning'] = $this->language->get('error_exists');
         }
 
@@ -390,8 +376,8 @@ class ControllerCatalogSupplier extends Controller {
 		
 		$this->load->model('catalog/product');
 
-		foreach ($this->request->post['selected'] as $supplier_id) {
-  			$product_total = $this->model_catalog_product->getTotalProductsBySupplierId($supplier_id);
+		foreach ($this->parameters['selected'] as $supplierId) {
+  			$product_total = $this->model_catalog_product->getTotalProductsBySupplierId($supplierId);
     
 			if ($product_total) {
 	  			$this->error['warning'] = sprintf($this->language->get('error_product'), $product_total);	

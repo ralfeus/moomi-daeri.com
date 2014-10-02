@@ -10,6 +10,7 @@ $_['text_browse']        = 'Browse Files';
 $_['text_clear']         = 'Clear Image';
 $_['text_percent']       = 'Percentage';
 $_['text_amount']        = 'Fixed Amount';
+$_['textShippingCost'] = 'Shipping cost';
 
 // Fields
 $_['field_name']            = 'Supplier Name';
@@ -22,5 +23,5 @@ $_['field_action']          = 'Action';
 $_['error_exists']      = "Error: Supplier with such name already exists!";
 $_['error_permission']   = 'Warning: You do not have permission to modify suppliers!';
 $_['error_name']         = 'Supplier name must be between 3 and 64 characters!';
+$_['error_shippingCost'] = 'Wrong number format!';
 $_['error_product']      = 'Warning: This supplier cannot be deleted as it is currently assigned to %s products!';
-?>
