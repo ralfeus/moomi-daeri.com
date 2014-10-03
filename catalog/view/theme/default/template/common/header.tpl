@@ -21,6 +21,7 @@
 <link rel="<?= $style['rel'] ?>" type="text/css" href="<?= $style['href'] ?>" media="<?= $style['media'] ?>" />
 <?php } ?>
 <script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
 <link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.16.custom.css" />
@@ -37,6 +38,8 @@
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/wkauction.style.css" />
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/wkauction/wkallauctions.css" />
 <script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/countdown.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/jquery.countdown.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/jquery.quick.pagination.min.js"></script>
 
 <!--[if IE]>
 <script type="text/javascript" src="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4-iefix.js"></script>
