@@ -86,9 +86,8 @@ class ControllerCommonFileManager extends Controller {
 				}
 			}		
 		}
-        $this->getLogger()->write(print_r($json, true));
-		$this->getLogger()->write(print_r(json_encode($json), true));
-		$this->response->setOutput(json_encode($json));		
+        $this->getLogger()->write(var_dump($json));
+		$this->response->setOutput(json_encode($json));
 	}
 
     public function downloadImage()
