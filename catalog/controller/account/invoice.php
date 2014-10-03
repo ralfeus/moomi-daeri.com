@@ -204,6 +204,28 @@ $temp = $invoice->getCustomer();
                 );
                 $subTotalCustomerCurrency += $orderItem->getTotal(true);
             }
+
+if (empty($this->data['orderItems'])) {
+	$this->load->model('account/order');
+        $modelInvoice = $this->load->model('account/invoice');
+        $modelOrderItem = $this->load->model('account/order_item');
+	foreach ($modelInvoice->getInvoiceItems($this->request->request['invoiceId']) as $invoiceItem) {
+		$orderItem = $this->model_account_order->getOrderProduct($invoiceItem['order_item_id']);
+		$this->data['orderItems'][] = array(
+                    'id' => $orderItem['order_product_id'],
+                    'comment' => $orderItem['public_comment'],
+                    'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
+                    'model' => $orderItem['model'],
+                    'name' => $orderItem['name'],
+                    'options' => $modelOrderItem->getOrderItemOptionsString($orderItem['order_product_id']),
+                    'order_id' => $orderItem['order_id'],
+                    'price' => $this->currency->format($orderItem['price']),
+                    'quantity' => $orderItem['quantity'],
+                    'subtotal' => $this->currency->format($orderItem['price'] * $orderItem['quantity'])
+                );
+		$subTotalCustomerCurrency += $orderItem['total'];
+            }
+}
             /// Set invoice data
             $this->data['invoiceId'] = $invoice->getId();
             $this->data['comment'] = $invoice->getComment();
