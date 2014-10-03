@@ -113,7 +113,11 @@ abstract class Controller extends OpenCartBase
     protected function loadStrings() {
         /// Stub function. Should be replaced with abstract one once all Controller derived classes implement it
     }
-	
+
+    /**
+     * @return string
+     * @throws Exception
+     */
 	protected function render() {
 		foreach ($this->children as $child) {
 			$this->data[basename($child)] = $this->getChild($child);
@@ -132,8 +136,7 @@ abstract class Controller extends OpenCartBase
       		
 			return $this->output;
     	} else {
-			trigger_error('Error: Could not load template ' . DIR_TEMPLATE . $this->template . '!');
-			exit();				
+			throw new Exception('Error: Could not load template ' . DIR_TEMPLATE . $this->template . '!');
     	}
 	}
 
