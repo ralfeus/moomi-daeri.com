@@ -27,6 +27,8 @@ class ControllerSaleInvoice extends Controller
         $this->modelReferenceAddress = $this->load->model('reference/address');
         $this->modelSaleCustomer = $this->load->model('sale/customer');
         $this->modelSaleOrder = $this->load->model('sale/order');
+	$this->modelSaleInvoice = $this->load->model('sale/invoice');
+        $this->modelSaleOrderItem = $this->load->model('sale/order_item');
         $this->load->model('tool/image');
 
         $this->data['notifications'] = array();
@@ -114,11 +116,13 @@ class ControllerSaleInvoice extends Controller
         unset($data['filterCustomerId']);
         $tmpResult = array();
         foreach (InvoiceDAO::getInstance()->getInvoices($data) as $invoice)
-            if (!in_array($invoice->getCustomer()['customer_id'], $tmpResult))
-                $tmpResult[$invoice->getCustomer()['customer_id']] =
-                    $invoice->getCustomer()['lastname'] . " " .
-                    $invoice->getCustomer()['firstname'] . ' / ' .
-                    $invoice->getCustomer()['nickname'];
+$temp = $invoice->getCustomer();
+            if (!in_array($temp['customer_id'], $tmpResult))
+$temp2 = $invoice->getCustomer();
+                $tmpResult[$temp2['customer_id']] =
+                    $temp2['lastname'] . " " .
+                    $temp2['firstname'] . ' / ' .
+                    $temp2['nickname'];
         natcasesort($tmpResult);
         return $tmpResult;
     }
@@ -142,6 +146,7 @@ class ControllerSaleInvoice extends Controller
 
         $this->data['customers'] = $this->getCustomers();
         $data = $this->parameters;
+
         foreach (InvoiceDAO::getInstance()->getInvoices($data) as $invoice) {
             $action = array();
             $action[] = array(
@@ -165,11 +170,12 @@ class ControllerSaleInvoice extends Controller
 
             $arrTemp = explode(" ", $invoice->getTimeModified());
             $invoiceDate = $arrTemp[0];
+$temp = $invoice->getCustomer();
             $this->data['invoices'][] = array(
                 'invoiceId' => $invoice->getId(),
                 'action' => $action,
-                'customer' => $invoice->getCustomer()['lastname'] . ' ' . $invoice->getCustomer()['firstname'],
-                'customerId' => $invoice->getCustomer()['customer_id'],
+                'customer' => $temp['lastname'] . ' ' . $temp['firstname'],
+                'customerId' => $temp['customer_id'],
                 'shippingCost' => $this->getCurrency()->format($invoice->getShippingCost(), $this->config->get('config_currency')),
                 'shippingMethod' => \Shipping::getName($invoice->getShippingMethod(), $this->registry),
                 'status' => $this->load->model('localisation/invoice')->getInvoiceStatus($invoice->getStatusId()),
@@ -244,38 +250,38 @@ class ControllerSaleInvoice extends Controller
 //        $modelTransaction = $this->load->model('sale/transaction');
         $invoice = InvoiceDAO::getInstance()->getInvoice($invoiceId);
 //        $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
-
-        if ($invoice->getCustomer()['await_invoice_confirmation'])
+$temp = $invoice->getCustomer();
+        if ($temp['await_invoice_confirmation'])
             InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_CUSTOMER_CONFIRMATION);
         else
         {
             $totalToPay = $this->getCurrency()->convert(
                 $invoice->getTotalCustomerCurrency(),
                 $invoice->getCurrencyCode(),
-                $invoice->getCustomer()['base_currency_code']);
-            if ($invoice->getCustomer()['balance'] < $totalToPay)
-                if ($invoice->getCustomer()['allow_overdraft'])
+                $temp['base_currency_code']);
+            if ($temp['balance'] < $totalToPay)
+                if ($temp['allow_overdraft'])
                 {
-                    Transaction::addPayment($invoice->getCustomer()['customer_id'], $invoiceId, $this->registry);
+                    Transaction::addPayment($temp['customer_id'], $invoiceId, $this->registry);
                     InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_PAID);
                 }
                 else
                     InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
             else
             {
-                Transaction::addPayment($invoice->getCustomer()['customer_id'], $invoiceId, $this->registry);
+                Transaction::addPayment($temp['customer_id'], $invoiceId, $this->registry);
                 InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_PAID);
             }
         }
         $this->load->model('tool/communication')->sendMessage(
-            $invoice->getCustomer()['customer_id'],
+            $temp['customer_id'],
             sprintf(
                 $this->getLanguage()->get('INVOICE_STATUS_NOTIFICATION'),
                 $this->load->model('localisation/invoice')->getInvoiceStatus($invoiceId),
                 $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1),
                 $this->getCurrency()->format(
-                    $this->modelSaleCustomer->getCustomerBalance($invoice->getCustomer()['customer_id']),
-                    $invoice->getCustomer()['base_currency_code'],
+                    $this->modelSaleCustomer->getCustomerBalance($temp['customer_id']),
+                    $temp['base_currency_code'],
                     1)
             ),
             SYS_MSG_INVOICE_CREATED
@@ -486,8 +492,9 @@ class ControllerSaleInvoice extends Controller
             $this->modelReferenceAddress->getAddress($invoice->getShippingAddressId()), $this->registry);
 
         $orderItemIdParam = '';
+
         foreach ($invoice->getOrderItems() as $orderItem) {
-            //print_r($orderItem); die();
+
             $this->data['orderItems'][] = array(
                 'id' => $orderItem->getId(),
                 'comment' => $orderItem->getPublicComment(),
@@ -504,6 +511,25 @@ class ControllerSaleInvoice extends Controller
             $orderItemIdParam .= '&orderItemId[]=' . $orderItem->getId();
         }
 
+if (empty($this->data['orderItems'])) {
+	$_invoice = $this->modelSaleInvoice->getInvoice($this->parameters['invoiceId']);
+	foreach ($this->modelSaleInvoice->getInvoiceItems($_invoice['invoice_id']) as $invoiceItem) {
+            $orderItem = $this->modelSaleOrderItem->getOrderItem($invoiceItem['order_item_id']);
+            $this->data['orderItems'][] = array(
+                'id' => $orderItem['order_product_id'],
+                'comment' => $orderItem['public_comment'],
+                'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
+                'model' => $orderItem['model'],
+                'name' => $orderItem['name'],
+                'options' => $this->modelSaleOrderItem->getOrderItemOptionsString($invoiceItem['order_item_id']),
+                'order_id' => $orderItem['order_id'],
+                'price' => $this->currency->format($orderItem['price'], $this->config->get('config_currency')),
+                'quantity' => $orderItem['quantity'],
+                'subtotal' => $this->currency->format($orderItem['price'] * $orderItem['quantity'], $this->config->get('config_currency'))
+            );
+            $orderItemIdParam .= '&orderItemId[]=' . $invoiceItem['order_item_id'];
+        }
+}
         $add = $this->modelReferenceAddress->getAddress($invoice->getShippingAddressId());
         $this->load->model('sale/order');
         $order_info = $this->model_sale_order->getOrderByShippingAddressId($invoice->getShippingAddressId());

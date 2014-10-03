@@ -31,6 +31,7 @@
         <table>
           <thead>
             <tr>
+              <td class="remove"><input type="checkbox" onclick="$('input[name*=\'selected\']').attr('checked', this.checked);"/></td>
               <td class="image"><?php echo $column_image; ?></td>
               <td class="name"><?php echo $column_name; ?></td>
               <td class="model"><?php echo $column_model; ?></td>
@@ -42,6 +43,7 @@
           <tbody>
             <?php foreach ($products as $product) { ?>
             <tr>
+              <td class="checkbox"><input type="checkbox" name="selected[]" value="<?= $product['key'] ?>"/></td>
               <td class="image"><?php if ($product['thumb']) { ?>
                 <a href="<?php echo $product['href']; ?>"><img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>" /></a>
                 <?php } ?></td>

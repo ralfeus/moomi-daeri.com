@@ -21,6 +21,7 @@
 <link rel="<?= $style['rel'] ?>" type="text/css" href="<?= $style['href'] ?>" media="<?= $style['media'] ?>" />
 <?php } ?>
 <script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
 <link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.16.custom.css" />
@@ -37,6 +38,8 @@
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/wkauction.style.css" />
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/wkauction/wkallauctions.css" />
 <script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/countdown.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/jquery.countdown.js"></script>
+<script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/jquery.quick.pagination.min.js"></script>
 
 <!--[if IE]>
 <script type="text/javascript" src="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4-iefix.js"></script>
@@ -72,20 +75,25 @@ DD_belatedPNG.fix('#logo img');
   }
 
 ?>
-<!-- BEGIN JIVOSITE CODE {literal} -->
-<script type="text/javascript">//<!--
-    (function() {
-        var widget_id = '15225';
-        var s = document.createElement('script');
-        s.type = 'text/javascript';
-        s.async = true;
-        s.src = '//code.jivosite.com/script/widget/'+widget_id;
-        var ss = document.getElementsByTagName('script')[0];
-        ss.parentNode.insertBefore(s, ss);
+    <!-- Start SiteHeart code -->
+    <script>
+    (function(){
+    var widget_id = 732840;
+    _shcp =[{widget_id : widget_id}];
+    var lang =(navigator.language || navigator.systemLanguage
+    || navigator.userLanguage ||"en")
+    .substr(0,2).toLowerCase();
+    var url ="widget.siteheart.com/widget/sh/"+ widget_id +"/"+ lang +"/widget.js";
+    var hcc = document.createElement("script");
+    hcc.type ="text/javascript";
+    hcc.async =true;
+    hcc.src =("https:"== document.location.protocol ?"https":"http")
+    +"://"+ url;
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hcc, s.nextSibling);
     })();
-//-->
-</script>
-<!-- {/literal} END JIVOSITE CODE -->
+    </script>
+    <!-- End SiteHeart code -->
 <!-- RedHelper --
 <script id="rhlpscrtg" type="text/javascript" charset="utf-8" async="async"
         src="https://web.redhelper.ru/service/main.js?c=moomidae">

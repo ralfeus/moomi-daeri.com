@@ -173,5 +173,10 @@ class ModelAccountOrder extends Model {
 		
 		return $query->row['total'];
 	}
+
+	public function getOrderProduct($order_product_id) {
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_product WHERE order_product_id = '" . $order_product_id . "'");
+		return $query->row;
+	}
 }
 ?>
