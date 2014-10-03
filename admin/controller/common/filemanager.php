@@ -68,7 +68,6 @@ class ControllerCommonFileManager extends Controller {
 		
 		if (isset($this->request->post['directory'])) {
 			$directories = glob(rtrim(DIR_IMAGE . 'data/' . str_replace('../', '', $this->request->post['directory']), '/') . '/*', GLOB_ONLYDIR); 
-			$this->getLogger()->write(print_r($directories, true));
 			if ($directories) {
 				$i = 0;
 			
@@ -86,7 +85,6 @@ class ControllerCommonFileManager extends Controller {
 				}
 			}		
 		}
-        $this->getLogger()->write(var_dump($json));
 		$this->response->setOutput(json_encode($json));
 	}
 
