@@ -1197,7 +1197,7 @@ if($this->config->get('wk_auction_timezone_set')){
 		
 		$this->data['layouts'] = $this->model_design_layout->getLayouts();
 										
-		$this->template = 'catalog/product_form.tpl';
+		$this->template = 'catalog/productForm.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'
