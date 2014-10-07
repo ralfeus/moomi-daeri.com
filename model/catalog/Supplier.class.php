@@ -7,12 +7,14 @@ class Supplier {
     private $groupId;
     private $name;
     private $internalModel;
+    private $shippingCost;
 
-    public function __construct($groupId, $id, $internalModel, $name) {
+    public function __construct($groupId, $id, $internalModel, $name, $shippingCost) {
         $this->groupId = $groupId;
         $this->id = $id;
         $this->internalModel = $internalModel;
         $this->name = $name;
+        $this->shippingCost = $shippingCost;
     }
 
     public function getGroup() {
@@ -21,6 +23,7 @@ class Supplier {
         }
         return $this->group;
     }
+
     /**
      * @return mixed
      */
@@ -32,24 +35,31 @@ class Supplier {
     /**
      * @return mixed
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
     /**
      * @return mixed
      */
-    public function getInternalModel()
-    {
+    public function getInternalModel() {
         return $this->internalModel;
     }
 
     /**
      * @return mixed
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
+    }
+
+    /**
+     * @return float
+     */
+    public function getShippingCost() {
+        if (!isset($this->shippingCost)) {
+            $this->shippingCost = SupplierDAO::getInstance()->getShippingCost($this->id);
+        }
+        return $this->shippingCost;
     }
 }

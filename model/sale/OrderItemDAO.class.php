@@ -2,6 +2,7 @@
 namespace model\sale;
 
 use model\catalog\Supplier;
+use model\catalog\SupplierDAO;
 use model\DAO;
 
 class OrderItemDAO extends DAO {
@@ -192,14 +193,13 @@ class OrderItemDAO extends DAO {
         unset($data['filterSupplierId']);
         $filter = $this->buildFilter($data);
         $query = "
-            SELECT DISTINCT s.*
+            SELECT DISTINCT s.supplier_id
             FROM " . $this->orderItemsFromQuery
             . (!is_null($filter) ? "WHERE " . $filter->filterString : "")
         ;
         $result = array();
-        foreach ($this->getDb()->query($query, $filter->params)->rows as $supplierEntry) {
-            $result[] = new Supplier($supplierEntry['supplier_group_id'], $supplierEntry['supplier_id'],
-                $supplierEntry['internal_model'], $supplierEntry['name']);
+        foreach ($this->getDb()->query($query, $filter->params)->rows as $supplierId) {
+            $result[] = SupplierDAO::getInstance()->getSupplier($supplierId['supplier_id']);
         }
         return $result;
     }

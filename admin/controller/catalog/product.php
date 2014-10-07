@@ -353,9 +353,9 @@ class ControllerCatalogProduct extends Controller {
 					break;
 				}					
 			}
-			$suppliers = SupplierDAO::getInstance()->getSupplier($result['supplier_id']);
-			if (empty($suppliers))
-				$suppliers['name'] = "";
+			$supplier = SupplierDAO::getInstance()->getSupplier($result['supplier_id']);
+			if (empty($supplier))
+				$supplier['name'] = "";
 
             $manufacturers = $this->model_catalog_manufacturer->getManufacturer($result['manufacturer_id']);
 			if (empty($manufacturers))
@@ -372,7 +372,7 @@ class ControllerCatalogProduct extends Controller {
 				'user_name'  => $result['user_name'],
 				'status'     => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
 				'manufacturer'=> $manufacturers['name'],
-				'supplier'	 => $suppliers['name'],
+				'supplier'	 => $supplier->getName(),
 				'selected'   => isset($this->request->post['selected']) && in_array($result['product_id'], $this->request->post['selected']),
 				'action'     => $action,
 				'link'     	 => $link,
@@ -1197,7 +1197,7 @@ if($this->config->get('wk_auction_timezone_set')){
 		
 		$this->data['layouts'] = $this->model_design_layout->getLayouts();
 										
-		$this->template = 'catalog/product_form.tpl';
+		$this->template = 'catalog/productForm.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'

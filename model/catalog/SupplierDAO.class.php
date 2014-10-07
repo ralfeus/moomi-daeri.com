@@ -13,12 +13,18 @@ class SupplierDAO extends DAO {
             SET
                 supplier_group_id = ?,
                 name = ?,
-                internal_model = ?
-            ", array("i:" . $data['supplier_group_id'], 's:' . $data['name'], 's:' . $data['internal_model'])
+                internal_model = ?,
+                shipping_cost = ?
+            ", array(
+                "i:" . $data['supplierGroupId'],
+                's:' . $data['name'],
+                's:' . $data['internalModel'],
+                'd:' . $data['shippingCost']
+            )
         );
 //		$supplier_id = $this->getDb()->getLastId();
 
-		$this->cache->delete('supplier');
+		$this->getCache()->deleteAll('/^suppliers\./');
     }
 
     /**
@@ -32,12 +38,19 @@ class SupplierDAO extends DAO {
 		    SET
                 supplier_group_id = ?,
 		        name = ?,
-                internal_model = ?
+                internal_model = ?,
+                shipping_cost = ?
             WHERE supplier_id = ?
-            ", array('i:' . $data['supplier_group_id'], 's:' . $data['name'], 's:' . $data['internal_model'], "i:$supplierId")
+            ", array(
+                'i:' . $data['supplierGroupId'],
+                's:' . $data['name'],
+                's:' . $data['internalModel'],
+                'd:' . $data['shippingCost'],
+                "i:$supplierId"
+            )
         );
 
-		$this->cache->delete('supplier');
+		$this->getCache()->deleteAll('/^suppliers\./');
     }
 
     /**
@@ -51,13 +64,35 @@ class SupplierDAO extends DAO {
     }
 
     /**
+     * @param int $supplierId
+     * @return float
+     */
+    public function getShippingCost($supplierId) {
+        return
+            $this->getDb()->queryScalar(<<<SQL
+                SELECT shipping_cost
+                FROM supplier
+                WHERE supplier_id = ?
+SQL
+                , array("i:$supplierId")
+            );
+    }
+
+    /**
      * @param string $supplierId
-     * @return array
+     * @return Supplier
      */
     public function getSupplier($supplierId) {
 		$query = $this->getDb()->query("SELECT DISTINCT * FROM supplier WHERE supplier_id = ?", array("i:$supplierId"));
 
-		return $query->row;
+		return
+            new Supplier(
+                $query->row['supplier_group_id'],
+                $query->row['supplier_id'],
+                $query->row['internal_model'],
+                $query->row['name'],
+                $query->row['shipping_cost']
+            );
     }
 
     /**
@@ -72,10 +107,10 @@ class SupplierDAO extends DAO {
 
     /**
      * @param array $data
-     * @return array
+     * @return Supplier[]
      */
     public function getSuppliers($data = array()) {
-		if ($data) {
+        if (is_null($this->getCache()->get('suppliers.' . md5(serialize($data))))) {
 			$sql = "SELECT * FROM supplier";
 
 			$sort_data = array(
@@ -107,20 +142,20 @@ class SupplierDAO extends DAO {
 			}
 
 			$query = $this->getDb()->query($sql);
-
-			return $query->rows;
+            $result = array();
+			foreach ($query->rows as $supplierEntry) {
+                $result[] = new Supplier(
+                    $supplierEntry['supplier_group_id'],
+                    $supplierEntry['supplier_id'],
+                    $supplierEntry['internal_model'],
+                    $supplierEntry['name'],
+                    $supplierEntry['shipping_cost']
+                );
+            }
+            $this->getCache()->set('suppliers.' . md5(serialize($data)), $result);
+            return $result;
 		} else {
-			$supplier_data = $this->cache->get('supplier');
-
-			if (!$supplier_data) {
-				$query = $this->getDb()->query("SELECT * FROM supplier ORDER BY name");
-
-				$supplier_data = $query->rows;
-
-				$this->cache->set('supplier', $supplier_data);
-			}
-
-			return $supplier_data;
+			return $this->getCache()->get('suppliers.' . md5(serialize($data)));
 		}
     }
 
@@ -139,4 +174,3 @@ class SupplierDAO extends DAO {
         return $this->getDb()->queryScalar("SELECT COUNT(*) as total FROM supplier WHERE supplier_group_id = ?", array("i:$supplierGroupId"));
     }
 }
-?>
