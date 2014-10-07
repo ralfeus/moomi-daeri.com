@@ -10,8 +10,7 @@ use model\sale\OrderItemDAO;
  * Time: 21:43
  * To change this template use File | Settings | File Templates.
  */
-class ControllerSaleInvoice extends Controller
-{
+class ControllerSaleInvoice extends Controller {
     /** @var ModelReferenceAddress */
     private $modelReferenceAddress;
     /** @var ModelSaleCustomer */
@@ -27,8 +26,6 @@ class ControllerSaleInvoice extends Controller
         $this->modelReferenceAddress = $this->load->model('reference/address');
         $this->modelSaleCustomer = $this->load->model('sale/customer');
         $this->modelSaleOrder = $this->load->model('sale/order');
-	$this->modelSaleInvoice = $this->load->model('sale/invoice');
-        $this->modelSaleOrderItem = $this->load->model('sale/order_item');
         $this->load->model('tool/image');
 
         $this->data['notifications'] = array();
@@ -300,14 +297,15 @@ $temp = $invoice->getCustomer();
         $this->response->setOutput($this->render());
     }
 
-    protected function initParameters()
-    {
+    protected function initParameters() {
+        global $_REQUEST;
         $this->parameters['data'] = empty($_REQUEST['data']) ? null : $_REQUEST['data'];
         $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
         $this->parameters['invoiceId'] = empty($_REQUEST['invoiceId']) ? null : $_REQUEST['invoiceId'];
         $this->parameters['method'] = empty($_REQUEST['method']) ? null : $_REQUEST['method'];
         $this->parameters['orderItemId'] = empty($_REQUEST['orderItemId']) || !is_array($_REQUEST['orderItemId']) ? array() : $_REQUEST['orderItemId'];
         $this->parameters['param'] = empty($_REQUEST['param']) ? null : $_REQUEST['param'];
+        $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
         $this->parameters['shippingMethod'] = empty($_REQUEST['shippingMethod']) ? null : $_REQUEST['shippingMethod'];
         $this->parameters['token'] = $this->session->data['token'];
         $this->parameters['weight'] = empty($_REQUEST['weight']) ? null : $_REQUEST['weight'];
@@ -376,14 +374,13 @@ $temp = $invoice->getCustomer();
                 OrderItemDAO::getInstance()->setStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_PACKED);
     }
 
-    private function showCreateForm()
-    {
+    private function showCreateForm() {
         //$this->log->write(print_r($this->request->request, true));
         $this->setBreadcrumbs();
-        if (!isset($this->request->request['selectedItems']))
+        if (!sizeof($this->parameters['selectedItems']))
             return;
         $orderItems = OrderItemDAO::getInstance()->getOrderItems(array(
-            'selected_items' => $this->request->request['selectedItems']
+            'selected_items' => $this->parameters['selectedItems']
         ));
 
 
@@ -398,6 +395,7 @@ $temp = $invoice->getCustomer();
         $totalWeight = 0;
         $total = 0; $totalCustomerCurrency = 0;
         $orderItemIdParam = '';
+        $localShipping = array();
         foreach ($orderItems as $orderItem) {
             $orderItemObject = new OrderItem($this->registry, $orderItem['affiliate_id'],
                 $orderItem['affiliate_transaction_id'], $orderItem['comment'], $orderItem['customer_id'], 
@@ -428,6 +426,26 @@ $temp = $invoice->getCustomer();
             $total += $orderItem['total']; //$orderItem['price'] * $orderItem['quantity'];
             $totalCustomerCurrency += $orderItemObject->getTotalCustomerCurrency();
             $orderItemIdParam .= '&orderItemId[]=' . $orderItem['order_product_id'];
+            /// Calculate local shipping
+            if (array_key_exists($orderItemObject->getSupplierId(), $localShipping)) {
+                $localShipping[$orderItemObject->getSupplierId()]['total'] += $orderItemObject->getTotal();
+                $orderItemObject->setShippingCost(0);
+            } else {
+                $localShipping[$orderItemObject->getSupplierId()]['orderItem'] = $orderItemObject;
+                $localShipping[$orderItemObject->getSupplierId()]['total'] = $orderItemObject->getTotal();
+                $orderItemObject->setShippingCost($orderItemObject->getSupplier()->getShippingCost());
+            }
+        }
+        /// Check whether suppliers have free shipping
+        foreach ($localShipping as $supplierEntry) {
+            /** @var OrderItem $orderItem */
+            $orderItem = $supplierEntry['orderItem'];
+            if ($supplierEntry['total'] >= $orderItem->getSupplier()->getFreeShippingThreshold()) {
+                $orderItem->setShippingCost(0);
+            } else {
+                $total += $orderItem->getShippingCost();
+                $totalCustomerCurrency += $orderItem->getShippingCost(true);
+            }
         }
         /// Set invoice data
         $firstItemOrder = $this->modelSaleOrder->getOrder($orderItems[0]['order_id']);
@@ -511,30 +529,29 @@ $temp = $invoice->getCustomer();
             $orderItemIdParam .= '&orderItemId[]=' . $orderItem->getId();
         }
 
-	foreach ($this->data['orderItems'] as $item) {
-	    $ids[] = $item['id'];
-	}
-
-	$_invoice = $this->modelSaleInvoice->getInvoice($this->parameters['invoiceId']);
-	foreach ($this->modelSaleInvoice->getInvoiceItems($_invoice['invoice_id']) as $invoiceItem) {
-	    if (!in_array($invoiceItem['order_item_id'],$ids)) {
-		$orderItem = $this->modelSaleOrderItem->getOrderItem($invoiceItem['order_item_id']);
-		$this->data['orderItems'][] = array(
-		    'id' => $orderItem['order_product_id'],
-		    'comment' => $orderItem['public_comment'],
-		    'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
-		    'model' => $orderItem['model'],
-		    'name' => $orderItem['name'],
-		    'options' => $this->modelSaleOrderItem->getOrderItemOptionsString($invoiceItem['order_item_id']),
-		    'order_id' => $orderItem['order_id'],
-		    'price' => $this->currency->format($orderItem['price'], $this->config->get('config_currency')),
-		    'quantity' => $orderItem['quantity'],
-		    'subtotal' => $this->currency->format($orderItem['price'] * $orderItem['quantity'], $this->config->get('config_currency'))
-		);
-		$orderItemIdParam .= '&orderItemId[]=' . $invoiceItem['order_item_id'];
-	    }
+        foreach ($this->data['orderItems'] as $item) {
+            $ids[] = $item['id'];
         }
 
+        if (empty($this->data['orderItems'])) {
+            $_invoice = InvoiceDAO::getInstance()->getInvoice($this->parameters['invoiceId']);
+            foreach (InvoiceDAO::getInstance()->getInvoiceItems($_invoice['invoice_id']) as $invoiceItem) {
+                    $orderItem = OrderItemDAO::getInstance()->getOrderItem($invoiceItem['order_item_id']);
+                    $this->data['orderItems'][] = array(
+                        'id' => $orderItem->getId(),
+                        'comment' => $orderItem->getPublicComment(),
+                        'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
+                        'model' => $orderItem->getModel(),
+                        'name' => $orderItem->getName(),
+                        'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
+                        'order_id' => $orderItem->getOrderId(),
+                        'price' => $this->currency->format($orderItem->getPrice(), $this->config->get('config_currency')),
+                        'quantity' => $orderItem->getQuantity(),
+                        'subtotal' => $this->currency->format($orderItem->getPrice() * $orderItem->getQuantity(), $this->config->get('config_currency'))
+                    );
+                    $orderItemIdParam .= '&orderItemId[]=' . $orderItem->getId();
+                }
+        }
         $add = $this->modelReferenceAddress->getAddress($invoice->getShippingAddressId());
         $this->load->model('sale/order');
         $order_info = $this->model_sale_order->getOrderByShippingAddressId($invoice->getShippingAddressId());
