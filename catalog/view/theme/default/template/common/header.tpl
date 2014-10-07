@@ -379,7 +379,7 @@ DD_belatedPNG.fix('#logo img');
       <div class="links">
 		  <a class="account" href="<?= $account ?>"><span><?= $text_account ?></span></a> 
 		  <?php if($this->config->get('wk_auction_timezone_set')){ ?>
-		    <a class="cart" style="right: 475px;" href="<?php echo $menuauction; ?>"><span>Auction</span></a>      
+		    <a class="auction_h" href="<?php echo $menuauction; ?>"><span>Auction</span></a>      
 		  <?php } ?>
                   <a class="home" href="<?= $home ?>"><span><?= $text_home ?></span></a>
                   <a class="wishlist_total" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>

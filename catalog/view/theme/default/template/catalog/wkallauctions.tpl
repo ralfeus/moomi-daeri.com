@@ -24,7 +24,7 @@ jQuery(document).ready(function() {
 
 <div class="box mp_auction" id="daily_deal_block_center">
 
-  <div class="mpauction-heading"><?php echo $heading_title; ?></div>
+  <div class="mpauction-heading"><div class="auction_pic"><?php echo $heading_title; ?></div></div>
 
   <div class="mpauction-content" id="dmmod">
   
