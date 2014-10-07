@@ -29,21 +29,17 @@
           </div>
           <?php 
       }
-   }
-   else{
+   } else{
 
-      foreach($my_bids as $ibid){
-
-      if($ibid['user_id']==$user)
+      if($my_bids[count($my_bids)-1]['user_id']==$user)
       {
          $buser=$user;
       }
-      
-    }
+     
    
-   $tbids=count($my_bids);
+    $tbids=count($my_bids);
  
-   if($auction_id){
+    if($auction_id){
   
    	$sa=explode(" ",$end);
 

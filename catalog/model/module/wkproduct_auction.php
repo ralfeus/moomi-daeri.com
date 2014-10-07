@@ -13,8 +13,8 @@ class ModelModuleWkproductauction extends Model {
 	}
 	public function getAuctionbids($auction_id) {
 			
-		$data = $this->db->query("SELECT * FROM " . DB_PREFIX . "wkauctionbids WHERE sold=0 AND auction_id = '" . (int)$auction_id . "' ORDER BY user_bid");
-		
+		$data = $this->db->query("SELECT * FROM " . DB_PREFIX . "wkauctionbids WHERE sold=0 AND auction_id = '" . (int)$auction_id . "' ORDER BY id");
+
 		return $data->rows;
 	}
 	public function updateAuctionbids($auction_id) {
@@ -124,7 +124,7 @@ fclose($handle);
 	}
 
 	public function wkauctionbids_viewbids($auction){
-	    $query =$this->db->query("SELECT c.nickname, wa.user_bid FROM " . DB_PREFIX . "wkauctionbids wa LEFT JOIN ". DB_PREFIX ."customer c ON (c.customer_id=wa.user_id) WHERE wa.auction_id = '" . (int)$auction . "' ORDER BY wa.user_bid DESC");
+	    $query =$this->db->query("SELECT c.nickname, wa.user_bid FROM " . DB_PREFIX . "wkauctionbids wa LEFT JOIN ". DB_PREFIX ."customer c ON (c.customer_id=wa.user_id) WHERE wa.auction_id = '" . (int)$auction . "' ORDER BY wa.id DESC");
 	    return $query->rows;
 	}
 
