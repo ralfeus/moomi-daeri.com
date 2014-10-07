@@ -2,7 +2,7 @@
 namespace model\total;
 use model\DAO;
 
-abstract class TotalDAO extends DAO {
+abstract class TotalBaseDAO extends DAO {
     public abstract function getOrderTotal(&$totalData, &$total, &$taxes, $orderId, $chosenOnes = false);
     public abstract function getTotal(&$totalData, &$total, &$taxes, $chosenOnes = false);
     public abstract function updateOrderTotal($orderId, $totalData);
