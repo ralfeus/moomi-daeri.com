@@ -101,25 +101,25 @@ class ControllerSaleInvoice extends Controller {
         }
     }
 
-    private function getCustomers()
-    {
+    private function getCustomers() {
         $data = array();
-        foreach ($this->parameters as $key => $value)
-        {
+        foreach ($this->parameters as $key => $value) {
             if (strpos($key, 'filter') === false)
                 continue;
             $data[$key] = $value;
         }
         unset($data['filterCustomerId']);
         $tmpResult = array();
-        foreach (InvoiceDAO::getInstance()->getInvoices($data) as $invoice)
-$temp = $invoice->getCustomer();
-            if (!in_array($temp['customer_id'], $tmpResult))
-$temp2 = $invoice->getCustomer();
+        foreach (InvoiceDAO::getInstance()->getInvoices($data) as $invoice) {
+            $temp = $invoice->getCustomer();
+            if (!in_array($temp['customer_id'], $tmpResult)) {
+                $temp2 = $invoice->getCustomer();
                 $tmpResult[$temp2['customer_id']] =
                     $temp2['lastname'] . " " .
                     $temp2['firstname'] . ' / ' .
                     $temp2['nickname'];
+            }
+        }
         natcasesort($tmpResult);
         return $tmpResult;
     }
