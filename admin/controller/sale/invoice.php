@@ -511,6 +511,30 @@ $temp = $invoice->getCustomer();
             $orderItemIdParam .= '&orderItemId[]=' . $orderItem->getId();
         }
 
+	foreach ($this->data['orderItems'] as $item) {
+	    $ids[] = $item['id'];
+	}
+
+	$_invoice = $this->modelSaleInvoice->getInvoice($this->parameters['invoiceId']);
+	foreach ($this->modelSaleInvoice->getInvoiceItems($_invoice['invoice_id']) as $invoiceItem) {
+	    if (!in_array($invoiceItem['order_item_id'],$ids)) {
+		$orderItem = $this->modelSaleOrderItem->getOrderItem($invoiceItem['order_item_id']);
+		$this->data['orderItems'][] = array(
+		    'id' => $orderItem['order_product_id'],
+		    'comment' => $orderItem['public_comment'],
+		    'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
+		    'model' => $orderItem['model'],
+		    'name' => $orderItem['name'],
+		    'options' => $this->modelSaleOrderItem->getOrderItemOptionsString($invoiceItem['order_item_id']),
+		    'order_id' => $orderItem['order_id'],
+		    'price' => $this->currency->format($orderItem['price'], $this->config->get('config_currency')),
+		    'quantity' => $orderItem['quantity'],
+		    'subtotal' => $this->currency->format($orderItem['price'] * $orderItem['quantity'], $this->config->get('config_currency'))
+		);
+		$orderItemIdParam .= '&orderItemId[]=' . $invoiceItem['order_item_id'];
+	    }
+        }
+
         $add = $this->modelReferenceAddress->getAddress($invoice->getShippingAddressId());
         $this->load->model('sale/order');
         $order_info = $this->model_sale_order->getOrderByShippingAddressId($invoice->getShippingAddressId());
