@@ -1,6 +1,7 @@
 <?php
-require_once("ModelTotal.php");
-class ModelTotalLowOrderFee extends ModelTotal
+use model\total\TotalDAO;
+
+class ModelTotalLowOrderFee extends TotalDAO
 {
     public function getOrderTotal(&$totalData, &$total, &$taxes, $orderId, $chosenOnes = false)
     {

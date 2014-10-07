@@ -1,6 +1,7 @@
 <?php
-require_once('ModelTotal.php');
-class ModelTotalSubTotal extends ModelTotal {
+use model\total\TotalDAO;
+
+class ModelTotalSubTotal extends TotalDAO {
     public function getOrderTotal(&$totalData, &$total, &$taxes, $orderId, $chosenOnes = false)
     {
         /// Calculate subtotal of the cart

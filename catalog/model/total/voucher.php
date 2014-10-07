@@ -1,6 +1,7 @@
 <?php
-require_once('ModelTotal.php');
-class ModelTotalVoucher extends ModelTotal {
+use model\total\TotalDAO;
+
+class ModelTotalVoucher extends TotalDAO {
     public function getOrderTotal(&$totalData, &$total, &$taxes, $orderId, $chosenOnes = false)
     {
         $this->getOrderExtensionTotal($totalData, $total, $taxes, $orderId, 'voucher', $chosenOnes);
