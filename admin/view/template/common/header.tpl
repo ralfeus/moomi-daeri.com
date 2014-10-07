@@ -15,6 +15,7 @@
 <?php } ?>
 <link rel="stylesheet" type="text/css" href="view/stylesheet/stylesheet.css" />
 <link rel="stylesheet" type="text/css" href="view/stylesheet/jquery.multiselect.css" />
+<link rel="stylesheet" type="text/css" href="view/stylesheet/jquery.calculator.css" />
 <link rel="stylesheet" type="text/css" href="view/stylesheet/jquery.multiselect.filter.css" />
 <?php foreach ($styles as $style) { ?>
 <link rel="<?php echo $style['rel']; ?>" type="text/css" href="<?php echo $style['href']; ?>" media="<?php echo $style['media']; ?>" />
@@ -27,6 +28,13 @@
 <script type="text/javascript" src="view/javascript/jquery/superfish/js/superfish.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/jquery.multiselect.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/jquery.multiselect.filter.js"></script>
+<script type="text/javascript" src="view/javascript/jquery/jquery.plugin.js"></script>
+<script type="text/javascript" src="view/javascript/jquery/jquery.calculator.js"></script>
+<script type="text/javascript">
+    $(function  () {
+        $('#Calculator').calculator({showOn: 'opbutton', buttonImageOnly: true, buttonImage: 'view/image/calculator.png'});
+    });
+</script> 
 <?php foreach ($scripts as $script) { ?>
 <script type="text/javascript" src="<?php echo $script; ?>"></script>
 <?php } ?>
