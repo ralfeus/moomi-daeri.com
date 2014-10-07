@@ -429,6 +429,23 @@ label {
 	background: url('../image/header_cart.png') no-repeat;
 }
 
+#header .links .auction_h {
+	display: block;
+	padding: 0px 0px 0px 50px;
+	position: absolute;
+	bottom: 15px;
+	right: 475px;
+	color: #3f3f3f;
+	text-decoration: none;
+	font-family: Tahoma;
+	font-size: 14px;
+	width: 95px;
+	height: 47px;
+	line-height: 47px;
+	text-align: center;
+	background: url('../image/header_auction.gif') no-repeat;
+}
+
 .box-button .info {
 	display: block;
 	padding: 0px 8px 0px 0px;
