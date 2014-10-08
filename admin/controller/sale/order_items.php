@@ -33,7 +33,9 @@ class ControllerSaleOrderItems extends Controller {
                 //'isCustomerOrderReady' => $this->isCustomerOrderReady($customer['customer_id'])
             );
         }
-		natcasesort($result);
+		uasort($result, function($a, $b) {
+            return strnatcasecmp($a['nickname_name'], $b['nickname_name']);
+        });
 		return $result;
 	}
 
@@ -326,7 +328,7 @@ foreach ($temp as $v) {
 //		$this->load->model('localisation/order_status');
 		///$this->data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
 
-		$this->template = 'sale/order_items_list.tpl';
+		$this->template = 'sale/orderItemsList.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'
