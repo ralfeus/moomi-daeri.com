@@ -4,6 +4,15 @@ namespace model\catalog;
 use model\DAO;
 class SupplierDAO extends DAO {
     /**
+     * @param int $supplierId
+     * @param string $columnName
+     * @return mixed
+     */
+    private function getSingleValue($supplierId, $columnName) {
+        return $this->getDb()->queryScalar("SELECT $columnName FROM supplier WHERE supplier_id = ?", array("i:$supplierId"));
+    }
+
+    /**
      * @param array $data
      * @return void
      */
@@ -67,32 +76,62 @@ class SupplierDAO extends DAO {
      * @param int $supplierId
      * @return float
      */
+    public function getFreeShippingThreshold($supplierId) {
+        return $this->getSingleValue($supplierId, 'free_shipping_threshold');
+    }
+
+    /**
+     * @param int $supplierId
+     * @return int
+     */
+    public function getGroupId($supplierId) {
+        return $this->getSingleValue($supplierId, 'supplier_group_id');
+    }
+
+    /**
+     * @param int $supplierId
+     * @return string
+     */
+    public function getInternalModel($supplierId) {
+        return $this->getSingleValue($supplierId, 'internal_model');
+    }
+
+    /**
+     * @param int $supplierId
+     * @return string
+     */
+    public function getName($supplierId) {
+        return $this->getSingleValue($supplierId, 'name');
+    }
+
+    /**
+     * @param int $supplierId
+     * @return float
+     */
     public function getShippingCost($supplierId) {
-        return
-            $this->getDb()->queryScalar(<<<SQL
-                SELECT shipping_cost
-                FROM supplier
-                WHERE supplier_id = ?
-SQL
-                , array("i:$supplierId")
-            );
+        return $this->getSingleValue($supplierId, 'shipping_cost');
     }
 
     /**
      * @param string $supplierId
+     * @param bool $shallow Defines whether whole object data should be extracted from the database or just stub
      * @return Supplier
      */
-    public function getSupplier($supplierId) {
-		$query = $this->getDb()->query("SELECT DISTINCT * FROM supplier WHERE supplier_id = ?", array("i:$supplierId"));
-
-		return
-            new Supplier(
-                $query->row['supplier_group_id'],
-                $query->row['supplier_id'],
-                $query->row['internal_model'],
-                $query->row['name'],
-                $query->row['shipping_cost']
-            );
+    public function getSupplier($supplierId, $shallow = false) {
+        if ($shallow) {
+             return new Supplier($supplierId);
+        } else {
+            $query = $this->getDb()->query("SELECT * FROM supplier WHERE supplier_id = ?", array("i:$supplierId"));
+            return
+                new Supplier(
+                    $query->row['supplier_group_id'],
+                    $query->row['supplier_id'],
+                    $query->row['internal_model'],
+                    $query->row['name'],
+                    $query->row['shipping_cost'],
+                    $query->row['free_shipping_threshold']
+                );
+        }
     }
 
     /**
@@ -149,7 +188,8 @@ SQL
                     $supplierEntry['supplier_id'],
                     $supplierEntry['internal_model'],
                     $supplierEntry['name'],
-                    $supplierEntry['shipping_cost']
+                    $supplierEntry['shipping_cost'],
+                    $supplierEntry['free_shipping_threshold']
                 );
             }
             $this->getCache()->set('suppliers.' . md5(serialize($data)), $result);
