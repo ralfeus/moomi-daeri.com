@@ -48,7 +48,7 @@ abstract class TotalBaseDAO extends DAO {
                 text = ?,
                 value = ?
             WHERE order_id = ? AND code = ?
-            ", array('s:' . $totalData['text'], 'f:' . $totalData['value'], "i:$orderId", "s:$extension")
+            ", array('s:' . $totalData['text'], 'd:' . $totalData['value'], "i:$orderId", "s:$extension")
         );
     }
 }

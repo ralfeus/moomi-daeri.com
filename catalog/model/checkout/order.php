@@ -798,7 +798,8 @@ class ModelCheckoutOrder extends Model {
 
     private function updateTotals($orderId, $totalData)
     {
-        foreach ($totalData as $totalsElement)
+        foreach ($totalData as $totalsElement) {
             $this->{'model_total_' . $totalsElement['code']}->updateOrderTotal($orderId, $totalsElement);
+        }
     }
 }
