@@ -184,8 +184,8 @@ class SupplierDAO extends DAO {
             $result = array();
 			foreach ($query->rows as $supplierEntry) {
                 $result[] = new Supplier(
-                    $supplierEntry['supplier_group_id'],
                     $supplierEntry['supplier_id'],
+                    $supplierEntry['supplier_group_id'],
                     $supplierEntry['internal_model'],
                     $supplierEntry['name'],
                     $supplierEntry['shipping_cost'],
