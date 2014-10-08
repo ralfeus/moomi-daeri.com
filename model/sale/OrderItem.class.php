@@ -1,6 +1,8 @@
 <?php
 namespace model\sale;
 
+use model\catalog\Supplier;
+use model\catalog\SupplierDAO;
 use model\core\Currency;
 use model\core\CurrencyDAO;
 
@@ -9,11 +11,14 @@ class OrderItem {
     private $registry;
     private $affiliateId;
     private $affiliateTransactionId;
+    protected $downloadData;
     private $id;
     private $orderId;
+    protected $product;
     private $productId;
     private $name;
     private $model;
+    protected $options;
     private $quantity;
     private $price;
     private $total;
@@ -28,6 +33,8 @@ class OrderItem {
     private $customerName;
     private $customerId;
     private $customerNick;
+    /** @var Supplier */
+    private $supplier;
     private $supplierId;
     private $imagePath;
     private $weight;
@@ -254,6 +261,13 @@ class OrderItem {
     }
 
     /**
+     * @param float $value
+     */
+    public function setShippingCost($value) {
+        $this->shippingCost = $value;
+    }
+
+    /**
      * @return string
      */
     public function getStatusDate()
@@ -267,6 +281,16 @@ class OrderItem {
     public function getStatusId()
     {
         return $this->statusId;
+    }
+
+    /**
+     * @return Supplier
+     */
+    public function getSupplier() {
+        if (!isset($this->supplier)) {
+            $this->supplier = SupplierDAO::getInstance()->getSupplier($this->supplierId, true);
+        }
+        return $this->supplier;
     }
 
     /**
