@@ -537,7 +537,7 @@ class ControllerCommonHome extends Controller {
       $this->parameters = $this->session->data['parameters']['catalog/product'];
       $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
       $this->parameters['sort'] = empty($_REQUEST['sort']) ? null : $_REQUEST['sort'];
-      $this->parameters['token'] = $this->session->data['token'];
+      $this->parameters['token'] = isset($this->session->data['token']) ? $this->session->data['token'] : $_REQUEST['token'];
   }
 
   private function getUserNames()
