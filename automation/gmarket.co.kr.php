@@ -65,7 +65,7 @@ abstract class GMarketCoKr extends ProductSource {
             $items = $htmlDom->find('tr');
             /** @var simple_html_dom_node $item */
             foreach ($items as $item) {
-                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount . "\n";
+                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount . "\t- ";
     //            $aElement = $item->find('a[href*=category_detail.php]', 0);
                 $product = new Product(
                     $this,
@@ -81,7 +81,8 @@ abstract class GMarketCoKr extends ProductSource {
                 if ($this->addProductToList($product, $products)) {
                     self::fillDetails($product);
                 }
-    //            if ($tmp > 5) break;
+                echo $product->sourceProductId . "\n";
+//                if ($tmp > 5) break;
             }
             $htmlDom->clear();
         } while ($productsToGet);

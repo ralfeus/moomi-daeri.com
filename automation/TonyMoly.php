@@ -7,9 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 class TonyMoly extends ProductSource {
-    private function __construct() {}
-
-    private function fillDetails(Product $product) {
+   private function fillDetails(Product $product) {
         $matches = array();
         /// Get images
         $html = $this->getHtmlDocument('http://etonymoly.com/common/pop_zoom_goods.asp?guid=' . $product->sourceProductId);
@@ -50,7 +48,7 @@ class TonyMoly extends ProductSource {
             echo "Page $currPage of $pagesNum\n"; $tmp = 1;
             $items = $html->find('ul a');
             foreach ($items as $item) {
-                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . sizeof($items) . "\n";
+                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . sizeof($items) . "\t - ";
                 if (!sizeof($item->find('img')))
                     continue;
 //                preg_match('/(?<=guid=)\d+/', $item->attr['href'], $matches);
@@ -68,6 +66,7 @@ class TonyMoly extends ProductSource {
                 if ($this->addProductToList($product, $products)) {
                     self::fillDetails($product);
                 }
+                echo $product->sourceProductId . "\n";
 //                $products[] = $product;
             }
             if ($currPage < $pagesNum)
@@ -95,7 +94,7 @@ class TonyMoly extends ProductSource {
         foreach ($urls as $url) {
             echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . "\n";
             $products = array_merge($products, self::getCategoryProducts($url));
-//            break;
+            break;
         }
         echo "Totally found " . sizeof($products) . " products\n";
         echo date('Y-m-d H:i:s') . " --- Finished\n";

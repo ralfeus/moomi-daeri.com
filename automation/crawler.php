@@ -6,8 +6,7 @@ spl_autoload_register(function($class) {
    include("$class.php");
 });
 
-function handleError($errno, $errstr, $errfile, $errline, array $errcontext)
-{
+function handleError($errno, $errstr, $errfile, $errline, array $errcontext) {
     // error was suppressed with the @-operator
     if (0 === error_reporting()) {
         return false;
@@ -133,8 +132,7 @@ class Product {
 
     public function __construct(
         ProductSource $sourceSite, $categoryId, $sourceProductId, $name, $url, $thumbnail, $price, $description = null, $weight = null
-    )
-    {
+    ) {
         $this->categoryId = $categoryId;
         $this->description = $description;
         $this->name = $name;
@@ -239,8 +237,11 @@ class DatabaseManager {
     public function cleanup($syncTime) {
         $statement = $this->connection->prepare('
             UPDATE imported_products
-            SET active = FALSE
-            WHERE time_modified < :lastUpdateTime
+            SET active =
+                CASE
+                    WHEN time_modified < :lastUpdateTime THEN FALSE
+                    ELSE TRUE
+                END
         ');
         $statement->execute(array(':lastUpdateTime' => date('Y-m-d H:i:s', $syncTime)));
     }
@@ -274,7 +275,6 @@ if ($sites = file_get_contents("crawler.lck")) {
     foreach (DatabaseManager::getInstance()->getSourceSitesById($sites) as $sourceSite) {
         $className = $sourceSite->class_name;
         echo date('Y-m-d H:i:s') . " Crawling $className\n";
-//        require_once("$className.php") || die("Couldn't find class file $className");
         DatabaseManager::getInstance()->addProducts($className::getInstance());
     }
     DatabaseManager::getInstance()->cleanup($startTime);
