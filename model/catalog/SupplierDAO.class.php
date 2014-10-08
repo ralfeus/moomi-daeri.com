@@ -124,8 +124,8 @@ class SupplierDAO extends DAO {
             $query = $this->getDb()->query("SELECT * FROM supplier WHERE supplier_id = ?", array("i:$supplierId"));
             return
                 new Supplier(
-                    $query->row['supplier_group_id'],
                     $query->row['supplier_id'],
+                    $query->row['supplier_group_id'],
                     $query->row['internal_model'],
                     $query->row['name'],
                     $query->row['shipping_cost'],
