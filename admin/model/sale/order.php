@@ -1,7 +1,5 @@
 <?php
 use model\sale\OrderItemDAO;
-use model\setting\ExtensionDAO;
-use model\total\TotalBaseDAO;
 
 class ModelSaleOrder extends Model {
 	public function addOrder($data) { //echo "asdsadas"; die();
@@ -697,19 +695,12 @@ class ModelSaleOrder extends Model {
 			}
 		}
 		$shipping_cost = $this->getShippingCost($order['shipping_method'], $orderItems, array('weight' => $total_weight));
-//        if ($order['total'] != $total_price + $shipping_cost && !$deleted)
-//        {
-//            $this->db->query("UPDATE order_total SET value = $total_price, text = '" . $this->currency->format($total_price). "' WHERE order_id = $order_id AND code = 'sub_total'");
-//            $this->db->query("UPDATE order_total SET value = $shipping_cost, text = '" . $this->currency->format($shipping_cost). "' WHERE order_id = $order_id AND code = 'shipping'");
-//            $this->db->query("UPDATE order_total SET value = " . ($total_price + $shipping_cost) . ", text = '" . $this->currency->format($total_price + $shipping_cost). "' WHERE order_id = $order_id AND code = 'total'");
-//            $this->db->query("UPDATE `order` SET total = " . ($total_price + $shipping_cost) . " WHERE order_id = $order_id");
-//        }
-        /** @var TotalBaseDAO[] $totalExtensions */
-        $totalExtensions = ExtensionDAO::getInstance()->getExtensions('total');
-        $totalData = array(); $total = 0; $tax = 0;
-        foreach ($totalExtensions as $totalExtension) {
-            $totalExtension->getOrderTotal($totalData, $total, $tax, $order_id);
-            $totalExtension->updateOrderTotal($order_id, $totalData);
+        if ($order['total'] != $total_price + $shipping_cost && !$deleted)
+        {
+            $this->db->query("UPDATE order_total SET value = $total_price, text = '" . $this->currency->format($total_price). "' WHERE order_id = $order_id AND code = 'sub_total'");
+            $this->db->query("UPDATE order_total SET value = $shipping_cost, text = '" . $this->currency->format($shipping_cost). "' WHERE order_id = $order_id AND code = 'shipping'");
+            $this->db->query("UPDATE order_total SET value = " . ($total_price + $shipping_cost) . ", text = '" . $this->currency->format($total_price + $shipping_cost). "' WHERE order_id = $order_id AND code = 'total'");
+            $this->db->query("UPDATE `order` SET total = " . ($total_price + $shipping_cost) . " WHERE order_id = $order_id");
         }
 	}
 
