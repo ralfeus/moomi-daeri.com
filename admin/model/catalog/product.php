@@ -35,7 +35,10 @@ class ModelCatalogProduct extends Model {
                 tax_class_id = " . (isset($data['tax_class_id']) ? (int)($data['tax_class_id']) : 0) . ",
 		        sort_order = '" . (int)$data['sort_order'] . "',
 		        date_added = NOW(),
-		        affiliate_commission = " . (isset($data['affiliate_commission']) ? (float)$data['affiliate_commission'] : 0)
+		        affiliate_commission =  ". (isset($data['affiliate_commission']) ? (float)$data['affiliate_commission'] : 0) . ",
+                korean_name = '" . $this->getDb()->escape($data['korean_name']) . "',
+                supplier_url = '" . $this->getDb()->escape($data['supplier_url']) . "'
+            "
         );
 		$product_id = $this->db->getLastId();
 
@@ -567,14 +570,12 @@ class ModelCatalogProduct extends Model {
         {
             $data['filterLanguageId'] = $this->config->get('config_language_id');
 			$sql = "
-			    SELECT p.*, pd.*, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
+			    SELECT p.*, pd.*, p.supplier_url AS link, u.user_id, u.username AS user_name
 			    FROM
 			        product AS p
 			        LEFT JOIN product_description AS pd ON (p.product_id = pd.product_id)
 			        LEFT JOIN supplier AS s ON p.supplier_id = s.supplier_id
                     LEFT JOIN manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
-                    LEFT JOIN product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=" . ATTRIBUTE_LINK . ")
-                    LEFT JOIN product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=" . ATTRIBUTE_KOREAN_NAME . ")
                     LEFT JOIN user AS u ON p.user_id = u.user_id";
 			
 			if (!empty($data['filter_category_id']))
@@ -1002,4 +1003,3 @@ class ModelCatalogProduct extends Model {
     }
 
 }
-?>
