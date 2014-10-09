@@ -66,7 +66,8 @@ final class MySQL implements DBDriver{
         if (sizeof($params)) {
             $types = ''; $args = array(); $refArgs = array(); $i = 0;
             foreach ($params as $param) {
-                list($type, $value) = preg_split("/:/", $param);
+                $type = substr($param, 0, 1);
+                $value = substr($param, 2);
                 $types .= $type;
                 $args[$i] = $value;
                 $refArgs[] = &$args[$i++];
@@ -121,7 +122,7 @@ final class MySQL implements DBDriver{
      * @param string $sql
      * @param array $params
      * @param bool $log
-     * @return mixed
+     * @return mixed|bool Returns false is no rows is returned
      */
     public function queryScalar($sql, $params = array(), $log = false) {
         $result = $this->query($sql, $params, $log);
