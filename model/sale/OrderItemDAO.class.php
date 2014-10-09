@@ -62,7 +62,7 @@ class OrderItemDAO extends DAO {
 				op.*, op.order_product_id as order_item_id, op.status_id as status,
 				concat(o.firstname, ' ', o.lastname) as customer_name, o.date_added,
 				c.customer_id, c.nickname as customer_nick,
-				p.product_id, p.supplier_id as supplier_id, p.image as image_path, p.weight, p.weight_class_id,
+				p.product_id, p.supplier_id as supplier_id, p.image as image_path, p.weight, p.weight_class_id, p.supplier_url, p.korean_name,
 				s.name as supplier_name, s.supplier_group_id, s.internal_model as internal_model
 			FROM
 				" . $this->orderItemsFromQuery .

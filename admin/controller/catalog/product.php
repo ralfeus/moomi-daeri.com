@@ -584,7 +584,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['tab_design'] = $this->language->get('tab_design');
 
 
-if($this->config->get('wk_auction_timezone_set')){
+        if($this->config->get('wk_auction_timezone_set')){
               $this->data['tab_auction'] = $this->language->get('tab_auction');
               $this->data['entry_min'] = $this->language->get('entry_min');
               $this->data['entry_max'] = $this->language->get('entry_max');
@@ -1258,14 +1258,13 @@ if($this->config->get('wk_auction_timezone_set')){
         unset($data['filterSupplierId']);
         $tmpResult = array();
         $products = $this->modelCatalogProduct->getProductSuppliers($data);
-        $this->log->write(sizeof($products));
-        foreach ($products as $product)
-        {
+//        $this->log->write(sizeof($products));
+        foreach ($products as $product) {
             if (!in_array($product['supplier_id'], $tmpResult))
                 $tmpResult[$product['supplier_id']] = $product['supplier_name'];
         }
         natcasesort($tmpResult);
-        $this->log->write(sizeof($tmpResult));
+//        $this->log->write(sizeof($tmpResult));
         return $tmpResult;
     }
 

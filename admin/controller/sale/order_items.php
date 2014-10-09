@@ -151,26 +151,26 @@ class ControllerSaleOrderItems extends Controller {
 
 			foreach ($orderItems as $orderItem) {
 
-$temp = $this->model_sale_order->getOrderTotals($orderItem['order_id']);
+            $temp = $this->model_sale_order->getOrderTotals($orderItem['order_id']);
 
-$cuoponed = 0;
-foreach ($temp as $v) {
-    if ($v['code'] == 'coupon') {
-	$_code = explode('(',$v['title']);
-	$_code = explode(')',$_code[1]);
-	$code = $_code[0];
-	$coupon_products = $this->model_sale_order->getCouponProducts($code);
-	if ($coupon_products) {
-	    if (in_array($orderItem['product_id'],$coupon_products)){
-		$cuoponed = 1;
-	    } else {
-		$cuoponed = 0;
-	    }
-	} else {
-	    $cuoponed = 1;
-	}
-    }
-}
+            $cuoponed = 0;
+            foreach ($temp as $v) {
+                if ($v['code'] == 'coupon') {
+                $_code = explode('(',$v['title']);
+                $_code = explode(')',$_code[1]);
+                $code = $_code[0];
+                $coupon_products = $this->model_sale_order->getCouponProducts($code);
+                    if ($coupon_products) {
+                        if (in_array($orderItem['product_id'],$coupon_products)){
+                        $cuoponed = 1;
+                        } else {
+                        $cuoponed = 0;
+                        }
+                    } else {
+                        $cuoponed = 1;
+                    }
+                }
+            }
 
 				if (!empty($orderItem['affiliate_id'])) {
 					$orderItem['affiliate_transaction_amount'] = $this->getCurrency()->format($orderItem['total'] * $modelSaleAffiliate->getProductAffiliateCommission($orderItem['product_id']) / 100, $this->config->get('config_currency'));
@@ -197,18 +197,18 @@ foreach ($temp as $v) {
 					$image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
 				}
 
-				$supplier_url = "";
-				foreach ($this->model_catalog_product->getProductAttributes($orderItem['product_id']) as $attribute)
-					if ($attribute['name'] == 'Supplier URL')
-					{
-						foreach ($attribute['product_attribute_description'] as $attribute_language_version)
-							if ($attribute_language_version['text'])
-							{
-								$supplier_url = $attribute_language_version['text'];
-								break;
-							}
-						break;
-					}
+//				$supplier_url = "";
+//				foreach ($this->model_catalog_product->getProductAttributes($orderItem['product_id']) as $attribute)
+//					if ($attribute['name'] == 'Supplier URL')
+//					{
+//						foreach ($attribute['product_attribute_description'] as $attribute_language_version)
+//							if ($attribute_language_version['text'])
+//							{
+//								$supplier_url = $attribute_language_version['text'];
+//								break;
+//							}
+//						break;
+//					}
 
 				$action = array();
 
@@ -230,7 +230,7 @@ foreach ($temp as $v) {
 
 				$action[] = array(
 					'text' => $this->language->get('text_supplier_url'),
-					'href' => $supplier_url
+					'href' => $orderItem['supplier_url']
 				);
 				$action[] = array(
 					'text' => $this->language->get('text_get_history'),
@@ -243,16 +243,16 @@ foreach ($temp as $v) {
 					'image_path'	              => $image,
 					'name'			                => $orderItem['name'],
 					'model'                     => $orderItem['model'],
-					'name_korean'	              => $this->getProductAttribute($orderItem['product_id'], "Name Korean"),
+					'name_korean'	              => $orderItem['korean_name'],
 					'order_id'					        => $orderItem['order_id'],
 					'isOrderReady'              => $arrReady[$orderItem['order_id']],
-							  'order_url'					        => $this->url->link('sale/order/info', 'order_id=' . $orderItem['order_id'] . '&token=' . $this->session->data['token'], 'SSL'),
+                    'order_url'					        => $this->url->link('sale/order/info', 'order_id=' . $orderItem['order_id'] . '&token=' . $this->session->data['token'], 'SSL'),
 					'customer_name'             => $orderItem['customer_name'],
 					'customer_nick'             => $orderItem['customer_nick'],
 					'options'                   => nl2br(OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem['order_product_id'])),
 					'publicComment'             => $orderItem['public_comment'],
 					'supplier_name'	            => $orderItem['supplier_name'],
-					'supplier_url'	            => $supplier_url,
+					'supplier_url'	            => $orderItem['supplier_url'],
 					'supplier_internal_model'   => $orderItem['internal_model'],
 					'status'       	            => $orderItem['status'] ? Status::getStatus($orderItem['status'], $this->config->get('language_id')) : "",
 					'price'			                => $this->currency->format($orderItem['price'], $this->config->get('config_currency')),
