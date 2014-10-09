@@ -101,11 +101,11 @@ class ControllerProductCompare extends Controller {
 				
 				$attribute_groups = $this->model_catalog_product->getProductAttributes($product_id);
 				
-//				foreach ($attribute_groups as $attribute_group) {
-//					foreach ($attribute_group['attribute'] as $attribute) {
-//						$attribute_data[$attribute['attribute_id']] = $attribute['text'];
-//					}
-//				}
+				foreach ($attribute_groups as $attribute_group) {
+					foreach ($attribute_group['attribute'] as $attribute) {
+						$attribute_data[$attribute['attribute_id']] = $attribute['text'];
+					}
+				}
 															
 				$this->data['products'][$product_id] = array(
 					'product_id'   => $product_info['product_id'],
