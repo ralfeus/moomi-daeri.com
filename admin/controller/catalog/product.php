@@ -510,6 +510,8 @@ class ControllerCatalogProduct extends Controller {
         $this->data['textUnselectAll'] = $this->language->get('UNSELECT_ALL');
 		$this->data['text_percent'] = $this->language->get('text_percent');
 		$this->data['text_amount'] = $this->language->get('text_amount');
+        $this->data['textKoreanName'] = $this->language->get('KOREAN_NAME');
+        $this->data['textSupplierUrl'] = $this->language->get('SUPPLIER_URL');
 
 		$this->data['entry_name'] = $this->language->get('entry_name');
 		$this->data['entry_meta_description'] = $this->language->get('entry_meta_description');
@@ -1176,8 +1178,24 @@ class ControllerCatalogProduct extends Controller {
 		} else {
       		$this->data['points'] = '';
     	}
-						
-		if (isset($this->request->post['product_reward'])) {
+
+        if (isset($this->request->post['koreanName'])) {
+            $this->data['koreanName'] = $this->request->post['koreanName'];
+        } else if (!empty($product_info)) {
+            $this->data['koreanName'] = $product_info['korean_name'];
+        } else {
+            $this->data['koreanName'] = '';
+        }
+
+        if (isset($this->request->post['supplierUrl'])) {
+            $this->data['supplierUrl'] = $this->request->post['supplierUrl'];
+        } else if (!empty($product_info)) {
+            $this->data['supplierUrl'] = $product_info['supplier_url'];
+        } else {
+            $this->data['supplierUrl'] = '';
+        }
+
+      if (isset($this->request->post['product_reward'])) {
 			$this->data['product_reward'] = $this->request->post['product_reward'];
 		} elseif (isset($this->request->get['product_id'])) {
 			$this->data['product_reward'] = $this->model_catalog_product->getProductRewards($this->request->get['product_id']);

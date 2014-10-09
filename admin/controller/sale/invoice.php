@@ -415,7 +415,7 @@ $temp = $invoice->getCustomer();
                 'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem['order_item_id']),
                 'price' => $this->getCurrency()->format($orderItem['price'], $this->config->get('config_currency')),
                 'quantity' => $orderItem['quantity'],
-                'shipping' => $this->getCurrency()->format($orderItem['shipping'], $this->config->get('config_currency')),
+                'shipping' => $orderItem['shipping'],
                 'subtotal' => $this->getCurrency()->format($orderItem['price'] * $orderItem['quantity'] + $orderItem['shipping'], $this->config->get('config_currency'))
             );
             $totalWeight +=

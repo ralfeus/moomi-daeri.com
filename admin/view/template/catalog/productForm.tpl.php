@@ -93,6 +93,10 @@
                 <?php } ?></td>
             </tr>
             <tr>
+                <td><?= $textKoreanName ?></td>
+                <td><input type="text" name="koreanName" value="<?= $koreanName ?>" /></td>
+            </tr>
+            <tr>
               <td><?= $entry_sku ?></td>
               <td><input type="text" name="sku" value="<?= $sku ?>" /></td>
             </tr>
@@ -264,6 +268,10 @@
 <?php endforeach; ?>
                     </select>
                 </td>
+            </tr>
+            <tr>
+                <td><?= $textSupplierUrl ?></td>
+                <td><input type="text" name="supplierUrl" value="<?= $supplierUrl ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_main_category ?></td>
