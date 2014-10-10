@@ -36,8 +36,8 @@ class ModelCatalogProduct extends Model {
 		        sort_order = ?,
 		        date_added = NOW(),
 		        affiliate_commission =  ?,
-                koreanName = ?,
-                supplierUrl = ?
+                korean_name = ?,
+                supplier_url = ?
             ", array(
                 's:' . $data['model'],
                 'i:' . $data['user_id'],
@@ -63,8 +63,8 @@ class ModelCatalogProduct extends Model {
                 'i:' . (isset($data['tax_class_id']) ? $data['tax_class_id'] : 0),
                 'i:' . $data['sort_order'],
                 'd:' . (isset($data['affiliate_commission']) ? $data['affiliate_commission'] : 0),
-                's:' . $data['korean_name'],
-                's:' . $data['supplier_url']
+                's:' . $data['koreanName'],
+                's:' . $data['supplierUrl']
             )
         );
 		$product_id = $this->getDb()->getLastId();
