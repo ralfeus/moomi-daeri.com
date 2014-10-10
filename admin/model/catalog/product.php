@@ -553,6 +553,8 @@ class ModelCatalogProduct extends Model {
 		
 		if ($query->num_rows) {
 			$data = $query->row;
+            $data['koreanName'] = $data['korean_name'];
+            $data['supplierUrl'] = $data['supplier_url'];
 			$data['keyword'] = '';
 			$data['status'] = '0';
 						
