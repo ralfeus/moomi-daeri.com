@@ -460,7 +460,7 @@ class ControllerSaleOrderItems extends Controller {
 				'id'            => $order_item['order_product_id'],
 				'image_path'	=> $image,
 				'name'			=> $order_item['name'],
-				'name_korean'	=> $this->getProductAttribute($order_item['product_id'], "Name Korean"),
+				'name_korean'	=> $order_item['korean_name'],
 				'options'       => OrderItemDAO::getInstance()->getOrderItemOptionsString($order_item['order_item_id']),
 				'order_id'      => $order_item['order_id'],
 				'quantity'		=> $order_item['quantity'],
