@@ -383,7 +383,7 @@ DD_belatedPNG.fix('#logo img');
 		  <?php } ?>
                   <a class="home" href="<?= $home ?>"><span><?= $text_home ?></span></a>
                   <a class="wishlist_total" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>
-		  <a class="cart" href="<?= $cart ?>" id="cart_total_data>"<span><?= $text_cart ?></span></a>
+		  <a class="cart" href="<?= $cart ?>" id="cart_total_data"><span><?= $text_cart ?></span></a>
 				  
           <table style="display: none;">
               <tr><td>

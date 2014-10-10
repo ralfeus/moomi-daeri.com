@@ -47,11 +47,9 @@ class ModelShopGeneral extends Model {
 	}
 
 	public function isVip($customer_id) {
-		$today = date("Y-m-d");
-		$lastMonth = date("Y-m-d", mktime(0, 0, 0, date("m")-1, date("d"),   date("Y")));
-		$query = "SELECT * FROM `order` WHERE customer_id='" . $customer_id . "' AND date_added BETWEEN '" . $lastMonth . "' AND '" . $today . "'";
+        $query = "SELECT * FROM `customer` WHERE customer_id='" . $customer_id . "' AND customer_group_id=6";
 		$result = $this->db->query($query);
-		if(count($result->rows) >= 2){
+		if(count($result->rows) >= 1){
 			return true;
 		}
 		else {

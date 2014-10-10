@@ -3,6 +3,7 @@ final class Customer {
 	private $customer_id;
 	private $firstname;
 	private $lastname;
+	private $nickname;
 	private $email;
     /** @var \Registry */
     private $registry;
@@ -31,6 +32,7 @@ final class Customer {
 				$this->customer_id = $customer_query->row['customer_id'];
 				$this->firstname = $customer_query->row['firstname'];
 				$this->lastname = $customer_query->row['lastname'];
+				$this->nickname = $customer_query->row['nickname'];
 				$this->email = $customer_query->row['email'];
 				$this->telephone = $customer_query->row['telephone'];
 				$this->fax = $customer_query->row['fax'];
@@ -106,6 +108,7 @@ final class Customer {
 			$this->customer_id = $customer_query->row['customer_id'];
 			$this->firstname = $customer_query->row['firstname'];
 			$this->lastname = $customer_query->row['lastname'];
+			$this->nickname = $customer_query->row['nickname'];
 			$this->email = $customer_query->row['email'];
 			$this->telephone = $customer_query->row['telephone'];
 			$this->fax = $customer_query->row['fax'];
@@ -130,6 +133,7 @@ final class Customer {
 		$this->customer_id = '';
 		$this->firstname = '';
 		$this->lastname = '';
+		$this->nickname = '';
 		$this->email = '';
 		$this->telephone = '';
 		$this->fax = '';
@@ -165,6 +169,10 @@ final class Customer {
   
   	public function getLastName() {
 		return $this->lastname;
+  	}
+
+  	public function getNickName() {
+		return $this->nickname;
   	}
   
   	public function getEmail() {

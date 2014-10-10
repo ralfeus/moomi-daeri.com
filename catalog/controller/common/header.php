@@ -89,7 +89,8 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_items'] = sprintf($this->language->get('text_items'), $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->currency->format($total));
    	$this->data['text_search'] = $this->language->get('text_search');
 		$this->data['text_welcome'] = sprintf($this->language->get('text_welcome'), $this->url->link('account/login', '', 'SSL'), $this->url->link('account/register', '', 'SSL'));
-		$this->data['text_logged'] = sprintf($this->language->get('text_logged'), $str, $this->url->link('account/account', '', 'SSL'), $this->customer->getFirstName(), $this->url->link('account/logout', '', 'SSL'));
+//		$this->data['text_logged'] = sprintf($this->language->get('text_logged'), $str, $this->url->link('account/account', '', 'SSL'), $this->customer->getFirstName(), $this->url->link('account/logout', '', 'SSL'));
+		$this->data['text_logged'] = sprintf($this->language->get('text_logged'), $str, $this->url->link('account/account', '', 'SSL'), $this->customer->getNickName(), $this->url->link('account/logout', '', 'SSL'));
 		$this->data['text_account'] = $this->language->get('text_account');
    	$this->data['text_checkout'] = $this->language->get('text_checkout');
 		$this->data['text_language'] = $this->language->get('text_language');

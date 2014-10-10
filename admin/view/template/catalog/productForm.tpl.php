@@ -106,7 +106,7 @@
             </tr>
             <tr>
               <td><?= $entry_location ?></td>
-              <td><input type="text" name="location" value="<?= $location ?>" /></td>
+              <td><input type="text" id="Calculator" name="location" value="<?= $location ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_price ?></td>
@@ -654,7 +654,7 @@
                     <?php } ?>
                   </select></td>
                 <td class="right"><input type="text" name="product_special[<?= $special_row ?>][priority]" value="<?= $product_special['priority'] ?>" size="2" /></td>
-                <td class="right"><input type="text" name="product_special[<?= $special_row ?>][price]" value="<?= $product_special['price'] ?>" /></td>
+                <td class="right"><input type="text" id="Calculator" name="product_special[<?= $special_row ?>][price]" value="<?= $product_special['price'] ?>" /></td>
                 <td class="left"><input type="text" name="product_special[<?= $special_row ?>][date_start]" value="<?= $product_special['date_start'] ?>" class="date" /></td>
                 <td class="left"><input type="text" name="product_special[<?= $special_row ?>][date_end]" value="<?= $product_special['date_end'] ?>" class="date" /></td>
                 <td class="left"><a onclick="$('#special-row<?= $special_row ?>').remove();" class="button"><?= $button_remove ?></a></td>
@@ -1134,7 +1134,7 @@ function addSpecial() {
     <?php } ?>
     html += '    </select></td>';		
     html += '    <td class="right"><input type="text" name="product_special[' + special_row + '][priority]" value="" size="2" /></td>';
-	html += '    <td class="right"><input type="text" name="product_special[' + special_row + '][price]" value="" /></td>';
+	html += '    <td class="right"><input type="text" class="specCalculator" name="product_special[' + special_row + '][price]" value="" /></td>';
     html += '    <td class="left"><input type="text" name="product_special[' + special_row + '][date_start]" value="" class="date" /></td>';
 	html += '    <td class="left"><input type="text" name="product_special[' + special_row + '][date_end]" value="" class="date" /></td>';
 	html += '    <td class="left"><a onclick="$(\'#special-row' + special_row + '\').remove();" class="button"><?= $button_remove ?></a></td>';
@@ -1145,6 +1145,8 @@ function addSpecial() {
  
 	$('#special-row' + special_row + ' .date').datepicker({dateFormat: 'yy-mm-dd'});
 	
+    $('#special-row' + special_row + ' .specCalculator').calculator({showOn: 'opbutton', buttonImageOnly: true, buttonImage: 'view/image/calculator.png'});
+
 	special_row++;
 }
 //--></script> 
