@@ -568,6 +568,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['button_add_option'] = $this->language->get('button_add_option');
 		$this->data['button_add_option_value'] = $this->language->get('button_add_option_value');
 		$this->data['button_add_discount'] = $this->language->get('button_add_discount');
+		$this->data['button_load_special'] = $this->language->get('button_load_special');
 		$this->data['button_add_special'] = $this->language->get('button_add_special');
 		$this->data['button_add_image'] = $this->language->get('button_add_image');
 		$this->data['button_remove'] = $this->language->get('button_remove');

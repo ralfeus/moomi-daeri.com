@@ -30,11 +30,7 @@
 <script type="text/javascript" src="view/javascript/jquery/jquery.multiselect.filter.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/jquery.plugin.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/jquery.calculator.js"></script>
-<script type="text/javascript">
-    $(function  () {
-        $('#Calculator').calculator({showOn: 'opbutton', buttonImageOnly: true, buttonImage: 'view/image/calculator.png'});
-    });
-</script> 
+
 <?php foreach ($scripts as $script) { ?>
 <script type="text/javascript" src="<?php echo $script; ?>"></script>
 <?php } ?>

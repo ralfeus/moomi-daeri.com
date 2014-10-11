@@ -637,31 +637,10 @@
                 <td class="right"><?= $entry_price ?></td>
                 <td class="left"><?= $entry_date_start ?></td>
                 <td class="left"><?= $entry_date_end ?></td>
-                <td></td>
+                <td class="left"><a onclick="loadSpecial();" class="button"><?= $button_load_special ?></a></td>
               </tr>
             </thead>
             <?php $special_row = 0; ?>
-            <?php foreach ($product_specials as $product_special) { ?>
-            <tbody id="special-row<?= $special_row ?>">
-              <tr>
-                <td class="left"><select name="product_special[<?= $special_row ?>][customer_group_id]">
-                    <?php foreach ($customer_groups as $customer_group) { ?>
-                    <?php if ($customer_group['customer_group_id'] == $product_special['customer_group_id']) { ?>
-                    <option value="<?= $customer_group['customer_group_id'] ?>" selected="selected"><?= $customer_group['name'] ?></option>
-                    <?php } else { ?>
-                    <option value="<?= $customer_group['customer_group_id'] ?>"><?= $customer_group['name'] ?></option>
-                    <?php } ?>
-                    <?php } ?>
-                  </select></td>
-                <td class="right"><input type="text" name="product_special[<?= $special_row ?>][priority]" value="<?= $product_special['priority'] ?>" size="2" /></td>
-                <td class="right"><input type="text" id="Calculator" name="product_special[<?= $special_row ?>][price]" value="<?= $product_special['price'] ?>" /></td>
-                <td class="left"><input type="text" name="product_special[<?= $special_row ?>][date_start]" value="<?= $product_special['date_start'] ?>" class="date" /></td>
-                <td class="left"><input type="text" name="product_special[<?= $special_row ?>][date_end]" value="<?= $product_special['date_end'] ?>" class="date" /></td>
-                <td class="left"><a onclick="$('#special-row<?= $special_row ?>').remove();" class="button"><?= $button_remove ?></a></td>
-              </tr>
-            </tbody>
-            <?php $special_row++; ?>
-            <?php } ?>
             <tfoot>
               <tr>
                 <td colspan="5"></td>
@@ -812,6 +791,11 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+    $(function  () {
+        $('#Calculator:text').calculator({showOn: 'opbutton', buttonImageOnly: true, buttonImage: 'view/image/calculator.png'});
+    });
+</script> 
 <script type="text/javascript" src="view/javascript/ckeditor/ckeditor.js"></script> 
 <script type="text/javascript"><!--
 <?php foreach ($languages as $language) { ?>
@@ -1120,6 +1104,40 @@ function addDiscount() {
 	$('#discount-row' + discount_row + ' .date').datepicker({dateFormat: 'yy-mm-dd'});
 	
 	discount_row++;
+}
+//--></script> 
+<script type="text/javascript"><!--
+var special_row = <?php echo $special_row; ?>;
+
+function loadSpecial() {
+    <?php foreach ($product_specials as $product_special) { ?>
+  	html  = '<tbody id="special-row' + special_row + '">';
+	html += '  <tr>'; 
+    html += '    <td class="left"><select name="product_special[' + special_row + '][customer_group_id]">';
+    <?php foreach ($customer_groups as $customer_group) { ?>
+    <?php if ($customer_group['customer_group_id'] == $product_special['customer_group_id']) { ?>
+    html += '      <option value="<?php echo $customer_group['customer_group_id']; ?>" selected="selected"><?php echo $customer_group['name']; ?></option>';
+    <?php } else { ?>
+    html += '      <option value="<?php echo $customer_group['customer_group_id']; ?>"><?php echo $customer_group['name']; ?></option>';
+    <?php } ?>
+    <?php } ?>
+    html += '    </select></td>';
+    html += '    <td class="right"><input type="text" name="product_special[' + special_row + '][priority]" value="<?php echo $product_special['priority']; ?>" size="2" /></td>';
+	html += '    <td class="right"><input type="text" class="specCalculator" name="product_special[' + special_row + '][price]" value="<?php echo $product_special['price']; ?>" /></td>';
+    html += '    <td class="left"><input type="text" name="product_special[' + special_row + '][date_start]" value="<?php echo $product_special['date_start']; ?>" class="date" /></td>';
+	html += '    <td class="left"><input type="text" name="product_special[' + special_row + '][date_end]" value="<?php echo $product_special['date_end']; ?>" class="date" /></td>';
+	html += '    <td class="left"><a onclick="$(\'#special-row' + special_row + '\').remove();" class="button"><?php echo $button_remove; ?></a></td>';
+	html += '  </tr>';
+    html += '</tbody>';
+    
+	$('#special tfoot').before(html);
+ 
+	$('#special-row' + special_row + ' .date').datepicker({dateFormat: 'yy-mm-dd'});
+    
+    $('#special-row' + special_row + ' .specCalculator').calculator({showOn: 'opbutton', buttonImageOnly: true, buttonImage: 'view/image/calculator.png'});
+	special_row++;
+    <?php } ?>    
+
 }
 //--></script> 
 <script type="text/javascript"><!--
