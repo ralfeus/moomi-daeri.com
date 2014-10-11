@@ -3,22 +3,32 @@ tr.couponed td {
     background-color: rgb(255, 255, 203) !important;
 }
 </style>
-<?php echo $header; ?>
+<?= $header ?>
 <div id="content">
   <div class="breadcrumb">
     <?php foreach ($breadcrumbs as $breadcrumb) { ?>
-    <?php echo $breadcrumb['separator']; ?><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a>
+    <?= $breadcrumb['separator'] ?><a href="<?= $breadcrumb['href'] ?>"><?= $breadcrumb['text'] ?></a>
     <?php } ?>
   </div>
   <?php if ($error_warning) { ?>
-  <div class="error"><?php echo $error_warning; ?></div>
+  <div class="error"><?= $error_warning ?></div>
   <?php } ?>
   <?php if ($success) { ?>
-  <div class="success"><?php echo $success; ?></div>
+  <div class="success"><?= $success ?></div>
   <?php } ?>
   <div class="box">
     <div class="heading">
-      <h1><img src="view/image/order.png" alt="" /> <?php echo $heading_title; ?></h1>
+      <h1><img src="view/image/order.png" alt="" /> <?= $heading_title ?></h1>
+	  <div class="buttons">
+          <?php foreach ($statuses[GROUP_ORDER_ITEM_STATUS] as $status):
+            if ($status['settable']): ?>
+                <a onclick="submitForm('<?= $status['set_status_url'] ?>');" class="button"><?= $status['name'] ?></a>
+            <?php endif;
+          endforeach; ?>
+          <a onclick="submitForm('<?= $invoice ?>');" class="button"><?= $button_invoice ?></a>
+		  <a onclick="$('#form').attr('target', '_blank'); submitForm('<?= $print ?>');" class="button"><?= $button_print ?></a>
+          <a onclick="$('#form').attr('target', '_blank'); submitForm('<?= $printWithoutNick ?>');" class="button"><?= $textPrintWithoutNick ?></a>
+	  </div>
     </div>
     <div class="content">
       <form action="" method="post" enctype="multipart/form-data" id="form">
@@ -40,22 +50,19 @@ tr.couponed td {
 						$sort_class = ''; ?>
 					<a href="<?= $sort_order_id ?>" <?= $sort_class ?>><?= $field_order_id ?></a>
 				</td>
-                <td class="left"><?php echo "$column_customer_nick/<br />$column_customer"; ?></td>
-                <td class="right"><?php echo $column_item_image; ?></td>
-                <td class="right"><?php echo $column_item_name; ?></td>
+                <td class="left"><?= "$column_customer_nick/<br />$column_customer" ?></td>
+                <td class="right"><?= $column_item_image ?></td>
+                <td class="right"><?= $column_item_name ?></td>
                 <td class="left">
-                    <?php if ($sort == 'supplier_name'): ?>
-                    <a href="<?php echo $sort_supplier; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_supplier; ?></a>
-                    <?php else: ?>
-                    <a href="<?php echo $sort_supplier; ?>"><?php echo $column_supplier; ?></a>
-                    <?php endif; ?>
+<?php $class = $sort == 'supplier_name' ? 'class="' . strtolower($order) . '"' : ''; ?>
+                    <a href="<?= $sort_supplier ?>" <?= $class ?>"><?= $column_supplier ?></a>
                 </td>
                 <td class="right">
                     <?= $column_price ?>&nbsp;/
                     <?= $column_quantity ?>&nbsp;/
                     <?= $columnWeight ?>
                 </td>
-                <td class="left"><?php echo $column_status; ?></td>
+                <td class="left"><?= $column_status ?></td>
               <td class="left">Comment</td>
 			  <td class="left">Action</td>
             </tr>
@@ -106,7 +113,7 @@ tr.couponed td {
                     </select>
                 </td>
                 <td><input name="filterComment" value="<?= $filterComment ?>" onkeydown="filterKeyDown(event)" /></td>
-                <td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td>
+                <td align="right"><a onclick="filter();" class="button"><?= $button_filter ?></a></td>
             </tr>
           </thead>
           <tbody>
@@ -114,20 +121,20 @@ tr.couponed td {
     <?php foreach ($order_items as $order_item): ?>
 					<tr <?php if ($order_item['cuoponed']) { ?> class="couponed" <?php } ?> >
                         <td style="text-align: center;">
-                            <input type="checkbox" id="selectedItems[]" name="selectedItems[]" value="<?php echo $order_item['id']; ?>" />
+                            <input type="checkbox" id="selectedItems[]" name="selectedItems[]" value="<?= $order_item['id'] ?>" />
                         </td>
-                        <td class="right" ><?php echo $order_item['id']; ?></td>
+                        <td class="right" ><?= $order_item['id'] ?></td>
 						<td><a target="_blank" href="<?= $order_item['order_url'] ?>" <?php if($order_item['isOrderReady']) { echo 'class="boldRed"'; } ?>><?= $order_item['order_id'] ?></a></td>
-                        <td class="left"><?php echo $order_item['customer_nick'] . "/<br />" . $order_item['customer_name']; ?></td>
-                        <td class="right"><img src="<?php echo $order_item['image_path']; ?>" /></td>
+                        <td class="left"><?= $order_item['customer_nick'] . "/<br />" . $order_item['customer_name'] ?></td>
+                        <td class="right"><img src="<?= $order_item['image_path'] ?>" /></td>
                         <td class="left">
                             <table height="100%" width="100%" class="list">
-                                <tr valign="center"><td><?php echo $order_item['model'] . "&nbsp;/&nbsp;" . $order_item['name']; ?></td></tr>
-                                <tr><td><span style="color: red; "><?php echo $order_item['options']; ?></span></td></tr>
-                                <tr valign="center"><td><?php echo $order_item['name_korean']; ?></td></tr>
+                                <tr valign="center"><td><?= $order_item['model'] . "&nbsp;/&nbsp;" . $order_item['name'] ?></td></tr>
+                                <tr><td><span style="color: red; "><?= $order_item['options'] ?></span></td></tr>
+                                <tr valign="center"><td><?= $order_item['name_korean'] ?></td></tr>
                             </table>
                         </td>
-					    <td class="left"><?php echo $order_item['supplier_name']; ?></td>
+					    <td class="left"><?= $order_item['supplier_name'] ?></td>
                         <td class="right">
                             <?= $order_item['price'] ?>
                             <input
@@ -142,24 +149,24 @@ tr.couponed td {
                         <td class="left">
                             Private<br />
                             <input
-                                    alt="<?php echo $order_item['comment']; ?>"
+                                    alt="<?= $order_item['comment'] ?>"
                                     onblur="saveComment(<?= $order_item['id'] ?>, this, true);"
                                     onkeydown="if (event.keyCode == 13) saveComment(<?= $order_item['id'] ?>, this, true);"
-                                    value="<?php echo $order_item['comment']; ?>"/><br />
+                                    value="<?= $order_item['comment'] ?>"/><br />
                             Public<br />
                             <input
-                                    alt="<?php echo $order_item['publicComment']; ?>"
+                                    alt="<?= $order_item['publicComment'] ?>"
                                     onblur="saveComment(<?= $order_item['id'] ?>, this, false);"
                                     onkeydown="if (event.keyCode == 13) saveComment(<?= $order_item['id'] ?>, this, false);"
-                                    value="<?php echo $order_item['publicComment']; ?>"/>
+                                    value="<?= $order_item['publicComment'] ?>"/>
 
                         </td>
                         <td class="right">
                             <?php foreach ($order_item['action'] as $action):
                                 if ($action['href']): ?>
-                                    [<a href="<?php echo $action['href']; ?>" target="_blank"><?php echo $action['text']; ?></a>]
+                                    [<a href="<?= $action['href'] ?>" target="_blank"><?= $action['text'] ?></a>]
                                 <?php else: ?>
-                                    [<?php echo $action['text']; ?>]
+                                    [<?= $action['text'] ?>]
                                 <?php endif;
                             endforeach; ?>
                         </td>
@@ -167,13 +174,13 @@ tr.couponed td {
     <?php endforeach; ?>
 <?php else: ?>
 				<tr>
-				  <td class="center" colspan="11"><?php echo $text_no_results; ?></td>
+				  <td class="center" colspan="11"><?= $text_no_results ?></td>
 				</tr>
 <?php endif; ?>
           </tbody>
         </table>
       </form>
-      <div class="pagination"><?php echo $pagination; ?></div>
+      <div class="pagination"><?= $pagination ?></div>
     </div>
   </div>
 </div>
@@ -309,4 +316,4 @@ function commissionAction(action, id) {
 }
 
 //--></script>
-<?php echo $footer; ?>
+<?= $footer ?>

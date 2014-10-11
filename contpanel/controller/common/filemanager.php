@@ -68,7 +68,6 @@ class ControllerCommonFileManager extends Controller {
 		
 		if (isset($this->request->post['directory'])) {
 			$directories = glob(rtrim(DIR_IMAGE . 'data/' . str_replace('../', '', $this->request->post['directory']), '/') . '/*', GLOB_ONLYDIR); 
-			
 			if ($directories) {
 				$i = 0;
 			
@@ -86,8 +85,7 @@ class ControllerCommonFileManager extends Controller {
 				}
 			}		
 		}
-		
-		$this->response->setOutput(json_encode($json));		
+		$this->response->setOutput(json_encode($json));
 	}
 
     public function downloadImage()
