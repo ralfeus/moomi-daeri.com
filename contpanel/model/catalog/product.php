@@ -10,34 +10,64 @@ class ModelCatalogProduct extends Model {
         $this->db->query("
 		    INSERT INTO product
 		    SET
-		        model = '" . $this->db->escape($data['model']) . "',
-		        user_id = '" . (int)$data['user_id'] . "',
-		        sku = '" . $this->db->escape($data['sku']) . "',
-		        upc = '" . $this->db->escape($data['upc']) . "',
-		        location = '" . $this->db->escape($data['location']) . "',
+		        model = ?,
+		        user_id = ?,
+		        sku = ?,
+		        upc = ?,
+		        location = ?,
 		        quantity = 9999,
-		        minimum = '" . (int)$data['minimum'] . "',
-		        subtract = '" . (int)$data['subtract'] . "',
-		        stock_status_id = '" . (int)$data['stock_status_id'] . "',
-		        date_available = '" . $this->db->escape($data['date_available']) . "',
-		        manufacturer_id = '" . (int)$data['manufacturer_id'] . "',
-		        supplier_id = '" . (int)$data['supplier_id'] . "',
-		        shipping = '" . (int)$data['shipping'] . "',
-		        price = '" . (float)$data['price'] . "',
-		        points = '" . (int)$data['points'] . "',
-		        weight = '" . (float)$data['weight'] . "',
-		        weight_class_id = '" . (int)$data['weight_class_id'] . "',
-		        length = '" . (float)$data['length'] . "',
-		        width = '" . (float)$data['width'] . "',
-		        height = '" . (float)$data['height'] . "',
-		        length_class_id = '" . (int)$data['length_class_id'] . "',
-		        status = '" . (int)$data['status'] . "',
-                tax_class_id = " . (isset($data['tax_class_id']) ? (int)($data['tax_class_id']) : 0) . ",
-		        sort_order = '" . (int)$data['sort_order'] . "',
+		        minimum = ?,
+		        subtract = ?,
+		        stock_status_id = ?,
+		        date_available = ?,
+		        manufacturer_id = ?,
+		        supplier_id = ?,
+		        shipping = ?,
+		        price = ?,
+		        points = ?,
+		        weight = ?,
+		        weight_class_id = ?,
+		        length = ?,
+		        width = ?,
+		        height = ?,
+		        length_class_id = ?,
+		        status = ?,
+                tax_class_id = ?,
+		        sort_order = ?,
 		        date_added = NOW(),
-		        affiliate_commission = " . (isset($data['affiliate_commission']) ? (float)$data['affiliate_commission'] : 0)
+		        affiliate_commission =  ?,
+                korean_name = ?,
+                supplier_url = ?
+            ", array(
+                's:' . $data['model'],
+                'i:' . $data['user_id'],
+                's:' . $data['sku'],
+                's:' . $data['upc'],
+                's:' . $data['location'],
+                'i:' . $data['minimum'],
+                'i:' . $data['subtract'],
+                'i:' . $data['stock_status_id'],
+                's:' . $data['date_available'],
+                'i:' . $data['manufacturer_id'],
+                'i:' . $data['supplier_id'],
+                'i:' . $data['shipping'],
+                'd:' . $data['price'],
+                'i:' . $data['points'],
+                'd:' . $data['weight'],
+                'i:' . $data['weight_class_id'],
+                'd:' . $data['length'],
+                'd:' . $data['width'],
+                'd:' . $data['height'],
+                'i:' . $data['length_class_id'],
+                'i:' . $data['status'],
+                'i:' . (isset($data['tax_class_id']) ? $data['tax_class_id'] : 0),
+                'i:' . $data['sort_order'],
+                'd:' . (isset($data['affiliate_commission']) ? $data['affiliate_commission'] : 0),
+                's:' . $data['koreanName'],
+                's:' . $data['supplierUrl']
+            )
         );
-		$product_id = $this->db->getLastId();
+		$product_id = $this->getDb()->getLastId();
 
 		if($this->config->get('wk_auction_timezone_set')){      
 		    if (isset($data['auction_min']) && isset($data['auction_max']) && isset($data['auction_end'])) {
@@ -282,33 +312,63 @@ class ModelCatalogProduct extends Model {
 		$this->db->query("
 		    UPDATE product
 		    SET
-		        model = '" . $this->db->escape($data['model']) . "',
-		        sku = '" . $this->db->escape($data['sku']) . "',
-		        upc = '" . $this->db->escape($data['upc']) . "',
-		        location = '" . $this->db->escape($data['location']) . /*"',
-		        quantity = '" . (int)$data['quantity'] . */"',
-		        minimum = '" . (int)$data['minimum'] . "',
-		        subtract = '" . (int)$data['subtract'] . "',
-		        stock_status_id = '" . (int)$data['stock_status_id'] . "',
-		        date_available = '" . $this->db->escape($data['date_available']) . "',
-		        manufacturer_id = '" . (int)$data['manufacturer_id']  . "',
-		        supplier_id = '" . (int)$data['supplier_id'] . "',
-		        shipping = '" . (int)$data['shipping'] . "',
-		        price = '" . (float)$data['price'] . "',
-		        points = '" . (int)$data['points'] . "',
-		        weight = '" . (float)$data['weight'] . "',
-		        weight_class_id = '" . (int)$data['weight_class_id'] . "',
-		        length = '" . (float)$data['length'] . "',
-		        width = '" . (float)$data['width'] . "',
-		        height = '" . (float)$data['height'] . "',
-		        length_class_id = '" . (int)$data['length_class_id'] . "',
-		        status = '" . (int)$data['status'] . "',
-		        tax_class_id = '" . $this->db->escape($data['tax_class_id']) . "',
-		        sort_order = '" . (int)$data['sort_order'] . "',
-		        date_modified = NOW()"
-		        . ", affiliate_commission = '" . (float)$data['affiliate_commission'] . "'" .
-           " WHERE product_id = '" . (int)$product_id . "'
-        ");
+		        model = ?,
+		        sku = ?,
+		        upc = ?,
+		        location = ?,
+		        minimum = ?,
+		        subtract = ?,
+		        stock_status_id = ?,
+		        date_available = ?,
+		        manufacturer_id = ?,
+		        supplier_id = ?,
+		        shipping = ?,
+		        price = ?,
+		        points = ?,
+		        weight = ?,
+		        weight_class_id = ?,
+		        length = ?,
+		        width = ?,
+		        height = ?,
+		        length_class_id = ?,
+		        status = ?,
+		        tax_class_id = ?,
+		        sort_order = ?,
+		        date_modified = NOW(),
+		        affiliate_commission = ?,
+                korean_name = ?,
+                supplier_url = ?
+            WHERE product_id = ?
+            ", array(
+                's:' . $data['model'],
+                's:' . $data['sku'],
+                's:' . $data['upc'],
+                's:' . $data['location'],
+                //$data['quantity'],
+                'i:' . $data['minimum'],
+                'i:' . $data['subtract'],
+                'i:' . $data['stock_status_id'],
+                's:' . $data['date_available'],
+                'i:' . $data['manufacturer_id'],
+                'i:' . $data['supplier_id'],
+                'i:' . $data['shipping'],
+                'd:' . $data['price'],
+                'i:' . $data['points'],
+                'd:' . $data['weight'],
+                'i:' . $data['weight_class_id'],
+                'd:' . $data['length'],
+                'd:' . $data['width'],
+                'd:' . $data['height'],
+                'i:' . $data['length_class_id'],
+                'i:' . $data['status'],
+                's:' . $data['tax_class_id'],
+                'i:' . $data['sort_order'],
+                'd:' . $data['affiliate_commission'],
+                's:' . $data['koreanName'],
+                's:' . $data['supplierUrl'],
+                "i:$product_id"
+            )
+        );
 
 		if (isset($data['image'])) {
 			$this->db->query("UPDATE product SET image = '" . $this->db->escape($data['image']) . "' WHERE product_id = '" . (int)$product_id . "'");
@@ -493,6 +553,8 @@ class ModelCatalogProduct extends Model {
 		
 		if ($query->num_rows) {
 			$data = $query->row;
+            $data['koreanName'] = $data['korean_name'];
+            $data['supplierUrl'] = $data['supplier_url'];
 			$data['keyword'] = '';
 			$data['status'] = '0';
 						
@@ -567,14 +629,12 @@ class ModelCatalogProduct extends Model {
         {
             $data['filterLanguageId'] = $this->config->get('config_language_id');
 			$sql = "
-			    SELECT p.*, pd.*, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
+			    SELECT p.*, pd.*, p.supplier_url AS link, u.user_id, u.username AS user_name
 			    FROM
 			        product AS p
 			        LEFT JOIN product_description AS pd ON (p.product_id = pd.product_id)
 			        LEFT JOIN supplier AS s ON p.supplier_id = s.supplier_id
                     LEFT JOIN manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
-                    LEFT JOIN product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=" . ATTRIBUTE_LINK . ")
-                    LEFT JOIN product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=" . ATTRIBUTE_KOREAN_NAME . ")
                     LEFT JOIN user AS u ON p.user_id = u.user_id";
 			
 			if (!empty($data['filter_category_id']))
@@ -1002,4 +1062,3 @@ class ModelCatalogProduct extends Model {
     }
 
 }
-?>

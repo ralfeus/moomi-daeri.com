@@ -1050,6 +1050,7 @@ class ControllerSaleOrder extends Controller {
 		} else {
 			$order_id = 0;
 		}
+
 		$this->modelSaleOrder->updateOrderTotals($order_id);
 		$order_info = $this->modelSaleOrder->getOrder($order_id);
 

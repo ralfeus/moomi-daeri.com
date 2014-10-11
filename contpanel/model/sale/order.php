@@ -677,6 +677,7 @@ class ModelSaleOrder extends Model {
 		$total_price = 0;
 		$total_weight = 0;
 		$orderItems = $this->getOrderProducts($order_id);
+
 		foreach ($orderItems as $item) {
 		    $query = $this->db->query("SELECT product_id FROM product WHERE product_id = '" . (int)$item['product_id'] . "'")->row['product_id'];
 		    if(empty($query)) $deleted = 1;

@@ -51,6 +51,7 @@ $_['button_add_product']      = 'Добавить товар';
 $_['button_add_option']       = 'Добавить опцию';
 $_['button_add_option_value'] = 'Добавить значение опции';
 $_['button_add_discount']     = 'Добавить скидку';
+$_['button_load_special']     = 'Загрузить акцию';
 $_['button_add_special']      = 'Добавить акцию';
 $_['button_add_image']        = 'Добавить изображение';
 $_['button_add_geo_zone']     = 'Добавить географическую зону';

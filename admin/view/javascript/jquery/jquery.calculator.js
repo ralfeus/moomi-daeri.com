@@ -8,7 +8,7 @@
 
 	var pluginName = 'calculator';
 	
-	var layoutStandard = ['  BSCECA', '_1_2_3_+@X', '_4_5_6_-@U', '_7_8_9_*@E', '_0_._=_/'];
+	var layoutStandard = ['_1_2_3_+', '_4_5_6_-', '_7_8_9_*@U', '_0_._%_/_='];
 
 	var digit = 'd';
 	var binary = 'b';

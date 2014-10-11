@@ -106,11 +106,11 @@
             </tr>
             <tr>
               <td><?= $entry_location ?></td>
-              <td><input type="text" name="location" value="<?= $location ?>" /></td>
+              <td><input type="text" id="Calculator" name="location" value="<?= $location ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_price ?></td>
-              <td><input type="text" id="Calculator" name="price" value="<?= $price ?>" /></td>
+              <td><input type="text" name="price" value="<?= $price ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_tax_class ?></td>

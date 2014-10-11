@@ -353,9 +353,9 @@ class ControllerCatalogProduct extends Controller {
 					break;
 				}					
 			}
-			$suppliers = SupplierDAO::getInstance()->getSupplier($result['supplier_id']);
-			if (empty($suppliers))
-				$suppliers['name'] = "";
+			$supplier = SupplierDAO::getInstance()->getSupplier($result['supplier_id']);
+			if (empty($supplier))
+				$supplier['name'] = "";
 
             $manufacturers = $this->model_catalog_manufacturer->getManufacturer($result['manufacturer_id']);
 			if (empty($manufacturers))
@@ -372,7 +372,7 @@ class ControllerCatalogProduct extends Controller {
 				'user_name'  => $result['user_name'],
 				'status'     => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
 				'manufacturer'=> $manufacturers['name'],
-				'supplier'	 => $suppliers['name'],
+				'supplier'	 => $supplier->getName(),
 				'selected'   => isset($this->request->post['selected']) && in_array($result['product_id'], $this->request->post['selected']),
 				'action'     => $action,
 				'link'     	 => $link,
@@ -510,6 +510,8 @@ class ControllerCatalogProduct extends Controller {
         $this->data['textUnselectAll'] = $this->language->get('UNSELECT_ALL');
 		$this->data['text_percent'] = $this->language->get('text_percent');
 		$this->data['text_amount'] = $this->language->get('text_amount');
+        $this->data['textKoreanName'] = $this->language->get('KOREAN_NAME');
+        $this->data['textSupplierUrl'] = $this->language->get('SUPPLIER_URL');
 
 		$this->data['entry_name'] = $this->language->get('entry_name');
 		$this->data['entry_meta_description'] = $this->language->get('entry_meta_description');
@@ -584,7 +586,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['tab_design'] = $this->language->get('tab_design');
 
 
-if($this->config->get('wk_auction_timezone_set')){
+        if($this->config->get('wk_auction_timezone_set')){
               $this->data['tab_auction'] = $this->language->get('tab_auction');
               $this->data['entry_min'] = $this->language->get('entry_min');
               $this->data['entry_max'] = $this->language->get('entry_max');
@@ -1176,8 +1178,24 @@ if($this->config->get('wk_auction_timezone_set')){
 		} else {
       		$this->data['points'] = '';
     	}
-						
-		if (isset($this->request->post['product_reward'])) {
+
+        if (isset($this->request->post['koreanName'])) {
+            $this->data['koreanName'] = $this->request->post['koreanName'];
+        } else if (!empty($product_info)) {
+            $this->data['koreanName'] = $product_info['korean_name'];
+        } else {
+            $this->data['koreanName'] = '';
+        }
+
+        if (isset($this->request->post['supplierUrl'])) {
+            $this->data['supplierUrl'] = $this->request->post['supplierUrl'];
+        } else if (!empty($product_info)) {
+            $this->data['supplierUrl'] = $product_info['supplier_url'];
+        } else {
+            $this->data['supplierUrl'] = '';
+        }
+
+      if (isset($this->request->post['product_reward'])) {
 			$this->data['product_reward'] = $this->request->post['product_reward'];
 		} elseif (isset($this->request->get['product_id'])) {
 			$this->data['product_reward'] = $this->model_catalog_product->getProductRewards($this->request->get['product_id']);
@@ -1197,7 +1215,7 @@ if($this->config->get('wk_auction_timezone_set')){
 		
 		$this->data['layouts'] = $this->model_design_layout->getLayouts();
 										
-		$this->template = 'catalog/product_form.tpl';
+		$this->template = 'catalog/productForm.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'
@@ -1258,14 +1276,13 @@ if($this->config->get('wk_auction_timezone_set')){
         unset($data['filterSupplierId']);
         $tmpResult = array();
         $products = $this->modelCatalogProduct->getProductSuppliers($data);
-        $this->log->write(sizeof($products));
-        foreach ($products as $product)
-        {
+//        $this->log->write(sizeof($products));
+        foreach ($products as $product) {
             if (!in_array($product['supplier_id'], $tmpResult))
                 $tmpResult[$product['supplier_id']] = $product['supplier_name'];
         }
         natcasesort($tmpResult);
-        $this->log->write(sizeof($tmpResult));
+//        $this->log->write(sizeof($tmpResult));
         return $tmpResult;
     }
 

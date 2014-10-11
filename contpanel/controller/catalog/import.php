@@ -23,21 +23,21 @@ class ControllerCatalogImport extends Controller {
             $images[] = array('image' => $modelToolImage->download($imageUrl));
         /// Preparing name, korean name, link and description
         $product_description = array();
-        $koreanName = array(
-            'attribute_id' => ATTRIBUTE_KOREAN_NAME,
-            'product_attribute_description' => array()
-        );
-        $sourceUrl = array(
-            'attribute_id' => ATTRIBUTE_LINK,
-            'product_attribute_description' => array()
-        );
+//        $koreanName = array(
+//            'attribute_id' => ATTRIBUTE_KOREAN_NAME,
+//            'product_attribute_description' => array()
+//        );
+//        $sourceUrl = array(
+//            'attribute_id' => ATTRIBUTE_LINK,
+//            'product_attribute_description' => array()
+//        );
         foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
             $product_description[$language['language_id']] = array(
                 'name' => $productToAdd->getName(),
                 'description' => $productToAdd->getDescription()
             );
-            $koreanName['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getName() );
-            $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getSourceUrl() );
+//            $koreanName['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getName() );
+//            $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getSourceUrl() );
         }
 
         $productId = $this->modelCatalogProduct->addProduct(array(
@@ -52,7 +52,7 @@ class ControllerCatalogImport extends Controller {
             'model' => $productToAdd->getSourceProductId(),
             'points' => null,
             'price' => $productToAdd->getSourcePrice()->getPrice() * $productToAdd->getSourceSite()->getRegularCustomerPriceRate(),
-            'product_attribute' => array($koreanName, $sourceUrl),
+            //'product_attribute' => array($koreanName, $sourceUrl),
             'product_category' => $productToAdd->getCategories(),
             'product_description' => $product_description,
             'product_image' => $images,
@@ -72,7 +72,9 @@ class ControllerCatalogImport extends Controller {
             'upc' => null,
             'user_id' => 0,
             'weight' => $productToAdd->getWeight(), 'weight_class_id' => 1,
-            'width' => null
+            'width' => null,
+            'korean_name' => $productToAdd->getName(),
+            'supplier_url' => $productToAdd->getSourceUrl()
         ));
 
         $this->modelCatalogImport->pairImportedProduct($productToAdd->getId(), $productId);
@@ -226,22 +228,22 @@ class ControllerCatalogImport extends Controller {
             $images[] = array('image' => $modelToolImage->download($imageUrl));
         /// Preparing name, korean name and description
         $product_description = array();
-        $koreanName = array(
-            'attribute_id' => ATTRIBUTE_KOREAN_NAME,
-            'product_attribute_description' => array()
-        );
-        $sourceUrl = array(
-            'attribute_id' => ATTRIBUTE_LINK,
-            'product_attribute_description' => array()
-        );
-        foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
-//            $product_description[$language['language_id']] = array(
-//                'name' => $productToUpdate->getName(),
-//                'description' => $productToUpdate->getDescription()
-//            );
-            $koreanName['product_attribute_description'][$language['language_id']] = array( 'text' => $productToUpdate->getName() );
-            $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToUpdate->getSourceUrl() );
-        }
+//        $koreanName = array(
+//            'attribute_id' => ATTRIBUTE_KOREAN_NAME,
+//            'product_attribute_description' => array()
+//        );
+//        $sourceUrl = array(
+//            'attribute_id' => ATTRIBUTE_LINK,
+//            'product_attribute_description' => array()
+//        );
+//        foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
+////            $product_description[$language['language_id']] = array(
+////                'name' => $productToUpdate->getName(),
+////                'description' => $productToUpdate->getDescription()
+////            );
+//            $koreanName['product_attribute_description'][$language['language_id']] = array( 'text' => $productToUpdate->getName() );
+//            $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToUpdate->getSourceUrl() );
+//        }
 
         /// Copying product options in order to preserve ones
         $localProductOptions = $this->modelCatalogProduct->getProductOptions($productToUpdate->getLocalProductId());
@@ -281,7 +283,9 @@ class ControllerCatalogImport extends Controller {
             'upc' => null,
             'user_id' => 0,
             'weight' => $localProduct['weight'], 'weight_class_id' => $localProduct['weight_class_id'],
-            'width' => null
+            'width' => null,
+            'korean_name' => $productToUpdate->getName(),
+            'supplier_url' => $productToUpdate->getSourceUrl()
         ));
     }
 
