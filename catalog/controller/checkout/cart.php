@@ -1,12 +1,30 @@
 <?php
-class ControllerCheckoutCart extends Controller {
+use model\checkout\CartDAO;
+use system\engine\CustomerController;
+
+class ControllerCheckoutCart extends CustomerController {
 	private $error = array();
+
+    private function checkLocalShipping($supplierId, $orderTotal) {
+        if ($orderTotal >= $this->data['suppliers'][$supplierId]['freeShippingThreshold']) {
+            $this->data['suppliers'][$supplierId]['shippingCost'] = 0;
+            $this->data['suppliers'][$supplierId]['textShippingCost'] = $this->getLanguage()->get('LOCAL_SHIPPING_FREE');
+        } else {
+            $this->data['suppliers'][$supplierId]['textShippingCost'] =
+                sprintf(
+                    $this->getLanguage()->get('LOCAL_SHIPPING_YET_TO_ORDER'),
+                    $this->getCurrency()->format($this->data['suppliers'][$supplierId]['freeShippingThreshold'] - $orderTotal)
+                );
+        }
+        $this->data['suppliers'][$supplierId]['shippingCostFormatted'] =
+            $this->getCurrency()->format($this->data['suppliers'][$supplierId]['shippingCost']);
+    }
 
 	public function index() {
 		$this->language->load('checkout/cart');
 		// Remove
 		if (isset($this->request->get['remove'])) {
-			$this->cart->remove($this->request->get['remove']);
+			$this->getCart()->remove($this->request->get['remove']);
 			$this->redirect($this->url->link('checkout/cart'));
 		}
 
@@ -19,7 +37,7 @@ class ControllerCheckoutCart extends Controller {
 						$option = array();
 					}
 
-      				$this->cart->add($this->request->post['product_id'], $this->request->post['quantity'], $option);
+      				$this->getCart()->add($this->request->post['product_id'], $this->request->post['quantity'], $option);
 				} else {
 					foreach ($this->request->post['quantity'] as $key => $value) {
 	      				$this->cart->update($key, $value);
@@ -90,6 +108,7 @@ class ControllerCheckoutCart extends Controller {
      		$this->data['button_remove'] = $this->language->get('button_remove');
      		$this->data['button_shopping'] = $this->language->get('button_shopping');
       		$this->data['button_checkout'] = $this->language->get('button_checkout');
+            $this->data['textBrand'] = $this->language->get('MANUFACTURER');
             $this->data['textCheckoutSelected'] = $this->language->get('CHECKOUT_SELECTED');
 
 			if ($this->config->get('config_customer_price') && !$this->customer->isLogged()) {
@@ -125,7 +144,17 @@ class ControllerCheckoutCart extends Controller {
 			$this->load->model('tool/image');
 
       		$this->data['products'] = array();
-			$products = $this->cart->getProducts();
+			$products = CartDAO::getInstance()->getProducts();
+            uasort($products, function($a, $b) {
+                if ($a['supplierId'] < $b['supplierId']) {
+                    return -1;
+                } elseif ($a['supplierId'] > $b['supplierId']) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+            $currentSupplierId = null; $currentSupplierOrderTotal = 0;
       		foreach ($products as $product) {
 				$product_total = 0;
 
@@ -201,11 +230,27 @@ class ControllerCheckoutCart extends Controller {
 					'price'    => $price,
 					'total'    => $total,
 					'href'     => $this->url->link('product/product', 'product_id=' . $product['product_id']),
-					'remove'   => $this->url->link('checkout/cart', 'remove=' . $product['key'])
+					'remove'   => $this->url->link('checkout/cart', 'remove=' . $product['key']),
+                    'supplierId' => $product['supplierId']
         		);
+                /// Show local shipping cost
+                if ($currentSupplierId != $product['supplierId']) {
+                    if (!is_null($currentSupplierId)) {
+                        $this->checkLocalShipping($currentSupplierId, $currentSupplierOrderTotal);
+                    }
+                    $currentSupplierId = $product['supplierId'];
+                    $this->data['suppliers'][$currentSupplierId]['name'] = $product['brand'];
+                    $this->data['suppliers'][$currentSupplierId]['shippingCost'] = $product['supplierShippingCost'];
+                    $this->data['suppliers'][$currentSupplierId]['freeShippingThreshold'] = $product['supplierFreeShippingThreshold'];
+                    $currentSupplierOrderTotal = $product['total'];
+                } else {
+                    $currentSupplierOrderTotal += $product['total'];
+                }
       		}
+            /// Post-products last supplier check
+            $this->checkLocalShipping($currentSupplierId, $currentSupplierOrderTotal);
 
-			// Gift Voucher
+            // Gift Voucher
 			$this->data['vouchers'] = array();
 
 			if (isset($this->session->data['vouchers']) && $this->session->data['vouchers']) {
@@ -220,7 +265,7 @@ class ControllerCheckoutCart extends Controller {
 
 			$total_data = array();
 			$total = 0;
-			$taxes = $this->cart->getTaxes();
+			$taxes = $this->getCart()->getTaxes();
 
 			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
 				$this->load->model('setting/extension');
@@ -228,11 +273,9 @@ class ControllerCheckoutCart extends Controller {
 				$sort_order = array();
 
 				$results = $this->model_setting_extension->getExtensions('total');
-
 				foreach ($results as $key => $value) {
 					$sort_order[$key] = $this->config->get($value['code'] . '_sort_order');
 				}
-
 				array_multisort($sort_order, SORT_ASC, $results);
 
 				foreach ($results as $result) {
@@ -275,10 +318,10 @@ class ControllerCheckoutCart extends Controller {
 
 			$this->data['urlCheckout'] = $this->url->link('checkout/checkout', '', 'SSL');
 
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/cart.tpl')) {
-				$this->template = $this->config->get('config_template') . '/template/checkout/cart.tpl';
+			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/cart.tpl.php')) {
+				$this->template = $this->config->get('config_template') . '/template/checkout/cart.tpl.php';
 			} else {
-				$this->template = 'default/template/checkout/cart.tpl';
+				$this->template = 'default/template/checkout/cart.tpl.php';
 			}
 
 			$this->children = array(
@@ -293,11 +336,8 @@ class ControllerCheckoutCart extends Controller {
 			$this->response->setOutput($this->render());
     	} else {
       		$this->data['heading_title'] = $this->language->get('heading_title');
-
       		$this->data['text_error'] = $this->language->get('text_empty');
-
       		$this->data['button_continue'] = $this->language->get('button_continue');
-
       		$this->data['continue'] = $this->url->link('common/home');
 
 			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/error/not_found.tpl')) {

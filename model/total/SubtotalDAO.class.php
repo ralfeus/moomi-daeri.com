@@ -2,8 +2,7 @@
 namespace model\total;
 
 class SubtotalDAO extends TotalBaseDAO {
-    public function getOrderTotal(&$totalData, &$total, &$taxes, $orderId, $chosenOnes = false)
-    {
+    public function getOrderTotal(&$totalData, &$total, &$taxes, $orderId, $chosenOnes = false) {
         /// Calculate subtotal of the cart
         $tempTotalData = array();
         $tempTotal = 0;

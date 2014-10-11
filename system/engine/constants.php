@@ -62,10 +62,6 @@ define('ORDER_STATUS_FINISH', 0x00080011);
 define('ORDER_STATUS_READY_TO_SHIP', 0x00080012
 );
 
-//TODO: Replace attribute with field in `product` table
-define('ATTRIBUTE_KOREAN_NAME', 42); // Attribute ID of the attribute containing korean name of the product.
-define('ATTRIBUTE_LINK', 43); // Attribute ID of the attribute containing link to the product of the source site
-
 /// Definition of search string weight in different product properties
 define('SEARCH_WEIGHT_FULL_PHRASE_MODEL', 10000); // Full search phrase in product model
 define('SEARCH_WEIGHT_FULL_PHRASE_NAME', 10000); // Full search phrase in product name

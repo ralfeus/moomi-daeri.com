@@ -7,8 +7,7 @@ abstract class TotalBaseDAO extends DAO {
     public abstract function getTotal(&$totalData, &$total, &$taxes, $chosenOnes = false);
     public abstract function updateOrderTotal($orderId, $totalData);
 
-    protected final function getOrderExtensionTotal(&$totalData, &$total, &$taxes, $orderId, $extension, $chosenOnes = false)
-    {
+    protected final function getOrderExtensionTotal(&$totalData, &$total, &$taxes, $orderId, $extension, $chosenOnes = false) {
         $tempTotalData = array();
         $tempTotal = 0;
         $tempTaxes = 0;

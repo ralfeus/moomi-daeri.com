@@ -125,9 +125,9 @@
             <?php foreach ($products as $product) { ?>
             <tr>
               <td style="text-align: center;"><?php if ($product['selected']) { ?>
-                <input type="checkbox" name="selected[]" value="<?php echo $product['product_id']; ?>" checked="checked" />
+                <input type="checkbox" name="selectedItems[]" value="<?php echo $product['product_id']; ?>" checked="checked" />
                 <?php } else { ?>
-                <input type="checkbox" name="selected[]" value="<?php echo $product['product_id']; ?>" />
+                <input type="checkbox" name="selectedItems[]" value="<?php echo $product['product_id']; ?>" />
                 <?php } ?></td>
               <td class="center"><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" style="padding: 1px; border: 1px solid #DDDDDD;" /></td>
               <td class="left"><?php echo $product['name']; ?></td>

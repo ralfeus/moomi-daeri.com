@@ -110,6 +110,18 @@ abstract class Controller extends OpenCartBase
 //        $this->log->write("Stub function");
     }
 
+    /**
+     * @param array $paramsMap
+     */
+    protected function initParametersWithDefaults($paramsMap) {
+        foreach ($paramsMap as $param => $defaultValue) {
+            $paramName = preg_replace_callback('/_(\w)/', function($m) {
+                return strtoupper($m[1]);
+            }, $param);
+            $this->parameters[$paramName] = empty($_REQUEST[$param]) ? $defaultValue : $_REQUEST[$param];
+        }
+    }
+
     protected function loadStrings() {
         /// Stub function. Should be replaced with abstract one once all Controller derived classes implement it
     }

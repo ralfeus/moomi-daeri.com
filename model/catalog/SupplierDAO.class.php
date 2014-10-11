@@ -13,53 +13,28 @@ class SupplierDAO extends DAO {
     }
 
     /**
-     * @param array $data
-     * @return void
+     * @param Supplier $supplier
+     * @return int
      */
-    public function addSupplier($data) {
+    public function addSupplier($supplier) {
         $this->getDb()->query("
             INSERT INTO supplier
             SET
                 supplier_group_id = ?,
                 name = ?,
                 internal_model = ?,
-                shipping_cost = ?
+                shipping_cost = ?,
+                free_shipping_threshold = ?
             ", array(
-                "i:" . $data['supplierGroupId'],
-                's:' . $data['name'],
-                's:' . $data['internalModel'],
-                'd:' . $data['shippingCost']
+                'i:' . $supplier->getGroupId(),
+                's:' . $supplier->getName(),
+                's:' . $supplier->getInternalModel(),
+                'd:' . $supplier->getShippingCost(),
+                'd:' . $supplier->getFreeShippingThreshold(),
             )
         );
-//		$supplier_id = $this->getDb()->getLastId();
-
 		$this->getCache()->deleteAll('/^suppliers\./');
-    }
-
-    /**
-     * @param int $supplierId
-     * @param array $data
-     * @return void
-     */
-    public function editSupplier($supplierId, $data) {
-		$this->getDb()->query("
-		    UPDATE supplier
-		    SET
-                supplier_group_id = ?,
-		        name = ?,
-                internal_model = ?,
-                shipping_cost = ?
-            WHERE supplier_id = ?
-            ", array(
-                'i:' . $data['supplierGroupId'],
-                's:' . $data['name'],
-                's:' . $data['internalModel'],
-                'd:' . $data['shippingCost'],
-                "i:$supplierId"
-            )
-        );
-
-		$this->getCache()->deleteAll('/^suppliers\./');
+        return $this->getDb()->getLastId();
     }
 
     /**
@@ -69,7 +44,7 @@ class SupplierDAO extends DAO {
     public function deleteSupplier($supplierId) {
 		$this->getDb()->query("DELETE FROM supplier WHERE supplier_id = ?", array("i:$supplierId"));
 
-		$this->cache->delete('supplier');
+        $this->getCache()->deleteAll('/^suppliers\./');
     }
 
     /**
@@ -212,5 +187,32 @@ class SupplierDAO extends DAO {
      */
     public function getTotalSuppliersBySupplierGroupId($supplierGroupId) {
         return $this->getDb()->queryScalar("SELECT COUNT(*) as total FROM supplier WHERE supplier_group_id = ?", array("i:$supplierGroupId"));
+    }
+
+    /**
+     * @param Supplier $supplier
+     * @return void
+     */
+    public function saveSupplier($supplier) {
+        $this->getDb()->query("
+		    UPDATE supplier
+		    SET
+                supplier_group_id = ?,
+		        name = ?,
+                internal_model = ?,
+                shipping_cost = ?,
+                free_shipping_threshold = ?
+            WHERE supplier_id = ?
+            ", array(
+                'i:' . $supplier->getGroupId(),
+                's:' . $supplier->getName(),
+                's:' . $supplier->getInternalModel(),
+                'd:' . $supplier->getShippingCost(),
+                'd:' . $supplier->getFreeShippingThreshold(),
+                'i:' . $supplier->getId()
+            )
+        );
+
+        $this->getCache()->deleteAll('/^suppliers\./');
     }
 }

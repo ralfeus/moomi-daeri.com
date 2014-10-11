@@ -111,9 +111,10 @@ class OrderItemDAO extends DAO {
     /**
      * @param array $data
      * @param \stdClass $filter
-     * @return array
+     * @param bool $objects Defines whether OrderItem object should be returned instead of array TODO: to make only option
+     * @return array|OrderItem[]
      */
-    public function getOrderItems($data = array(), $filter = null) {
+    public function getOrderItems($data = array(), $filter = null, $objects = false) {
 
         if (is_null($filter)) { $filter = $this->buildFilter($data); }
         $sort = "";
@@ -158,7 +159,23 @@ class OrderItemDAO extends DAO {
             $limit = null;
         }
 
-        return $this->fetchOrderItems($filter, $sort, $limit);
+        $result = $this->fetchOrderItems($filter, $sort, $limit);
+        if ($objects) {
+            $objectArray = array();
+            foreach ($result as $orderItemInfo) {
+                $objectArray[] = new OrderItem($this->registry, $orderItemInfo['affiliate_id'], $orderItemInfo['affiliate_transaction_id'],
+                    $orderItemInfo['comment'], $orderItemInfo['customer_id'], $orderItemInfo['customer_name'], $orderItemInfo['customer_nick'],
+                    $orderItemInfo['order_item_id'], $orderItemInfo['image_path'], $orderItemInfo['internal_model'],
+                    $orderItemInfo['model'], $orderItemInfo['name'], $orderItemInfo['order_id'], $orderItemInfo['price'],
+                    $orderItemInfo['product_id'], $orderItemInfo['public_comment'], $orderItemInfo['quantity'], $orderItemInfo['shipping'],
+                    $orderItemInfo['time_modified'], $orderItemInfo['status'], $orderItemInfo['supplier_group_id'],
+                    $orderItemInfo['supplier_id'], $orderItemInfo['supplier_name'], $orderItemInfo['total'],
+                    $orderItemInfo['weight'], $orderItemInfo['weight_class_id']);
+            }
+            return $objectArray;
+        } else {
+            return $result;
+        }
     }
 
     /**
@@ -276,6 +293,18 @@ SQL
 
     /**
      * Returns filter string and parameters array
+     * Accepts filters:
+     * filterComment: string
+     * filterCustomerId: int[]
+     * filterItem: string - substring of name or model
+     * filterModel: string - substring of model
+     * filterOrderId: int
+     * filterOrderProductId: int
+     * filterProductId: int
+     * filterStatusId: int[]
+     * filterSupplierId: int[] - supplier IDs
+     * filterTimeModified: string
+     * selected_items: int[] - item IDs
      * @param array $data
      * @return \stdClass
      */
@@ -308,6 +337,14 @@ SQL
             $this->buildSimpleFieldFilterEntry('i', 'op.order_id', $data['filterOrderId'], $filter, $params);
             $this->buildSimpleFieldFilterEntry('i', 'op.order_product_id', $data['filterOrderItemId'], $filter, $params);
             $this->buildSimpleFieldFilterEntry('i', 'op.product_id', $data['filterProductId'], $filter, $params);
+            if (!empty($data['filterTimeModifiedFrom'])) {
+                $filter .= ($filter ? " AND " : '') . "op.time_modified >= ?";
+                $params[] = 's:' . $data['filterTimeModifiedFrom'];
+            }
+            if (!empty($data['filterTimeModifiedTo'])) {
+                $filter .= ($filter ? " AND " : '') . "op.time_modified <= ?";
+                $params[] = 's:' . $data['filterTimeModifiedTo'];
+            }
         }
 
         if (!$filter) {
@@ -383,12 +420,35 @@ SQL
     }
 
     /**
+     * @param OrderItem $orderItem
+     * @param bool $delayed Defines whether update in the database must be performed immediately or can be delayed
+     */
+    public function saveOrderItem($orderItem, $delayed = false) {
+        $this->getDb()->query("
+            UPDATE" . ($delayed ? " LOW_PRIORITY " : "") . "order_product
+            SET
+                total = price * quantity + ?,
+                comment = ?,
+                public_comment = ?,
+                shipping = ?,
+                time_modified = NOW()
+            WHERE order_product_id = ?
+            ", array(
+                'd:' . $orderItem->getShippingCost(),
+                's:' . $orderItem->getPrivateComment(),
+                's:' . $orderItem->getPublicComment(),
+                'd:' . $orderItem->getShippingCost(),
+                'i:' . $orderItem->getId()
+            )
+        );
+    }
+
+    /**
      * @param int $order_item_id
      * @param string $comment
      * @param bool $isPrivate
      */
     public function setOrderItemComment($order_item_id, $comment, $isPrivate = true) {
-        $this->log->write($isPrivate);
         $field = $isPrivate ? 'comment' : 'public_comment';
         $query = "
             UPDATE order_product
@@ -416,13 +476,16 @@ SQL
      * @param int $orderItemId
      * @param int $orderItemStatusId
      * @return bool
+     * TODO: Replace with change of the OrderItem object + saveOrderItem()
      */
     public function setStatus($orderItemId, $orderItemStatusId) {
         $orderItem = $this->getOrderItem($orderItemId);
         if ($orderItem->getStatusId() != $orderItemStatusId) {
             $this->getDb()->query("
                 UPDATE order_product
-                SET status_id = ?
+                SET
+                    status_id = ?,
+                    time_modified = NOW()
                 WHERE order_product_id = ?
             ", array("i:$orderItemStatusId", "i:$orderItemId"));
             return true;

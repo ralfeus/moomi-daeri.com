@@ -1,6 +1,7 @@
 <?php
 $_['CONTENT_MANAGEMENT'] = 'Content management';
 $_['CREDIT_MANAGEMENT'] = "Deposit management";
+$_['FINISH_SUPPLIER_ORDERS_FOR_TODAY'] = 'Close orders to suppliers';
 $_['IMPORT_PRODUCTS'] = 'Import products';
 $_['ORDER_CONFIRMATION'] = 'Checkout confirmation';
 $_['REPURCHASE_ORDERS'] = "Agent orders";

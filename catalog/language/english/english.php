@@ -101,6 +101,7 @@ $_['FILTER'] = 'Filter';
 $_['GALLERY'] = 'Gallery';
 $_['INCOME_AMOUNT'] = 'Credit';
 $_['INVOICE_ID'] = 'Invoice ID';
+$_['MANUFACTURER'] = 'Manufacturer';
 $_['NO_ITEMS'] = 'There are no items';
 $_['ORDER_ITEM_ID'] = 'Order item ID';
 $_['ORDER_ITEMS'] = 'Order items';

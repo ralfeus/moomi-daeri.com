@@ -37,6 +37,13 @@ class Supplier {
     }
 
     /**
+     * @param int $groupId
+     */
+    public function setGroupId($groupId) {
+        $this->groupId = $groupId;
+    }
+
+    /**
      * @return mixed
      */
     public function getId() {
@@ -54,6 +61,13 @@ class Supplier {
     }
 
     /**
+     * @param mixed $internalModel
+     */
+    public function setInternalModel($internalModel) {
+        $this->internalModel = $internalModel;
+    }
+
+    /**
      * @return mixed
      */
     public function getName() {
@@ -61,6 +75,13 @@ class Supplier {
             $this->name = SupplierDAO::getInstance()->getName($this->id);
         }
         return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name) {
+        $this->name = $name;
     }
 
     /**
@@ -74,6 +95,13 @@ class Supplier {
     }
 
     /**
+     * @param float $shippingCost
+     */
+    public function setShippingCost($shippingCost) {
+        $this->shippingCost = $shippingCost;
+    }
+
+    /**
      * @return float
      */
     public function getFreeShippingThreshold() {
@@ -81,5 +109,12 @@ class Supplier {
             $this->freeShippingThreshold = SupplierDAO::getInstance()->getFreeShippingThreshold($this->id);
         }
         return $this->freeShippingThreshold;
+    }
+
+    /**
+     * @param float $freeShippingThreshold
+     */
+    public function setFreeShippingThreshold($freeShippingThreshold) {
+        $this->freeShippingThreshold = $freeShippingThreshold;
     }
 }

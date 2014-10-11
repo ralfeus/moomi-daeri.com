@@ -13,4 +13,4 @@ $_['text_language']         = 'Язык';
 $_['text_currency']         = 'Валюта';
 $_['text_repurchase_order'] = 'Агент';
 $_['text_shopping_guide']   = 'Гид по сайту';
-?>
+$_['SEARCH_PROMPT'] = 'поиск...';

@@ -28,21 +28,22 @@ class ControllerCheckoutAddToOrder extends Controller
 	public function confirm()
 	{
 		$this->modelCheckoutOrder = $this->load->model('checkout/order');
-		foreach ($this->cart->getProducts(true) as $order_item)
+        $orderItems = array();
+		foreach ($this->cart->getProducts(true) as $orderItem)
 		{
-			$order_items[] = array(
-				'product_id'	=> $order_item['product_id'],
-				'name'			=> $order_item['name'],
-				'model'			=> $order_item['model'],
-				'quantity'		=> $order_item['quantity'],
-				'price'			=> $order_item['price'],
-				'total'			=> $order_item['total'],
+			$orderItems[] = array(
+				'product_id'	=> $orderItem['product_id'],
+				'name'			=> $orderItem['name'],
+				'model'			=> $orderItem['model'],
+				'quantity'		=> $orderItem['quantity'],
+				'price'			=> $orderItem['price'],
+				'total'			=> $orderItem['total'],
 				'tax'			=> 0,
-				'options'		=> $order_item['option'],
-				'download'		=> $order_item['download']
+				'options'		=> $orderItem['option'],
+				'download'		=> $orderItem['download']
 			);
 		}
-		$this->modelCheckoutOrder->addOrderItems($this->request->request['order_id'], $order_items);
+		$this->modelCheckoutOrder->addOrderItems($this->request->request['order_id'], $orderItems);
 		$this->cart->clear(true);
 //        $json = array();
 //        $json['output'] = $this->render();
@@ -76,9 +77,9 @@ class ControllerCheckoutAddToOrder extends Controller
 			$this->template = $this->config->get('config_template') . $templateFileName;
 		else
 			$this->template = 'default' . $templateFileName;
-		$this->log->write(print_r($this->data, true));
+//		$this->log->write(print_r($this->data, true));
 		$json['output'] = $this->render();
-		$this->log->write(print_r($json, true));
+//		$this->log->write(print_r($json, true));
 		$this->response->setOutput(json_encode($json));
 	}
 

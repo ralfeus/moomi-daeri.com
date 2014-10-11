@@ -1,5 +1,7 @@
 <?php
+use model\sale\CustomerDAO;
 use model\sale\OrderItemDAO;
+use model\setting\StoreDAO;
 
 class ControllerSaleCustomer extends Controller {
 	private $error = array();
@@ -822,31 +824,22 @@ class ControllerSaleCustomer extends Controller {
   	} 
 	
 	public function login() {
-		$json = array();
-		/** @var ModelSaleCustomer $modelSaleCustomer */
-		$modelSaleCustomer = $this->load->model('sale/customer');
-		
-		$customer_info = $modelSaleCustomer->getCustomer($this->parameters['customerId']);
+		$customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
 				
-		if ($customer_info) {
+		if ($customer) {
 			$token = md5(mt_rand());
-			$modelSaleCustomer->editToken($this->parameters['customerId'], $token);
+			CustomerDAO::getInstance()->editToken($this->parameters['customerId'], $token);
 
-			/** @var ModelSettingStore $modelSettingStore */
-			$modelSettingStore = $this->load->model('setting/store');
-			$storeInfo = $modelSettingStore->getStore($this->parameters['storeId']);
-			if ($storeInfo) {
-				$this->redirect($storeInfo['url'] . 'index.php?route=account/login&token=' . $token);
+			$store = StoreDAO::getInstance()->getStore($this->parameters['storeId']);
+			if ($store) {
+				$this->redirect($store['url'] . 'index.php?route=account/login&token=' . $token);
 			} else { 
 				$this->redirect(HTTP_CATALOG . 'index.php?route=account/login&token=' . $token);
 			}
 		} else {
 			$this->load->language('error/not_found');
-
 			$this->document->setTitle($this->language->get('heading_title'));
-
 			$this->data['heading_title'] = $this->language->get('heading_title');
-
 			$this->data['text_not_found'] = $this->language->get('text_not_found');
 
 			$this->data['breadcrumbs'] = array();

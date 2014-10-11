@@ -13,4 +13,4 @@ $_['text_language']         = '語';
 $_['text_currency']         = '貨幣';
 $_['text_repurchase_order'] = '代理人';
 $_['text_shopping_guide']   = '導購';
-?>
+$_['SEARCH_PROMPT'] = '搜索...';

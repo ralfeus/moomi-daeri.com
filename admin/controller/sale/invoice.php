@@ -395,7 +395,7 @@ $temp = $invoice->getCustomer();
         $totalWeight = 0;
         $total = 0; $totalCustomerCurrency = 0;
         $orderItemIdParam = '';
-        $localShipping = array();
+//        $localShipping = array();
         foreach ($orderItems as $orderItem) {
             $orderItemObject = new OrderItem($this->registry, $orderItem['affiliate_id'],
                 $orderItem['affiliate_transaction_id'], $orderItem['comment'], $orderItem['customer_id'], 
@@ -405,48 +405,55 @@ $temp = $invoice->getCustomer();
                 $orderItem['quantity'], $orderItem['shipping'], $orderItem['status_date'], $orderItem['status_id'],
                 $orderItem['supplier_group_id'], $orderItem['supplier_id'], $orderItem['supplier_name'], $orderItem['total'],
                 $orderItem['weight'], $orderItem['weight_class_id']);
-            $this->data['orderItems'][] = array(
-                'id' => $orderItem['order_product_id'],
-                'comment' => $orderItem['public_comment'],
-                'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
-                'model' => $orderItem['model'],
-                'name' => $orderItem['name'],
-                'order_id' => $orderItem['order_id'],
-                'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem['order_item_id']),
-                'price' => $this->getCurrency()->format($orderItem['price'], $this->config->get('config_currency')),
-                'quantity' => $orderItem['quantity'],
-                'shipping' => $orderItem['shipping'],
-                'subtotal' => $this->getCurrency()->format($orderItem['price'] * $orderItem['quantity'] + $orderItem['shipping'], $this->config->get('config_currency'))
+            $this->data['orderItems'][$orderItemObject->getId()] = array(
+                'id' => $orderItemObject->getId(),
+                'comment' => $orderItemObject->getPublicComment(),
+                'image_path' => $this->registry->get('model_tool_image')->getImage($orderItemObject->getImagePath()),
+                'model' => $orderItemObject->getModel(),
+                'name' => $orderItemObject->getName(),
+                'order_id' => $orderItemObject->getOrderId(),
+                'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItemObject->getId()),
+                'price' => $this->getCurrency()->format($orderItemObject->getPrice(), $this->config->get('config_currency')),
+                'quantity' => $orderItemObject->getQuantity(),
+                'shipping' => $orderItemObject->getShippingCost(),
+                'subtotal' => $this->getCurrency()->format($orderItemObject->getPrice() * $orderItemObject->getQuantity() + $orderItemObject->getShippingCost(), $this->config->get('config_currency'))
             );
             $totalWeight +=
               $this->weight->convert(
                   $orderItem['weight'],
                   $orderItem['weight_class_id'],
                   $this->config->get('config_weight_class_id')) * $orderItem['quantity'];
-            $total += $orderItem['total']; //$orderItem['price'] * $orderItem['quantity'];
-            $totalCustomerCurrency += $orderItemObject->getTotalCustomerCurrency();
+            $total += $orderItemObject->getPrice() * $orderItemObject->getQuantity();
+            $totalCustomerCurrency += $orderItemObject->getPrice(true) * $orderItemObject->getQuantity();
             $orderItemIdParam .= '&orderItemId[]=' . $orderItem['order_product_id'];
-            /// Calculate local shipping
-            if (array_key_exists($orderItemObject->getSupplierId(), $localShipping)) {
-                $localShipping[$orderItemObject->getSupplierId()]['total'] += $orderItemObject->getTotal();
-                $orderItemObject->setShippingCost(0);
-            } else {
-                $localShipping[$orderItemObject->getSupplierId()]['orderItem'] = $orderItemObject;
-                $localShipping[$orderItemObject->getSupplierId()]['total'] = $orderItemObject->getTotal();
-                $orderItemObject->setShippingCost($orderItemObject->getSupplier()->getShippingCost());
-            }
+//            /// Calculate local shipping
+//            if (array_key_exists($orderItemObject->getSupplierId(), $localShipping)) {
+//                $localShipping[$orderItemObject->getSupplierId()]['total'] += $orderItemObject->getTotal();
+//                $orderItemObject->setShippingCost(0);
+//                OrderItemDAO::getInstance()->saveOrderItem($orderItemObject, true);
+//            } else {
+//                $localShipping[$orderItemObject->getSupplierId()]['orderItem'] = $orderItemObject;
+//                $localShipping[$orderItemObject->getSupplierId()]['total'] = $orderItemObject->getTotal();
+//                $orderItemObject->setShippingCost($orderItemObject->getSupplier()->getShippingCost());
+//            }
         }
-        /// Check whether suppliers have free shipping
-        foreach ($localShipping as $supplierEntry) {
-            /** @var OrderItem $orderItem */
-            $orderItem = $supplierEntry['orderItem'];
-            if ($supplierEntry['total'] >= $orderItem->getSupplier()->getFreeShippingThreshold()) {
-                $orderItem->setShippingCost(0);
-            } else {
-                $total += $orderItem->getShippingCost();
-                $totalCustomerCurrency += $orderItem->getShippingCost(true);
-            }
-        }
+//        /// Check whether suppliers have free shipping
+//        foreach ($localShipping as $supplierEntry) {
+//            /** @var OrderItem $orderItem */
+//            $orderItem = $supplierEntry['orderItem'];
+//            if ($supplierEntry['total'] >= $orderItem->getSupplier()->getFreeShippingThreshold()) {
+//                $orderItem->setShippingCost(0);
+//            } else {
+//                $total += $orderItem->getShippingCost();
+//                $totalCustomerCurrency += $orderItem->getShippingCost(true);
+//            }
+//            OrderItemDAO::getInstance()->saveOrderItem($orderItem, true);
+//            $this->data['orderItems'][$orderItem->getId()]['shipping'] = $orderItem->getShippingCost();
+//            $this->data['orderItems'][$orderItem->getId()]['subtotal'] = $this->getCurrency()->format(
+//                $orderItem->getPrice() * $orderItem->getQuantity() + $orderItem->getShippingCost(),
+//                $this->config->get('config_currency')
+//            );
+//        }
         /// Set invoice data
         $firstItemOrder = $this->modelSaleOrder->getOrder($orderItems[0]['order_id']);
 //        $this->log->write(print_r($firstItemOrder, true));
@@ -495,8 +502,7 @@ $temp = $invoice->getCustomer();
         $this->response->setOutput($this->render());
     }
 
-    private function showEditForm()
-    {
+    private function showEditForm() {
         if (!$this->parameters['invoiceId'])
             return;
 

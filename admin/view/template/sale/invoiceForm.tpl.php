@@ -107,7 +107,15 @@
                                 </td>
                                 <td class="right"><?= $orderItem['price'] ?></td>
                                 <td class="right"><?= $orderItem['quantity'] ?></td>
-                                <td class="right"><?= $orderItem['shipping'] ?></td>
+                                <td class="right">
+                                    <input
+                                        id="shipping<?= $orderItem['id'] ?>"
+                                        value="<?= $orderItem['shipping'] ?>"
+                                        alt="<?= $orderItem['shipping'] ?>"
+                                        onblur="checkChanged(this)"
+                                        onkeypress="if (event.keyCode == 13) saveOrderItemShipping(<?= $orderItem['id'] ?>, this);"
+                                        <?= $readOnly ?> />
+                                </td>
                                 <td class="right"><?= $orderItem['subtotal'] ?></td>
                                 <td class="left"><?= $orderItem['comment'] ?></td>
                             </tr>
@@ -140,8 +148,15 @@ $(document).ready(function() {
         $('#buttonSaveDiscount').remove();
 });
 
-function formatCurrencies(value)
-{
+function checkChanged(actor) {
+    if (actor.value != actor.alt) {
+        actor.style.borderColor = "blue";
+    } else {
+        actor.style.border = null;
+    }
+}
+
+function formatCurrencies(value) {
     var result;
     $.ajax({
         url: 'index.php?route=localisation/currency/format&token=<?= $this->session->data["token"] ?>',
@@ -164,8 +179,7 @@ function formatCurrencies(value)
     return result;
 }
 
-function recalculateShipping()
-{
+function recalculateShipping() {
     $.ajax({
         url: '<?= $shippingCostRoute ?>'.replace(/&amp;/g, '&'),
         type: 'post',
@@ -193,21 +207,18 @@ function recalculateShipping()
     });
 }
 
-function recalculateTotal()
-{
+function recalculateTotal() {
     var totalCost = <?= $totalRaw ?> + Number($('#shippingCostRaw').val()) - Number($('[name=discount]').val());
     var currencyStrings = formatCurrencies(totalCost);
     $('#grandTotal').val(currencyStrings['system']);
     $('[name=totalCustomerCurrency]').val(currencyStrings['customer']);
 }
 
-function resetValue(element)
-{
+function resetValue(element) {
     element.attr('value', element.attr('alt'));
 }
 
-function saveDiscount()
-{
+function saveDiscount() {
     <?php if ($invoiceId): ?>
     $.ajax({
         url: 'index.php?route=sale/invoice/saveDiscount',
@@ -221,6 +232,36 @@ function saveDiscount()
     });
     <?php endif; ?>
     recalculateTotal();
+}
+
+function saveOrderItemShipping(orderItemId, actor) {
+    if (actor.value == actor.alt)
+        return false;
+    if (!Number(actor.value)) {
+        actor.style.borderColor = "red";
+        return false;
+    }
+    $(actor).effect("bounce");
+    $.ajax({
+        url: 'index.php?route=sale/order_items/saveShipping',
+        beforeSend: function() {
+            $(actor).after('<span class="wait">&nbsp;<img src="view/image/loading.gif" alt="" /></span>');
+        },
+        complete: function() {
+            $('.wait').remove();
+            actor.style.borderColor = null;
+        },
+        data: {
+            token: '<?= $this->session->data["token"] ?>',
+            orderItemId: orderItemId,
+            shipping: actor.value
+        },
+        dataType: 'json',
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert('saveTextField():\n' + jqXHR.responseText);
+        },
+        type: 'post'
+    });
 }
 
 function saveTextField(field)

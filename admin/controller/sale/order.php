@@ -1051,7 +1051,7 @@ class ControllerSaleOrder extends Controller {
 			$order_id = 0;
 		}
 
-		$this->modelSaleOrder->updateOrderTotals($order_id);
+//		$this->modelSaleOrder->updateOrderTotals($order_id);
 		$order_info = $this->modelSaleOrder->getOrder($order_id);
 
 		if ($order_info) {
@@ -1529,7 +1529,7 @@ foreach ($this->data['totals'] as $v) {
      	if (!$this->user->hasPermission('modify', 'sale/order')) {
       		$json['error'] = $this->language->get('error_permission'); 
 		} elseif (isset($this->request->get['order_id'])) {
-			$this->model_sale_order->updateOrderTotals($this->request->get['order_id']);
+//			$this->model_sale_order->updateOrderTotals($this->request->get['order_id']);
 			$invoice_no = $this->model_sale_order->createInvoiceNo($this->request->get['order_id']);
 			$this->model_sale_order->addOrderHistory(
 				$this->request->get['order_id'],
@@ -1938,7 +1938,7 @@ foreach ($this->data['totals'] as $v) {
 		}
 
 		foreach ($orders as $order_id) {
-			$this->model_sale_order->updateOrderTotals($order_id);
+//			$this->model_sale_order->updateOrderTotals($order_id);
 			$order_info = $this->model_sale_order->getOrder($order_id);
 
 			if ($order_info) {

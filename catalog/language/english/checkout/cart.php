@@ -22,5 +22,6 @@ $_['column_total']    = 'Total';
 // Error
 $_['error_stock']     = 'Products marked with *** are not available in the desired quantity or not in stock!';
 $_['error_minimum']   = 'Minimum order amount for %s is %s!';	
-$_['error_required']  = '%s required!';	
-?>
+$_['error_required']  = '%s required!';
+$_['LOCAL_SHIPPING_FREE'] = 'Local shipping is free for this manufacturer';
+$_['LOCAL_SHIPPING_YET_TO_ORDER'] = 'Order for %s more to have local shipping for free!';

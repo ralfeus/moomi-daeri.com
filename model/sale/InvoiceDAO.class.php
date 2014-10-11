@@ -22,7 +22,7 @@ class InvoiceDAO extends DAO {
             /// If weight isn't defined by administrator it's calculated
             if (!$weight)
                 $tmpWeight += $this->weight->format($orderItem['weight'], $this->config->get('config_weight_class_id')) * $orderItem['quantity'];
-            $itemCost = $orderItem['price'] * $orderItem['quantity'];
+            $itemCost = $orderItem['price'] * $orderItem['quantity'] + $orderItem['shipping'];
             $tmpSubtotal += $itemCost;
             $subtotalCustomerCurrency += $orderItemObject->getTotalCustomerCurrency();
         }

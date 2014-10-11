@@ -13,4 +13,4 @@ $_['text_language']         = 'Language';
 $_['text_currency']         = 'Currency';
 $_['text_repurchase_order'] = 'Agent';
 $_['text_shopping_guide']   = 'Shopping guide';
-?>
+$_['SEARCH_PROMPT'] = 'search...';

@@ -1,5 +1,9 @@
 <?php   
-class ControllerCommonHome extends Controller {   
+class ControllerCommonHome extends Controller {
+    public function __construct($registry) {
+        parent::__construct($registry);
+    }
+
 	public function index() {
 
     $this->load->language('common/home');
@@ -103,7 +107,7 @@ class ControllerCommonHome extends Controller {
 			$this->model_localisation_currency->updateCurrencies();
 		}
 		
-		$this->template = 'common/home.tpl';
+		$this->template = 'common/home.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'

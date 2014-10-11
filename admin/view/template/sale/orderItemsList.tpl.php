@@ -10,7 +10,10 @@ tr.couponed td {
     <?= $breadcrumb['separator'] ?><a href="<?= $breadcrumb['href'] ?>"><?= $breadcrumb['text'] ?></a>
     <?php } ?>
   </div>
-  <?php if ($error_warning) { ?>
+<?php foreach ($notifications as $class => $notification)
+    echo "<div class=\"$class\">$notification</div>";
+?>
+    <?php if ($error_warning) { ?>
   <div class="error"><?= $error_warning ?></div>
   <?php } ?>
   <?php if ($success) { ?>

@@ -28,7 +28,7 @@ interface DBDriver {
      * @param string $sql
      * @param array $params
      * @param bool $log
-     * @return mixed
+     * @return mixed|bool Returns false is no rows is returned
      */
     public function queryScalar($sql, $params = array(), $log = false);
 }

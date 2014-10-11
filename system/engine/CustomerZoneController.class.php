@@ -1,7 +1,7 @@
 <?php
 namespace system\engine;
 
-class CustomerZoneController extends \Controller{
+class CustomerZoneController extends CustomerController {
     public function __construct($registry) {
         parent::__construct($registry);
         if (!$this->getCustomer()->isLogged()) {

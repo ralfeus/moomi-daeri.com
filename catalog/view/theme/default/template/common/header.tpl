@@ -102,12 +102,12 @@ DD_belatedPNG.fix('#logo img');
 
 <script language="javascript">//<!--
     var actionCheckboxChecked = '';
-    var holiDays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'Christmas Day']];
+    var holidays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'Christmas Day']];
     $(document).ready(function() {
       var url = "<?= $this->url->link('shop/admin/getAllHolidaysForCalendar') ?>";
       $.post(url, function(response) {
         response = $.parseJSON(response);
-        holiDays = response['holidays'];
+        holidays = response['holidays'];
 
         $("#calendar").datepicker({
           showOn: "calendar",
@@ -189,11 +189,11 @@ DD_belatedPNG.fix('#logo img');
     }
 
     function setHoliDays(date) {
-       for (i = 0; i < holiDays.length; i++) {
-         if (date.getFullYear() == holiDays[i][0]
-            && date.getMonth() == holiDays[i][1] - 1
-              && date.getDate() == holiDays[i][2]) {
-            return [true, 'holiday', holiDays[i][3]];
+       for (i = 0; i < holidays.length; i++) {
+         if (date.getFullYear() == holidays[i][0]
+            && date.getMonth() == holidays[i][1] - 1
+              && date.getDate() == holidays[i][2]) {
+            return [true, 'holiday', holidays[i][3]];
          }
        }
       return [true, ''];
@@ -262,7 +262,7 @@ DD_belatedPNG.fix('#logo img');
 <?php if ($filter_name): ?>
           <input type="text" name="filter_name" value="<?= $filter_name ?>" />
 <?php else: ?>
-          <input type="text" name="filter_name" value="<?/*= $text_search */?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
+          <input type="text" name="filter_name" value="<?= $textSearchPrompt ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
 <?php endif; ?>
 		<div class="styled-select-wrapper">
 		<select class="styled-select">

@@ -153,6 +153,7 @@ $(document).ready(function(){
 			<ul>
 				<li><a href="<?= $order_items_processing ?>"><?= $text_order_items_processing ?></a></li>
                 <li><a href="<?= $repurchaseOrders ?>"><?= $textRepurchaseOrders ?></a></li>
+                <li><a href="<?= $urlFinishSupplierOrders ?>"><?= $textFinishSupplierOrders ?></a></li>
 			</ul>
 		  </li>
           <li><a href="<?= $invoices ?>"><?= $text_invoices ?></a></li>

@@ -43,13 +43,21 @@
               <tr>
                   <td><?= $textShippingCost ?></td>
                   <td>
-                      <input type="text" name="shippingCost" value="<?= $shippingCost ?>" maxlength="255" size="100" />
+                      <input type="text" name="shippingCost" value="<?= $shippingCost ?>" maxlength="16" size="100" />
 <?php if ($error_shippingCost): ?>
                       <span class="error"><?= $error_shippingCost ?></span>
 <?php endif; ?>
                   </td>
               </tr>
-
+              <tr>
+                  <td><?= $textFreeShippingThreshold ?></td>
+                  <td>
+                      <input type="text" name="freeShippingThreshold" value="<?= $freeShippingThreshold ?>" maxlength="16" size="100" />
+<?php if ($error_freeShippingThreshold): ?>
+                      <span class="error"><?= $error_freeShippingThreshold ?></span>
+<?php endif; ?>
+                  </td>
+              </tr>
               <tr>
                 <td><?= $entry_internal_model ?></td>
                 <td><input type="text" name="internalModel" value="<?= $internalModel ?>" maxlength="255" size="100" />

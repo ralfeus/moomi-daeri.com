@@ -2,6 +2,7 @@
 use model\catalog\SupplierDAO;
 use model\catalog\SupplierGroupDAO;
 use model\sale\CustomerDAO;
+use model\sale\OrderItem;
 use model\sale\OrderItemDAO;
 
 class ControllerSaleOrderItems extends Controller {
@@ -11,7 +12,7 @@ class ControllerSaleOrderItems extends Controller {
 
 	public function __construct($registry) {
 		parent::__construct($registry);
-
+        $this->takeSessionVariables();
 		$this->load->language('sale/order_items');
 
 		$this->load->model('catalog/product');
@@ -24,6 +25,41 @@ class ControllerSaleOrderItems extends Controller {
 	public function index() {
 		$this->getList();
 	}
+
+    public function finishSupplierOrders() {
+        $orderItems = OrderItemDAO::getInstance()->getOrderItems(array(
+                'filterStatusId' => array(ORDER_ITEM_STATUS_ORDERED),
+                'filterTimeModifiedFrom' => date('Y-m-d'),
+                'filterTimeModifiedTo' => date('Y-m-d H:i:s')
+            ), null, true
+        );
+        $localShipping = array();
+        foreach ($orderItems as $orderItem) {
+            if (array_key_exists($orderItem->getSupplierId(), $localShipping)) {
+                $localShipping[$orderItem->getSupplierId()]['total'] += $orderItem->getPrice() * $orderItem->getQuantity();
+                $localShipping[$orderItem->getSupplierId()]['orderItemIds'] .= ', ' . $orderItem->getId();
+                $orderItem->setShippingCost(0);
+                OrderItemDAO::getInstance()->saveOrderItem($orderItem, true);
+            } else {
+                $localShipping[$orderItem->getSupplierId()]['orderItem'] = $orderItem;
+                $localShipping[$orderItem->getSupplierId()]['total'] = $orderItem->getPrice() * $orderItem->getQuantity();
+                $localShipping[$orderItem->getSupplierId()]['orderItemIds'] = $orderItem->getId();
+                $orderItem->setShippingCost($orderItem->getSupplier()->getShippingCost());
+            }
+        }
+        /// Check whether suppliers have free shipping
+        $this->session->data['notifications']['success'] = "Successfully calculated local shipping cost for following order items:<br />";
+        foreach ($localShipping as $supplierId => $supplierEntry) {
+            /** @var OrderItem $orderItem */
+            $orderItem = $supplierEntry['orderItem'];
+            if ($supplierEntry['total'] >= $orderItem->getSupplier()->getFreeShippingThreshold()) {
+                $orderItem->setShippingCost(0);
+            }
+            OrderItemDAO::getInstance()->saveOrderItem($orderItem, true);
+            $this->session->data['notifications']['success'] .= $supplierId . '=>' . $supplierEntry['orderItemIds'] . "<br />";
+        }
+        $this->redirect($this->url->link('sale/order_items', 'token=' . $this->parameters['token'], 'SSL'));
+    }
 
 	private function getCustomers()	{
 		$result = array();
@@ -691,6 +727,20 @@ class ControllerSaleOrderItems extends Controller {
 		$this->response->setOutput('');
 	}
 
+    public function saveShipping() {
+        $orderItemId = isset($_REQUEST['orderItemId']) ? $_REQUEST['orderItemId'] : null;
+        $shipping = isset($_REQUEST['shipping']) ? $_REQUEST['shipping'] : null;
+
+        if (!$this->isValidOrderItemId($orderItemId))
+            $this->response->addHeader("HTTP/1.0 400 Bad request");
+        else {
+            $orderItem = OrderItemDAO::getInstance()->getOrderItem($orderItemId);
+            $orderItem->setShippingCost($shipping);
+            OrderItemDAO::getInstance()->saveOrderItem($orderItem, true);
+        }
+        $this->response->setOutput('');
+    }
+
 	protected function setBreadcrumbs()
 	{
 		$this->data['breadcrumbs'] = array();
@@ -746,4 +796,3 @@ class ControllerSaleOrderItems extends Controller {
 
 
 }
-?>
