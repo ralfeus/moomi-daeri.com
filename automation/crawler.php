@@ -150,10 +150,15 @@ class Product {
 }
 
 class DatabaseManager {
+    /** @var PDO */
     private $connection;
 
     private static $instance;
     private function __construct() {
+        $this->dbConnect();
+    }
+
+    private function dbConnect() {
         $this->connection = new PDO(
             'mysql:host=' . DB_HOSTNAME . ';dbname=' . DB_DATABASE,
             DB_USERNAME,
@@ -214,6 +219,7 @@ class DatabaseManager {
                     weight = :weight
             ';
         $products = $site->getProducts();
+        $this->dbConnect();
         $statement = $this->connection->prepare($sql);
         echo date('Y-m-d H:i:s') . " Adding to the database " . count($products) . "\n";
         foreach ($products as $product) {
