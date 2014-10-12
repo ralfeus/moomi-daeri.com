@@ -213,8 +213,8 @@ class DatabaseManager {
                     time_modified = NOW(),
                     weight = :weight
             ';
-        $statement = $this->connection->prepare($sql);
         $products = $site->getProducts();
+        $statement = $this->connection->prepare($sql);
         echo date('Y-m-d H:i:s') . " Adding to the database " . count($products) . "\n";
         foreach ($products as $product) {
             echo date('Y-m-d H:i:s') . " Adding " . $product->sourceProductId . "\n";
