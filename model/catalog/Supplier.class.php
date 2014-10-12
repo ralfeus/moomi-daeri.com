@@ -68,7 +68,7 @@ class Supplier {
      * @return mixed
      */
     public function getInternalModel() {
-        if (!isset($this->internalModel)) {
+        if (!($this->internalModel instanceof Mutable)) {
             $this->internalModel = new Mutable(SupplierDAO::getInstance()->getInternalModel($this->id));
         }
         return $this->internalModel->get();
