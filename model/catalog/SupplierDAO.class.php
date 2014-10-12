@@ -33,8 +33,19 @@ class SupplierDAO extends DAO {
                 'd:' . $supplier->getFreeShippingThreshold(),
             )
         );
+        $newSupplierId = $this->getDb()->getLastId();
+        $this->getDb()->query("
+            INSERT INTO supplier_to_manufacturer
+            SET
+                supplier_id = ?,
+                manufacturer_id = ?
+            ", array(
+                "i:$newSupplierId",
+                'i:' . $supplier->getRelatedManufacturer()->getId()
+            )
+        );
 		$this->getCache()->deleteAll('/^suppliers\./');
-        return $this->getDb()->getLastId();
+        return $newSupplierId;
     }
 
     /**
@@ -77,6 +88,20 @@ class SupplierDAO extends DAO {
      */
     public function getName($supplierId) {
         return $this->getSingleValue($supplierId, 'name');
+    }
+
+    /**
+     * @param $supplierId
+     * @return Manufacturer
+     */
+    public function getRelatedManufacturer($supplierId) {
+        $relatedManufacturerId = $this->getDb()->queryScalar("
+            SELECT manufacturer_id
+            FROM supplier_to_manufacturer
+            WHERE supplier_id = ?
+            ", array("i:$supplierId")
+        );
+        return ManufacturerDAO::getInstance()->getManufacturer($relatedManufacturerId, true);
     }
 
     /**
@@ -210,6 +235,19 @@ class SupplierDAO extends DAO {
                 'd:' . $supplier->getShippingCost(),
                 'd:' . $supplier->getFreeShippingThreshold(),
                 'i:' . $supplier->getId()
+            )
+        );
+        $this->getDb()->query("
+            INSERT INTO supplier_to_manufacturer
+            SET
+                supplier_id = ?,
+                manufacturer_id = ?
+            ON DUPLICATE KEY UPDATE
+                manufacturer_id = ?
+            ", array(
+                "i:" . $supplier->getId(),
+                'i:' . $supplier->getRelatedManufacturer()->getId(),
+                'i:' . $supplier->getRelatedManufacturer()->getId()
             )
         );
 

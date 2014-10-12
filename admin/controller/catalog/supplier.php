@@ -1,4 +1,6 @@
 <?php
+use model\catalog\Manufacturer;
+use model\catalog\ManufacturerDAO;
 use model\catalog\Supplier;
 use model\catalog\SupplierDAO;
 use model\catalog\SupplierGroupDAO;
@@ -28,17 +30,20 @@ class ControllerCatalogSupplier extends Controller {
         $this->parameters['sort'] = !empty($_REQUEST['sort']) ? $_REQUEST['sort'] : 'name';
         $this->parameters['supplierGroupId'] = !empty($_REQUEST['supplierGroupId']) ? $_REQUEST['supplierGroupId'] : null;
         $this->parameters['supplierId'] = !empty($_REQUEST['supplierId']) ? $_REQUEST['supplierId'] : null;
+        $this->initParametersWithDefaults(array(
+            'relatedManufacturerId' => 0
+        ));
     }
   
     public function insert() {
+        $supplier = new Supplier(0);
         if ($this->request->server['REQUEST_METHOD'] == 'POST') {
-            $supplier = new Supplier(0,
-                $this->parameters['supplierGroupId'],
-                $this->parameters['internalModel'],
-                $this->parameters['name'],
-                $this->parameters['shippingCost'],
-                $this->parameters['freeShippingThreshold']
-            );
+            $supplier->setGroupId($this->parameters['supplierGroupId']);
+            $supplier->setInternalModel($this->parameters['internalModel']);
+            $supplier->setName($this->parameters['name']);
+            $supplier->setShippingCost($this->parameters['shippingCost']);
+            $supplier->setFreeShippingThreshold($this->parameters['freeShippingThreshold']);
+            $supplier->setRelatedManufacturer(new Manufacturer($this->parameters['relatedManufacturerId']));
             if ($this->validateInsert() && $this->validateSupplierData($supplier)) {
                 SupplierDAO::getInstance()->addSupplier($supplier);
 
@@ -71,6 +76,7 @@ class ControllerCatalogSupplier extends Controller {
             $supplier->setInternalModel($this->parameters['internalModel']);
             $supplier->setName($this->parameters['name']);
             $supplier->setShippingCost($this->parameters['shippingCost']);
+            $supplier->setRelatedManufacturer(new Manufacturer($this->parameters['relatedManufacturerId']));
             if ($this->validateSupplierData($supplier)) {
                 SupplierDAO::getInstance()->saveSupplier($supplier);
 
@@ -215,7 +221,7 @@ class ControllerCatalogSupplier extends Controller {
 
 		$url = '';
 
-		if ($order == 'ASC') {
+		if ($this->parameters['order'] == 'ASC') {
 			$url .= '&order=DESC';
 		} else {
 			$url .= '&order=ASC';
@@ -246,8 +252,8 @@ class ControllerCatalogSupplier extends Controller {
 			
 		$this->data['pagination'] = $pagination->render();
 
-		$this->data['sort'] = $sort;
-		$this->data['order'] = $order;
+		$this->data['sort'] = $this->parameters['sort'];
+		$this->data['order'] = $this->parameters['order'];
 
 		$this->template = 'catalog/supplier_list.tpl';
 		$this->children = array(
@@ -273,6 +279,7 @@ class ControllerCatalogSupplier extends Controller {
         $this->data['text_none'] = $this->language->get('text_none');
 		$this->data['text_percent'] = $this->language->get('text_percent');
         $this->data['textFreeShippingThreshold'] = $this->language->get('FREE_SHIPPING_THRESHOLD');
+        $this->data['textRelatedManufacturer'] = $this->language->get('MANUFACTURER');
         $this->data['textShippingCost'] = $this->language->get('textShippingCost');
 
 		$this->data['entry_name'] = $this->language->get('field_name') . ':';
@@ -339,11 +346,13 @@ class ControllerCatalogSupplier extends Controller {
 		
 		$this->data['languages'] = $this->model_localisation_language->getLanguages();
         $this->data['supplier_groups'] = SupplierGroupDAO::getInstance()->getSupplierGroups();
+        $this->data['manufacturers'] = ManufacturerDAO::getInstance()->getManufacturers();
         $this->data = array_merge($this->data, $this->parameters);
 
         $this->data['freeShippingThreshold'] = $supplier->getFreeShippingThreshold();
         $this->data['internalModel'] = $supplier->getInternalModel();
         $this->data['name'] = $supplier->getName();
+        $this->data['relatedManufacturerId'] = $supplier->getRelatedManufacturer()->getId();
         $this->data['supplierGroupId'] = $supplier->getGroupId();
         $this->data['shippingCost'] = $supplier->getShippingCost();
 

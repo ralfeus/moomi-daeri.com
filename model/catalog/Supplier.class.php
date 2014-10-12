@@ -1,6 +1,8 @@
 <?php
 namespace model\catalog;
 
+use system\library\Mutable;
+
 class Supplier {
     private $id;
     private $group;
@@ -9,21 +11,33 @@ class Supplier {
     private $internalModel;
     private $shippingCost;
     private $freeShippingThreshold;
+    private $relatedManufacturer;
 
-    public function __construct($id, $groupId = null, $internalModel = null, $name = null, $shippingCost = null, $freeShippingThreshold = null) {
+    /*
+     * @param int $id
+     * @param int $groupId
+     * @param string $intenalModel
+     * @param string @name
+     * @param float $shippingCost
+     * @param float $freeShippingThreshold
+     * @param Manufacturer $relatedManufacturer
+     */
+    public function __construct($id, $groupId = null, $internalModel = null, $name = null, $shippingCost = null,
+                                $freeShippingThreshold = null, $relatedManufacturer = null) {
         $this->id = $id; ///TODO: Перевірити, чи може товар існувати без постачальника
-        if (!is_null($groupId)) { $this->groupId = $groupId; }
-        if (!is_null($internalModel)) { $this->internalModel = $internalModel; }
-        if (!is_null($name)) { $this->name = $name; }
-        if (!is_null($shippingCost)) { $this->shippingCost = $shippingCost; }
-        if (!is_null($freeShippingThreshold)) { $this->freeShippingThreshold = $freeShippingThreshold ; }
+        if (!is_null($groupId)) { $this->groupId = new Mutable($groupId); }
+        if (!is_null($internalModel)) { $this->internalModel = new Mutable($internalModel); }
+        if (!is_null($name)) { $this->name = new Mutable($name); }
+        if (!is_null($relatedManufacturer)) { $this->relatedManufacturer = new Mutable($relatedManufacturer); }
+        if (!is_null($shippingCost)) { $this->shippingCost = new Mutable($shippingCost); }
+        if (!is_null($freeShippingThreshold)) { $this->freeShippingThreshold = new Mutable($freeShippingThreshold); }
     }
 
     public function getGroup() {
         if (!isset($this->group)) {
-            $this->group = SupplierGroupDAO::getInstance()->getSupplierGroup($this->getGroupId());
+            $this->group = new Mutable(SupplierGroupDAO::getInstance()->getSupplierGroup($this->getGroupId()));
         }
-        return $this->group;
+        return $this->group->get();
     }
 
     /**
@@ -31,16 +45,16 @@ class Supplier {
      */
     public function getGroupId() {
         if (!isset($this->groupId)) {
-            $this->groupId = SupplierDAO::getInstance()->getGroupId($this->id);
+            $this->groupId = new Mutable(SupplierDAO::getInstance()->getGroupId($this->id));
         }
-        return $this->groupId;
+        return $this->groupId->get();
     }
 
     /**
      * @param int $groupId
      */
     public function setGroupId($groupId) {
-        $this->groupId = $groupId;
+        $this->groupId->set($groupId);
     }
 
     /**
@@ -55,16 +69,16 @@ class Supplier {
      */
     public function getInternalModel() {
         if (!isset($this->internalModel)) {
-            $this->internalModel = SupplierDAO::getInstance()->getInternalModel($this->id);
+            $this->internalModel = new Mutable(SupplierDAO::getInstance()->getInternalModel($this->id));
         }
-        return $this->internalModel;
+        return $this->internalModel->get();
     }
 
     /**
      * @param mixed $internalModel
      */
     public function setInternalModel($internalModel) {
-        $this->internalModel = $internalModel;
+        $this->internalModel->set($internalModel);
     }
 
     /**
@@ -72,16 +86,16 @@ class Supplier {
      */
     public function getName() {
         if (!isset($this->name)) {
-            $this->name = SupplierDAO::getInstance()->getName($this->id);
+            $this->name = new Mutable(SupplierDAO::getInstance()->getName($this->id));
         }
-        return $this->name;
+        return $this->name->get();
     }
 
     /**
      * @param string $name
      */
     public function setName($name) {
-        $this->name = $name;
+        $this->name->set($name);
     }
 
     /**
@@ -89,16 +103,16 @@ class Supplier {
      */
     public function getShippingCost() {
         if (!isset($this->shippingCost)) {
-            $this->shippingCost = SupplierDAO::getInstance()->getShippingCost($this->id);
+            $this->shippingCost = new Mutable(SupplierDAO::getInstance()->getShippingCost($this->id));
         }
-        return $this->shippingCost;
+        return $this->shippingCost->get();
     }
 
     /**
      * @param float $shippingCost
      */
     public function setShippingCost($shippingCost) {
-        $this->shippingCost = $shippingCost;
+        $this->shippingCost->set($shippingCost);
     }
 
     /**
@@ -106,15 +120,36 @@ class Supplier {
      */
     public function getFreeShippingThreshold() {
         if (!isset($this->freeShippingThreshold)) {
-            $this->freeShippingThreshold = SupplierDAO::getInstance()->getFreeShippingThreshold($this->id);
+            $this->freeShippingThreshold = new Mutable(SupplierDAO::getInstance()->getFreeShippingThreshold($this->id));
         }
-        return $this->freeShippingThreshold;
+        return $this->freeShippingThreshold->get();
     }
 
     /**
      * @param float $freeShippingThreshold
      */
     public function setFreeShippingThreshold($freeShippingThreshold) {
-        $this->freeShippingThreshold = $freeShippingThreshold;
+        $this->freeShippingThreshold->set($freeShippingThreshold);
+    }
+
+    /**
+     * @return Manufacturer
+     */
+    public function getRelatedManufacturer() {
+        if (!isset($this->relatedManufacturer)) {
+            $this->relatedManufacturer = new Mutable(SupplierDAO::getInstance()->getRelatedManufacturer($this->id));
+        }
+        return $this->relatedManufacturer->get();
+    }
+
+    /**
+     * @param mixed $relatedManufacturer
+     */
+    public function setRelatedManufacturer($relatedManufacturer) {
+        if (isset($this->relatedManufacturer)) {
+            $this->relatedManufacturer->set($relatedManufacturer);
+        } else {
+            $this->relatedManufacturer = new Mutable($relatedManufacturer);
+        }
     }
 }

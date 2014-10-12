@@ -69,15 +69,23 @@ class ManufacturerDAO extends DAO {
         $this->cache->delete('manufacturer');
     }
 
-    public function getManufacturer($manufacturer_id) {
-        $query = $this->db->query("SELECT DISTINCT *, (SELECT keyword FROM url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "') AS keyword FROM manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+    /**
+     * @param int $manufacturerId
+     * @param bool $shallow
+     * @return Manufacturer|array
+     */
+    public function getManufacturer($manufacturerId, $shallow = false) {
+        if ($shallow) {
+            return new Manufacturer($manufacturerId);
+        }
+        $query = $this->db->query("SELECT DISTINCT *, (SELECT keyword FROM url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturerId . "') AS keyword FROM manufacturer WHERE manufacturer_id = '" . (int)$manufacturerId . "'");
 
         return $query->row;
     }
 
     public function getManufacturers($data = array()) {
         if ($data) {
-            $sql = "SELECT * FROM manufacturer";
+            $sql = "SELECT *, manufacturer_id AS id FROM manufacturer";
 
             $sort_data = array(
                 'name',
@@ -115,7 +123,7 @@ class ManufacturerDAO extends DAO {
             $manufacturer_data = $this->cache->get('manufacturer');
 
             if (!$manufacturer_data) {
-                $query = $this->db->query("SELECT * FROM manufacturer ORDER BY name");
+                $query = $this->db->query("SELECT *, manufacturer_id AS id FROM manufacturer ORDER BY name");
 
                 $manufacturer_data = $query->rows;
 

@@ -41,6 +41,19 @@
                 </td>
             </tr>
               <tr>
+                  <td><?= $textRelatedManufacturer ?></td>
+                  <td>
+                      <select name="relatedManufacturerId">
+                          <option value="0"><?= $text_none ?></option>
+<?php foreach ($manufacturers as $manufacturer):
+    $selected = ($manufacturer['id'] == $relatedManufacturerId) ? " selected" : ""; ?>
+                          <option value="<?= $manufacturer['id'] ?>" <?= $selected ?>><?= $manufacturer['name'] ?></option>
+<?php endforeach; ?>
+                      </select>
+                  </td>
+              </tr>
+
+              <tr>
                   <td><?= $textShippingCost ?></td>
                   <td>
                       <input type="text" name="shippingCost" value="<?= $shippingCost ?>" maxlength="16" size="100" />
