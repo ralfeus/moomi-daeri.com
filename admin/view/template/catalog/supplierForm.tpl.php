@@ -30,12 +30,9 @@
                 <td>
                     <select name="supplierGroupId">
                         <option value="0"><?= $text_none ?></option>
-<?php foreach ($supplierGroups as $supplierGroup): ?>
-    <?php if ($supplierGroup['supplier_group_id'] == $supplierGroupId): ?>
-                        <option value="<?= $supplierGroup['supplier_group_id'] ?>" selected="selected"><?= $supplierGroup['name'] ?></option>
-    <?php else: ?>
-                        <option value="<?= $supplierGroup['supplier_group_id'] ?>"><?= $supplierGroup['name'] ?></option>
-    <?php endif; ?>
+<?php foreach ($supplierGroups as $supplierGroup):
+    $selected = $supplierGroup['supplier_group_id'] == $supplierGroupId ? "selected" : ''; ?>
+                        <option value="<?= $supplierGroup['supplier_group_id'] ?>" <?= $selected ?>><?= $supplierGroup['name'] ?></option>
 <?php endforeach; ?>
                     </select>
                 </td>
