@@ -269,12 +269,12 @@ class DatabaseManager {
 
 if ($sites = file_get_contents("crawler.lck")) {
     unlink("crawler.lck");
-//    fclose(STDIN);
-//    fclose(STDOUT);
-//    fclose(STDERR);
-//    $STDIN = fopen('/dev/null', 'r');
-//    $STDOUT = fopen('import.log', 'wb');
-//    $STDERR = fopen('import.error.log', 'wb');
+    fclose(STDIN);
+    fclose(STDOUT);
+    fclose(STDERR);
+    $STDIN = fopen('/dev/null', 'r');
+    $STDOUT = fopen('import.log', 'wb');
+    $STDERR = fopen('import.error.log', 'wb');
 
     echo date('Y-m-d H:i:s') . " Starting\n";
     $startTime = time();
