@@ -44,8 +44,11 @@ class Supplier {
      * @return mixed
      */
     public function getGroupId() {
+        global $log;
         if (!isset($this->groupId)) {
             $this->groupId = new Mutable(SupplierDAO::getInstance()->getGroupId($this->id));
+        } else {
+            $log->write(print_r($this->groupId, true));
         }
         return $this->groupId->get();
     }
