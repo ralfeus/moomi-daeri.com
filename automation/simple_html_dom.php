@@ -519,7 +519,7 @@ class simple_html_dom_node
      * @param string $selector
      * @param int $idx
      * @param bool $lowercase
-     * @return array[simple_html_dom_node]|simple_html_dom_node
+     * @return simple_html_dom_node[]|simple_html_dom_node
      */
     function find($selector, $idx = null, $lowercase=false)
 	{
@@ -571,6 +571,15 @@ class simple_html_dom_node
 		else if ($idx<0) $idx = count($found) + $idx;
 		return (isset($found[$idx])) ? $found[$idx] : null;
 	}
+
+    /**
+     * @param string $selector
+     * @param int $index
+     * @return simple_html_dom_node
+     */
+    function findOne($selector, $index = 0) {
+        return $this->find($selector, $index);
+    }
 
 	// seek for given conditions
 	// PaperG - added parameter to allow for case insensitive testing of the value of a selector.

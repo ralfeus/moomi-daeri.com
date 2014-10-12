@@ -209,12 +209,15 @@ class DatabaseManager {
                     description = :description,
                     price = :price,
                     price_promo = :promoPrice,
+                    active = TRUE,
                     time_modified = NOW(),
                     weight = :weight
             ';
         $statement = $this->connection->prepare($sql);
         $products = $site->getProducts();
+        echo date('Y-m-d H:i:s') . " Adding to the database " . count($products) . "\n";
         foreach ($products as $product) {
+            echo date('Y-m-d H:i:s') . " Adding " . $product->sourceProductId . "\n";
             $statement->execute(array(
                 ':sourceSiteId' => $site->getSite()->id,
                 ':sourceCategoryId' => $product->categoryId,
@@ -237,11 +240,8 @@ class DatabaseManager {
     public function cleanup($syncTime) {
         $statement = $this->connection->prepare('
             UPDATE imported_products
-            SET active =
-                CASE
-                    WHEN time_modified < :lastUpdateTime THEN FALSE
-                    ELSE TRUE
-                END
+            SET active = FALSE
+            WHERE time_modified < :lastUpdateTime
         ');
         $statement->execute(array(':lastUpdateTime' => date('Y-m-d H:i:s', $syncTime)));
     }
@@ -263,12 +263,12 @@ class DatabaseManager {
 
 if ($sites = file_get_contents("crawler.lck")) {
     unlink("crawler.lck");
-    fclose(STDIN);
-    fclose(STDOUT);
-    fclose(STDERR);
-    $STDIN = fopen('/dev/null', 'r');
-    $STDOUT = fopen('import.log', 'wb');
-    $STDERR = fopen('import.error.log', 'wb');
+//    fclose(STDIN);
+//    fclose(STDOUT);
+//    fclose(STDERR);
+//    $STDIN = fopen('/dev/null', 'r');
+//    $STDOUT = fopen('import.log', 'wb');
+//    $STDERR = fopen('import.error.log', 'wb');
 
     echo date('Y-m-d H:i:s') . " Starting\n";
     $startTime = time();

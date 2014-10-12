@@ -26,7 +26,7 @@ class TonyMoly extends ProductSource {
         /// Get price and promo price
         $product->price = preg_replace('/\D+/', '', $html->find('div.FixHeight li td.major2', 0)->plaintext);
         $item = $html->find('div.FixHeight li.desc>strike', 0);
-        if ($item != null) {
+        if (!is_null($item)) {
             $product->promoPrice = $product->price;
             $product->price = preg_replace('/\D+/', '', $item->plaintext);
         }
@@ -34,8 +34,7 @@ class TonyMoly extends ProductSource {
         $html->clear();
     }
 
-    private function getCategoryProducts($categoryUrl)
-    {
+    private function getCategoryProducts($categoryUrl) {
         $products = array();
         $categoryId = preg_match('/(?<=cate=)\d+/', $categoryUrl, $matches) ? $matches[0] : null;
         $categoryUrl = 'http://etonymoly.com/common/ajax/exec_getProdList.asp?cate=' . $categoryId;
@@ -94,7 +93,7 @@ class TonyMoly extends ProductSource {
         foreach ($urls as $url) {
             echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . "\n";
             $products = array_merge($products, self::getCategoryProducts($url));
-//            break;
+            break;
         }
         echo "Totally found " . sizeof($products) . " products\n";
         echo date('Y-m-d H:i:s') . " --- Finished\n";
