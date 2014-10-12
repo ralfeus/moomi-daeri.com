@@ -25,7 +25,7 @@ class Supplier {
     public function __construct($id, $groupId = null, $internalModel = null, $name = null, $shippingCost = null,
                                 $freeShippingThreshold = null, $relatedManufacturer = null) {
         $this->id = $id; ///TODO: Перевірити, чи може товар існувати без постачальника
-        if (!is_null($groupId)) { $this->groupId = new Mutable($groupId); }
+        if (!is_null($groupId)) { $this->groupId = new Mutable($groupId); global $log; $log->write(print_r($this->groupId, true));}
         if (!is_null($internalModel)) { $this->internalModel = new Mutable($internalModel); }
         if (!is_null($name)) { $this->name = new Mutable($name); }
         if (!is_null($relatedManufacturer)) { $this->relatedManufacturer = new Mutable($relatedManufacturer); }
