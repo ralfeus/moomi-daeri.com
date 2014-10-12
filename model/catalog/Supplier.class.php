@@ -85,7 +85,7 @@ class Supplier {
      * @return mixed
      */
     public function getName() {
-        if (!isset($this->name)) {
+        if (!($this->name instanceof Mutable)) {
             $this->name = new Mutable(SupplierDAO::getInstance()->getName($this->id));
         }
         return $this->name->get();
