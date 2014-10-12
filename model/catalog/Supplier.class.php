@@ -54,7 +54,11 @@ class Supplier {
      * @param int $groupId
      */
     public function setGroupId($groupId) {
-        $this->groupId->set($groupId);
+        if (isset($this->groupId)) {
+            $this->groupId->set($groupId);
+        } else {
+            $this->groupId = new Mutable($groupId);
+        }
     }
 
     /**
@@ -65,7 +69,7 @@ class Supplier {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getInternalModel() {
         if (!isset($this->internalModel)) {
@@ -75,14 +79,18 @@ class Supplier {
     }
 
     /**
-     * @param mixed $internalModel
+     * @param string $internalModel
      */
     public function setInternalModel($internalModel) {
-        $this->internalModel->set($internalModel);
+        if (isset($this->internalModel)) {
+            $this->internalModel->set($internalModel);
+        } else {
+            $this->internalModel = new Mutable($internalModel);
+        }
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getName() {
         if (!isset($this->name)) {
@@ -95,7 +103,11 @@ class Supplier {
      * @param string $name
      */
     public function setName($name) {
-        $this->name->set($name);
+        if (isset($this->name)) {
+            $this->name->set($name);
+        } else {
+            $this->name = new Mutable($name);
+        }
     }
 
     /**
@@ -112,7 +124,11 @@ class Supplier {
      * @param float $shippingCost
      */
     public function setShippingCost($shippingCost) {
-        $this->shippingCost->set($shippingCost);
+        if (isset($this->shippingCost)) {
+            $this->shippingCost->set($shippingCost);
+        } else {
+            $this->shippingCost = new Mutable($shippingCost);
+        }
     }
 
     /**
@@ -129,7 +145,11 @@ class Supplier {
      * @param float $freeShippingThreshold
      */
     public function setFreeShippingThreshold($freeShippingThreshold) {
-        $this->freeShippingThreshold->set($freeShippingThreshold);
+        if (isset($this->freeShippingThreshold)) {
+            $this->freeShippingThreshold->set($freeShippingThreshold);
+        } else {
+            $this->freeShippingThreshold = new Mutable($freeShippingThreshold);
+        }
     }
 
     /**
