@@ -44,7 +44,7 @@ class Supplier {
      * @return mixed
      */
     public function getGroupId() {
-        if (!isset($this->groupId)) {
+        if (!($this->groupId instanceof Mutable)) {
             $this->groupId = new Mutable(SupplierDAO::getInstance()->getGroupId($this->id));
         }
         return $this->groupId->get();
