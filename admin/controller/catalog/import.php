@@ -73,8 +73,8 @@ class ControllerCatalogImport extends Controller {
             'user_id' => 0,
             'weight' => $productToAdd->getWeight(), 'weight_class_id' => 1,
             'width' => null,
-            'korean_name' => $productToAdd->getName(),
-            'supplier_url' => $productToAdd->getSourceUrl()
+            'koreanName' => $productToAdd->getName(),
+            'supplierUrl' => $productToAdd->getSourceUrl()
         ));
 
         $this->modelCatalogImport->pairImportedProduct($productToAdd->getId(), $productId);
@@ -262,7 +262,7 @@ class ControllerCatalogImport extends Controller {
             'model' => $localProduct['model'],
             'points' => null,
             'price' => $productToUpdate->getSourcePrice()->getPrice() * $productToUpdate->getSourceSite()->getRegularCustomerPriceRate(),
-            'product_attribute' => array($koreanName, $sourceUrl),
+//            'product_attribute' => array($koreanName, $sourceUrl),
             'product_category' => $localProductCategories,
             'product_description' => null,
             'product_image' => $images,
@@ -284,8 +284,8 @@ class ControllerCatalogImport extends Controller {
             'user_id' => 0,
             'weight' => $localProduct['weight'], 'weight_class_id' => $localProduct['weight_class_id'],
             'width' => null,
-            'korean_name' => $productToUpdate->getName(),
-            'supplier_url' => $productToUpdate->getSourceUrl()
+            'koreanName' => $productToUpdate->getName(),
+            'supplierUrl' => $productToUpdate->getSourceUrl()
         ));
     }
 
