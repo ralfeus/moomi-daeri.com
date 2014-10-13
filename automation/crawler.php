@@ -243,13 +243,20 @@ class DatabaseManager {
         echo date('Y-m-d H:i:s') . " Added data to database\n";
     }
 
-    public function cleanup($syncTime) {
+    /**
+     * @param ProductSource $sourceSite
+     * @param string $syncTime
+     */
+    public function cleanup($sourceSite, $syncTime) {
         $statement = $this->connection->prepare('
             UPDATE imported_products
             SET active = FALSE
-            WHERE time_modified < :lastUpdateTime
+            WHERE time_modified < :lastUpdateTime AND source_site_id = :sourceSiteId
         ');
-        $statement->execute(array(':lastUpdateTime' => date('Y-m-d H:i:s', $syncTime)));
+        $statement->execute(array(
+            ':lastUpdateTime' => date('Y-m-d H:i:s', $syncTime),
+            ':sourceSiteId' => $sourceSite->getSite()->id
+        ));
     }
 
     /**
@@ -282,6 +289,6 @@ if ($sites = file_get_contents("crawler.lck")) {
         $className = $sourceSite->class_name;
         echo date('Y-m-d H:i:s') . " Crawling $className\n";
         DatabaseManager::getInstance()->addProducts($className::getInstance());
+        DatabaseManager::getInstance()->cleanup($className::getInstance(), $startTime);
     }
-    DatabaseManager::getInstance()->cleanup($startTime);
 }
