@@ -100,6 +100,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
                     : "",
                 'quantity'		=> $order_item['quantity'],
                 'price' => (float)$order_item['price'],
+                'whiteprice' => (float)$order_item['whiteprice'],
                 'shipping' => (float)$order_item['shipping'],
                 'amount' => (float)$order_item['total'],
                 'actions'                    => $actions,

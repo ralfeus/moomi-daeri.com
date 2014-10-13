@@ -1,24 +1,24 @@
 <?php echo $header; ?>
 <div id="content">
     <div class="breadcrumb">
-<?php foreach ($breadcrumbs as $breadcrumb): ?>
+    <?php foreach ($breadcrumbs as $breadcrumb): ?>
         <?= $breadcrumb['separator'] ?><a href="<?php echo $breadcrumb['href']; ?>"><?= $breadcrumb['text'] ?></a>
-<?php endforeach; ?>
+    <?php endforeach; ?>
     </div>
     <h1><?= $headingTitle ?></h1>
-<?php foreach ($notifications as $class => $notification)
+    <?php foreach ($notifications as $class => $notification)
     echo "<div class=\"$class\">" . nl2br(print_r($notification, true)) . "</div>";
-?>
+    ?>
     <div class="box">
         <div class="heading">
             <h1><img src="view/image/order.png" alt="" /><?= $headingTitle ?></h1>
             <div class="buttons">
-<?php foreach ($statuses as $status): ?>
-                <a onclick="submitStatus('<?= $status['statusId'] ?>');" class="button"><?= $status['name'] ?></a>
-<?php endforeach; ?>
-                <a onclick="recalculateShipping()" class="button"><?= $textRecalculateShipping ?></a>
-                <a onclick="submitForm('<?= $invoiceUrl ?>');" class="button"><?= $textInvoice ?></a>
-                <a onclick="$('#form').attr('target', '_blank'); submitForm('<?= $print ?>');" class="button"><?= $textPrint ?></a>
+            <?php foreach ($statuses as $status): ?>
+            <a onclick="submitStatus('<?= $status['statusId'] ?>');" class="button"><?= $status['name'] ?></a>
+            <?php endforeach; ?>
+            <a onclick="recalculateShipping()" class="button"><?= $textRecalculateShipping ?></a>
+            <a onclick="submitForm('<?= $invoiceUrl ?>');" class="button"><?= $textInvoice ?></a>
+            <a onclick="$('#form').attr('target', '_blank'); submitForm('<?= $print ?>');" class="button"><?= $textPrint ?></a>
             </div>
         </div>
         <form action="" id="form" method="post" enctype="multipart/form-data">
@@ -26,19 +26,19 @@
                 <thead>
                     <tr>
                         <td style="width: 1px; text-align: center;"><input type="checkbox" onclick="selectAll(this);" /></td>
-                        <td style="width: 1px"><?= $textOrderId ?> / <?= $textUnderlyingOrderId ?></td>
-                        <td style="width: 1px"><?= $textItem ?></td>
-                        <td style="width: 1px"><?= $textCustomer ?></td>
-                        <td style="width: 1px"><?= $textShopName ?> / <?= $textSiteName ?></td>
-                        <td style="width: 1px">
+                        <td style="width: 1px; text-align: center;"><?= $textOrderId ?> / <?= $textUnderlyingOrderId ?></td>
+                        <td style="width: 1px; text-align: center;"><?= $textItem ?></td>
+                        <td style="width: 1px; text-align: center;"><?= $textCustomer ?></td>
+                        <td style="width: 1px; text-align: center;"><?= $textShopName ?> / <?= $textSiteName ?></td>
+                        <td style="width: 1px; text-align: center;">
                             <?= preg_replace('/\s/', '&nbsp;', $textPricePerItem) ?><br />
                             <?= preg_replace('/\s/', '&nbsp;', $textQuantity) ?><br />
                             <?= preg_replace('/\s/', '&nbsp;', $textShipping) ?><br />
                             <?= preg_replace('/\s/', '&nbsp;', $textAmount) ?>&nbsp;(<?= $currencyCode ?>)
                         </td>
-                        <td style="width: 1px"><?= $textStatus ?></td>
-                        <td style="width: auto;" "><?= $textComment ?></td>
-                        <td style="width: 1px"><?= $textActions ?></td>
+                        <td style="width: 1px; text-align: center;"><?= $textStatus ?></td>
+                        <td style="width: auto; text-align: center;" "><?= $textComment ?></td>
+                        <td style="width: 1px; text-align: center;"><?= $textActions ?></td>
                     </tr>
                     <tr class="filter">
                         <td />
@@ -72,7 +72,7 @@
                             <input name="filterStatusSetDate" class="date" value="<?= $filterStatusSetDate ?>" onkeydown="filterKeyDown(event)" />
                         </td>
                         <td />
-                        <td align="right"><a onclick="filter();" class="button"><?= $textFilter; ?></a></td>
+                        <td><a onclick="filter();" class="button"><?= $textFilter; ?></a></td>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,7 +90,6 @@
                             <td>
                                 <input
                                     onkeydown="itemNameKeyDown(event, this, <?= $order['orderId'] ?>)"
-                                    style="width: 100%"
                                     value="<?= $order['itemName'] ?>"
                                     />
                                 <a href="<?= $order['originalImagePath'] ?>" target="_blank">
@@ -101,30 +100,31 @@
                             <td>
                                 <input
                                     onkeydown="shopNameKeyDown(event, this, <?= $order['orderId'] ?>)"
-                                    style="width: 100%"
                                     value="<?= $order['shopName'] ?>"
                                     /><br />
                                 <a href="<?= $order['itemUrl'] ?>"><?= $order['siteName'] ?></a>
                             </td>
                             <td>
+                                <input id="whiteprice_<?= $order['orderId'] ?>"
+                                       value="<?= $order['whiteprice'] ?>"
+                                       onkeyup="price_<?= $order['orderId'] ?>.value=this.value"
+                                    />
                                 <input id="price_<?= $order['orderId'] ?>"
+                                       class="repCalculator"
+                                       style="width: 70%"
                                        onkeydown="changePrice(event, this, <?= $order['orderId'] ?>)"
-                                       style="width: 100%"
                                        value="<?= $order['price'] ?>"
                                     />
                                 <input
                                         onkeydown="quantityKeyDown(event, this, <?= $order['orderId'] ?>)"
-                                        style="width: 100%"
                                         value="<?= $order['quantity'] ?>"
                                         />
                                 <input id="shipping_<?= $order['orderId'] ?>"
                                     onkeydown="changeShipping(event, this, <?= $order['orderId'] ?>)"
-                                    style="width: 100%"
                                     value="<?= $order['shipping'] ?>"
                                     />
                                 <input id="total_<?= $order['orderId'] ?>"
                                        onkeydown="amountKeyDown(event, this, <?= $order['orderId'] ?>)"
-                                       style="width: 100%"
                                        value="<?= $order['amount'] ?>"
                                     />
                             </td>
@@ -135,14 +135,12 @@
                                         alt="<?php echo $order['privateComment']; ?>"
                                         onblur="saveComment(<?= $order['orderId'] ?>, this, true);"
                                         onkeydown="if (event.keyCode == 13) saveComment(<?= $order['orderId'] ?>, this, true);"
-                                        style="width: 100%"
                                         value="<?php echo $order['privateComment']; ?>"/><br />
                                 Public <span style="color: red; background-color: yellow">(this comment will see the customer)</span><br />
                                 <input
                                         alt="<?php echo $order['comment']; ?>"
                                         onblur="saveComment(<?= $order['orderId'] ?>, this, false);"
                                         onkeydown="if (event.keyCode == 13) saveComment(<?= $order['orderId'] ?>, this, false);"
-                                        style="width: 100%"
                                         value="<?php echo $order['comment']; ?>"/><br />
                                 <span style="color: red; "><?= $order['options'] ?></span>
                             </td>
@@ -162,6 +160,9 @@
         <div class="pagination"><?= $pagination ?></div>
     </div>
 </div>
+    <script type="text/javascript">
+	$(function() { $(".repCalculator").calculator({showOn: 'opbutton', buttonImageOnly: true, buttonImage: 'view/image/calculator.png'}); });
+    </script> 
 <script type="text/javascript">//<!--
 $(document).ready(function() {
     $('.date').datepicker({dateFormat: 'yy-mm-dd'});

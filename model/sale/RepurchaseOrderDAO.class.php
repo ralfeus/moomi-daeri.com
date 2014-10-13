@@ -98,10 +98,9 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                     ? $options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'] : '',
             'orderItemStatusId' => $orderItem->getStatusId(),
             'price' => $orderItem->getPrice(),
-            'comment' => !empty($orderItem->getPublicComment())
-                    ? $orderItem->getPublicComment()
-                    : (!empty($options[REPURCHASE_ORDER_COMMENT_OPTION_ID])
-                        ? $options[REPURCHASE_ORDER_COMMENT_OPTION_ID]['value'] : ''),
+            'whiteprice' => $orderItem->getWhitePrice(),
+            'comment' => !empty($options[REPURCHASE_ORDER_COMMENT_OPTION_ID])
+                        ? $options[REPURCHASE_ORDER_COMMENT_OPTION_ID]['value'] : '',
             'quantity' => $orderItem->getQuantity(),
             'shipping' => $orderItem->getShippingCost(),
             'shopName' => !empty($options[REPURCHASE_ORDER_SHOP_NAME_OPTION_ID])
@@ -144,6 +143,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                         ? $options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'] : '',
                 'orderItemStatusId' => $repurchaseOrderItem['status'],
                 'price' => $repurchaseOrderItem['price'],
+                'whiteprice' => $repurchaseOrderItem['whiteprice'],
                 'comment' => !empty($repurchaseOrderItem['public_comment'])
                         ? $repurchaseOrderItem['public_comment']
                         : (!empty($options[REPURCHASE_ORDER_COMMENT_OPTION_ID])

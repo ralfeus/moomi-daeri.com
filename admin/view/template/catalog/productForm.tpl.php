@@ -612,7 +612,7 @@
                   </select></td>
                 <td class="right"><input type="text" name="product_discount[<?= $discount_row ?>][quantity]" value="<?= $product_discount['quantity'] ?>" size="2" /></td>
                 <td class="right"><input type="text" name="product_discount[<?= $discount_row ?>][priority]" value="<?= $product_discount['priority'] ?>" size="2" /></td>
-                <td class="right"><input type="text" name="product_discount[<?= $discount_row ?>][price]" value="<?= $product_discount['price'] ?>" /></td>
+                <td class="right"><input type="text" style="width=75%" name="product_discount[<?= $discount_row ?>][price]" value="<?= $product_discount['price'] ?>" /></td>
                 <td class="left"><input type="text" name="product_discount[<?= $discount_row ?>][date_start]" value="<?= $product_discount['date_start'] ?>" class="date" /></td>
                 <td class="left"><input type="text" name="product_discount[<?= $discount_row ?>][date_end]" value="<?= $product_discount['date_end'] ?>" class="date" /></td>
                 <td class="left"><a onclick="$('#discount-row<?= $discount_row ?>').remove();" class="button"><?= $button_remove ?></a></td>
@@ -654,7 +654,7 @@
                     <?php } ?>
                   </select></td>
                 <td class="right"><input type="text" name="product_special[<?= $special_row ?>][priority]" value="<?= $product_special['priority'] ?>" size="2" /></td>
-                <td class="right"><input type="text" id="Calculator" name="product_special[<?= $special_row ?>][price]" value="<?= $product_special['price'] ?>" /></td>
+                <td class="right"><input style="width: 75%" type="text" class="specCalculator" name="product_special[<?= $special_row ?>][price]" value="<?= $product_special['price'] ?>" /></td>
                 <td class="left"><input type="text" name="product_special[<?= $special_row ?>][date_start]" value="<?= $product_special['date_start'] ?>" class="date" /></td>
                 <td class="left"><input type="text" name="product_special[<?= $special_row ?>][date_end]" value="<?= $product_special['date_end'] ?>" class="date" /></td>
                 <td class="left"><a onclick="$('#special-row<?= $special_row ?>').remove();" class="button"><?= $button_remove ?></a></td>
@@ -669,6 +669,10 @@
               </tr>
             </tfoot>
           </table>
+    <script type="text/javascript">
+	$(function() { $(".specCalculator").calculator({showOn: 'opbutton', buttonImageOnly: true, buttonImage: 'view/image/calculator.png'}); });
+    </script> 
+
         </div>
         <div id="tab-image">
           <table id="images" class="list">
@@ -1134,7 +1138,7 @@ function addSpecial() {
     <?php } ?>
     html += '    </select></td>';		
     html += '    <td class="right"><input type="text" name="product_special[' + special_row + '][priority]" value="" size="2" /></td>';
-	html += '    <td class="right"><input type="text" class="specCalculator" name="product_special[' + special_row + '][price]" value="" /></td>';
+	html += '    <td class="right"><input style="width: 75%" type="text"class="specCalculator" name="product_special[' + special_row + '][price]" value="" /></td>';
     html += '    <td class="left"><input type="text" name="product_special[' + special_row + '][date_start]" value="" class="date" /></td>';
 	html += '    <td class="left"><input type="text" name="product_special[' + special_row + '][date_end]" value="" class="date" /></td>';
 	html += '    <td class="left"><a onclick="$(\'#special-row' + special_row + '\').remove();" class="button"><?= $button_remove ?></a></td>';

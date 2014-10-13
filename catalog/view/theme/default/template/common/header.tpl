@@ -267,7 +267,6 @@ DD_belatedPNG.fix('#logo img');
 		<div class="styled-select-wrapper">
 		<select class="styled-select">
 		  <option>All Categories</option>
-		  <option>All Categories</option>
 		</select>
 		</div>
       </div>   
