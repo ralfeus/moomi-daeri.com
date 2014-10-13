@@ -1,4 +1,6 @@
-<?php  
+<?php
+use model\catalog\ManufacturerDAO;
+
 class ControllerModuleMpchanges extends Controller {
     private $mpfilter = array();
     private $mp_message = array("type" => "success", "message" => array());
@@ -272,7 +274,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->data['action_del_elements'] = $this->url->link('module/mpchanges/delelements', 'token=' . $this->session->data['token'], 'SSL');
 
         $this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
-        $this->data['manufacturers'] = $this->model_catalog_manufacturer->getManufacturers();
+        $this->data['manufacturers'] = ManufacturerDAO::getInstance()->getManufacturers();
         $this->data['categories'] = $this->model_catalog_category->getCategories();
 
         $this->template = 'module/mpchanges.tpl';

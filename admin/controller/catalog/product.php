@@ -1,4 +1,5 @@
 <?php
+use model\catalog\ManufacturerDAO;
 use model\catalog\SupplierDAO;
 use model\sale\OrderItemDAO;
 
@@ -842,7 +843,7 @@ class ControllerCatalogProduct extends Controller {
 	
 		$this->load->model('catalog/manufacturer');
 		
-    	$this->data['manufacturers'] = $this->model_catalog_manufacturer->getManufacturers();
+    	$this->data['manufacturers'] = ManufacturerDAO::getInstance()->getManufacturers();
     	if (isset($this->request->post['manufacturer_id'])) {
       		$this->data['manufacturer_id'] = $this->request->post['manufacturer_id'];
 		} elseif (!empty($product_info)) {

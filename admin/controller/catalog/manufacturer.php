@@ -1,5 +1,7 @@
-<?php    
-class ControllerCatalogManufacturer extends Controller { 
+<?php
+use model\catalog\ManufacturerDAO;
+
+class ControllerCatalogManufacturer extends Controller {
 	private $error = array();
   
   	public function index() {
@@ -171,7 +173,7 @@ class ControllerCatalogManufacturer extends Controller {
 		
 		$manufacturer_total = $this->model_catalog_manufacturer->getTotalManufacturers();
 	
-		$results = $this->model_catalog_manufacturer->getManufacturers($data);
+		$results = ManufacturerDAO::getInstance()->getManufacturers($data);
  
     	foreach ($results as $result) {
 			$action = array();
