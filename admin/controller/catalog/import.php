@@ -228,21 +228,11 @@ class ControllerCatalogImport extends Controller {
             $images[] = array('image' => $modelToolImage->download($imageUrl));
         /// Preparing name, korean name and description
         $product_description = array();
-//        $koreanName = array(
-//            'attribute_id' => ATTRIBUTE_KOREAN_NAME,
-//            'product_attribute_description' => array()
-//        );
-//        $sourceUrl = array(
-//            'attribute_id' => ATTRIBUTE_LINK,
-//            'product_attribute_description' => array()
-//        );
 //        foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
 ////            $product_description[$language['language_id']] = array(
 ////                'name' => $productToUpdate->getName(),
 ////                'description' => $productToUpdate->getDescription()
 ////            );
-//            $koreanName['product_attribute_description'][$language['language_id']] = array( 'text' => $productToUpdate->getName() );
-//            $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToUpdate->getSourceUrl() );
 //        }
 
         /// Copying product options in order to preserve ones

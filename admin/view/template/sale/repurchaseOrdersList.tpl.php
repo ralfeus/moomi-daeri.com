@@ -1,14 +1,14 @@
 <?php echo $header; ?>
 <div id="content">
     <div class="breadcrumb">
-        <?php foreach ($breadcrumbs as $breadcrumb): ?>
-            <?= $breadcrumb['separator'] ?><a href="<?php echo $breadcrumb['href']; ?>"><?= $breadcrumb['text'] ?></a>
-        <?php endforeach; ?>
+<?php foreach ($breadcrumbs as $breadcrumb): ?>
+        <?= $breadcrumb['separator'] ?><a href="<?php echo $breadcrumb['href']; ?>"><?= $breadcrumb['text'] ?></a>
+<?php endforeach; ?>
     </div>
-    <h1><?php echo $headingTitle; ?></h1>
-    <?php foreach ($notifications as $class => $notification)
-        echo "<div class=\"$class\">" . nl2br(print_r($notification, true)) . "</div>";
-    ?>
+    <h1><?= $headingTitle ?></h1>
+<?php foreach ($notifications as $class => $notification)
+    echo "<div class=\"$class\">" . nl2br(print_r($notification, true)) . "</div>";
+?>
     <div class="box">
         <div class="heading">
             <h1><img src="view/image/order.png" alt="" /><?= $headingTitle ?></h1>
@@ -49,10 +49,7 @@
                         <td>
                             <select name="filterCustomerId[]" multiple="true">
 <?php foreach ($customers as $customer):
-    if (in_array($customer['id'], $filterCustomerId))
-        $selected = "selected=\"selected\"";
-    else
-        $selected = ""; ?>
+    $selected = in_array($customer['id'], $filterCustomerId) ? "selected=\"selected\"" : ""; ?>
                                 <option value="<?= $customer['id'] ?>" <?= $selected ?>><?= $customer['name'] ?></option>
 <?php endforeach; ?>
                             </select>

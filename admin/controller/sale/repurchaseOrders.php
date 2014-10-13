@@ -169,7 +169,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
 
         $this->setBreadcrumbs();
         $this->initStatuses();
-        $this->template = 'sale/repurchaseOrdersList.php';
+        $this->template = 'sale/repurchaseOrdersList.tpl.php';
         $this->children = array(
             'common/header',
             'common/footer'
@@ -271,7 +271,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
         $this->data['textSiteName'] = $this->getLanguage()->get('SITE_NAME');
         $this->data['textWhoOrders'] = $this->getLanguage()->get('WHO_ORDERS');
 
-        $this->template = 'sale/repurchaseOrdersListPrint.tpl';
+        $this->template = 'sale/repurchaseOrdersListPrint.tpl.php';
         $this->response->setOutput($this->render());
     }
 
@@ -344,10 +344,10 @@ class ControllerSaleRepurchaseOrders extends Controller {
         );
     }
 
-    public function setStatus()
-    {
-        if (empty($_REQUEST['statusId']))
+    public function setStatus() {
+        if (empty($_REQUEST['statusId'])) {
             return;
+        }
         /** @var ModelSaleOrder $modelSaleOrder */
         $modelSaleOrder = $this->load->model('sale/order');
         foreach ($this->parameters['selectedItems'] as $orderId) {
