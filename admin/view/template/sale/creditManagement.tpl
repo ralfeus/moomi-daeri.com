@@ -47,6 +47,7 @@
                         <td />
                         <td style="white-space: nowrap;">
                             <input
+                                style="width: auto;"
                                 alt="<?= $request['amount'] ?>"
                                 onblur="saveAmount(<?= $request['requestId'] ?>, this)"
                                 onfocus="$(this).removeClass('red')"
