@@ -48,10 +48,10 @@
                         </td>
                         <td>
                             <select name="filterCustomerId[]" multiple="true">
-<?php foreach ($customers as $customer):
-    $selected = in_array($customer['id'], $filterCustomerId) ? "selected=\"selected\"" : ""; ?>
+                            <?php foreach ($customers as $customer):
+                                $selected = in_array($customer['id'], $filterCustomerId) ? "selected=\"selected\"" : ""; ?>
                                 <option value="<?= $customer['id'] ?>" <?= $selected ?>><?= $customer['name'] ?></option>
-<?php endforeach; ?>
+                            <?php endforeach; ?>
                             </select>
                         </td>
                         <td>
@@ -108,6 +108,7 @@
                                 <input id="whiteprice_<?= $order['orderId'] ?>"
                                        value="<?= $order['whiteprice'] ?>"
                                        onkeyup="price_<?= $order['orderId'] ?>.value=this.value"
+                                       onkeydown="changeWhitePrice(event, this, <?= $order['orderId'] ?>)"
                                     />
                                 <input id="price_<?= $order['orderId'] ?>"
                                        class="repCalculator"
@@ -145,12 +146,12 @@
                                 <span style="color: red; "><?= $order['options'] ?></span>
                             </td>
                             <td>
-<?php foreach ($order['actions'] as $action): ?>
+                            <?php foreach ($order['actions'] as $action): ?>
                                 [&nbsp;<a
                                     <?= !empty($action['href']) ? 'href="' .  $action['href'] . '"' : '' ?>
                                     <?= !empty($action['onclick']) ? 'onclick="' . $action['onclick'] . '"' : '' ?>
                                     target="_blank"><?= preg_replace('/\s/', '&nbsp;', $action['text']) ?></a>&nbsp;]
-<?php endforeach; ?>
+                            <?php endforeach; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -189,6 +190,12 @@ function changePrice(event, sender, orderId)
 {
     if (event.keyCode == 13)
         setProperty(orderId, sender, 'price');
+}
+
+function changeWhitePrice(event, sender, orderId)
+{
+    if (event.keyCode == 13)
+        setProperty(orderId, sender, 'whiteprice');
 }
 
 function changeShipping(event, sender, orderId)
@@ -347,6 +354,7 @@ function setProperty(orderId, sender, propName) {
           }
           else {
             $('#price_'+json['itemId']).val(json['price']);
+            $('#whiteprice_'+json['itemId']).val(json['whiteprice']);
             $('#total_'+json['itemId']).val(json['total'])
           }
         },

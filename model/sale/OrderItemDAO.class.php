@@ -517,6 +517,14 @@ SQL
         $this->db->query($query);
     }
 
+    public function setWhitePrice($orderItemId, $amount)
+    {
+        $query = "UPDATE order_product SET whiteprice = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
+        $this->db->query($query);
+        $query = "UPDATE order_product SET price = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
+        $this->db->query($query);
+    }
+
     public function setShipping($orderItemId, $amount)
     {
         $query = "UPDATE order_product SET shipping = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;

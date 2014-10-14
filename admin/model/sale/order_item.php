@@ -296,9 +296,15 @@ class ModelSaleOrderItem extends Model
 
     public function setPrice($orderItemId, $amount)
     {
-      $query = "UPDATE " . DB_PREFIX . "order_product SET price = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
-      $this->db->query($query);
       $query = "UPDATE " . DB_PREFIX . "order_product SET total = (quantity*price) + shipping WHERE order_product_id = " . (int)$orderItemId;
+      $this->db->query($query);
+    }
+
+    public function setWhitePrice($orderItemId, $amount)
+    {
+      $query = "UPDATE " . DB_PREFIX . "order_product SET whiteprice = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
+      $this->db->query($query);
+      $query = "UPDATE " . DB_PREFIX . "order_product SET price = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
       $this->db->query($query);
     }
 

@@ -244,6 +244,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
             case 'amount':
             case 'quantity':
             case 'price':
+            case 'whiteprice':
             case 'shipping':
                 return is_numeric($propValue);
             case 'image':
@@ -313,6 +314,9 @@ class ControllerSaleRepurchaseOrders extends Controller {
             case 'price':
                 RepurchaseOrderDAO::getInstance()->setPrice($this->parameters['orderId'], $this->parameters['value']);
                 break;
+            case 'whiteprice':
+                RepurchaseOrderDAO::getInstance()->setWhitePrice($this->parameters['orderId'], $this->parameters['value']);
+                break;
             case 'shipping':
                 RepurchaseOrderDAO::getInstance()->setShipping($this->parameters['orderId'], $this->parameters['value']);
                 break;
@@ -323,6 +327,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
         $row = RepurchaseOrderDAO::getInstance()->getPrices($this->parameters['orderId']);
         $json['itemId'] = $row['order_product_id'];
         $json['price'] = $row['price'];
+        $json['whiteprice'] = $row['whiteprice'];
         $json['total'] = $row['total'];
         $json['result'] = 'Done';
 //        $this->log->write(print_r($json, true));
