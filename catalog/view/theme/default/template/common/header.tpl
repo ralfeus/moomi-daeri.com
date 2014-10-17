@@ -20,6 +20,7 @@
 <?php foreach ($styles as $style) { ?>
 <link rel="<?= $style['rel'] ?>" type="text/css" href="<?= $style['href'] ?>" media="<?= $style['media'] ?>" />
 <?php } ?>
+
 <script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.6.1.min.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>
@@ -40,11 +41,30 @@
 <script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/countdown.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/jquery.countdown.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/jquery.quick.pagination.min.js"></script>
-
 <!--[if IE]>
 <script type="text/javascript" src="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4-iefix.js"></script>
 <![endif]-->
 <script type="text/javascript" src="catalog/view/javascript/jquery/tabs.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	// Expand Panel
+	$("#open").click(function(){
+		$("div.header-top").slideDown("slow");
+	
+	});	
+	
+	// Collapse Panel
+	$("#close").click(function(){
+		$("div.header-top").slideUp("slow");	
+	});		
+	
+	// Switch buttons from "Log In | Register" to "Close Panel" on click
+	$("#toggle a").click(function () {
+		$("#toggle a").toggle();
+	});		
+		
+});
+</script>
 <script type="text/javascript">
   var warningMesssage = '<?= $text_no_select_images ?>';
 </script>
@@ -200,6 +220,46 @@ DD_belatedPNG.fix('#logo img');
     }
 //-->
 </script>
+<script type="text/javascript">
+$(document).ready(function(){
+	// Lets make the top panel toggle based on the click of the show/hide link	
+	$("#sub-panel").click(function(){
+		// Toggle the bar up 
+		$("#span-selectors").slideToggle();	
+		// Settings
+		var el = $("#shText");  
+		// Lets us know whats inside the element
+		var state = $("#shText").html();
+		// Change the state  
+		state = (state == 'Hide' ? '<span id="shText">Show</span>' : '<span id="shText">Hide</span>');					
+		// Finally change whats insdide the element ID
+		el.replaceWith(state); 
+	}); // end sub panel click function
+}); // end on DOM
+</script>
+<script type="text/javascript">
+$(function(){
+  $.fn.scrollToTop=function(){
+    $(this).hide().removeAttr("href");
+    if($(window).scrollTop()!="0"){
+        $(this).fadeIn("slow")
+  }
+  var scrollDiv=$(this);
+  $(window).scroll(function(){
+    if($(window).scrollTop()=="0"){
+    $(scrollDiv).fadeOut("slow")
+    }else{
+    $(scrollDiv).fadeIn("slow")
+  }
+  });
+    $(this).click(function(){
+      $("html, body").animate({scrollTop:0},"slow")
+    })
+  }
+});
+$(function() {$("#toTop").scrollToTop();});
+</script>
+
 <style type="text/css">
   .width180 {
     width: 180px;
@@ -230,77 +290,91 @@ DD_belatedPNG.fix('#logo img');
 <body>
 <div class="header-top-wrapper">
 	<div class="header-top">
-<div id="span-selectors">
-                          <form id="selectors" action="<?= $action ?>" method="post" enctype="multipart/form-data">
-                              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                  <tr>
-
-								  <td width="128">
-								  <table height="20" cellpadding="0" cellspacing="1"><tr>
-  <?php foreach ($currencies as $currency): ?>
-                                          <td class="currency-selector">
-      <?php
-      if ($currency['code'] == $currency_code):
-          $boldBegin = "<b>"; $boldEnd = "</b>";
-          $onClick = "";
-      else:
-          $boldBegin = ""; $boldEnd = "";
-          $onClick = 'onclick="changeCurrency(\'' . $currency['code'] . '\')"';
-      endif;
-      $symbol = $currency['symbol_left'] ? $currency['symbol_left'] : $currency['symbol_right'];
-      ?>
-                                              <a title="<?= $currency['title'] ?>" <?= $onClick ?>>
-                                                  <?= $boldBegin ?><?= $symbol ?> <?= $boldEnd ?>
-                                              </a>
-                                          </td>
-  <?php endforeach; ?>
-</tr></table></td>
-  
-  <td>
-      <div id="search">
-          <div class="button-search"></div>
-<?php if ($filter_name): ?>
-          <input type="text" name="filter_name" value="<?= $filter_name ?>" />
-<?php else: ?>
-          <input type="text" name="filter_name" value="<?= $textSearchPrompt ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
-<?php endif; ?>
-		<div class="styled-select-wrapper">
-		<select class="styled-select">
-		  <option>All Categories</option>
-		</select>
-		</div>
-      </div>   
-  <td>
-  
-  
-
-  <?php foreach ($languages as $language): ?>
-                                          <td style="width: 40px;text-align: center; vertical-align: middle;">
-                                            <input type="hidden" name="language_code" value="" />
-                                            <input type="hidden" name="currency_code" value="" />
-                                            <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
-                                              <div class="language-selector">
-                                                <a href="index.php?<?= unset_query_string_var('language', $_SERVER['QUERY_STRING']) ?>&amp;language=<?= $language['code'] ?>">
-                                                  <img
-                                                      src="image/flags/<?php echo $language['image'] ?>"
-                                                      alt="<?php echo $language['name'] ?>"
-                                                      title="<?= $language['name'] ?>" />
-                                                </a>
-                                              </div>
-                                          </td>
-  <?php endforeach; ?>  
-<td width="210"><div class="contact-header">Contact:<br />moomidae@gmail.com</div><td>
-                                  </tr>
-                              </table>
-                              <!--<input type="hidden" name="language_code" value="" />
-                              <input type="hidden" name="currency_code" value="" />
-                              <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />-->
-                          </form>
-                      </div>	
+        <div id="span-selectors">
+            <form id="selectors" action="<?= $action ?>" method="post" enctype="multipart/form-data">
+              <table align="center" cellpadding="0" cellspacing="0" border="0">
+                <tr valign="middle">
+                  <td width="128">
+                    <table height="20" cellpadding="0" cellspacing="1">
+                      <tr>
+                        <?php foreach ($currencies as $currency): ?>
+                        <td class="currency-selector">
+                          <?php
+                            if ($currency['code'] == $currency_code):
+                                $boldBegin = "<b>"; $boldEnd = "</b>";
+                                $onClick = "";
+                            else:
+                                $boldBegin = ""; $boldEnd = "";
+                                $onClick = 'onclick="changeCurrency(\'' . $currency['code'] . '\')"';
+                            endif;
+                            $symbol = $currency['symbol_left'] ? $currency['symbol_left'] : $currency['symbol_right'];
+                          ?>
+                          <a title="<?= $currency['title'] ?>" <?= $onClick ?>>
+                            <?= $boldBegin ?><?= $symbol ?> <?= $boldEnd ?>
+                          </a>
+                        </td>
+                        <?php endforeach; ?>
+                      </tr>
+                    </table>
+                  </td>
+                  <td width="450">
+                    <div id="search">
+                        <div class="button-search"></div>
+                            <?php if ($filter_name): ?>
+                                <input type="text" name="filter_name" value="<?= $filter_name ?>" />
+                            <?php else: ?>
+                                <input type="text" name="filter_name" value="<?= $textSearchPrompt ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
+                            <?php endif; ?>
+                        <div class="styled-select-wrapper">
+		                      <select class="styled-select">
+		                          <option>All Categories</option>
+		                      </select>
+                        </div>
+                    </div>   
+                  <td width="180">
+                    <table height="40" cellpadding="0" cellspacing="1">
+                      <tr>
+                  
+                  <?php foreach ($languages as $language): ?>
+                  <td style="width: 40px;text-align: center; vertical-align: middle;">
+                    <input type="hidden" name="language_code" value="" />
+                    <input type="hidden" name="currency_code" value="" />
+                    <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
+                    <div class="language-selector">
+                      <a href="index.php?<?= unset_query_string_var('language', $_SERVER['QUERY_STRING']) ?>&amp;language=<?= $language['code'] ?>">
+                        <img
+                          src="image/flags/<?php echo $language['image'] ?>"
+                          alt="<?php echo $language['name'] ?>"
+                          title="<?= $language['name'] ?>"
+                        />
+                      </a>
+                    </div>
+                  </td>
+                  <?php endforeach; ?>  
+                      </tr>
+                    </table>
+                  <td width="150" align="center">
+                  <table><div class="contact-header">Contact:<br />moomidae@gmail.com</div></table>
+                </tr>
+              </table>
+            </form>
+        </div>	
 	</div>
+        <!-- The tab on top -->	
+	<div class="header-top-tab">
+		<ul class="login">
+	    	<li class="left">&nbsp;</li>
+			<li id="toggle">
+				<a id="open" class="open"></a>
+				<a id="close" style="display: none;" class="close"></a>			
+			</li>
+	    	<li class="right">&nbsp;</li>
+		</ul> 
+	</div> <!-- / top -->
 </div>
 
 <div id="container">
+  <a id="toTop"></a>
   <div id="header"
 <?php if ($logo): ?>
       style="background: url('<?php echo $logo; ?>');"

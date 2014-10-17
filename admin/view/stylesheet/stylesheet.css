@@ -148,6 +148,7 @@ body > #container {
 #container #header {
 	width: 100%; 
     position: fixed;
+    z-index: 9999;
 }
 #content {
 	background: #FFFFFF url('../image/background.png') 0px 1px repeat-x;

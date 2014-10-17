@@ -66,18 +66,135 @@ label {
 }
 /* layout */
 
-.header-top-wrapper{
-	height: 55px;
-	background: #38b0e4;
+
+ /* Panel Tab/button */
+ 
+.header-top-tab {
+  	background: url(../image/tab_b.png) repeat-x 0 0;
+	height: 42px;
+	position: relative;
+    top: 0;
+    z-index: 999;
 }
 
-.header-top{
-	width: 1000px;
-	margin: 0 auto;
-	height: 48px;
-	padding-top: 7px;
+.header-top-tab ul.login {
+	display: block;
 	position: relative;
+  	float: right;
+  	clear: right;
+  	height: 42px;
+	width: auto;
+  	font-weight: bold;
+	line-height: 42px;
+	margin: 0;
+	right: 20px;
+  	color: white;
+  	font-size: 80%;
+	text-align: center;
 }
+
+.header-top-tab ul.login li.left {
+  	background: url(../image/tab_l.png) no-repeat left 0;
+  	height: 42px;
+	width: 30px;
+	padding: 0;
+	margin: 0;
+  	display: block;
+	float: left;
+}
+
+.header-top-tab ul.login li.right {
+  	background: url(../image/tab_r.png) no-repeat left 0;
+  	height: 42px;
+	width: 30px;
+	padding: 0;
+	margin: 0;
+  	display: block;
+	float: left;
+}
+
+.header-top-tab ul.login li {
+    margin: auto;
+	display: block;
+	float: left;
+	height: 42px;
+  	background: url(../image/tab_m.png) repeat-x 0 0;
+}
+
+.header-top-tab ul.login li a {
+	color: #15ADFF;
+}
+
+.header-top-tab ul.login li a:hover {
+	color: white;
+}
+
+.header-top-tab .sep {color:#414141}
+
+.header-top-tab a.open, .header-top-tab a.close {
+	height: 20px;
+	line-height: 20px !important;
+	padding-left: 30px !important;
+	cursor: pointer;
+	display: block;
+	position: relative;
+	top: 11px;
+}
+
+.header-top-tab a.open {background: url(../image/bt_open.png) no-repeat left 0;}
+.header-top-tab a.close {background: url(../image/bt_close.png) no-repeat left 0;}
+.header-top-tab a:hover.open {background: url(../image/bt_open.png) no-repeat left -19px;}
+.header-top-tab a:hover.close {background: url(../image/bt_close.png) no-repeat left -19px;}
+
+/* sliding panel */
+.header-top-wrapper {
+    position: fixed;   /*Panel will overlap  content */
+    /*position: relative;*/   /*Panel will "push" the content down */
+    top: 0;
+    width: 100%;
+    z-index: 999;
+    margin-left: auto;
+    margin-right: auto;
+    
+ 	height: 55px;
+/**
+ * 	background: #38b0e4;
+ */
+    }
+
+.header-top {
+/**
+ * 	width: 100%;
+ *  	height: 48px;
+ */
+/**
+ * 	color: #999999;
+ */
+    background: #38b0e4;
+/**
+ * 	background: #272727;
+ */
+	overflow: hidden;
+	position: relative;
+	z-index: 3;
+	display: none;
+    
+/**
+ *  	width: 1000px;
+ */
+	margin: 0 auto;
+
+ 	padding-top: 7px;
+ 	position: relative;
+     }
+     
+.header-top #span-selectors {
+    margin: 0px 200px;
+    }
+.header-top #span-selectors table{
+
+    min-width: 100%;
+    }
 
 #container {
     padding: 0 10px;
@@ -89,6 +206,20 @@ label {
     -moz-border-radius: 5px 5px 5px 5px;
     -khtml-border-radius: 5px 5px 5px 5px;
     border-radius: 5px 5px 5px 5px;
+}
+#toTop {
+ position:fixed;
+ z-index:9999;
+ bottom:10px;
+ right:10px;
+ background: url('../image/totop.png') no-repeat;
+ width: 64px;
+ height: 64px;
+ border: none;
+ padding: 5px;
+ cursor: pointer;
+ color: transparent;
+ text-decoration: none;
 }
 #column-left {
 	float: left;
@@ -312,8 +443,6 @@ label {
 	display:table;
 	float:right;
 	font-size:14px;
-	position: absolute;
-    right: 0;
     top: 5px;
 	line-height: 22px
 }
