@@ -23,7 +23,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
         $orderItem = OrderItemDAO::getInstance()->getOrderItem($this->parameters['orderItemId']);
 //        $this->log->write(print_r($orderItem, true));
         $cancelledStatus =
-            $orderItem['status'] // take original status
+            $orderItem->getStatusId() // take original status
             & 0xFFFF0000 // clean up status value but keep group
             | (ORDER_ITEM_STATUS_CANCELLED & 0x0000FFFF); // set cancelled status
 //        $this->log->write($cancelledStatus);
