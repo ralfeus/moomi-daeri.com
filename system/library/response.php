@@ -57,6 +57,7 @@ final class Response {
 	}
 
 	public function output() {
+	    if (!defined('HTTP_CATALOG')) $this->output = str_replace('index.php?route=common/home', '', $this->output);
 		if ($this->output) {
 			if ($this->level) {
 				$ouput = $this->compress($this->output, $this->level);

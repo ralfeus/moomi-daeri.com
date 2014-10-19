@@ -1,11 +1,6 @@
 <div class="box">
 
-<div class="box-button">
-	<a class="info" href="index.php?route=shop/admin/showPage&page_id=15"><span><?= $textShoppingGuide ?>Information</span></a>
-	<a class="agent" href="index.php?route=product/repurchase"><span><?= $text_repurchase_order ?>Agent</span></a>
-</div>
-
-	<div class="category_box_heading"><?php echo $heading_title; ?></div>
+<div class="category_box_heading"><?php echo $heading_title; ?></div>
     <!-- 	<div class="box-content"> -->
     <div>
 <?php /*?>

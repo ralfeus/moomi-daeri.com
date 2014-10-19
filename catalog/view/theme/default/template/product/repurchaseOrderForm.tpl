@@ -24,15 +24,20 @@
                         <div id='box'>
                             <table width="100%">
                                 <tr><td colspan="5">
-                                    <?php echo $entry_item_url; ?><br/>
-                                    <input id="itemUrl" style="width: 100%;"/>
+                                    <a class="tooltip yellow-tooltip"><span><?php echo $entry_item_url_help; ?></span></a>
+                                    <?php echo $entry_item_url; ?>
+                                                                        <br/>
+                                    <input id="itemUrl" style="width: 100%;" value="http://"/>
                                 </td></tr>
                                 <tr>
                                     <td colspan="4">
-                                        <?php echo $entry_image_path; ?><br />
+                                        <a class="tooltip yellow-tooltip"><span><?php echo $entry_image_url_help; ?></span></a>
+                                        <?php echo $entry_image_path; ?>
+                                        <br />
                                         <input id="imagePath" style="width: 100%" onblur="downloadImage(this);" /><br />
+                                        <a class="tooltip yellow-tooltip"><span><?php echo $entry_image_path_help; ?></span></a>
                                         <input type="file" id="imageFile" name="imageFile" value="File" onchange="ajaxFileUpload(this)"/>
-                                    </td>
+                                        </td>
                                     <td class="right" rowspan="4">
                                         <a href="<?= HTTP_IMAGE ?>/no_image.jpg" target="_blank">
                                             <img id="image" src="<?= HTTP_IMAGE ?>/no_image.jpg" alt="Not an image" style="max-height: 240px; max-width: 320px;" />
@@ -45,33 +50,40 @@
                                         <input type="radio" id='whoBuys' value='<?= REPURCHASE_ORDER_CUSTOMER_BUYS_OPTION_VALUE_ID ?>' disabled="true"/>&nbsp;<?= $textCustomerBuys ?><br />
                                     </td-->
                                     <td colspan="2">
+                                        <a class="tooltip yellow-tooltip"><span><?php echo $entry_name_product_help; ?></span></a>
                                         <?= $textItemName ?><br />
                                         <input id="itemName" style="width: 100%;" />
                                     </td>
                                     <td colspan="2">
+                                        <a class="tooltip yellow-tooltip"><span><?php echo $entry_name_shop_help; ?></span></a>
                                         <?= $textShopName ?><br />
                                         <input id="shopName" style="width: 100%;" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td width="25%">
+                                        <a class="tooltip yellow-tooltip"><span><?php echo $entry_size_help; ?></span></a>
                                         <?php echo $entry_size; ?><br />
                                         <input id="size" />
                                     </td>
                                     <td width="25%">
+                                        <a class="tooltip yellow-tooltip"><span><?php echo $entry_color_help; ?></span></a>
                                         <?php echo $entry_color; ?><br />
                                         <input id="color" />
                                     </td>
                                     <td width="25%">
+                                        <a class="tooltip yellow-tooltip"><span><?php echo $entry_quantity_help; ?></span></a>
                                         <?php echo $entry_quantity; ?><br />
                                         <input id="quantity" value="1" />
                                     </td>
                                     <td width="25%">
+                                        <a class="tooltip yellow-tooltip"><span><?php echo $entry_price_help; ?></span></a>
                                         <?= $textApproximatePrice ?>
                                         <input id="price" />
                                     </td>
                                 </tr>
                                 <tr><td colspan="4">
+                                    <a class="tooltip yellow-tooltip"><span><?php echo $entry_comments_help; ?></span></a>
                                     <?= $textComment ?><br />
                                     <textarea id="comment" style="width: 100%"></textarea>
                                 </td></tr>

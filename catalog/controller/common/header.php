@@ -89,8 +89,13 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_items'] = sprintf($this->language->get('text_items'), $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->currency->format($total));
    	    $this->data['textSearchPrompt'] = $this->language->get('SEARCH_PROMPT');
 		$this->data['text_welcome'] = sprintf($this->language->get('text_welcome'), $this->url->link('account/login', '', 'SSL'), $this->url->link('account/register', '', 'SSL'));
-//		$this->data['text_logged'] = sprintf($this->language->get('text_logged'), $str, $this->url->link('account/account', '', 'SSL'), $this->customer->getFirstName(), $this->url->link('account/logout', '', 'SSL'));
+		$this->data['text_welcome_help'] = sprintf($this->language->get('text_welcome_help'), $this->url->link('account/login', '', 'SSL'));
+		$this->data['text_welcome_guest_left'] = sprintf($this->language->get('text_welcome_guest_left'), $this->url->link('account/login', '', 'SSL'));
+		$this->data['text_welcome_guest_right'] = sprintf($this->language->get('text_welcome_guest_right'), $this->url->link('account/register', '', 'SSL'));
 		$this->data['text_logged'] = sprintf($this->language->get('text_logged'), $str, $this->url->link('account/account', '', 'SSL'), $this->customer->getNickName(), $this->url->link('account/logout', '', 'SSL'));
+		$this->data['text_logged_help'] = sprintf($this->language->get('text_logged_help'), $str, $this->customer->getNickName());
+		$this->data['text_logged_customer_left'] = sprintf($this->language->get('text_logged_customer_left'), $str, $this->url->link('account/account', '', 'SSL'), $this->customer->getNickName());
+		$this->data['text_logged_customer_right'] = sprintf($this->language->get('text_logged_customer_right'), $this->url->link('account/logout', '', 'SSL'));
 		$this->data['text_account'] = $this->language->get('text_account');
    	$this->data['text_checkout'] = $this->language->get('text_checkout');
 		$this->data['text_language'] = $this->language->get('text_language');
@@ -102,6 +107,7 @@ class ControllerCommonHeader extends Controller {
         $this->data['text_login'] = $this->language->get('LOGIN');
         $this->data['text_logout'] = $this->language->get('LOGOUT');
         $this->data['text_repurchase_order'] = $this->language->get('text_repurchase_order');
+        $this->data['text_auction'] = $this->language->get('text_auction');
         $this->data['text_sitemap'] = $this->language->get('SITEMAP');
         $this->data['text_special'] = $this->language->get('SPECIAL');
     $this->data['textGallery'] = $this->language->get('GALLERY');

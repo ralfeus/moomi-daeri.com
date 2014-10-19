@@ -35,7 +35,7 @@
 <link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/nailthumb/jquery.nailthumb.1.1.min.css" />
 <link rel="stylesheet" href="catalog/view/theme/default/stylesheet/carousel/tango/skin.css" type="text/css" />
 <script type="text/javascript" src="catalog/view/javascript/jquery.jcarousel.min.js"></script>
-
+<link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/tooltip.css" />
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/wkauction.style.css" />
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/wkauction/wkallauctions.css" />
 <script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/countdown.js"></script>
@@ -259,7 +259,25 @@ $(function(){
 });
 $(function() {$("#toTop").scrollToTop();});
 </script>
-
+<script type="text/javascript">
+$(function(){
+ $(window).scroll(function() {
+  var top = $(document).scrollTop();
+  if (top > 150) {
+    $('.links').addClass('linksfixed'); //200 - это значение высоты прокрутки страницы для добавления класс
+  }
+  else {
+    $('.links').removeClass('linksfixed');
+  }
+ });
+});
+</script>
+<script type='text/javascript'>
+    $(document).ready(function() {
+    setTimeout("$('#hello-top').fadeIn('fast');", 1000);
+    setTimeout("$('#hello-top').fadeOut('slow');", 5000);
+});
+</script>
 <style type="text/css">
   .width180 {
     width: 180px;
@@ -286,6 +304,20 @@ $(function() {$("#toTop").scrollToTop();});
       border: 1px solid #BF5A0C;
     }
 </style>
+
+<!-- AdPacks -->
+<style>
+#adpacks-wrapper{font-family: Arial, Helvetica;width:280px;position: fixed;_position:absolute;bottom: 0;right: 20px;z-index: 9999;background: #eaeaea;padding: 10px;-moz-box-shadow: 0 0 15px #444;-webkit-box-shadow: 0 0 15px #444;box-shadow: 0 0 15px #444;}
+body .adpacks{background:#fff;padding:15px;margin:15px 0 0;border:3px solid #eee;}
+body .one .bsa_it_ad{background:transparent;border:none;font-family:inherit;padding:0;margin:0;}
+body .one .bsa_it_ad .bsa_it_i{display:block;padding:0;float:left;margin:0 10px 0 0;}
+body .one .bsa_it_ad .bsa_it_i img{padding:0;border:none;}
+body .one .bsa_it_ad .bsa_it_t{padding: 0 0 6px 0; font-size: 11px;}
+body .one .bsa_it_p{display:none;}
+body #bsap_aplink,body #bsap_aplink:hover{display:block;font-size:9px;margin: -15px 0 0 0;text-align:right;}
+body .one .bsa_it_ad .bsa_it_d{font-size: 11px;}
+body .one{overflow: hidden}
+</style>
 </head>
 <body>
 <div class="header-top-wrapper">
@@ -294,44 +326,23 @@ $(function() {$("#toTop").scrollToTop();});
             <form id="selectors" action="<?= $action ?>" method="post" enctype="multipart/form-data">
               <table align="center" cellpadding="0" cellspacing="0" border="0">
                 <tr valign="middle">
-                  <td width="128">
-                    <table height="20" cellpadding="0" cellspacing="1">
-                      <tr>
-                        <?php foreach ($currencies as $currency): ?>
-                        <td class="currency-selector">
-                          <?php
-                            if ($currency['code'] == $currency_code):
-                                $boldBegin = "<b>"; $boldEnd = "</b>";
-                                $onClick = "";
-                            else:
-                                $boldBegin = ""; $boldEnd = "";
-                                $onClick = 'onclick="changeCurrency(\'' . $currency['code'] . '\')"';
-                            endif;
-                            $symbol = $currency['symbol_left'] ? $currency['symbol_left'] : $currency['symbol_right'];
-                          ?>
-                          <a title="<?= $currency['title'] ?>" <?= $onClick ?>>
-                            <?= $boldBegin ?><?= $symbol ?> <?= $boldEnd ?>
-                          </a>
-                        </td>
-                        <?php endforeach; ?>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="450">
-                    <div id="search">
-                        <div class="button-search"></div>
+                  <td width="150" align="center">
+                   <table><div class="contact-header">Contact:<br /><a href="mailto:moomidae@gmail.com">moomidae@gmail.com</a></div></table>
+                  <td width="400">
+                          <div id="search">
                             <?php if ($filter_name): ?>
                                 <input type="text" name="filter_name" value="<?= $filter_name ?>" />
                             <?php else: ?>
                                 <input type="text" name="filter_name" value="<?= $textSearchPrompt ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
                             <?php endif; ?>
-                        <div class="styled-select-wrapper">
-		                      <select class="styled-select">
-		                          <option>All Categories</option>
-		                      </select>
-                        </div>
-                    </div>   
-                  <td width="180">
+                          </div>
+                          <div class="styled-select-wrapper">
+                            <select class="styled-select">
+                              <option>All Categories</option>
+                            </select>
+                          </div>
+                          <div class="button-search"></div>
+                 <td style="width: 180px; padding-left: 100px;">
                     <table height="40" cellpadding="0" cellspacing="1">
                       <tr>
                   
@@ -353,8 +364,33 @@ $(function() {$("#toTop").scrollToTop();});
                   <?php endforeach; ?>  
                       </tr>
                     </table>
-                  <td width="150" align="center">
-                  <table><div class="contact-header">Contact:<br />moomidae@gmail.com</div></table>
+                 <td style="width: 128px;">
+                    <table height="20" cellpadding="0" cellspacing="1">
+                      <tr>
+                        <?php foreach ($currencies as $currency): ?>
+                        <td class="currency-selector">
+                          <?php
+                            if ($currency['code'] == $currency_code):
+                                $boldBegin = "<b>"; $boldEnd = "</b>";
+                                $onClick = "";
+                            else:
+                                $boldBegin = ""; $boldEnd = "";
+                                $onClick = 'onclick="changeCurrency(\'' . $currency['code'] . '\')"';
+                            endif;
+                            $symbol = $currency['symbol_left'] ? $currency['symbol_left'] : $currency['symbol_right'];
+                          ?>
+                          <a title="<?= $currency['title'] ?>" <?= $onClick ?>>
+                          <img 
+                            src="image/currency/<?php echo $currency['code'] ?>.png"
+                          alt="<?= $currency['title'] ?>"
+                          title="<?= $currency['title'] ?>"
+                        />
+                           </a>
+                        </td>
+                        <?php endforeach; ?>
+                      </tr>
+                    </table>
+                  </td>
                 </tr>
               </table>
             </form>
@@ -364,101 +400,40 @@ $(function() {$("#toTop").scrollToTop();});
 	<div class="header-top-tab">
 		<ul class="login">
 	    	<li class="left">&nbsp;</li>
+            <li onmouseover="showHelloTopOn()" onmouseout="showHelloTopOff()"><?= (!$logged) ? $text_welcome_guest_left :$text_logged_customer_left ?></li>
 			<li id="toggle">
 				<a id="open" class="open"></a>
 				<a id="close" style="display: none;" class="close"></a>			
 			</li>
+            <li><?= (!$logged) ? $text_welcome_guest_right :$text_logged_customer_right ?></li>
 	    	<li class="right">&nbsp;</li>
 		</ul> 
 	</div> <!-- / top -->
-</div>
+    <div id="hello-top" class="bottom">
+        <?= (!$logged) ? $text_welcome_help :$text_logged_help ?></div>
+    </div>
 
 <div id="container">
   <a id="toTop"></a>
   <div id="header"
-<?php if ($logo): ?>
+    <?php if ($logo): ?>
       style="background: url('<?php echo $logo; ?>');"
-<?php endif; ?>
-      >
-	  
-      <table style="display: none;width: 100%; height: 150px;">
-          <tbody>
-              <!--<tr>
-                <td colspan="2" style=""></td>
-              </tr>-->
-              <tr>
-                  <td style="width: 100%;"></td>
-                  <td style="vertical-align: bottom;">
-                      <div id="span-selectors">
-                          <form id="selectors" action="<?= $action ?>" method="post" enctype="multipart/form-data">
-                              <table style="border: 4px solid #40db4b">
-                                  <tbody>
-                                      <tr>
-  <?php foreach ($languages as $language): ?>
-                                          <td style="text-align: center; vertical-align: middle;">
-                                            <input type="hidden" name="language_code" value="" />
-                                            <input type="hidden" name="currency_code" value="" />
-                                            <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
-                                              <div class="language-selector">
-                                                <a href="index.php?<?= unset_query_string_var('language', $_SERVER['QUERY_STRING']) ?>&amp;language=<?= $language['code'] ?>">
-                                                  <img
-                                                      src="image/flags/<?php echo $language['image'] ?>"
-                                                      alt="<?php echo $language['name'] ?>"
-                                                      title="<?= $language['name'] ?>" />
-                                                </a>
-                                              </div>
-                                          </td>
-  <?php endforeach; ?>
-                                      </tr>
-                                      <tr>
-  <?php foreach ($currencies as $currency): ?>
-                                          <td class="currency-selector">
-      <?php
-      if ($currency['code'] == $currency_code):
-          $boldBegin = "<b>"; $boldEnd = "</b>";
-          $onClick = "";
-      else:
-          $boldBegin = ""; $boldEnd = "";
-          $onClick = 'onclick="changeCurrency(\'' . $currency['code'] . '\')"';
-      endif;
-      $symbol = $currency['symbol_left'] ? $currency['symbol_left'] : $currency['symbol_right'];
-      ?>
-                                              <a title="<?= $currency['title'] ?>" <?= $onClick ?>>
-                                                  <?= $boldBegin ?><?= $symbol ?> <?= $boldEnd ?>
-                                              </a>
-                                          </td>
-  <?php endforeach; ?>
-                                      </tr>
-                                  </tbody>
-                              </table>
-                              <!--<input type="hidden" name="language_code" value="" />
-                              <input type="hidden" name="currency_code" value="" />
-                              <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />-->
-                          </form>
-                      </div>
-                  </td>
-              </tr>
-          </tbody>
-      </table>
-      <div id="cart">
-          <div class="heading">
-              <h4><?= $text_cart ?></h4>
-              <a><span id="cart_total"><?= $text_items ?></span></a>
-          </div>
-          <div class="content"></div>
-      </div>
-
-      <div id="welcome"><?= (!$logged) ? $text_welcome :$text_logged ?></div>
-      <div class="links">
-		  <a class="account" href="<?= $account ?>"><span><?= $text_account ?></span></a> 
-		  <?php if($this->config->get('wk_auction_timezone_set')){ ?>
-		    <a class="auction_h" href="<?php echo $menuauction; ?>"><span>Auction</span></a>      
+    <?php endif; ?>
+  >
+  <a href="<?= $home ?>"></a>
+<!--  <div id="welcome"><?= (!$logged) ? $text_welcome :$text_logged ?></div>-->
+  <div class="links">
+<!--		  <a class="account" href="<?= $account ?>"><span><?= $text_account ?></span></a> -->
+		  <a class="home" href="<?= $home ?>"><span><?= $text_home ?></span></a>
+          <?php if($this->config->get('wk_auction_timezone_set')){ ?>
+            <a class="auction_h" href="<?php echo $menuauction; ?>"><span><?= $text_auction ?></span></a>      
 		  <?php } ?>
-                  <a class="home" href="<?= $home ?>"><span><?= $text_home ?></span></a>
-                  <a class="wishlist_total" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>
+          <a class="agent" href="index.php?route=product/repurchase"><span><?= $text_repurchase_order ?></span></a>
+          <a class="info" href="index.php?route=shop/admin/showPage&page_id=15"><span><?= $textShoppingGuide ?></span></a>        
+          <a class="wishlist_total" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>
 		  <a class="cart" href="<?= $cart ?>" id="cart_total_data"><span><?= $text_cart ?></span></a>
 				  
-          <table style="display: none;">
+<!--          <table style="display: none;">
               <tr><td>
                                    
                   <a class="button" href="<?= $checkout ?>"><span><?= $text_checkout ?></span></a>
@@ -468,7 +443,7 @@ $(function() {$("#toTop").scrollToTop();});
                   <a class="button" href="<?= $urlGallery ?>"><span><?= $textGallery ?></span></a>
                   <a class="buttonPink" href="<?= $urlShoppingGuide ?>"><span><?= $textShoppingGuide ?></span></a>
               </td></tr>
-          </table>
+          </table>-->
       </div>
   </div>
 <?php /*if ($categories) { ?>
@@ -512,5 +487,11 @@ function changeLanguage(code)
 {
     $('input[name=language_code]').attr('value', code);
     $('#selectors').submit();
+}
+function showHelloTopOn() {
+        $('#hello-top').show();
+   }
+function showHelloTopOff() {
+    $('#hello-top').hide();
 }
 //--></script>
