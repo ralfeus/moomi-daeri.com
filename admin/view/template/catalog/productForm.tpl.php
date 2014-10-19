@@ -248,13 +248,10 @@
               <td><?= $entry_manufacturer ?></td>
               <td><select name="manufacturer_id">
                   <option value="0" selected="selected"><?= $text_none ?></option>
-                  <?php foreach ($manufacturers as $manufacturer) { ?>
-                  <?php if ($manufacturer['manufacturer_id'] == $manufacturer_id) { ?>
-                  <option value="<?= $manufacturer['manufacturer_id'] ?>" selected="selected"><?= $manufacturer['name'] ?></option>
-                  <?php } else { ?>
-                  <option value="<?= $manufacturer['manufacturer_id'] ?>"><?= $manufacturer['name'] ?></option>
-                  <?php } ?>
-                  <?php } ?>
+<?php foreach ($manufacturers as $manufacturer):
+    $selected = ($manufacturer->getId() == $manufacturer_id) ? " selected" : ""; ?>
+                  <option value="<?= $manufacturer->getId() ?> <?= $selected ?>"><?= $manufacturer->getName() ?></option>
+<?php endforeach; ?>
                 </select></td>
             </tr>
             <tr>

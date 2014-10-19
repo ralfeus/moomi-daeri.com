@@ -40,7 +40,7 @@
                         <select name="manufacturer_id" class="filter_option">
                             <option value="0"><?php echo $option_all; ?></option>
                             <?php foreach ($manufacturers as $manufacturer) { ?>
-                            <option value="<?php echo $manufacturer['manufacturer_id']; ?>"><?php echo $manufacturer['name']; ?></option>
+                            <option value="<?php echo $manufacturer->getId(); ?>"><?php echo $manufacturer->getName(); ?></option>
                             <?php } ?>
                         </select>
                     </td>

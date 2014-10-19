@@ -1,11 +1,9 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: dev
- * Date: 4.8.13
- * Time: 17:12
- * To change this template use File | Settings | File Templates.
- */
+namespace automation\SourceSite;
+
+use automation\Product;
+use automation\ProductSource;
+
 class TonyMoly extends ProductSource {
    private function fillDetails(Product $product) {
         $matches = array();
@@ -75,8 +73,7 @@ class TonyMoly extends ProductSource {
         return $products;
     }
 
-    private function getCategoryUrls()
-    {
+    protected function getAllCategoriesUrls() {
         $categories = array();
         $html = $this->getHtmlDocument(self::getUrl());
         $items = $html->find('div[class=posR TopCategory] .SubCate a');
@@ -85,14 +82,18 @@ class TonyMoly extends ProductSource {
         return $categories;
     }
 
+    protected function getMappedCategoriesUrls() {
+        //TODO: Implement for mapped categories
+    }
+
     public function getProducts()
     {
         echo date('Y-m-d H:i:s') . "\n";
         $products = array();
-        $urls = self::getCategoryUrls(); $currCategory = 1;
+        $urls = $this->getCategoryUrls(); $currCategory = 1;
         foreach ($urls as $url) {
             echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . "\n";
-            $products = array_merge($products, self::getCategoryProducts($url));
+            $products = array_merge($products, $this->getCategoryProducts($url));
             break;
         }
         echo "Totally found " . sizeof($products) . " products\n";

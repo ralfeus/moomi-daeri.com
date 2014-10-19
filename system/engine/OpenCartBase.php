@@ -1,13 +1,14 @@
 <?php
 /**
  * Created by JetBrains PhpStorm.
- * User: dev
- * Date: 18.7.12
+ * User: Mykhaylo Khodorev
+ * Date: 18.07.2012
  * Time: 18:59
  * Base of MVCL architecture classes - models and controllers. Views and languages are not classes
  */
-class OpenCartBase
-{
+require_once(DIR_SYSTEM . 'engine/registry.php');
+require_once(DIR_SYSTEM . 'library/db.php');
+class OpenCartBase {
     /** @var Config */
     protected $config;
     /** @var DBDriver */
@@ -19,8 +20,11 @@ class OpenCartBase
     /** @var Registry */
     protected $registry;
 
-    protected function __construct($registry)
-    {
+    protected function __construct($registry) {
+        if (!isset($registry)) {
+            $registry = new Registry();
+            $registry->set('db', DB::getDB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE));
+        }
         $this->registry = $registry;
         $this->config = $this->registry->get('config');
         $this->db = $this->registry->get('db');

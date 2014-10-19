@@ -17,16 +17,11 @@ if (!defined('DIR_APPLICATION')) {
  */
 spl_autoload_register(function($class) {
     if (strpos($class, '\\') !== false) {
-        $class = preg_replace('/\\\\/', '/', $class);
-        include(DIR_SYSTEM . "../$class.class.php");
+        $class = DIR_ROOT . preg_replace('/\\\\/', '/', $class) . '.class.php';
+    } else {
+        return false;
     }
-//    $directoryIterator = new RecursiveDirectoryIterator(DIR_SYSTEM . '/../', FilesystemIterator::SKIP_DOTS);
-//    foreach ($directoryIterator as $directory) {
-//        if (file_exists($directory . "/$class.class.php")) {
-//            include($directory . "/$class.class.php");
-//            break;
-//        }
-//    }
+    include($class);
 });
 
 // Startup

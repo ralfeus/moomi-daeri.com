@@ -4,6 +4,15 @@ namespace model\catalog;
 use model\DAO;
 
 class ManufacturerDAO extends DAO {
+    /**
+     * @param int $manufacturerId
+     * @param string $columnName
+     * @return mixed
+     */
+    private function getSingleValue($manufacturerId, $columnName) {
+        return $this->getDb()->queryScalar("SELECT $columnName FROM manufacturer WHERE manufacturer_id = ?", array("i:$manufacturerId"));
+    }
+
     public function addManufacturer($data) {
         $this->db->query("INSERT INTO manufacturer SET name = '" . $this->db->escape($data['name']) . "', sort_order = '" . (int)$data['sort_order'] . "'");
 
@@ -71,6 +80,41 @@ class ManufacturerDAO extends DAO {
 
     /**
      * @param int $manufacturerId
+     * @return int
+     */
+    public function getAfcId($manufacturerId) {
+        return $this->getSingleValue($manufacturerId, 'afc_id');
+    }
+
+    /**
+     * @param int $manufacturerId
+     * @return string[]
+     */
+    public function getDescription($manufacturerId) {
+        $recordSet = $this->getDb()->query(<<<SQL
+            SELECT language_id, description
+            FROM manufacturer_description
+            WHERE manufacturer_id = ?
+SQL
+            , array("i:$manufacturerId")
+        );
+        $result = array();
+        foreach ($recordSet->rows as $descriptionEntry) {
+            $result[$descriptionEntry['language_id']] = $descriptionEntry['description'];
+        }
+        return $result;
+    }
+
+    /**
+     * @param int $manufacturerId
+     * @return string
+     */
+    public function getImagePath($manufacturerId) {
+        return $this->getSingleValue($manufacturerId, 'image');
+    }
+
+    /**
+     * @param int $manufacturerId
      * @param bool $shallow
      * @return Manufacturer|array
      */
@@ -83,8 +127,13 @@ class ManufacturerDAO extends DAO {
         return $query->row;
     }
 
+    /**
+     * @param array $data
+     * @return Manufacturer[]
+     * @throws \CacheNotInstalledException
+     */
     public function getManufacturers($data = array()) {
-        if ($data) {
+        if (is_null($this->getCache()->get('manufacturers.' . md5(serialize($data))))) {
             $sql = "SELECT *, manufacturer_id AS id FROM manufacturer";
 
             $sort_data = array(
@@ -116,21 +165,16 @@ class ManufacturerDAO extends DAO {
                 $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
             }
 
-            $query = $this->db->query($sql);
-
-            return $query->rows;
-        } else {
-            $manufacturer_data = $this->cache->get('manufacturer');
-
-            if (!$manufacturer_data) {
-                $query = $this->db->query("SELECT *, manufacturer_id AS id FROM manufacturer ORDER BY name");
-
-                $manufacturer_data = $query->rows;
-
-                $this->cache->set('manufacturer', $manufacturer_data);
+            $query = $this->getDb()->query($sql);
+            $result = array();
+            foreach ($query->rows as $manufacturerEntry) {
+                $result[] = new Manufacturer(
+                    $manufacturerEntry['manufacturer_id']);
             }
-
-            return $manufacturer_data;
+            $this->getCache()->set('manufacturers.' . md5(serialize($data)), $result);
+            return $result;
+        } else {
+            return $this->getCache()->get('manufacturers.' . md5(serialize($data)));
         }
     }
 
@@ -144,6 +188,22 @@ class ManufacturerDAO extends DAO {
         }
 
         return $manufacturer_store_data;
+    }
+
+    /**
+     * @param int $manufacturerId
+     * @return string
+     */
+    public function getName($manufacturerId) {
+        return $this->getSingleValue($manufacturerId, 'name');
+    }
+
+    /**
+     * @param int $manufacturerId
+     * @return int
+     */
+    public function getSortOrder($manufacturerId) {
+        return $this->getSingleValue($manufacturerId, 'sort_order');
     }
 
     public function getTotalManufacturersByImageId($image_id) {

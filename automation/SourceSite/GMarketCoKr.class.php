@@ -1,4 +1,9 @@
 <?php
+namespace automation\SourceSite;
+
+use automation\ProductSource;
+use automation\Product;
+
 abstract class GMarketCoKr extends ProductSource {
     protected $shopId;
 
@@ -45,6 +50,9 @@ abstract class GMarketCoKr extends ProductSource {
         $html->clear();
     }
 
+    protected function getAllCategoriesUrls() { /* Stub */ }
+    protected function getMappedCategoriesUrls() { /* Stub */ }
+
     public function getProducts() {
         echo date('Y-m-d H:i:s') . "\n";
         $productsCount = $this->getProductsCount();
@@ -63,7 +71,7 @@ abstract class GMarketCoKr extends ProductSource {
             $json = json_decode($output);
             $htmlDom = str_get_html($json->message);
             $items = $htmlDom->find('tr');
-            /** @var simple_html_dom_node $item */
+            /** @var \simple_html_dom_node $item */
             foreach ($items as $item) {
                 echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount . "\t- ";
     //            $aElement = $item->find('a[href*=category_detail.php]', 0);
@@ -90,6 +98,10 @@ abstract class GMarketCoKr extends ProductSource {
         return $products;
     }
 
+    /**
+     * @return int
+     * @throws \Exception
+     */
     private function getProductsCount() {
         $html = $this->getPage(
             'http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax',
@@ -101,7 +113,7 @@ abstract class GMarketCoKr extends ProductSource {
         if (isset($json->totalCount)) {
             return $json->totalCount;
         } else {
-            throw new Exception("No product count is defined");
+            throw new \Exception("No product count is defined");
         }
     }
 

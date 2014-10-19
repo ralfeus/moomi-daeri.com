@@ -1,12 +1,13 @@
 <?php
-require_once('gmarket.co.kr.php');
+namespace automation\SourceSite;
+
 class BanilaCO extends GMarketCoKr {
     public function __construct() {
         $this->shopId = 'jI4MR38jNjIxNY21MDgzODY1NjN/Rw==';
     }
 
     /**
-     * @return stdClass
+     * @return \stdClass
      */
     public function getSite() { return (object)array( 'id' => 12, 'name' => 'BanilaCO'); }
 }

@@ -5,9 +5,9 @@
             echo $breadcrumb['separator']; ?><a href="<?= $breadcrumb['href'] ?>"><?= $breadcrumb['text'] ?></a>
 <?php endforeach; ?>
     </div>
-    <?php foreach ($notifications as $class => $notification)
+<?php foreach ($notifications as $class => $notification)
         echo "<div class=\"$class\">" . nl2br($notification) . "</div>";
-    ?>
+?>
     <div class="box">
         <div class="heading">
             <h1><img src="view/image/order.png" alt="" /> <?= $headingTitle ?> <?= isset($invoiceId) ? "#$invoiceId" : "" ?></h1>

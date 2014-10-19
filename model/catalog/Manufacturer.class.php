@@ -34,14 +34,14 @@ class Manufacturer {
     }
 
     /**
-     * @param Mutable $afcId
+     * @param int $afcId
      */
     public function setAfcId($afcId) {
-        $this->afcId = $afcId;
+        $this->afcId->set($afcId);
     }
 
     /**
-     * @return Mutable
+     * @return string[]
      */
     public function getDescription() {
         if (!isset($this->description)) {

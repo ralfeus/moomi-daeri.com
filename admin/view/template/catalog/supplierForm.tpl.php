@@ -43,8 +43,8 @@
                       <select name="relatedManufacturerId">
                           <option value="0"><?= $text_none ?></option>
 <?php foreach ($manufacturers as $manufacturer):
-    $selected = ($manufacturer['id'] == $relatedManufacturerId) ? " selected" : ""; ?>
-                          <option value="<?= $manufacturer['id'] ?>" <?= $selected ?>><?= $manufacturer['name'] ?></option>
+    $selected = ($manufacturer->getId() == $relatedManufacturerId) ? " selected" : ""; ?>
+                          <option value="<?= $manufacturer->getId() ?>" <?= $selected ?>><?= $manufacturer->getName() ?></option>
 <?php endforeach; ?>
                       </select>
                   </td>

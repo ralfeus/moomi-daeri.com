@@ -1,5 +1,6 @@
 <?php
 namespace model;
+require_once(DIR_ROOT . 'system/engine/model.php');
 
 class DAO extends \Model{
     /** @var DAO[] */

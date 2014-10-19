@@ -180,14 +180,14 @@ class ControllerCatalogManufacturer extends Controller {
 			
 			$action[] = array(
 				'text' => $this->language->get('text_edit'),
-				'href' => $this->url->link('catalog/manufacturer/update', 'token=' . $this->session->data['token'] . '&manufacturer_id=' . $result['manufacturer_id'] . $url, 'SSL')
+				'href' => $this->url->link('catalog/manufacturer/update', 'token=' . $this->session->data['token'] . '&manufacturer_id=' . $result->getId() . $url, 'SSL')
 			);
 						
 			$this->data['manufacturers'][] = array(
-				'manufacturer_id' => $result['manufacturer_id'],
-				'name'            => $result['name'],
-				'sort_order'      => $result['sort_order'],
-				'selected'        => isset($this->request->post['selected']) && in_array($result['manufacturer_id'], $this->request->post['selected']),
+				'manufacturer_id' => $result->getId(),
+				'name'            => $result->getName(),
+				'sort_order'      => $result->getSortOrder(),
+				'selected'        => isset($this->request->post['selected']) && in_array($result->getId(), $this->request->post['selected']),
 				'action'          => $action
 			);
 		}	

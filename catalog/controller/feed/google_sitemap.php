@@ -1,4 +1,6 @@
 <?php
+use model\catalog\ManufacturerDAO;
+
 class ControllerFeedGoogleSitemap extends Controller {
 	public function index() {
 		if ($this->config->get('google_sitemap_status')) {
@@ -24,11 +26,11 @@ class ControllerFeedGoogleSitemap extends Controller {
 
 			$this->load->model('catalog/manufacturer');
 
-			$manufacturers = $this->model_catalog_manufacturer->getManufacturers();
+			$manufacturers = ManufacturerDAO::getInstance()->getManufacturers();
 
 			foreach ($manufacturers as $manufacturer) {
 				$output .= '<url>';
-				$output .= '<loc>' . str_replace('&', '&amp;', str_replace('&amp;', '&', $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $manufacturer['manufacturer_id']))) . '</loc>';
+				$output .= '<loc>' . str_replace('&', '&amp;', str_replace('&amp;', '&', $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $manufacturer->getId()))) . '</loc>';
 				$output .= '<changefreq>weekly</changefreq>';
 				$output .= '<priority>0.7</priority>';
 				$output .= '</url>';
