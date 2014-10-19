@@ -9,19 +9,23 @@ final class MySQL implements DBDriver{
     private static $queriesLog = "";
 	
 	public function __construct($hostname, $username, $password, $database) {
-		if (!$this->connection = new mysqli($hostname, $username, $password)) {
-      		exit('Error: Could not make a database connection using ' . $username . '@' . $hostname);
-    	}
+		$this->connect($hostname, $username, $password, $database);
+  	}
 
-    	if (!$this->connection->select_db($database)) {
-      		exit('Error: Could not connect to database ' . $database);
-    	}
-		
-		$this->connection->query("SET NAMES 'utf8'");
+    private function connect($hostName, $userName, $password, $database) {
+        if (!$this->connection = new mysqli($hostName, $userName, $password)) {
+            throw new mysqli_sql_exception("Could not make a database connection using $userName@$hostName");
+        }
+
+        if (!$this->connection->select_db($database)) {
+            throw new mysqli_sql_exception("Could not connect to database '$database'");
+        }
+
+        $this->connection->query("SET NAMES 'utf8'");
         $this->connection->query("SET CHARACTER SET utf8");
         $this->connection->query("SET CHARACTER_SET_CONNECTION=utf8");
         $this->connection->query("SET SQL_MODE = ''");
-  	}
+    }
 
     /**
      * @param string $sql
@@ -60,57 +64,65 @@ final class MySQL implements DBDriver{
             $log->write($sql);
         }
 
-        $statement = $this->prepareQuery($sql);
+        $attempts = 3; $statement = null;
+        while ($attempts--) {
+            $statement = $this->prepareQuery($sql);
 //        self::$queriesLog .= "#PID: " . getmypid() . "\r\n";
 //        self::$queriesLog .= "#Query: $sql\r\n";
-        if (sizeof($params)) {
-            $types = ''; $args = array(); $refArgs = array(); $i = 0;
-            foreach ($params as $param) {
-                $type = substr($param, 0, 1);
-                $value = substr($param, 2);
-                $types .= $type;
-                $args[$i] = $value;
-                $refArgs[] = &$args[$i++];
-            }
+            if (sizeof($params)) {
+                $types = '';
+                $args = array();
+                $refArgs = array();
+                $i = 0;
+                foreach ($params as $param) {
+                    $type = substr($param, 0, 1);
+                    $value = substr($param, 2);
+                    $types .= $type;
+                    $args[$i] = $value;
+                    $refArgs[] = &$args[$i++];
+                }
 
-            if (!call_user_func_array(array($statement, 'bind_param'), array_merge(array($types), $refArgs))) {
-                throw new mysqli_sql_exception($statement->error, $statement->errno);
+                if (!call_user_func_array(array($statement, 'bind_param'), array_merge(array($types), $refArgs))) {
+                    throw new mysqli_sql_exception($statement->error, $statement->errno);
+                }
             }
-        }
 //        self::$queriesLog .= "#Start: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
-        if ($statement->execute()) {
+            if ($statement->execute()) {
 //            self::$queriesLog .= "#Stop: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
-            if ($statement->affected_rows == -1) {
-                $statement->store_result();
-                $fields = array(); $row = null;
-                $result = new stdClass();
-                $meta = $statement->result_metadata();
+                if ($statement->affected_rows == -1) {
+                    $statement->store_result();
+                    $fields = array();
+                    $row = null;
+                    $result = new stdClass();
+                    $meta = $statement->result_metadata();
 
-                while ($field = $meta->fetch_field()) {
-                    $fields[] = &$row[$field->name];
-                }
-                call_user_func_array(array($statement, 'bind_result'), $this->refValues($fields));
-                $result->rows = array();
-                while ($statement->fetch()) {
-                    $currentRow = array();
-                    foreach ($row as $key => $value) {
-                        $currentRow[$key] = $value;
+                    while ($field = $meta->fetch_field()) {
+                        $fields[] = &$row[$field->name];
                     }
-                    $result->rows[] = $currentRow;
+                    call_user_func_array(array($statement, 'bind_result'), $this->refValues($fields));
+                    $result->rows = array();
+                    while ($statement->fetch()) {
+                        $currentRow = array();
+                        foreach ($row as $key => $value) {
+                            $currentRow[$key] = $value;
+                        }
+                        $result->rows[] = $currentRow;
+                    }
+
+                    $result->row = isset($result->rows[0]) ? $result->rows[0] : array();
+                    $result->num_rows = sizeof($result->rows);
+
+                    return $result;
+                } else {
+                    return $statement->affected_rows;
                 }
-
-                $result->row = isset($result->rows[0]) ? $result->rows[0] : array();
-                $result->num_rows = sizeof($result->rows);
-
-                return $result;
             } else {
-               return $statement->affected_rows;
-            }
-        } else {
 //            self::$queriesLog .= "#Stop: " . (new DateTime())->format("Y-m-d H:i:s.u") . "\r\n";
-            throw new mysqli_sql_exception($statement->error, $statement->errno);
+                error_log($statement->errno . ": " . $statement->error);
+            }
         }
-  	}
+        throw new mysqli_sql_exception($statement->error, $statement->errno);
+    }
 
     /**
      * Parameters should be in format i|d|s|b:value
