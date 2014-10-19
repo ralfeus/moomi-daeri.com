@@ -237,7 +237,14 @@ class SupplierDAO extends DAO {
                 'i:' . $supplier->getId()
             )
         );
-        $this->getDb()->query("
+        if (is_null($supplier->getRelatedManufacturer())) {
+            $this->getDb()->query("
+                DELETE FROM supplier_to_manufacturer
+                WHERE supplier_id = ?
+                ", array('i:' . $supplier->getId())
+            );
+        } else {
+            $this->getDb()->query("
             INSERT INTO supplier_to_manufacturer
             SET
                 supplier_id = ?,
@@ -245,11 +252,12 @@ class SupplierDAO extends DAO {
             ON DUPLICATE KEY UPDATE
                 manufacturer_id = ?
             ", array(
-                "i:" . $supplier->getId(),
-                'i:' . $supplier->getRelatedManufacturer()->getId(),
-                'i:' . $supplier->getRelatedManufacturer()->getId()
-            )
-        );
+                    "i:" . $supplier->getId(),
+                    'i:' . $supplier->getRelatedManufacturer()->getId(),
+                    'i:' . $supplier->getRelatedManufacturer()->getId()
+                )
+            );
+        }
 
         $this->getCache()->deleteAll('/^suppliers\./');
     }
