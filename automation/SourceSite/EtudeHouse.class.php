@@ -20,6 +20,23 @@ use automation\ProductSource;
 class EtudeHouse extends ProductSource {
 
     protected function getAllCategoriesUrls() {
+        $categories = array(); $xml = array();
+        xml_parse_into_struct(
+            xml_parser_create(),
+            file_get_contents($this->getRootUrl() . "/images/flash/data/menu.xml"),
+            $xml);
+        foreach ($xml as $element) {
+            if (($element['level'] == 2) && ($element['type'] == 'close')) {
+                break;
+            } elseif (($element['tag'] == 'MENU')
+                && (($element['level'] == 3) && ($element['type'] == 'open'))) {
+                $categories[] = $this->getRootUrl() . $element['attributes']['URL'];
+            }
+        }
+        return $categories;
+    }
+
+    protected function getMappedCategoriesUrls() {
         $categories = array();
         foreach (array_keys($this->getSite()->getCategoriesMap()) as $sourceSiteCategory) {
 //                foreach ($xml as $element) {
@@ -36,23 +53,6 @@ class EtudeHouse extends ProductSource {
                 $categories[] = $this->getRootUrl() . 'product.do?method=submain&catCd1=' . $sourceSiteCategory;
             } elseif (preg_match('/\d{6}/', $sourceSiteCategory)) {
                 $categories[] = $this->getRootUrl() . 'product.do?method=list&catCd2=' . $sourceSiteCategory;
-            }
-        }
-        return $categories;
-    }
-
-    protected function getMappedCategoriesUrls() {
-        $categories = array(); $xml = array();
-        xml_parse_into_struct(
-            xml_parser_create(),
-            file_get_contents($this->getRootUrl() . "/images/flash/data/menu.xml"),
-            $xml);
-        foreach ($xml as $element) {
-            if (($element['level'] == 2) && ($element['type'] == 'close')) {
-                break;
-            } elseif (($element['tag'] == 'MENU')
-                && (($element['level'] == 3) && ($element['type'] == 'open'))) {
-                $categories[] = $this->getRootUrl() . $element['attributes']['URL'];
             }
         }
         return $categories;
