@@ -38,11 +38,32 @@ form {
 label {
 	cursor: pointer;
 }
+#toggle a.open, #toggle a.close {
+	height: 22px;
+	line-height: 20px !important;
+	padding-left: 20px !important;
+	cursor: pointer;
+	display: block;
+	position: fixed;
+    right: 5px;
+	top: 5px;
+    z-index: 200;
+}
+
+#toggle a.close {background: url(../image/bt_open.png) no-repeat}
+#toggle a.open {background: url(../image/bt_close.png) no-repeat}
+#toggle a:hover.close {background: url(../image/bt_open_hover.png) no-repeat}
+#toggle a:hover.open {background: url(../image/bt_close_hover.png) no-repeat}
+
 #header .div1 {
 	height: 56px;
 	padding: 0px 30px;
 	background: url('../image/header.png') repeat-x;
 	min-width: 900px;
+	overflow: hidden;
+	position: relative;
+	z-index: 3;
+	display: none;
 }
 #header .div2 {
 	color: #FFFFFF;
@@ -253,8 +274,8 @@ body > #container {
 .box .buttons {
     float: right;
     position: fixed;
-    right: 20px;
-    top: 105px;
+    right: 50px;
+    top: 40px;
     max-width: 500px;
 }
 .box .buttons .button {

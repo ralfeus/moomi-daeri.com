@@ -35,6 +35,26 @@
         $('#Calculator').calculator({showOn: 'opbutton', buttonImageOnly: true, buttonImage: 'view/image/calculator.png'});
     });
 </script> 
+<script type="text/javascript">
+$(document).ready(function() {
+	// Expand Panel
+	$("#open").click(function(){
+		$("div#menu").slideUp("fast");
+	
+	});	
+	
+	// Collapse Panel
+	$("#close").click(function(){
+		$("div#menu").slideDown("fast");	
+	});		
+	
+	// Switch buttons from "Log In | Register" to "Close Panel" on click
+	$("#toggle a").click(function () {
+		$("#toggle a").toggle();
+	});		
+		
+});
+</script>
 <?php foreach ($scripts as $script) { ?>
 <script type="text/javascript" src="<?php echo $script; ?>"></script>
 <?php } ?>
@@ -90,6 +110,7 @@ $(document).ready(function(){
     <div class="div3"><img src="view/image/lock.png" alt="" style="position: relative; top: 3px;" />&nbsp;<?php echo $logged; ?></div>
     <?php } ?>
   </div>
+  
   <?php if ($logged) { ?>
   <div id="menu">
     <ul class="left" style="display: none;">
@@ -337,5 +358,9 @@ $(document).ready(function() {
 });
 //--></script>
   </div>
+  			<div id="toggle">
+				<a id="open" class="open"></a>
+				<a id="close" style="display: none;" class="close"></a>			
+			</div>
   <?php } ?>
 </div>
