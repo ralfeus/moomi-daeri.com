@@ -49,13 +49,13 @@
 $(document).ready(function() {
 	// Expand Panel
 	$("#open").click(function(){
-		$("div.header-top").slideDown("slow");
+		$("div.header-top").slideUp("slow");
 	
 	});	
 	
 	// Collapse Panel
 	$("#close").click(function(){
-		$("div.header-top").slideUp("slow");	
+		$("div.header-top").slideDown("slow");	
 	});		
 	
 	// Switch buttons from "Log In | Register" to "Close Panel" on click
@@ -220,23 +220,7 @@ DD_belatedPNG.fix('#logo img');
     }
 //-->
 </script>
-<script type="text/javascript">
-$(document).ready(function(){
-	// Lets make the top panel toggle based on the click of the show/hide link	
-	$("#sub-panel").click(function(){
-		// Toggle the bar up 
-		$("#span-selectors").slideToggle();	
-		// Settings
-		var el = $("#shText");  
-		// Lets us know whats inside the element
-		var state = $("#shText").html();
-		// Change the state  
-		state = (state == 'Hide' ? '<span id="shText">Show</span>' : '<span id="shText">Hide</span>');					
-		// Finally change whats insdide the element ID
-		el.replaceWith(state); 
-	}); // end sub panel click function
-}); // end on DOM
-</script>
+
 <script type="text/javascript">
 $(function(){
   $.fn.scrollToTop=function(){
@@ -263,19 +247,13 @@ $(function() {$("#toTop").scrollToTop();});
 $(function(){
  $(window).scroll(function() {
   var top = $(document).scrollTop();
-  if (top > 150) {
+  if (top > 132) {
     $('.links').addClass('linksfixed'); //200 - это значение высоты прокрутки страницы для добавления класс
   }
   else {
     $('.links').removeClass('linksfixed');
   }
  });
-});
-</script>
-<script type='text/javascript'>
-    $(document).ready(function() {
-    setTimeout("$('#hello-top').fadeIn('fast');", 1000);
-    setTimeout("$('#hello-top').fadeOut('slow');", 5000);
 });
 </script>
 <style type="text/css">
@@ -321,80 +299,91 @@ body .one{overflow: hidden}
 </head>
 <body>
 <div class="header-top-wrapper">
-	<div class="header-top">
-        <div id="span-selectors">
-            <form id="selectors" action="<?= $action ?>" method="post" enctype="multipart/form-data">
-              <table align="center" cellpadding="0" cellspacing="0" border="0">
-                <tr valign="middle">
-                  <td width="150" align="center">
-                   <table><div class="contact-header">Contact:<br /><a href="mailto:moomidae@gmail.com">moomidae@gmail.com</a></div></table>
-                  <td width="400">
-                          <div id="search">
-                            <?php if ($filter_name): ?>
-                                <input type="text" name="filter_name" value="<?= $filter_name ?>" />
-                            <?php else: ?>
-                                <input type="text" name="filter_name" value="<?= $textSearchPrompt ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
-                            <?php endif; ?>
-                          </div>
-                          <div class="styled-select-wrapper">
-                            <select class="styled-select">
-                              <option>All Categories</option>
-                            </select>
-                          </div>
-                          <div class="button-search"></div>
-                 <td style="width: 180px; padding-left: 100px;">
-                    <table height="40" cellpadding="0" cellspacing="1">
-                      <tr>
-                  
+  <div class="header-top">
+    <div id="span-selectors">
+      <form id="selectors" action="<?= $action ?>" method="post" enctype="multipart/form-data">
+        <table align="center" cellpadding="0" cellspacing="0" border="0">
+          <tr valign="middle">
+            <td width="150" align="center">
+              <table>
+                <div class="contact-header">Contact:<br />
+                  <a href="mailto:moomidae@gmail.com">moomidae@gmail.com</a>
+                </div>
+              </table>
+            </td>
+            <td width="400">
+              <div id="search">
+                <?php if ($filter_name): ?>
+                  <input type="text" name="filter_name" value="<?= $filter_name ?>" />
+                <?php else: ?>
+                  <input type="text" name="filter_name" value="<?= $textSearchPrompt ?>" onclick="this.value = '';" onkeydown="this.style.color = '#000000';" />
+                <?php endif; ?>
+              </div>
+              <div class="styled-select-wrapper">
+                <select class="styled-select">
+                  <option>All Categories</option>
+                </select>
+              </div>
+              <div class="button-search"></div>
+            </td>
+            <td style="width: 180px; padding-left: 100px;">
+              <table height="40" cellpadding="0" cellspacing="1">
+                <tr>
                   <?php foreach ($languages as $language): ?>
-                  <td style="width: 40px;text-align: center; vertical-align: middle;">
-                    <input type="hidden" name="language_code" value="" />
-                    <input type="hidden" name="currency_code" value="" />
-                    <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
-                    <div class="language-selector">
-                      <a href="index.php?<?= unset_query_string_var('language', $_SERVER['QUERY_STRING']) ?>&amp;language=<?= $language['code'] ?>">
-                        <img
-                          src="image/flags/<?php echo $language['image'] ?>"
-                          alt="<?php echo $language['name'] ?>"
-                          title="<?= $language['name'] ?>"
-                        />
-                      </a>
-                    </div>
-                  </td>
+                    <td style="width: 40px;text-align: center; vertical-align: middle;">
+                      <input type="hidden" name="language_code" value="" />
+                      <input type="hidden" name="currency_code" value="" />
+                      <input type="hidden" name="redirect" value="<?php echo $redirect ?>" />
+                      <div class="language-selector">
+                        <a href="index.php?<?= unset_query_string_var('language', $_SERVER['QUERY_STRING']) ?>&amp;language=<?= $language['code'] ?>">
+                          <img
+                            src="image/flags/<?php echo $language['image'] ?>"
+                            alt="<?php echo $language['name'] ?>"
+                            title="<?= $language['name'] ?>"
+                          />
+                        </a>
+                      </div>
+                    </td>
                   <?php endforeach; ?>  
-                      </tr>
-                    </table>
-                 <td style="width: 128px;">
-                    <table height="20" cellpadding="0" cellspacing="1">
-                      <tr>
-                        <?php foreach ($currencies as $currency): ?>
-                        <td class="currency-selector">
-                          <?php
-                            if ($currency['code'] == $currency_code):
-                                $boldBegin = "<b>"; $boldEnd = "</b>";
-                                $onClick = "";
-                            else:
-                                $boldBegin = ""; $boldEnd = "";
-                                $onClick = 'onclick="changeCurrency(\'' . $currency['code'] . '\')"';
-                            endif;
-                            $symbol = $currency['symbol_left'] ? $currency['symbol_left'] : $currency['symbol_right'];
-                          ?>
-                          <a title="<?= $currency['title'] ?>" <?= $onClick ?>>
-                          <img 
-                            src="image/currency/<?php echo $currency['code'] ?>.png"
+                </tr>
+              </table>
+            </td>
+            <td style="width: 128px;">
+              <table height="20" cellpadding="0" cellspacing="1">
+                <tr>
+                  <?php foreach ($currencies as $currency): ?>
+                    <td class="currency-selector">
+                      <?php
+                        if ($currency['code'] == $currency_code):
+                          $boldBegin = "<b>"; $boldEnd = "</b>";
+                          $onClick = "";
+                        else:
+                          $boldBegin = ""; $boldEnd = "";
+                          $onClick = 'onclick="changeCurrency(\'' . $currency['code'] . '\')"';
+                        endif;
+                        $symbol = $currency['symbol_left'] ? $currency['symbol_left'] : $currency['symbol_right'];
+                      ?>
+                      <a title="<?= $currency['title'] ?>" <?= $onClick ?>>
+                        <img 
+                          src="image/currency/<?php echo $currency['code'] ?>.png"
                           alt="<?= $currency['title'] ?>"
                           title="<?= $currency['title'] ?>"
                         />
-                           </a>
-                        </td>
-                        <?php endforeach; ?>
-                      </tr>
-                    </table>
-                  </td>
+                      </a>
+                    </td>
+                  <?php endforeach; ?>
                 </tr>
               </table>
-            </form>
-        </div>	
+            </td>
+            <td>
+              <table>
+                <div class="logout-header"><?= (!$logged) ? $text_welcome_guest_right :$text_logged_customer_right ?></div>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>	
 	</div>
         <!-- The tab on top -->	
 	<div class="header-top-tab">
@@ -405,7 +394,7 @@ body .one{overflow: hidden}
 				<a id="open" class="open"></a>
 				<a id="close" style="display: none;" class="close"></a>			
 			</li>
-            <li><?= (!$logged) ? $text_welcome_guest_right :$text_logged_customer_right ?></li>
+            <li></li>
 	    	<li class="right">&nbsp;</li>
 		</ul> 
 	</div> <!-- / top -->
@@ -423,13 +412,13 @@ body .one{overflow: hidden}
   <a href="<?= $home ?>"></a>
 <!--  <div id="welcome"><?= (!$logged) ? $text_welcome :$text_logged ?></div>-->
   <div class="links">
+          <a class="agent" href="index.php?route=product/repurchase"><span><?= $text_repurchase_order ?></span></a>
+          <a class="info" href="index.php?route=shop/admin/showPage&page_id=15"><span><?= $textShoppingGuide ?></span></a>        
 <!--		  <a class="account" href="<?= $account ?>"><span><?= $text_account ?></span></a> -->
-		  <a class="home" href="<?= $home ?>"><span><?= $text_home ?></span></a>
+<!--		  <a class="home" href="<?= $home ?>"><span><?= $text_home ?></span></a>-->
           <?php if($this->config->get('wk_auction_timezone_set')){ ?>
             <a class="auction_h" href="<?php echo $menuauction; ?>"><span><?= $text_auction ?></span></a>      
 		  <?php } ?>
-          <a class="agent" href="index.php?route=product/repurchase"><span><?= $text_repurchase_order ?></span></a>
-          <a class="info" href="index.php?route=shop/admin/showPage&page_id=15"><span><?= $textShoppingGuide ?></span></a>        
           <a class="wishlist_total" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>
 		  <a class="cart" href="<?= $cart ?>" id="cart_total_data"><span><?= $text_cart ?></span></a>
 				  
