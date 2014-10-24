@@ -409,7 +409,7 @@ body .one{overflow: hidden}
       style="background: url('<?php echo $logo; ?>');"
     <?php endif; ?>
   >
-  <a href="<?= $home ?>"></a>
+  <a href="<?= $home ?>" title="<?= $text_home ?>"></a>
 <!--  <div id="welcome"><?= (!$logged) ? $text_welcome :$text_logged ?></div>-->
   <div class="links">
           <a class="agent" href="index.php?route=product/repurchase"><span><?= $text_repurchase_order ?></span></a>
