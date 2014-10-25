@@ -8,8 +8,10 @@ class ControllerModuleLatest extends Controller {
         $this->load->model('catalog/product');
         $this->load->model('tool/image');
     }
-
-	protected function index($setting) {
+    
+    private function _endc( $array ) { return end( $array ); }
+	
+    protected function index($setting) {
 		$this->data['button_cart'] = $this->language->get('button_cart');
 
     $this->data['isSaler'] = $this->customer->getCustomerGroupId() == 6;
@@ -30,6 +32,19 @@ class ControllerModuleLatest extends Controller {
       'nocache'   => 1
 		);
 
+        if ((isset($this->request->get['route'])) AND ($this->request->get['route'] == 'product/category'))
+        {
+            $category_id = $this->_endc(explode('_', (string)$this->request->get['path']));       
+            $data['filter_category_id'] = $category_id;
+            $data['filter_sub_category'] = TRUE;
+        }
+         
+         
+        if ((isset($this->request->get['route'])) AND (isset($this->request->get['manufacturer_id'])) AND ($this->request->get['route'] == 'product/manufacturer/product'))
+        {
+            $manufacturer_id = $this->request->get['manufacturer_id'];       
+            $data['filter_manufacturer_id'] = $manufacturer_id;           
+        }
 
 		$results = $this->model_catalog_product->getProducts($data);
         //print_r($results);exit();
