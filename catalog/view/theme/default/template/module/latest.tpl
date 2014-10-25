@@ -1,4 +1,5 @@
-<div class="box">
+<?php if ($products) { ?>
+<div class="box-latest">
   <div class="box-heading"><?php echo $heading_title; ?></div>
   <div class="box-content">
     <div class="box-product">
@@ -34,4 +35,4 @@
     <div class="pagination"><?php echo $pagination; ?></div>
   </div>
 </div>
-
+<?php } ?>

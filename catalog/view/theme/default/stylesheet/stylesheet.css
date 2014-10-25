@@ -68,34 +68,36 @@ label {
 
 
  /* Panel Tab/button */
- 
-.header-top-tab {
+.header-top-tab-wrapper {
   	background: url(../image/tab_b.png) repeat-x 0 0;
-	height: 42px;
+	height: 10px;
+  right: 0px;
 	position: relative;
     top: 0;
-    z-index: 999;
     min-width: 380px;
+
+} 
+.header-top-tab {
+  left: 0px;
+	position: fixed;
+    top: 0;
 
 }
 
-.header-top-tab ul.login {
+.header-top-tab div.login {
 	display: block;
 	position: relative;
   	float: right;
-  	clear: right;
   	height: 42px;
 	width: auto;
   	font-weight: bold;
-	line-height: 42px;
+	line-height: 36px;
 	margin: 0;
-	right: 20px;
   	color: white;
-  	font-size: 80%;
 	text-align: center;
 }
 
-.header-top-tab ul.login li.left {
+.header-top-tab div.login div.left {
   	background: url(../image/tab_l.png) no-repeat left 0;
   	height: 42px;
 	width: 30px;
@@ -105,7 +107,7 @@ label {
 	float: left;
 }
 
-.header-top-tab ul.login li.right {
+.header-top-tab div.login div.right {
   	background: url(../image/tab_r.png) no-repeat left 0;
   	height: 42px;
 	width: 30px;
@@ -115,40 +117,28 @@ label {
 	float: left;
 }
 
-.header-top-tab ul.login li {
+.header-top-tab div.login div {
     margin: auto;
 	display: block;
 	float: left;
-
+  padding-left: 5px;
 	height: 42px;
   	background: url(../image/tab_m.png) repeat-x 0 0;
 }
 
-.header-top-tab ul.login li a {
+.header-top-tab div.login div a {
 	color: #DBFFE7;
-    margin-right: 15px;
+  text-decoration: none;
+  font-size: 18px;
+  z-index: 99999;
 }
 
-.header-top-tab ul.login li a:hover {
+.header-top-tab div.login div a:hover {
 	color: white;
 }
 
 .header-top-tab .sep {color:#414141}
 
-#toggle a.open, #toggle a.close {
-	height: 20px;
-	line-height: 20px !important;
-	padding-left: 30px !important;
-	cursor: pointer;
-	display: block;
-	position: relative;
-	top: 11px;
-}
-
-#toggle a.open {background: url(../image/bt_close.png) no-repeat}
-#toggle a.close {background: url(../image/bt_open.png) no-repeat}
-#toggle a:hover.open {background: url(../image/bt_close_hover.png) no-repeat}
-#toggle a:hover.close {background: url(../image/bt_open_hover.png) no-repeat}
 
 /* sliding panel */
 .header-top-wrapper {
@@ -156,9 +146,10 @@ label {
     /*position: relative;*/   /*Panel will "push" the content down */
     top: 0;
     width: 100%;
-    z-index: 999;
+    z-index: 99;
     margin-left: auto;
     margin-right: auto;
+  	background: url(../image/tab_b.png) repeat-x 0 0;
     
  	height: 55px;
 /**
@@ -203,7 +194,8 @@ label {
 #hello-top {
     display: none;
     position: absolute;
-    right: 50px;
+    left: 50px;
+    top: 50px;
     max-width: 400px;
     color: #71653a;
     background-color: #fff1be;
@@ -292,7 +284,7 @@ label {
 	margin-bottom: 7px;
 	padding-bottom: 4px;
 	position: relative;
-	z-index: 99;
+	z-index: 98;
 	
 }
 #header a {
@@ -492,18 +484,51 @@ cursor: pointer;
     top: 5px;
 	line-height: 22px
 }
+.login-header{
+	display: block;
+  position: absolute;
+  top: 7px;
+  left: 35px;
+
+}
 .logout-header{
 	display: block;
-  width: 100px;
   position: absolute;
-  right: 10px;
-  top: 18px;
+  top: 31px;
+  left: 80px;
+
 }
 .contact-header a, .logout-header a{
     color: #DBFFE7;
     font-weight: bold;
     text-decoration: none;
 }
+.login-header a{
+    color: #DBFFE7;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 18px;  
+}
+#toggle {
+  position: fixed;
+  z-index: 9999;
+  left: 20px;
+  top: 10px;
+}
+#toggle a.open, #toggle a.close {
+	height: 20px;
+	line-height: 20px !important;
+	padding-left: 30px !important;
+	cursor: pointer;
+	display: block;
+	top: 11px;
+}
+
+#toggle a.open {background: url(../image/bt_close.png) no-repeat}
+#toggle a.close {background: url(../image/bt_open.png) no-repeat}
+#toggle a:hover.open {background: url(../image/bt_close_hover.png) no-repeat}
+#toggle a:hover.close {background: url(../image/bt_open_hover.png) no-repeat}
+
 .styled-select-wrapper{
 	width: 151px;
     float:left;
@@ -544,17 +569,20 @@ cursor: pointer;
 #header .linksfixed {
  position: fixed;
  top: 118px;
- z-index: 9999; 
+ z-index: 99; 
 }
 #header .linksfixed a {
     opacity: 0.5; 
+    z-index: 100; 
 }
 #header .linksfixed a:hover {
     opacity: 0.8; 
 }#header .links a:hover {
     opacity: 0.8; 
 }
-
+#header .links .linksfixed .account a {
+    z-index: 100;  
+}
 #header .links .account {
 	bottom: 15px;
     color: #3F3F3F;
@@ -570,6 +598,9 @@ cursor: pointer;
     text-decoration: none;
     width: 152px;
 	background: url('../image/header_account.png') no-repeat;
+}
+#header .links .linksfixed .home a {
+    z-index: 100;  
 }
 #header .links .home {
 	display: none;
@@ -587,6 +618,9 @@ cursor: pointer;
 	line-height: 47px;
 	background: url('../image/header_home.png') no-repeat;
 }
+#header .links .linksfixed .auction_h a {
+    z-index: 100;  
+}
 #header .links .auction_h {
     display: none;
 	padding: 0px 0px 0px 50px;
@@ -602,6 +636,9 @@ cursor: pointer;
 	height: 47px;
 	line-height: 47px;
 	background: url('../image/header_auction.png') no-repeat;
+}
+#header .links .linksfixed .agent a {
+    z-index: 100;  
 }
 #header .links .agent {
     display: block;
@@ -619,6 +656,9 @@ cursor: pointer;
     line-height: 51px;
 	background: url('../image/header_agent.png') no-repeat;
 }
+#header .links .linksfixed .info a {
+    z-index: 100;  
+}
 #header .links .info {
 	display: block;
 	padding: 0px 0px 0px 50px;
@@ -635,6 +675,9 @@ cursor: pointer;
 	line-height: 47px;
 	background: url('../image/header_info.png') no-repeat;
 }
+#header .links .linksfixed .wishlist_total a {
+    z-index: 100;  
+}
 #header .links .wishlist_total {
     display: block;
 	padding: 0px 0px 0px 52px;
@@ -650,6 +693,9 @@ cursor: pointer;
 	height: 43px;
 	line-height: 42px;
 	background: url('../image/header_list.png') no-repeat;
+}
+#header .links .linksfixed .cart a {
+    z-index: 100;  
 }
 #header .links .cart {
     display: block;

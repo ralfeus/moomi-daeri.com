@@ -1,0 +1,127 @@
+.support {
+  display: inline-block;
+  position: relative;
+  text-decoration: none;
+  cursor: pointer;
+}
+.support em {
+  background: #FF6600;
+  border-radius: 20px;
+  border: 1px solid #999;
+  text-align: center;
+  color: #FFF;
+  font: normal bold 10px Arial;
+  padding: 0 4px;
+}
+.tip { 
+  display: none;
+  position: absolute;
+  z-index: 9998;
+  top: 0;
+  left: 100%;
+  background: #EDEDED;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  box-shadow: 5px 5px 0.5em -0.1em rgba(0,0,6,0.5);
+  text-align: left;
+  color: #000;
+  font: normal 500 14px Arial, sans-serif;
+  opacity: .9;
+  cursor: default;
+  padding: 5px;
+  margin: -15px 0 0 10px;
+  width: 200px;
+  min-height: 50px;
+  height: auto;
+}
+a.support:hover .tip {
+  display:block;
+}
+.tabNavigation {
+	padding: 0px 0px 0px 10px;
+	height: 30px;
+	border-bottom: 1px solid #DDDDDD;
+	margin-bottom: 15px;
+}
+ul.tabNavigation {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+ul.tabNavigation li {
+	display: inline;
+}
+ul.tabNavigation li a {
+	border-top: 1px solid #DDDDDD;
+	border-left: 1px solid #DDDDDD;
+	border-right: 1px solid #DDDDDD;
+	padding: 6px 15px 7px 15px;
+	float: left;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	font-weight: bold;
+	text-align: center;
+	text-decoration: none;
+	color: #000000;
+	margin-right: 2px;
+}
+
+ul.tabNavigation li a.selected,
+ul.tabNavigation li a.selected:hover {
+	padding-bottom: 8px;
+	background: #FFFFFF;
+}
+body, td, th, input, select, textarea, option, optgroup {
+	font-family: Arial, Helvetica, sans-serif;
+	/*font-size: 10px;*/
+	color: #000000;
+}
+#vkShare {
+	background-image: url(../img/socb/vk.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+	display: block;
+	width: 32px;
+	height: 32px;
+}
+#odklShare {
+	background-image: url(../img/socb/od.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+	display: block;
+	width: 32px;
+	height: 32px;
+}
+#fbShare {
+	background-image: url(../img/socb/fb.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+	display: block;
+	width: 32px;
+	height: 32px;
+}
+#twShare {
+	background-image: url(../img/socb/tw.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+	display: block;
+	width: 32px;
+	height: 32px;
+}
+#mailruShare {
+	background-image: url(../img/socb/ml.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+	display: block;
+	width: 32px;
+	height: 32px;
+}
+#yaruShare {
+	background-image: url(../img/socb/ya.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+	display: block;
+	width: 32px;
+	height: 32px;
+}
+

@@ -45,26 +45,7 @@
 <script type="text/javascript" src="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4-iefix.js"></script>
 <![endif]-->
 <script type="text/javascript" src="catalog/view/javascript/jquery/tabs.js"></script>
-<script type="text/javascript">
-$(document).ready(function() {
-	// Expand Panel
-	$("#open").click(function(){
-		$("div.header-top").slideUp("slow");
-	
-	});	
-	
-	// Collapse Panel
-	$("#close").click(function(){
-		$("div.header-top").slideDown("slow");	
-	});		
-	
-	// Switch buttons from "Log In | Register" to "Close Panel" on click
-	$("#toggle a").click(function () {
-		$("#toggle a").toggle();
-	});		
-		
-});
-</script>
+
 <script type="text/javascript">
   var warningMesssage = '<?= $text_no_select_images ?>';
 </script>
@@ -244,6 +225,28 @@ $(function(){
 $(function() {$("#toTop").scrollToTop();});
 </script>
 <script type="text/javascript">
+
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+	// Expand Panel
+	$("#open").click(function(){
+		$("div.header-top").slideUp("slow");
+	
+	});	
+	
+	// Collapse Panel
+	$("#close").click(function(){
+		$("div.header-top").slideDown("slow");	
+	});		
+	
+	// Switch buttons from "Log In | Register" to "Close Panel" on click
+	$("#toggle a").click(function () {
+		$("#toggle a").toggle();
+	});		
+		
+});
+
 $(function(){
  $(window).scroll(function() {
   var top = $(document).scrollTop();
@@ -304,11 +307,10 @@ body .one{overflow: hidden}
       <form id="selectors" action="<?= $action ?>" method="post" enctype="multipart/form-data">
         <table align="center" cellpadding="0" cellspacing="0" border="0">
           <tr valign="middle">
-            <td width="150" align="center">
+            <td width="150"">
               <table>
-                <div class="contact-header">Contact:<br />
-                  <a href="mailto:moomidae@gmail.com">moomidae@gmail.com</a>
-                </div>
+                <div class="login-header"><?= (!$logged) ? $text_welcome_guest_left :$text_logged_customer_left ?></div>
+                <div class="logout-header"><?= (!$logged) ? $text_welcome_guest_right :$text_logged_customer_right ?></div>
               </table>
             </td>
             <td width="400">
@@ -375,28 +377,31 @@ body .one{overflow: hidden}
                 </tr>
               </table>
             </td>
-            <td>
+            <td width="150" align="center">
               <table>
-                <div class="logout-header"><?= (!$logged) ? $text_welcome_guest_right :$text_logged_customer_right ?></div>
+                <div class="contact-header">Contact:<br />
+                  <a href="mailto:moomidae@gmail.com">moomidae@gmail.com</a>
+                </div>
               </table>
             </td>
+            
           </tr>
         </table>
       </form>
     </div>	
 	</div>
+           			<div id="toggle">
+				          <a id="open" class="open"></a>
+				          <a id="close" style="display: none;" class="close"></a>	
+                </div>
         <!-- The tab on top -->	
-	<div class="header-top-tab">
-		<ul class="login">
-	    	<li class="left">&nbsp;</li>
-            <li onmouseover="showHelloTopOn()" onmouseout="showHelloTopOff()"><?= (!$logged) ? $text_welcome_guest_left :$text_logged_customer_left ?></li>
-			<li id="toggle">
-				<a id="open" class="open"></a>
-				<a id="close" style="display: none;" class="close"></a>			
-			</li>
-            <li></li>
-	    	<li class="right">&nbsp;</li>
-		</ul> 
+	<div class="header-top-tab-wrapper"></div>
+  <div class="header-top-tab">
+		<div class="login">
+	    	<div class="left">&nbsp;</div>
+            <div><?= (!$logged) ? $text_welcome_guest_left :$text_logged_customer_left ?></div>
+	    	<div class="right">&nbsp;</div>
+		</div> 
 	</div> <!-- / top -->
     <div id="hello-top" class="bottom">
         <?= (!$logged) ? $text_welcome_help :$text_logged_help ?></div>

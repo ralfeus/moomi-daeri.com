@@ -12,7 +12,7 @@ $_['text_welcome_guest_left']    = '<a href="%s" title="Welcome visitor you can 
 $_['text_welcome_guest_right']   = ' <a href="%s">Register</a>';
 $_['text_logged']           = 'You are logged in as %s<a href="%s">%s</a> <b>(</b> <a href="%s">Logout</a> <b>)</b>';
 $_['text_logged_help']           = 'You are logged in as %s %s';
-$_['text_logged_customer_left']  = '%s<a href="%s">%s!</a>';
+$_['text_logged_customer_left']  = '%s<a href="%s" title="You are logged in as %s">%s!</a>';
 $_['text_logged_customer_right'] = ' <a href="%s">Logout</a>';
 $_['text_account']          = 'My Account';
 $_['text_checkout']         = 'Checkout';

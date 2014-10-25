@@ -127,6 +127,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
         $this->data['textShipping'] = $this->language->get('SHIPPING');
         $this->data['textStatus'] = $this->language->get('STATUS');
         $this->data['textSubtotal'] = $this->language->get('SUBTOTAL');
+        $this->data['textAddToCart'] = $this->language->get('ADDTOCART');
         $this->data['textTotal'] = $this->language->get('TOTAL');
         $this->data['urlRepurchaseOrders'] = $this->url->link('account/repurchaseOrders', '', 'SSL');
 

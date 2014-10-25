@@ -48,3 +48,4 @@ $_['ERROR_INVALID_IMAGE'] = 'The data returned by request of provided URL is not
 $_['ERROR_INVALID_URL_FORMAT'] = "The string provided does not resemble a URL";
 $_['GENERATE_HTML'] = 'Get HTML code';
 $_['GET_BY_URL'] = "Get by URL";
+?>

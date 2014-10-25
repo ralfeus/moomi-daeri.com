@@ -169,7 +169,7 @@ $('#button-login').live('click', function() {
             }
 
             if (json['total']) {
-                $('#cart_total').html(json['total']);
+                $('#cart_total_data').html(json['total_data']);
             }
 
             if (json['logged']) {

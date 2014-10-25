@@ -8,4 +8,6 @@
  */
 
 $_['HEADING_TITLE'] = 'Заказ агента';
+$_['FILTER_BY'] = 'Filter by';
+$_['ADDTOCART'] = 'Добавить в корзину';
 $_['UNCONDITIONALLY_ACCEPT'] = 'Безусловно принять';

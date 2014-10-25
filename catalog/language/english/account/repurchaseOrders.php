@@ -9,4 +9,5 @@
 
 $_['HEADING_TITLE'] = 'Agent order';
 $_['FILTER_BY'] = 'Filter by';
+$_['ADDTOCART'] = 'Add to Cart';
 $_['UNCONDITIONALLY_ACCEPT'] = 'Unconditionally accept';

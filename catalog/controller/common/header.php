@@ -94,7 +94,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_welcome_guest_right'] = sprintf($this->language->get('text_welcome_guest_right'), $this->url->link('account/register', '', 'SSL'));
 		$this->data['text_logged'] = sprintf($this->language->get('text_logged'), $str, $this->url->link('account/account', '', 'SSL'), $this->customer->getNickName(), $this->url->link('account/logout', '', 'SSL'));
 		$this->data['text_logged_help'] = sprintf($this->language->get('text_logged_help'), $str, $this->customer->getNickName());
-		$this->data['text_logged_customer_left'] = sprintf($this->language->get('text_logged_customer_left'), $str, $this->url->link('account/account', '', 'SSL'), $this->customer->getNickName());
+		$this->data['text_logged_customer_left'] = sprintf($this->language->get('text_logged_customer_left'), $str, $this->url->link('account/account', '', 'SSL'), $this->customer->getNickName(),$this->customer->getNickName());
 		$this->data['text_logged_customer_right'] = sprintf($this->language->get('text_logged_customer_right'), $this->url->link('account/logout', '', 'SSL'));
 		$this->data['text_account'] = $this->language->get('text_account');
    	$this->data['text_checkout'] = $this->language->get('text_checkout');

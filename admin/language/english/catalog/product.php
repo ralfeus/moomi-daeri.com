@@ -96,3 +96,4 @@ $_['DELETION_CONFIRM'] = "Products selected for deletion were ordered. Are you s
 $_['IMAGE_MANAGER'] = 'Image manager';
 $_['SUPPLIER_URL'] = 'Item URL on supplier site';
 $_['TITLE_DELETION_CONFIRM'] = 'Remove product confirmation';
+?>

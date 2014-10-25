@@ -11,7 +11,7 @@ $_['text_welcome_guest_left']    = '<a href="%s" title="歡迎您，遊客. 您�
 $_['text_welcome_guest_right']   = ' <a href="%s">創建和賬戶</a>';
 $_['text_logged']           = '您的登錄身份 %s<a href="%s">%s</a> <b>(</b> <a href="%s">註銷</a> <b>)</b>';
 $_['text_logged_help']           = '您的登錄身份 %s %s';
-$_['text_logged_customer_left']  = '%s<a href="%s">%s!</a>';
+$_['text_logged_customer_left']  = '%s<a href="%s" title="您的登錄身份 %s">%s!</a>';
 $_['text_logged_customer_right'] = ' <a href="%s">註銷</a>';
 $_['text_account']          = '我的帳戶';
 $_['text_checkout']         = '結帳';

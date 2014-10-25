@@ -383,7 +383,6 @@ class ControllerCheckoutCart extends CustomerController {
 		$this->language->load('checkout/cart');
 
 		$json = array();
-
 		if (isset($this->request->post['product_id'])) {
 			$this->load->model('catalog/product');
 
@@ -567,6 +566,7 @@ class ControllerCheckoutCart extends CustomerController {
 		}
 
 		$json['total'] = sprintf($this->language->get('text_items'), $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->currency->format($total));
+    $json['total_data'] = sprintf($this->language->get('text_items_data'), $this->cart->countProducts());
 
 		$this->data['totals'] = $total_data;
 

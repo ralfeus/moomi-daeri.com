@@ -357,10 +357,8 @@ $('#button-cart').bind('click', function() {
 
                 $('.success').fadeIn('slow');
 
-                $('#cart_total').html(json['total']);
-                
                 $('#cart_total_data').html(json['total_data']);
-
+                
                 $('html, body').animate({ scrollTop: 0 }, 'slow');
             }
         }

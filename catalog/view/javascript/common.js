@@ -115,10 +115,8 @@ function addToCart(product_id) {
 
 				$('.success').fadeIn('slow');
 
-				$('#cart_total').html(json['total']);
+				$('#cart_total_data').html(json['total_data']);
 
-                $('#cart_total_data').html(json['total_data']);
-                
 				$('html, body').animate({ scrollTop: 0 }, 'slow');
 			}
 		}
@@ -135,7 +133,7 @@ function removeCart(key) {
 			$('.success, .warning, .attention, .information').remove();
 
 			if (json['output']) {
-				$('#cart_total').html(json['total']);
+				$('#cart_total_data').html(json['total_data']);
 
 				$('#cart .content').html(json['output']);
 			}
@@ -153,7 +151,7 @@ function removeVoucher(key) {
 			$('.success, .warning, .attention, .information').remove();
 
 			if (json['output']) {
-				$('#cart_total').html(json['total']);
+				$('#cart_total_data').html(json['total_data']);
 
 				$('#cart .content').html(json['output']);
 			}
