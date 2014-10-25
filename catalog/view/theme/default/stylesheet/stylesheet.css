@@ -634,24 +634,14 @@ cursor: pointer;
 	line-height: 47px;
 	background: url('../image/header_home.png') no-repeat;
 }
-#header .links .linksfixed .auction_h a {
+.auction_h a {
     z-index: 100;  
 }
-#header .links .auction_h {
-    display: none;
-	padding: 0px 0px 0px 50px;
-	position: absolute;
-	bottom: 15px;
-	left: 155px;
-	color: #3f3f3f;
-	text-decoration: none;
-	font-family: Tahoma;
-    font-weight: bold;
-	font-size: 14px;
-	width: 90px;
-	height: 47px;
-	line-height: 47px;
-	background: url('../image/header_auction.png') no-repeat;
+.auction_h {
+    display: block;
+    width: 160px;
+	height: 150px;
+	background: url('../image/auction-banner.png') no-repeat;
 }
 #header .links .linksfixed .agent a {
     z-index: 100;  

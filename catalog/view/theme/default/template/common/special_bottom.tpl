@@ -6,6 +6,9 @@
 
 <?php } ?>
 
+          <?php if($this->config->get('wk_auction_timezone_set')){ ?>
+            <a class="auction_h" href="<?php echo $menuauction; ?>"></a>      
+		  <?php } ?>
 
 <?php if ($isSaler && $showDownload) { ?>
 <div style="width: 100%; text-align: right;"><a class="button" onclick="downloadImages()"><span>' . $text_button_download . '</span></a></div>

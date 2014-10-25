@@ -421,9 +421,6 @@ body .one{overflow: hidden}
           <a class="agent" href="index.php?route=product/repurchase"><span><?= $text_repurchase_order ?></span></a>
           <a class="info" href="index.php?route=shop/admin/showPage&page_id=15"><span><?= $textShoppingGuide ?></span></a>        
 <!--		  <a class="account" href="<?= $account ?>"><span><?= $text_account ?></span></a> -->
-          <?php if($this->config->get('wk_auction_timezone_set')){ ?>
-            <a class="auction_h" href="<?php echo $menuauction; ?>"><span><?= $text_auction ?></span></a>      
-		  <?php } ?>
           <a class="wishlist_total" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>
 		  <a class="cart" href="<?= $cart ?>" id="cart_total_data"><span><?= $text_cart ?></span></a>
 				  

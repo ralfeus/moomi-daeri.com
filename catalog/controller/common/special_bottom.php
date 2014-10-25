@@ -23,7 +23,12 @@ class ControllerCommonSpecialBottom extends Controller {
 		$this->data['text_workday'] = $this->language->get('text_workday');
 		$this->data['text_holiday'] = $this->language->get('text_holiday');
 		
+		$this->language->load('common/header');
+        $this->data['text_auction'] = $this->language->get('text_auction');
 		//print_r($photos);
+ if($this->config->get('wk_auction_timezone_set')){
+    $this->data['menuauction'] = $this->url->link('catalog/wkallauctions', '', 'SSL');
+}
 
 		if (isset($this->request->get['route'])) {
 			$route = $this->request->get['route'];
