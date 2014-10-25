@@ -44,7 +44,7 @@
                 <span id="orderStatus"><?= $order['statusName'] ?></span>
               </div>
               <div class="order-content<?= $order['orderItemId'] ?>" style="padding: 10px 0px; width: 100%; margin-bottom: 20px; border-top: 1px solid #EEEEEE; border-bottom: 1px solid #EEEEEE;">
-            
+           
                 <?php 
                 $dataCart[$order['orderItemId']] = array(
                   "quantity" => $order['quantity'],
@@ -52,7 +52,7 @@
                   "order_product_id" => $option['order_product_id'],
                   "itemName" => $textOrderItemId + $order['orderItemId'],
                   "itemUrl" => $order['itemUrl'],
-                  "imageUrl" => $order['itemUrl'],
+                  "imageUrl" => $order['imagePath'],
                   "whoBuys" => $option['value'],
                   "color" => $order['options']['14970']['value'],
                   "size" => $order['options']['14971']['value'],
@@ -106,6 +106,7 @@
                   '<?= $dataCart[$order['orderItemId']]['price'] ?>',
                   '<?= $dataCart[$order['orderItemId']]['itemName'] ?>',
                   '<?= $dataCart[$order['orderItemId']]['itemUrl'] ?>',
+                  '<?= $dataCart[$order['orderItemId']]['imageUrl'] ?>',
                   '<?= $dataCart[$order['orderItemId']]['whoBuys'] ?>',
                   '<?= $dataCart[$order['orderItemId']]['color'] ?>',
                   '<?= $dataCart[$order['orderItemId']]['size'] ?>',
@@ -182,7 +183,7 @@ function respondToOffer(orderId, response)
   })
 }
 
-function addOrderToCartAgent($indexAgent,$indexQuantity,$indexPrice,$indexName,$indexItemUrl,$indexWhoBuys,$indexColor,$indexSize,$indexComment,$indexShopName)
+function addOrderToCartAgent($indexAgent,$indexQuantity,$indexPrice,$indexName,$indexItemUrl,$indexImageUrl,$indexWhoBuys,$indexColor,$indexSize,$indexComment,$indexShopName)
 {
   $jsIndexName = "Order ID:" + $indexName;
   $('.order-content'+$indexAgent).each(function() {
@@ -195,7 +196,7 @@ function addOrderToCartAgent($indexAgent,$indexQuantity,$indexPrice,$indexName,$
         'product_id': '8608',
         'option[103067]': $jsIndexName,
         'option[14968]': $indexItemUrl,
-        'option[14967]': $indexItemUrl,
+        'option[14967]': $indexImageUrl,
         'option[18518]': $indexWhoBuys,
         'option[14970]': $indexColor,
         'option[14971]': $indexSize,
