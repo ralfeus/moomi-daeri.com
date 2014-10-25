@@ -1,6 +1,6 @@
 <?php
 // Heading
-$_['heading_title']    = 'Special Àctions';
+$_['heading_title']    = 'Special Actions';
  
 // Text
 

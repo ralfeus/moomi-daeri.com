@@ -417,10 +417,10 @@ body .one{overflow: hidden}
   <a href="<?= $home ?>" title="<?= $text_home ?>"></a>
 <!--  <div id="welcome"><?= (!$logged) ? $text_welcome :$text_logged ?></div>-->
   <div class="links">
+		      <a class="specaction" href="index.php?route=information/specaction"></a>
           <a class="agent" href="index.php?route=product/repurchase"><span><?= $text_repurchase_order ?></span></a>
           <a class="info" href="index.php?route=shop/admin/showPage&page_id=15"><span><?= $textShoppingGuide ?></span></a>        
 <!--		  <a class="account" href="<?= $account ?>"><span><?= $text_account ?></span></a> -->
-<!--		  <a class="home" href="<?= $home ?>"><span><?= $text_home ?></span></a>-->
           <?php if($this->config->get('wk_auction_timezone_set')){ ?>
             <a class="auction_h" href="<?php echo $menuauction; ?>"><span><?= $text_auction ?></span></a>      
 		  <?php } ?>
