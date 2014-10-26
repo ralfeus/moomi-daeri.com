@@ -8,15 +8,6 @@ class ControllerCommonSpecialBottom extends Controller {
 
 		
 
-		$this->load->language('shop/general');
-		$this->data['text_button_download'] = $this->language->get('text_button_download');
-		$this->data['isSaler'] = $this->customer->getCustomerGroupId() == 6;
-		$this->data['showDownload'] = false;
-        if (empty($_REQUEST['route']))
-            $_REQUEST['route'] = 'common/home';
-		if($_REQUEST['route'] == "product/category" || $_REQUEST['route'] == "common/home") {
-			$this->data['showDownload'] = true;
-		}
 
 		$this->language->load('common/calendar');
 		$this->data['text_our_holidays'] = $this->language->get('text_our_holidays');
@@ -29,6 +20,15 @@ class ControllerCommonSpecialBottom extends Controller {
  if($this->config->get('wk_auction_timezone_set')){
     $this->data['menuauction'] = $this->url->link('catalog/wkallauctions', '', 'SSL');
 }
+		$this->language->load('shop/general');
+		$this->data['text_button_download'] = $this->language->get('text_button_download');
+		$this->data['isSaler'] = $this->customer->getCustomerGroupId() == 6;
+		$this->data['showDownload'] = false;
+        if (empty($_REQUEST['route']))
+            $_REQUEST['route'] = 'information/specaction';
+		if($_REQUEST['route'] == "product/category" || $_REQUEST['route'] == "information/specaction") {
+			$this->data['showDownload'] = true;
+		}
 
 		if (isset($this->request->get['route'])) {
 			$route = $this->request->get['route'];

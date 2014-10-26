@@ -634,15 +634,7 @@ cursor: pointer;
 	line-height: 47px;
 	background: url('../image/header_home.png') no-repeat;
 }
-.auction_h a {
-    z-index: 100;  
-}
-.auction_h {
-    display: block;
-    width: 160px;
-	height: 150px;
-	background: url('../image/auction-banner.png') no-repeat;
-}
+
 #header .links .linksfixed .agent a {
     z-index: 100;  
 }
@@ -2289,28 +2281,55 @@ a.buttonPink:hover span {
 	display: inline-block;
 	text-indent: 28px;
 }
-/**
- * #bottom-action {
- *     display: block;
- *     position: absolute;  
- *     right: 0;
- *     top: 250px;
- *     z-index: 2;
- *     opacity: 0.7;
- *     
- *  	width: 210px;
- * }
- */
- .downImg {
-    width: 100%;
-    text-align: right;
+#specbanner{
+  position: relative;
+  display: block;
+  width: 780px;
 }
-.calend {
-    width: 210px;
+#specbanner div {
+  float:left;
 }
-.rev-gallery{
-	width: 149px;
-	height: 177px;
-	display: block;
+#galeryWrap {
+  width: 150px;
+  display: block;
+  left: 200px;
+overflow: hidden;
+}
+#galeryWrap .downImg {
+  text-align: center;
+  margin-top: 10px;
+}
+#galeryWrap .rev-gallery{
+	width: 150px;
+	height: 170px;
 	background: url('../image/rev_gallery.png') no-repeat;
+  display: block;
+}
+.auction_h a {
+    z-index: 100;  
+}
+.auction_h {
+    width: 160px;
+	height: 170px;
+  margin: 20px;
+	display: block;
+	background: url('../image/auction-banner.png') no-repeat;
+}
+#calenWrap {
+  height: 260px;
+  width: 230px;
+overflow: hidden;
+float: left;
+position:relative;
+display:block;
+}
+#calendar {
+  width: 220px;
+  overflow: hidden;
+}
+#carousel {
+  margin: 200px 10px 20px 10px;
+  width: auto;
+  position: relative;
+  left: 0px;
 }

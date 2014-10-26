@@ -116,11 +116,11 @@ DD_belatedPNG.fix('#logo img');
           beforeShowDay: setHoliDays
         });
 
-        //$('.ui-datepicker-inline').css('width', '180px');
-        $('.ui-datepicker-inline').addClass('width180');
+        $('.ui-datepicker-inline').css('width', '210px');
+//        $('.ui-datepicker-inline').addClass('width210');
       });
       var currentUrl = "<?= $_GET['route'] ?>";
-      if(currentUrl == 'common/home' || currentUrl == '') {
+      if(currentUrl == 'common/home' || 'information/specaction' || currentUrl == '') {
         var action_url = "<?= $this->url->link('shop/admin/hasAction') ?>";
         $.post(action_url, function(response) {
           response = $.parseJSON(response);
@@ -224,9 +224,7 @@ $(function(){
 });
 $(function() {$("#toTop").scrollToTop();});
 </script>
-<script type="text/javascript">
 
-</script>
 <script type="text/javascript">
 $(document).ready(function() {
 	// Expand Panel
