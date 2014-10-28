@@ -70,6 +70,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_opencart'] = $this->language->get('text_opencart');
 		$this->data['text_payment'] = $this->language->get('text_payment');
 		$this->data['text_product'] = $this->language->get('text_product');
+		$this->data['text_reset_filter_product'] = $this->language->get('text_reset_filter_product');
 		$this->data['text_reports'] = $this->language->get('text_reports');
 		$this->data['text_report_sale_order'] = $this->language->get('text_report_sale_order');
 		$this->data['text_report_sale_tax'] = $this->language->get('text_report_sale_tax');

@@ -130,6 +130,7 @@ $(document).ready(function(){
               <a class="parent" href="<?php echo $product; ?>"><?php echo $text_product; ?></a>
               <ul>
                   <li><a href="<?= $urlImportProducts ?>"><?= $textImportProducts ?></a></li>
+                  <li><a href="<?php echo $product; ?>&resetFilter=1"><?php echo $text_reset_filter_product; ?></a></li>
               </ul>
           </li>
           <li><a class="parent"><?php echo $text_attribute; ?></a>

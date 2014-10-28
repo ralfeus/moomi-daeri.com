@@ -51,6 +51,7 @@ $_['entry_weight']           = 'Вес:';
 $_['entry_length']           = 'Единица измерения длины:';
 $_['entry_dimension']        = 'Размеры (длина x ширина x высота):';
 $_['entry_image']            = 'Изображение товара:';
+$_['entry_image_description'] = 'Картинки:';
 $_['entry_customer_group']   = 'Группа покупателей:';
 $_['entry_date_start']       = 'Дата начала:';
 $_['entry_date_end']         = 'Дата окончания:';

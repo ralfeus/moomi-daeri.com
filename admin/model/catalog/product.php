@@ -37,7 +37,8 @@ class ModelCatalogProduct extends Model {
 		        date_added = NOW(),
 		        affiliate_commission =  ?,
                 korean_name = ?,
-                supplier_url = ?
+                supplier_url = ?,
+                image_description = ?
             ", array(
                 's:' . $data['model'],
                 'i:' . $data['user_id'],
@@ -64,7 +65,8 @@ class ModelCatalogProduct extends Model {
                 'i:' . $data['sort_order'],
                 'd:' . (isset($data['affiliate_commission']) ? $data['affiliate_commission'] : 0),
                 's:' . $data['koreanName'],
-                's:' . $data['supplierUrl']
+                's:' . $data['supplierUrl'],
+                's:' . $data['image_description']
             )
         );
 		$product_id = $this->getDb()->getLastId();
@@ -337,7 +339,8 @@ class ModelCatalogProduct extends Model {
 		        date_modified = NOW(),
 		        affiliate_commission = ?,
                 korean_name = ?,
-                supplier_url = ?
+                supplier_url = ?,
+                image_description = ?
             WHERE product_id = ?
             ", array(
                 's:' . $data['model'],
@@ -366,6 +369,7 @@ class ModelCatalogProduct extends Model {
                 'd:' . $data['affiliate_commission'],
                 's:' . $data['koreanName'],
                 's:' . $data['supplierUrl'],
+                's:' . $data['image_description'],
                 "i:$product_id"
             )
         );
@@ -542,6 +546,16 @@ class ModelCatalogProduct extends Model {
 		$this->cache->delete('product');
 	}
 	
+	public function copyDescriptions($product_id) {
+    $this->db->query("UPDATE product SET image_description = (SELECT description FROM product_description WHERE product_id ='" . (int)$product_id . "' AND language_id =2) WHERE product_id = '" . (int)$product_id . "'; ");
+	}
+	public function copyDescriptionsAll($product_id) {
+    $this->db->query("UPDATE product, product_description SET product.image_description=product_description.description WHERE product_description.product_id=product.product_id AND product_description.language_id=2;");
+	}
+	public function removeDescriptionsAll($product_id) {
+    $this->db->query("UPDATE product_description SET description='';");
+	}
+
 	public function copyProduct($product_id) {
 		$query = $this->db->query("
 		    SELECT DISTINCT *
@@ -555,6 +569,7 @@ class ModelCatalogProduct extends Model {
 			$data = $query->row;
             $data['koreanName'] = $data['korean_name'];
             $data['supplierUrl'] = $data['supplier_url'];
+            $data['image_description'] = $data['image_description'];
 			$data['keyword'] = '';
 			$data['status'] = '0';
 						

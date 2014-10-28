@@ -179,12 +179,37 @@ class ControllerCatalogProduct extends Controller {
     	$this->redirect($this->url->link('catalog/product', $this->buildUrlParameterString($this->parameters, array('route' => null)), 'SSL'));
   	}
 
+  	public function removeDescriptionAll() {
+			$this->modelCatalogProduct->removeDescriptionsAll();
+			$this->session->data['success'] = $this->language->get('text_success');
+			$this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+    	$this->getList();
+  	}
+  	public function copyDescriptionAll() {
+			$this->modelCatalogProduct->copyDescriptionsAll();
+			$this->session->data['success'] = $this->language->get('text_success');
+			$this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+    	$this->getList();
+  	}
+  	public function copyDescription() {
+		if (isset($this->request->post['selected']) && $this->validateCopy()) {
+			foreach ($this->request->post['selected'] as $product_id) {
+				$this->modelCatalogProduct->copyDescriptions($product_id);
+	  		}
+			$this->session->data['success'] = $this->language->get('text_success');
+			$this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+		}
+    	$this->getList();
+  	}
+
+
+
+
   	public function copy() {
 		if (isset($this->request->post['selected']) && $this->validateCopy()) {
 			foreach ($this->request->post['selected'] as $product_id) {
 				$this->modelCatalogProduct->copyProduct($product_id);
-	  		}
-
+  		}
 			$this->session->data['success'] = $this->language->get('text_success');
 			
 			$url = '';
@@ -303,6 +328,9 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['delete'] = $this->url->link('catalog/product/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
         $this->data['enable'] = $this->url->link('catalog/product/enable', 'token=' . $this->session->data['token'] . $url, 'SSL');
         $this->data['disable'] = $this->url->link('catalog/product/disable', 'token=' . $this->session->data['token'] . $url, 'SSL');
+		$this->data['copyDescription'] = $this->url->link('catalog/product/copyDescription', 'token=' . $this->session->data['token'] . $url, 'SSL');	
+		$this->data['copyDescriptionAll'] = $this->url->link('catalog/product/copyDescriptionAll', 'token=' . $this->session->data['token'] . $url, 'SSL');	
+		$this->data['removeDescriptionAll'] = $this->url->link('catalog/product/removeDescriptionAll', 'token=' . $this->session->data['token'] . $url, 'SSL');	
 
 		$this->data['products'] = array();
         $data = $this->parameters;
@@ -370,6 +398,7 @@ class ControllerCatalogProduct extends Controller {
 				'price'      => $result['price'],
 				'special'    => $special,
 				'image'      => $image,
+//        'image_description' => $result['image_description'],
 				'user_name'  => $result['user_name'],
 				'status'     => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
 				'manufacturer'=> $manufacturers['name'],
@@ -399,6 +428,9 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['column_action'] = $this->language->get('column_action');		
 				
 		$this->data['button_copy'] = $this->language->get('button_copy');		
+		$this->data['button_copyDescription'] = $this->language->get('button_copyDescription');		
+		$this->data['button_copyDescriptionAll'] = $this->language->get('button_copyDescriptionAll');		
+		$this->data['button_removeDescriptionAll'] = $this->language->get('button_removeDescriptionAll');		
 		$this->data['button_insert'] = $this->language->get('button_insert');		
 		$this->data['button_delete'] = $this->language->get('button_delete');		
 		$this->data['button_filter'] = $this->language->get('FILTER');
@@ -471,11 +503,11 @@ class ControllerCatalogProduct extends Controller {
 
 		$pagination = new Pagination();
 		$pagination->total = $product_total;
-		$pagination->page = $this->parameters['page'];
+		$pagination->page = $this->request->get['page'];
 		$pagination->limit = $this->config->get('config_admin_limit');
 		$pagination->text = $this->language->get('text_pagination');
         unset($this->parameters['page']);
-		$pagination->url = $this->url->link('catalog/product', $this->buildUrlParameterString($this->parameters) . '&page={page}', 'SSL');
+		$pagination->url = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&page={page}', 'SSL');
 		$this->data['pagination'] = $pagination->render();
 	
 		$this->data['filter_price'] = $filter_price;
@@ -541,6 +573,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['entry_dimension'] = $this->language->get('entry_dimension');
 		$this->data['entry_length'] = $this->language->get('entry_length');
     	$this->data['entry_image'] = $this->language->get('entry_image');
+    	$this->data['entry_image_description'] = $this->language->get('entry_image_description');
     	$this->data['entry_download'] = $this->language->get('entry_download');
     	$this->data['entry_category'] = $this->language->get('entry_category');
 		$this->data['entry_related'] = $this->language->get('entry_related');
@@ -752,7 +785,6 @@ class ControllerCatalogProduct extends Controller {
 		if (isset($this->request->get['product_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
       		$product_info = $this->model_catalog_product->getProduct($this->request->get['product_id']);
     	}
-
 		$this->load->model('localisation/language');
 		
 		$this->data['languages'] = $this->model_localisation_language->getLanguages();
@@ -797,6 +829,13 @@ class ControllerCatalogProduct extends Controller {
       		$this->data['location'] = '';
     	}
 
+		if (isset($this->request->post['image_description'])) {
+      		$this->data['image_description'] = $this->request->post['image_description'];
+    	} elseif (!empty($product_info)) {
+			$this->data['image_description'] = $product_info['image_description'];
+		} else {
+      		$this->data['image_description'] = '';
+    	}
 		$this->load->model('setting/store');
 		
 		$this->data['stores'] = $this->model_setting_store->getStores();
@@ -1222,7 +1261,6 @@ class ControllerCatalogProduct extends Controller {
 			'common/header',
 			'common/footer'
 		);
-				
 		$this->response->setOutput($this->render());
   	}
 
@@ -1302,7 +1340,8 @@ class ControllerCatalogProduct extends Controller {
     	if ((utf8_strlen($this->request->post['model']) < 1) || (utf8_strlen($this->request->post['model']) > 64)) {
       		$this->error['model'] = $this->language->get('error_model');
     	}
-		
+
+	
 		if ($this->error && !isset($this->error['warning'])) {
 			$this->error['warning'] = $this->language->get('error_warning');
 		}

@@ -116,6 +116,24 @@ class ControllerCommonHome extends Controller {
 		$this->getProducts();
 				
 		$this->response->setOutput($this->render());
+    
+    //// <---- Clear cache button handler:
+$this->data['clear_cache'] = $this->data['home'] = HTTPS_SERVER . 'index.php?route=common/home&clear_cache=true&token=' . $this->session->data['token'];
+if(isset($this->request->get['clear_cache'])){
+	
+	// specify an array of what we need to clear:
+	$cacheDirs = array(
+		'image_cache' => DIR_IMAGE . 'cache'
+		, 'system_cache' => DIR_CACHE
+	);
+
+	foreach ($cacheDirs as $cacheDir) {
+		foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($cacheDir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $path) {
+			$path->isDir() ? rmdir($path->getPathname()) : unlink($path->getPathname());
+		}
+	}
+}
+//// ---->
   }
 	
 	public function chart() {

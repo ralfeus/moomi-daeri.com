@@ -1072,6 +1072,7 @@ a.button-disabled span {
 	z-index: 2;
 	overflow: auto;
 }
+
 /* box */
 .box-latest {
 	margin-bottom: 20px;
@@ -1472,13 +1473,15 @@ a.button-disabled span {
 	margin-bottom: 20px;
 }
 .product-info > .left {
+  width: 325px;
 	float: left;
-	margin-right: 15px;
 }
 .product-info > .left + .right {
-	margin-left: 265px;
+	margin-left: 325px;
+  min-height: 540px;
 }
 .product-info .image {
+  margin-left: auto;
 	border: 1px solid #E7E7E7;
 	float: left;
 	margin-bottom: 20px;
@@ -1501,8 +1504,6 @@ a.button-disabled span {
 	margin-bottom: 10px;
 }
 .product-info .description {
-	border-top: 1px solid #E7E7E7;
-	border-bottom: 1px solid #E7E7E7;
 	padding: 5px 5px 10px 5px;
 	margin-bottom: 10px;
 	line-height: 20px;
@@ -1516,7 +1517,7 @@ a.button-disabled span {
 	text-decoration: none;
 }
 .product-info .price {
-	overflow: auto;
+/** 	overflow: auto; */
 	border-bottom: 1px solid #E7E7E7;
 	padding: 0px 5px 10px 5px;
 	margin-bottom: 10px;
@@ -1547,7 +1548,6 @@ a.button-disabled span {
 	color: #4D4D4D;
 }
 .product-info .options {
-	border-bottom: 1px solid #E7E7E7;
 	padding: 0px 5px 10px 5px;
 	margin-bottom: 10px;
 	color: #000000;

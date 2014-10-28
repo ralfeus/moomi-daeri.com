@@ -20,6 +20,10 @@
           <a onclick="location = '<?php echo $insert; ?>'" class="button"><?php echo $button_insert; ?></a>
           <a onclick="$('#form').attr('action', '<?php echo $copy; ?>'); $('#form').submit();" class="button"><?php echo $button_copy; ?></a>
           <a onclick="$('#form').submit();" class="button"><?= $button_delete ?></a>
+<!--          <a onclick="$('#form').attr('action', '<?php echo $copyDescription; ?>'); $('#form').submit();" class="button"><?php echo $button_copyDescription; ?></a>
+          <a onclick="$('#form').attr('action', '<?php echo $copyDescriptionAll; ?>'); $('#form').submit();" class="button"><?php echo $button_copyDescriptionAll; ?></a>
+          <a onclick="$('#form').attr('action', '<?php echo $removeDescriptionAll; ?>'); $('#form').submit();" class="button"><?php echo $button_removeDescriptionAll; ?></a>
+-->
       </div>
     </div>
     <div class="content">

@@ -39,7 +39,7 @@
         </div>
 
 <form action="<?= $action ?>" method="post" enctype="multipart/form-data" id="form">
-        <div id="tab-general">
+       <div id="tab-general">
           <div id="languages" class="htabs">
             <?php foreach ($languages as $language) { ?>
             <a href="#language<?= $language['language_id'] ?>"><img src="view/image/flags/<?= $language['image'] ?>" title="<?= $language['name'] ?>" /> <?= $language['name'] ?></a>
@@ -180,6 +180,10 @@
               <td><div class="image"><img src="<?= $thumb ?>" alt="" id="thumb" /><br />
                   <input type="hidden" name="image" value="<?= $image ?>" id="image" />
                   <a onclick="image_upload('image', 'thumb');"><?= $text_browse ?></a>&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="$('#thumb').attr('src', '<?= $no_image ?>'); $('#image').attr('value', '');"><?= $text_clear ?></a></div></td>
+            </tr>
+            <tr>
+                <td><?= $entry_image_description ?></td>
+                <td><textarea name="image_description" id="image_description"><?= isset($image_description) ? $image_description : '' ?></textarea></td>
             </tr>
             <tr>
               <td><?= $entry_date_available ?></td>
@@ -815,6 +819,15 @@
 </div>
 <script type="text/javascript" src="view/javascript/ckeditor/ckeditor.js"></script> 
 <script type="text/javascript"><!--
+CKEDITOR.replace('image_description', {
+	filebrowserBrowseUrl: 'index.php?route=common/filemanager&token=<?= $token ?>',
+	filebrowserImageBrowseUrl: 'index.php?route=common/filemanager&token=<?= $token ?>',
+	filebrowserFlashBrowseUrl: 'index.php?route=common/filemanager&token=<?= $token ?>',
+	filebrowserUploadUrl: 'index.php?route=common/filemanager&token=<?= $token ?>',
+	filebrowserImageUploadUrl: 'index.php?route=common/filemanager&token=<?= $token ?>',
+	filebrowserFlashUploadUrl: 'index.php?route=common/filemanager&token=<?= $token ?>'
+});
+
 <?php foreach ($languages as $language) { ?>
 CKEDITOR.replace('description<?= $language['language_id'] ?>', {
 	filebrowserBrowseUrl: 'index.php?route=common/filemanager&token=<?= $token ?>',
