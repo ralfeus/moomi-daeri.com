@@ -320,14 +320,6 @@
     
     </div>
     <div class="right">
-      <div id="image_description" style="border: 0px; margin-top: 35px; margin-left: 20px;" class="tab-content">
-    <?php echo $image_description; ?>
-  </div>
-
-    </div>
-  </div>
-
-
   <div id="tabs" class="htabs">
     <a href="#tab-description"><?php echo $tab_description; ?></a>
     <?php if ($attribute_groups) { ?>
@@ -420,6 +412,14 @@
       </div>
     </div>
   <?php } ?>
+
+    </div>
+  </div>
+      <div id="image_description" style="border: 0px; margin-top: 35px; margin-left: 20px;" class="tab-content">
+    <?php echo $image_description; ?>
+  </div>
+
+
   <?php if ($products) { ?>
     <div id="tab-related" class="tab-content">
       <div class="box-product">
