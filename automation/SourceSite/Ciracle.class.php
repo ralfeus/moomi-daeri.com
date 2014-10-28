@@ -6,8 +6,8 @@ class Ciracle extends GMarketCoKr {
         $this->shopId = 'zE3MR38DNzkxMk02NjExNzg4OTh/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 13, 'name' => 'Ciracle'); }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() { return (object)array( 'id' => 13, 'name' => 'Ciracle'); }
 }

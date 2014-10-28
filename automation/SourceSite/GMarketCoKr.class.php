@@ -50,50 +50,76 @@ abstract class GMarketCoKr extends ProductSource {
         $html->clear();
     }
 
-    protected function getAllCategoriesUrls() { /* Stub */ }
-    protected function getMappedCategoriesUrls() { /* Stub */ }
+    protected function getAllCategoriesUrls() { 
+	return array ( "http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax?GdlcCd=&GdmcCd=&GdscCd=&type=LIST&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop");
+    }
+
+    protected function getMappedCategoriesUrls() {
+	$categories = array(); 
+	foreach (array_keys($this->getSite()->getCategoriesMap()) as $sourceSiteCategory) {
+		echo date('Y-m-d H:i:s ') . $sourceSiteCategory . "\n";
+		list($GdlcCd, $GdmcCd, $GdscCd) = explode('/', $sourceSiteCategory);
+		$categories[] = "http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax?GdlcCd=$GdlcCd&GdmcCd=$GdmcCd&GdscCd=$GdscCd&type=LIST&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop";
+	}
+	return $categories;
+    }
+
 
     public function getProducts() {
         echo date('Y-m-d H:i:s') . "\n";
-        $productsCount = $this->getProductsCount();
-        echo date('Y-m-d H:i:s') . " $productsCount products are to be imported\n";
-        $page = 0; $productsToGet = $productsCount;
+	//echo date('Y-m-d H:i:s ') . print_r($this->getSite()->getCategoriesMap(), true);
+	if ($this->getSite()->getImportMappedCategoriesOnly()) {
+		$urls = $this->getMappedCategoriesUrls();
+	} else {
+		$urls = $this->getAllCategoriesUrls();
+		echo date('Y-m-d H:i:s ') . "Got " . sizeof($urls) . " category URLs\n";
+	}
+	$urlCount = 1;
         $products = array();
-        $tmp = 1;
-        do {
-            $chunk = min($productsToGet, 200); $page++; $productsToGet -= $chunk;
-            $output = $this->getPage(
-                'http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax',
-                null,
-                "type=LIST&page=$page&pageSize=$chunk&GdlcCd=&GdmcCd=&GdscCd=&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop",
-                array("Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8")
-            );
-            $json = json_decode($output);
-            $htmlDom = str_get_html($json->message);
-            $items = $htmlDom->find('tr');
-            /** @var \simple_html_dom_node $item */
-            foreach ($items as $item) {
-                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount . "\t- ";
-    //            $aElement = $item->find('a[href*=category_detail.php]', 0);
-                $product = new Product(
-                    $this,
+	foreach ($urls as $url) {
+	    list($address, $query) = explode('?', $url);
+            $productsCount = $this->getProductsCount($url);
+	    if (count($urls > 1)) {
+		echo date('Y-m-d H:i:s ') . "Crawling category " . $urlCount++ . " of " . count($urls) . "\n";
+	    }
+            echo date('Y-m-d H:i:s') . " $productsCount products are to be imported\n";
+            $page = 0; $productsToGet = $productsCount;
+            $tmp = 1;
+            do {
+                $chunk = min($productsToGet, 200); $page++; $productsToGet -= $chunk;
+                $output = $this->getPage(
+                    $address,
                     null,
-                    preg_match('/(?<=goodscode=)\d+/', $item->first_child()->first_child()->first_child()->attr['href'], $matches) ? $matches[0] : null,
-                    $item->first_child()->first_child()->first_child()->first_child()->attr['alt'],
-                    preg_match('/\(\'(http.+)\'/', $item->first_child()->first_child()->first_child()->attr['href'], $matches) ? $matches[1] : null,
-                    $item->first_child()->first_child()->first_child()->first_child()->attr['src'],
-                    preg_replace('/\D+/', '', $item->find('li.discount_price', 0)->plaintext),
-                    null,
-                    0.3
+                    "$query&page=$page&pageSize=$chunk",
+                    array("Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8")
                 );
-                if ($this->addProductToList($product, $products)) {
-                    self::fillDetails($product);
+                $json = json_decode($output);
+                $htmlDom = str_get_html($json->message);
+                $items = $htmlDom->find('tr');
+                /** @var \simple_html_dom_node $item */
+                foreach ($items as $item) {
+                    echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount . "\t- ";
+        //            $aElement = $item->find('a[href*=category_detail.php]', 0);
+                    $product = new Product(
+                        $this,
+                        null,
+                        preg_match('/(?<=goodscode=)\d+/', $item->first_child()->first_child()->first_child()->attr['href'], $matches) ? $matches[0] : null,
+                        $item->first_child()->first_child()->first_child()->first_child()->attr['alt'],
+                        preg_match('/\(\'(http.+)\'/', $item->first_child()->first_child()->first_child()->attr['href'], $matches) ? $matches[1] : null,
+                        $item->first_child()->first_child()->first_child()->first_child()->attr['src'],
+                        preg_replace('/\D+/', '', $item->find('li.discount_price', 0)->plaintext),
+                        null,
+                        0.3
+                    );
+                    if ($this->addProductToList($product, $products)) {
+                        self::fillDetails($product);
+                    }
+                    echo $product->sourceProductId . "\n";
+    //                if ($tmp > 5) break;
                 }
-                echo $product->sourceProductId . "\n";
-//                if ($tmp > 5) break;
-            }
-            $htmlDom->clear();
-        } while ($productsToGet);
+                $htmlDom->clear();
+            } while ($productsToGet);
+	}
         echo date('Y-m-d H:i:s') . " --- Finished\n";
         return $products;
     }
@@ -102,11 +128,12 @@ abstract class GMarketCoKr extends ProductSource {
      * @return int
      * @throws \Exception
      */
-    private function getProductsCount() {
+    private function getProductsCount($url) {
+	list($address, $query) = explode('?', $url);
         $html = $this->getPage(
-            'http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax',
+            $address,
             null,
-            "type=LIST&page=1&pageSize=40&GdlcCd=&GdmcCd=&GdscCd=&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop",
+            "$query&page=1&pageSize=40",
             array("Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8")
         );
         $json = json_decode($html);

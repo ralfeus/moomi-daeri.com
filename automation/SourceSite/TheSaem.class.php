@@ -6,8 +6,8 @@ class TheSaem extends GMarketCoKr {
         $this->shopId = 'DI5NR38DODExOUzzNzY3MTU3ODh/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 10, 'name' => 'TheSaem'); }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() { return (object)array( 'id' => 10, 'name' => 'TheSaem'); }
 }

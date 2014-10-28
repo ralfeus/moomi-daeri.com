@@ -6,8 +6,8 @@ class Missha extends GMarketCoKr {
         $this->shopId = 'TAzMR38TODMxME3zODg4NTkzMjR/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 2, 'name' => 'Missha'); }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() { return (object)array( 'id' => 2, 'name' => 'Missha'); }
 }

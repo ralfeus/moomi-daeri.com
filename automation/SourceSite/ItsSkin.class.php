@@ -6,8 +6,8 @@ class ItsSkin extends GMarketCoKr {
         $this->shopId = 'jIwMR38DODcxNU12MzQ1MjkxNDJ/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 17, 'name' => 'ItsSkin'); }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() { return (object)array( 'id' => 17, 'name' => 'ItsSkin'); }
 }

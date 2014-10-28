@@ -6,8 +6,8 @@ class TheSkinhouse extends GMarketCoKr {
         $this->shopId = 'jI4MR38DNDcxMg51NzUxODg5MzF/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 11, 'name' => 'TheSkinhouse'); }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() { return (object)array( 'id' => 11, 'name' => 'TheSkinhouse'); }
 }

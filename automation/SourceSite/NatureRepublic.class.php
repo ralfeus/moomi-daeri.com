@@ -6,8 +6,8 @@ class NatureRepublic extends GMarketCoKr {
         $this->shopId = 'zEyOR38TOTAxMQwzMzYzMzk2NzF/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 1, 'name' => 'NatureRepublic'); }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() { return (object)array( 'id' => 1, 'name' => 'NatureRepublic'); }
 }

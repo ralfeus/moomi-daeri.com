@@ -6,8 +6,8 @@ class Skinfod extends GMarketCoKr {
         $this->shopId = 'TE3NR38DNjExOk20MzY1MTc3ODl/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 9, 'name' => 'Skinfod'); }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() { return (object)array( 'id' => 9, 'name' => 'Skinfod'); }
 }

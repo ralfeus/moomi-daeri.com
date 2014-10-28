@@ -6,10 +6,10 @@ class HolikaHolika extends GMarketCoKr {
         $this->shopId = 'TE5NR38zOTgxOM32OTc0Mzk5NTJ/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() {
-        return (object)array( 'id' => 5, 'name' => 'HolikaHolika');
-    }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() {
+//        return (object)array( 'id' => 5, 'name' => 'HolikaHolika');
+//    }
 }

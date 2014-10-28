@@ -6,8 +6,8 @@ class Beyond extends GMarketCoKr {
         $this->shopId = 'TI1MR38zNjIxMY05MTU5NTE2NDV/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 14, 'name' => 'Beyond'); }
+    ///**
+    // * @return \stdClass
+    // */
+    //public function getSite() { return (object)array( 'id' => 14, 'name' => 'Beyond'); }
 }

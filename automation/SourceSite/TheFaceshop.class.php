@@ -6,8 +6,8 @@ class TheFaceshop extends GMarketCoKr {
         $this->shopId = 'jA0MR38zMzcxNUz3NzY2NjcyOTh/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 7, 'name' => 'The Faceshop'); }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() { return (object)array( 'id' => 7, 'name' => 'The Faceshop'); }
 }
