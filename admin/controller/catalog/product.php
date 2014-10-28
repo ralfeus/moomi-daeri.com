@@ -179,32 +179,6 @@ class ControllerCatalogProduct extends Controller {
     	$this->redirect($this->url->link('catalog/product', $this->buildUrlParameterString($this->parameters, array('route' => null)), 'SSL'));
   	}
 
-  	public function removeDescriptionAll() {
-			$this->modelCatalogProduct->removeDescriptionsAll();
-			$this->session->data['success'] = $this->language->get('text_success');
-			$this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
-    	$this->getList();
-  	}
-  	public function copyDescriptionAll() {
-			$this->modelCatalogProduct->copyDescriptionsAll();
-			$this->session->data['success'] = $this->language->get('text_success');
-			$this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
-    	$this->getList();
-  	}
-  	public function copyDescription() {
-		if (isset($this->request->post['selected']) && $this->validateCopy()) {
-			foreach ($this->request->post['selected'] as $product_id) {
-				$this->modelCatalogProduct->copyDescriptions($product_id);
-	  		}
-			$this->session->data['success'] = $this->language->get('text_success');
-			$this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
-		}
-    	$this->getList();
-  	}
-
-
-
-
   	public function copy() {
 		if (isset($this->request->post['selected']) && $this->validateCopy()) {
 			foreach ($this->request->post['selected'] as $product_id) {
@@ -328,9 +302,6 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['delete'] = $this->url->link('catalog/product/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
         $this->data['enable'] = $this->url->link('catalog/product/enable', 'token=' . $this->session->data['token'] . $url, 'SSL');
         $this->data['disable'] = $this->url->link('catalog/product/disable', 'token=' . $this->session->data['token'] . $url, 'SSL');
-		$this->data['copyDescription'] = $this->url->link('catalog/product/copyDescription', 'token=' . $this->session->data['token'] . $url, 'SSL');	
-		$this->data['copyDescriptionAll'] = $this->url->link('catalog/product/copyDescriptionAll', 'token=' . $this->session->data['token'] . $url, 'SSL');	
-		$this->data['removeDescriptionAll'] = $this->url->link('catalog/product/removeDescriptionAll', 'token=' . $this->session->data['token'] . $url, 'SSL');	
 
 		$this->data['products'] = array();
         $data = $this->parameters;
@@ -398,7 +369,6 @@ class ControllerCatalogProduct extends Controller {
 				'price'      => $result['price'],
 				'special'    => $special,
 				'image'      => $image,
-//        'image_description' => $result['image_description'],
 				'user_name'  => $result['user_name'],
 				'status'     => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
 				'manufacturer'=> $manufacturers['name'],
@@ -428,9 +398,6 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['column_action'] = $this->language->get('column_action');		
 				
 		$this->data['button_copy'] = $this->language->get('button_copy');		
-		$this->data['button_copyDescription'] = $this->language->get('button_copyDescription');		
-		$this->data['button_copyDescriptionAll'] = $this->language->get('button_copyDescriptionAll');		
-		$this->data['button_removeDescriptionAll'] = $this->language->get('button_removeDescriptionAll');		
 		$this->data['button_insert'] = $this->language->get('button_insert');		
 		$this->data['button_delete'] = $this->language->get('button_delete');		
 		$this->data['button_filter'] = $this->language->get('FILTER');
