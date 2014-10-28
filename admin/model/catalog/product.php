@@ -680,7 +680,7 @@ class ModelCatalogProduct extends Model {
 				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 			}	
 //            $this->getLogger()->write($sql);
-			$query = $this->getDb()->query($sql, null, true);
+			$query = $this->getDb()->query($sql);
             $productData = $query->rows;
             if (empty($data))
                 $this->cache->set('product.' . (int)$this->config->get('config_language_id'), $productData);
@@ -689,7 +689,7 @@ class ModelCatalogProduct extends Model {
 	}
 	
 	public function getProductsByCategoryId($category_id) {
-		$query = $this->db->query("SELECT * FROM product p LEFT JOIN product_description pd ON (p.product_id = pd.product_id) LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p2c.category_id = '" . (int)$category_id . "' ORDER BY pd.name ASC");
+		$query = $this->getDb()->query("SELECT * FROM product p LEFT JOIN product_description pd ON (p.product_id = pd.product_id) LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p2c.category_id = '" . (int)$category_id . "' ORDER BY pd.name ASC");
 								  
 		return $query->rows;
 	} 
