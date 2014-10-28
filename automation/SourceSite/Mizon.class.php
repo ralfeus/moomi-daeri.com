@@ -6,8 +6,8 @@ class Mizon extends GMarketCoKr {
         $this->shopId = 'TI5MR38DMTUxNY1zOTUzMzUxNjB/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 4, 'name' => 'Mizon'); }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() { return (object)array( 'id' => 4, 'name' => 'Mizon'); }
 }

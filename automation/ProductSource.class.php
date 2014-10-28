@@ -9,6 +9,8 @@ abstract class ProductSource {
     /** @var ProductSource[] */
     protected static $instances;
     protected $curlSession;
+    /** @var ImportSourceSite */
+    protected $sourceSite;
 
     /**
      * @return static
@@ -136,7 +138,12 @@ abstract class ProductSource {
       * @return ImportSourceSite
       */
      public function getSite() {
-         return ImportSourceSiteDAO::getInstance()->getSourceSite(static::class);
+	 if (is_null($this->sourceSite)) {
+		//error_log(static::class);
+         	$this->sourceSite = ImportSourceSiteDAO::getInstance()->getSourceSite(static::class);
+		//error_log(print_r($this->sourceSite, true));
+	 }
+	 return $this->sourceSite;
      }
 
      public abstract function getUrl();

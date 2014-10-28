@@ -6,8 +6,8 @@ class Innisfree extends GMarketCoKr {
         $this->shopId = 'jE3OR38TNDcxMEw4MzE4Njg1MDl/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 8, 'name' => 'Innisfree'); }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() { return (object)array( 'id' => 8, 'name' => 'Innisfree'); }
 }

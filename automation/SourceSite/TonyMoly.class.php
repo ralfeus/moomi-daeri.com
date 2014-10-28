@@ -11,7 +11,7 @@ class TonyMoly extends ProductSource {
         $html = $this->getHtmlDocument('http://etonymoly.com/common/pop_zoom_goods.asp?guid=' . $product->sourceProductId);
         $items = $html->find('div.thumb img');
         foreach ($items as $item) {
-            $product->images[] = "http://" . $this->getSite()->name . '/' . substr($item->attr['onmouseover'], 17, strlen($item->attr['onmouseover']) - 19);
+            $product->images[] = $this->getRootUrl() . '/' . substr($item->attr['onmouseover'], 17, strlen($item->attr['onmouseover']) - 19);
         }
         $html->clear();
 
@@ -19,7 +19,7 @@ class TonyMoly extends ProductSource {
         /// Get description
         $item = $html->find('div#ProdInfo>div.detail', 0);
         $product->description = trim($item->innertext);
-        $product->description = preg_replace('/src=\"\//', 'src=\"http:\/\/' . $this->getSite()->name . '/', $product->description);
+        $product->description = preg_replace('/(?<=src=\")\//', $this->getRootUrl() . '/', $product->description);
 
         /// Get price and promo price
         $product->price = preg_replace('/\D+/', '', $html->find('div.FixHeight li td.major2', 0)->plaintext);
@@ -55,7 +55,7 @@ class TonyMoly extends ProductSource {
                     preg_match('/(?<=guid=)\d+/', $item->attr['href'], $matches) ? $matches[0] : null,
                     mb_convert_encoding($item->first_child()->attr['title'],  'utf-8', 'euc-kr'),
                     $item->attr['href'],
-                    'http://' . $this->getSite()->name . $item->first_child()->attr['src'],
+                    $this->getRootUrl() . $item->first_child()->attr['src'],
                     null,
                     null,
                     0.25
@@ -101,6 +101,6 @@ class TonyMoly extends ProductSource {
         return $products;
     }
 
-    public function getSite() { return (object) array('id' => 3, 'name' => 'etonymoly.com'); }
+    //public function getSite() { return (object) array('id' => 3, 'name' => 'etonymoly.com'); }
     public function getUrl() { return 'http://etonymoly.com'; }
 }

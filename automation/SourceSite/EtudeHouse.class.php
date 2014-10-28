@@ -65,7 +65,7 @@ class EtudeHouse extends ProductSource {
         foreach ($urls as $url) {
             echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . ": $url\n";
             $products = array_merge($products, $this->getCategoryProducts($url));
-//            break;
+            //break;
         }
         echo "Totally found " . sizeof($products) . " products\n";
         echo date('Y-m-d H:i:s') . " --- Finished\n";

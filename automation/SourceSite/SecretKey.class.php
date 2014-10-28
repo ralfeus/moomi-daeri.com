@@ -6,8 +6,8 @@ class SecretKey extends GMarketCoKr {
         $this->shopId = 'DE3NR38jMDcxOA1yMDI1MjMxODd/Rw==';
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getSite() { return (object)array( 'id' => 15, 'name' => 'SecretKey'); }
+//    /**
+//     * @return \stdClass
+//     */
+//    public function getSite() { return (object)array( 'id' => 15, 'name' => 'SecretKey'); }
 }
