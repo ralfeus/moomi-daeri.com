@@ -161,6 +161,20 @@ label {
 #container {
     height: 100%;
 }
+#toTop {
+ position:fixed;
+ z-index:9999;
+ bottom:10px;
+ right:10px;
+ background: url('../image/totop.png') no-repeat;
+ width: 64px;
+ height: 64px;
+ border: none;
+ padding: 5px;
+ cursor: pointer;
+ color: transparent;
+ text-decoration: none;
+}
 body > #container {
 	height: auto;
 	min-height: 100%;
@@ -316,6 +330,7 @@ a.button, .list a.button {
 .list {
 	border-collapse: collapse;
 	width: 100%;
+  max-width: 1260px;
 	border-top: 1px solid #DDDDDD;
 	border-left: 1px solid #DDDDDD;
 	margin-bottom: 20px;
@@ -334,6 +349,7 @@ a.button, .list a.button {
 	text-decoration: none;
 	color: #222222;
 	font-weight: bold;
+  font-size: 14px;
 }
 .list tbody td a {
 	text-decoration: underline;

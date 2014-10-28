@@ -20,10 +20,6 @@
           <a onclick="location = '<?php echo $insert; ?>'" class="button"><?php echo $button_insert; ?></a>
           <a onclick="$('#form').attr('action', '<?php echo $copy; ?>'); $('#form').submit();" class="button"><?php echo $button_copy; ?></a>
           <a onclick="$('#form').submit();" class="button"><?= $button_delete ?></a>
-<!--          <a onclick="$('#form').attr('action', '<?php echo $copyDescription; ?>'); $('#form').submit();" class="button"><?php echo $button_copyDescription; ?></a>
-          <a onclick="$('#form').attr('action', '<?php echo $copyDescriptionAll; ?>'); $('#form').submit();" class="button"><?php echo $button_copyDescriptionAll; ?></a>
-          <a onclick="$('#form').attr('action', '<?php echo $removeDescriptionAll; ?>'); $('#form').submit();" class="button"><?php echo $button_removeDescriptionAll; ?></a>
--->
       </div>
     </div>
     <div class="content">
@@ -32,49 +28,49 @@
           <thead>
             <tr>
               <td style="width: 1px; text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').attr('checked', this.checked);" /></td>
-              <td class="center"><?php echo $column_image; ?></td>
-              <td class="left"><?php if ($sort == 'pd.name') { ?>
+              <td style="text-align: center; width: 120px;" class="center"><?php echo $column_image; ?></td>
+              <td style="text-align: center;" class="left"><?php if ($sort == 'pd.name') { ?>
                 <a href="<?php echo $sort_name; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_name; ?></a>
                 <?php } else { ?>
                 <a href="<?php echo $sort_name; ?>"><?php echo $column_name; ?></a>
                 <?php } ?></td>
-              <td class="left"><?php if ($sort == 'p.model') { ?>
+              <td style="text-align: center;" class="left"><?php if ($sort == 'p.model') { ?>
                 <a href="<?php echo $sort_model; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_model; ?></a>
                 <?php } else { ?>
                 <a href="<?php echo $sort_model; ?>"><?php echo $column_model; ?></a>
                 <?php } ?></td>
-              <td class="left"><?php if ($sort == 'p.price') { ?>
+              <td style="text-align: center;" class="left"><?php if ($sort == 'p.price') { ?>
                 <a href="<?php echo $sort_price; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_price; ?></a>
                 <?php } else { ?>
                 <a href="<?php echo $sort_price; ?>"><?php echo $column_price; ?></a>
                 <?php } ?></td>
-              <td class="right" style="width: 100px"><?php if ($sort == 'a.text') { ?>
+              <td style="text-align: center;" class="right" style="width: 100px"><?php if ($sort == 'a.text') { ?>
                 <a href="<?php echo $sort_korean_name; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_korean_name; ?></a>
                 <?php } else { ?>
                 <a href="<?php echo $sort_korean_name; ?>"><?php echo $column_korean_name; ?></a>
                 <?php } ?></td>
-              <td class="right"><?php if ($sort == 'u.username') { ?>
+              <td style="text-align: center;" class="right"><?php if ($sort == 'u.username') { ?>
                 <a href="<?php echo $sort_user_name; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_user_name; ?></a>
                 <?php } else { ?>
                 <a href="<?php echo $sort_user_name; ?>"><?php echo $column_user_name; ?></a>
                 <?php } ?></td> 
-              <td class="left"><?php if ($sort == 'p.status') { ?>
+              <td style="text-align: center;" class="left"><?php if ($sort == 'p.status') { ?>
                 <a href="<?php echo $sort_status; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_status; ?></a>
                 <?php } else { ?>
                 <a href="<?php echo $sort_status; ?>"><?php echo $column_status; ?></a>
                 <?php } ?></td>
-			        <td class="right"><?php if ($sort == 'p.manufacturer') { ?>
+			        <td style="text-align: center;" class="right"><?php if ($sort == 'p.manufacturer') { ?>
                 <a href="<?php echo $sort_manufacturer; ?>" class="<?php echo strtolower($order); ?>"><?php echo $columnManufacturer; ?></a>
                 <?php } else { ?>
                 <a href="<?php echo $sort_manufacturer; ?>"><?php echo $columnManufacturer; ?></a>
                 <?php } ?></td>	
-			  <td style="width: 1px" class="right"><?php if ($sort == 'p.supplier') { ?>
+			  <td style="width: 1px; text-align: center;" class="right"><?php if ($sort == 'p.supplier') { ?>
                 <a href="<?php echo $sort_supplier; ?>" class="<?php echo strtolower($order); ?>"><?php echo $columnSupplier; ?></a>
                 <?php } else { ?>
                 <a href="<?php echo $sort_supplier; ?>"><?php echo $columnSupplier; ?></a>
                 <?php } ?></td>
-              <td style="width: 1px; white-space: nowrap;"><?= $textDateAdded ?></td>
-              <td class="right"><?php echo $column_action; ?></td>
+              <td style="width: 1px; text-align: center;"><?= $textDateAdded ?></td>
+              <td style="text-align: center;" class="right"><?php echo $column_action; ?></td>
             </tr>
             <tr class="filter">
                 <td></td>
@@ -133,7 +129,7 @@
                 <?php } else { ?>
                 <input type="checkbox" name="selected[]" value="<?php echo $product['product_id']; ?>" />
                 <?php } ?></td>
-              <td class="center"><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" style="padding: 1px; border: 1px solid #DDDDDD;" /></td>
+              <td class="center"><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" style="padding: 1px; border: 1px solid rgb(221, 221, 221); width: 90%;" /></td>
               <td class="left"><?php echo $product['name']; ?></td>
               <td class="left"><?php echo $product['model']; ?></td>
               <td class="left"><?php if ($product['special']) { ?>

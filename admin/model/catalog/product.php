@@ -546,16 +546,6 @@ class ModelCatalogProduct extends Model {
 		$this->cache->delete('product');
 	}
 	
-	public function copyDescriptions($product_id) {
-    $this->db->query("UPDATE product SET image_description = (SELECT description FROM product_description WHERE product_id ='" . (int)$product_id . "' AND language_id =2) WHERE product_id = '" . (int)$product_id . "'; ");
-	}
-	public function copyDescriptionsAll($product_id) {
-    $this->db->query("UPDATE product, product_description SET product.image_description=product_description.description WHERE product_description.product_id=product.product_id AND product_description.language_id=2;");
-	}
-	public function removeDescriptionsAll($product_id) {
-    $this->db->query("UPDATE product_description SET description='';");
-	}
-
 	public function copyProduct($product_id) {
 		$query = $this->db->query("
 		    SELECT DISTINCT *
