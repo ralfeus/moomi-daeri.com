@@ -273,7 +273,7 @@ class ModelCatalogProduct extends Model {
         if (!empty($data['filterPrice']) && is_numeric($data['filterPrice']))
             $filter .= ($filter ? " AND" : "") . " p.price LIKE '" . $this->db->escape($data['filterPrice']) . "%'";
         if (!empty($data['filterKoreanName'])) 
-            $filter .= ($filter ? " AND" : "") . " a.text LIKE '%" . $this->db->escape(utf8_strtolower($data['filterKoreanName'])) . "%'";
+            $filter .= ($filter ? " AND" : "") . " p.korean_name LIKE '%" . $this->db->escape(utf8_strtolower($data['filterKoreanName'])) . "%'";
         if (isset($data['filterStatus']))
             $filter .= ($filter ? " AND" : "") . " p.status = '" . (int)$data['filterStatus'] . "'";
         if (!empty($data['filterSupplierId']))
@@ -690,7 +690,7 @@ class ModelCatalogProduct extends Model {
 				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 			}	
 //            $this->getLogger()->write($sql);
-			$query = $this->db->query($sql);
+			$query = $this->getDb()->query($sql, null, true);
             $productData = $query->rows;
             if (empty($data))
                 $this->cache->set('product.' . (int)$this->config->get('config_language_id'), $productData);
