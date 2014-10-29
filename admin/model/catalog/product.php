@@ -311,7 +311,7 @@ class ModelCatalogProduct extends Model {
 			    }
 			}
 		}
-		$this->db->query("
+		$this->getDb()->query("
 		    UPDATE product
 		    SET
 		        model = ?,
@@ -697,7 +697,7 @@ class ModelCatalogProduct extends Model {
 	public function getProductDescriptions($product_id) {
 		$product_description_data = array();
 		
-		$query = $this->db->query("SELECT * FROM product_description WHERE product_id = '" . (int)$product_id . "'");
+		$query = $this->getDb()->query("SELECT * FROM product_description WHERE product_id = '" . (int)$product_id . "'");
 		
 		foreach ($query->rows as $result) {
 			$product_description_data[$result['language_id']] = array(
