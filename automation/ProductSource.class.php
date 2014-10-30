@@ -1,6 +1,8 @@
 <?php
 namespace automation;
 use ErrorException;
+use Exception;
+use model\extension\ImportCategory;
 use model\extension\ImportSourceSite;
 use model\extension\ImportSourceSiteDAO;
 use simple_html_dom;
@@ -38,17 +40,42 @@ abstract class ProductSource {
              return false;
     }
 
-    protected abstract function getAllCategoriesUrls();
+    /**
+     * @param Product $product
+     */
+    protected abstract function fillDetails($product);
 
-    public function getCategoryUrls() {
+    /**
+     * @return string
+     */
+    protected abstract function getAllCategoriesUrl();
+
+    /**
+     * @param string $categoryUrl
+     * @return Product[]
+     * @throws Exception
+     */
+    protected abstract function getCategoryProducts($categoryUrl);
+
+    /**
+     * @param string $categoryUrl
+     * @return int
+     */
+    protected abstract function getCategoryProductsCount($categoryUrl);
+
+    public function getCategories() {
         if ($this->getSite()->getImportMappedCategoriesOnly()) {
-            return $this->getMappedCategoriesUrls();
+            return $this->getSite()->getCategoriesMap();
         } else {
-            return $this->getAllCategoriesUrls();
+            return array(new ImportCategory(null, null, null));
         }
     }
 
-    protected abstract function getMappedCategoriesUrls();
+    /**
+     * @param string $sourceSiteCategoryId
+     * @return string
+     */
+    protected abstract function getMappedCategoryUrl($sourceSiteCategoryId);
 
      /**
       * Gets HTML page by URL.
@@ -124,7 +151,39 @@ abstract class ProductSource {
          return null;
      }
 
-     public abstract function getProducts();
+    /**
+     * @return Product[]
+     */
+    public function getProducts() {
+        echo date('Y-m-d H:i:s') . "\n";
+        $categories = $this->getCategories();
+        //echo date('Y-m-d H:i:s ') . print_r($this->getSite()->getCategoriesMap(), true);
+        echo date('Y-m-d H:i:s ') . "Got " . sizeof($categories) . " category URLs\n";
+        $urlCount = 1;
+        $products = array();
+        foreach ($categories as $category) {
+            echo date('Y-m-d H:i:s ') . "Crawling category " . $urlCount++ . " of " . count($categories) . "\n";
+            if (is_null($category->getSourceSiteCategoryId())) {
+                $categoryUrl = $this->getAllCategoriesUrl();
+            } else {
+                $categoryUrl = $this->getMappedCategoryUrl($category->getSourceSiteCategoryId());
+            }
+            $productsCount = $this->getCategoryProductsCount($categoryUrl);
+            echo date('Y-m-d H:i:s') . " $productsCount products are to be imported\n";
+            $categoryProducts = $this->getCategoryProducts($categoryUrl);
+            $tmp = 1;
+            foreach ($categoryProducts as $product) {
+                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount . "\t- ";
+                if ((is_null($category->getPriceUpperLimit()) || ($product->price <= $category->getPriceUpperLimit())) &&
+                    $this->addProductToList($product, $products)) {
+                    $this->fillDetails($product);
+                }
+                echo $product->sourceProductId . "\n";
+            }
+        }
+        echo date('Y-m-d H:i:s') . " --- Finished\n";
+        return $products;
+    }
 
     /**
      * @return string
@@ -138,12 +197,12 @@ abstract class ProductSource {
       * @return ImportSourceSite
       */
      public function getSite() {
-	 if (is_null($this->sourceSite)) {
-		//error_log(static::class);
-         	$this->sourceSite = ImportSourceSiteDAO::getInstance()->getSourceSite(static::class);
-		//error_log(print_r($this->sourceSite, true));
-	 }
-	 return $this->sourceSite;
+         if (is_null($this->sourceSite)) {
+            //error_log(static::class);
+                $this->sourceSite = ImportSourceSiteDAO::getInstance()->getSourceSite(static::class);
+            //error_log(print_r($this->sourceSite, true));
+         }
+         return $this->sourceSite;
      }
 
      public abstract function getUrl();

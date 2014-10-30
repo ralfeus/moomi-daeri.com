@@ -35,7 +35,7 @@ class ImportSourceSite {
     }
 
     /**
-     * @return array
+     * @return ImportCategory[]
      */
     public function getCategoriesMap() {
         if (!isset($this->categoriesMap)) {
@@ -147,14 +147,14 @@ class ImportSourceSite {
     }
 
     /**
-     * @param array $value
+     * @param string $value
      */
     public function setName($value) {
         $this->name->set($value);
     }
 
     /**
-     * @return string
+     * @return float
      */
     public function getRegularCustomerPriceRate() {
         if (!isset($this->regularCustomerPriceRate)) {

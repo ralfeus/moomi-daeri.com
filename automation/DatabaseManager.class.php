@@ -75,9 +75,9 @@ class DatabaseManager {
         $products = $site->getProducts();
         $this->dbConnect();
         $statement = $this->connection->prepare($sql);
-        echo date('Y-m-d H:i:s') . " Adding to the database " . count($products) . "\n";
+        echo date('Y-m-d H:i:s') . " Adding to the database " . count($products) . " products\n";
         foreach ($products as $product) {
-            echo date('Y-m-d H:i:s') . " Adding " . $product->sourceProductId . "\n";
+//            echo date('Y-m-d H:i:s') . " Adding " . $product->sourceProductId . "\n";
             $statement->execute(array(
                 ':sourceSiteId' => $site->getSite()->getId(),
                 ':sourceCategoryId' => $product->categoryId,

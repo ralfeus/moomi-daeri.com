@@ -21,9 +21,9 @@ SQL
             , array(
                 's:' . $sourceSite->getClassName(),
                 's:' . implode(',', $sourceSite->getDefaultCategories()),
-                'i:' . $sourceSite->getDefaultManufacturer(),
+                'i:' . $sourceSite->getDefaultManufacturer()->getId(),
                 's:' . implode(',', $sourceSite->getStores()),
-                'i:' . $sourceSite->getDefaultSupplier(),
+                'i:' . $sourceSite->getDefaultSupplier()->getId(),
                 's:' . $sourceSite->getName(),
                 'd:' . $sourceSite->getRegularCustomerPriceRate(),
                 'd:' . $sourceSite->getWholesaleCustomerPriceRate()
@@ -31,41 +31,41 @@ SQL
         );
         $sourceSiteId = $this->getDb()->getLastId();
         if (sizeof($sourceSite->getCategoriesMap())) {
-            foreach ($sourceSite->getCategoriesMap() as $remoteCategory => $localCategories) {
-                foreach ($localCategories as $localCategory) {
-                    $this->getDb()->query(<<<SQL
-                        INSERT INTO imported_product_categories
-                        (source_site_id, source_site_category_id, local_category_id)
-                        VALUES (?, ?, ?)
+            foreach ($sourceSite->getCategoriesMap() as $category) {
+                $this->getDb()->query(<<<SQL
+                    INSERT INTO imported_product_categories
+                    (source_site_id, source_site_category_id, local_category_id, price_upper_limit)
+                    VALUES (?, ?, ?, ?)
 SQL
-                        , array(
-                            "i:$sourceSiteId",
-                            "s:$remoteCategory",
-                            "i:$localCategory"
-                        )
-                    );
-                }
+                    , array(
+                        "i:$sourceSiteId",
+                        "s:" . $category->getSourceSiteCategoryId(),
+                        "s:" . implode(',', $category->getLocalCategoryIds()),
+                        "d:" . $category->getPriceUpperLimit()
+                    )
+                );
             }
         }
     }
 
     /**
      * @param int $siteId
-     * @return array
+     * @return ImportCategory[]
      */
     public function getCategoriesMap($siteId) {
         $query = $this->getDb()->query("
-            SELECT source_site_category_id, local_category_id
+            SELECT source_site_category_id, local_category_id, price_upper_limit
             FROM imported_product_categories
             WHERE source_site_id = ?
             ", array("i:$siteId")
         );
         $result = array();
         foreach ($query->rows as $categoryMappingEntry) {
-            if (!array_key_exists($categoryMappingEntry['source_site_category_id'], $result)) {
-                $result[$categoryMappingEntry['source_site_category_id']] = array();
-            }
-            $result[$categoryMappingEntry['source_site_category_id']][] = $categoryMappingEntry['local_category_id'];
+            $result[$categoryMappingEntry['source_site_category_id']] = new ImportCategory(
+                $categoryMappingEntry['source_site_category_id'],
+                explode(',', $categoryMappingEntry['local_category_id']),
+                $categoryMappingEntry['price_upper_limit']
+            );
         }
         return $result;
     }
@@ -195,6 +195,7 @@ SQL
                 explode(',', $recordSet->row['default_category_id']),
                 $recordSet->row['default_manufacturer_id'],
                 $recordSet->row['default_supplier_id'],
+                $recordSet->row['import_mapped_categories_only'],
                 $recordSet->row['name'],
                 $recordSet->row['regular_customer_price_rate'],
                 explode(',', $recordSet->row['default_store_id']),

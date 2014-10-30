@@ -19,7 +19,7 @@ use automation\ProductSource;
 
 class EtudeHouse extends ProductSource {
 
-    protected function getAllCategoriesUrls() {
+    protected function getAllCategoriesUrl() {
         $categories = array(); $xml = array();
         xml_parse_into_struct(
             xml_parser_create(),
@@ -36,7 +36,7 @@ class EtudeHouse extends ProductSource {
         return $categories;
     }
 
-    protected function getMappedCategoriesUrls() {
+    protected function getMappedCategoryUrl($categoryId) {
         $categories = array();
         foreach (array_keys($this->getSite()->getCategoriesMap()) as $sourceSiteCategory) {
 //                foreach ($xml as $element) {
@@ -61,7 +61,7 @@ class EtudeHouse extends ProductSource {
     public function getProducts() {
         echo date('Y-m-d H:i:s') . "\n";
         $products = array();
-        $urls = $this->getCategoryUrls(); $currCategory = 1;
+        $urls = $this->getCategories(); $currCategory = 1;
         foreach ($urls as $url) {
             echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . ": $url\n";
             $products = array_merge($products, $this->getCategoryProducts($url));
@@ -84,7 +84,7 @@ class EtudeHouse extends ProductSource {
      * @param string $categoryUrl
      * @return  array
      */
-    private function getCategoryProducts($categoryUrl) {
+    protected function getCategoryProducts($categoryUrl) {
         $products = array(); $matches = array();
 
         $categoryId = preg_match('/(?<=catCd2=)\d+/', $categoryUrl, $matches)
@@ -130,7 +130,7 @@ class EtudeHouse extends ProductSource {
         return $products;
     }
 
-    private function fillDetails($product) {
+    protected function fillDetails($product) {
         $matches = array();
         $html = $this->getHtmlDocument($product->url);
 
@@ -158,5 +158,13 @@ class EtudeHouse extends ProductSource {
         }
 
         $html->clear();
+    }
+
+    /**
+     * @param string $categoryUrl
+     * @return int
+     */
+    protected function getCategoryProductsCount($categoryUrl) {
+        // TODO: Implement getCategoryProductsCount() method.
     }
 }

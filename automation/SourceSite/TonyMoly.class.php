@@ -5,7 +5,7 @@ use automation\Product;
 use automation\ProductSource;
 
 class TonyMoly extends ProductSource {
-   private function fillDetails(Product $product) {
+    protected function fillDetails($product) {
         $matches = array();
         /// Get images
         $html = $this->getHtmlDocument('http://etonymoly.com/common/pop_zoom_goods.asp?guid=' . $product->sourceProductId);
@@ -32,7 +32,7 @@ class TonyMoly extends ProductSource {
         $html->clear();
     }
 
-    private function getCategoryProducts($categoryUrl) {
+    protected function getCategoryProducts($categoryUrl) {
         $products = array();
         $categoryId = preg_match('/(?<=cate=)\d+/', $categoryUrl, $matches) ? $matches[0] : null;
         $categoryUrl = 'http://etonymoly.com/common/ajax/exec_getProdList.asp?cate=' . $categoryId;
@@ -73,7 +73,7 @@ class TonyMoly extends ProductSource {
         return $products;
     }
 
-    protected function getAllCategoriesUrls() {
+    protected function getAllCategoriesUrl() {
         $categories = array();
         $html = $this->getHtmlDocument(self::getUrl());
         $items = $html->find('div[class=posR TopCategory] .SubCate a');
@@ -82,7 +82,7 @@ class TonyMoly extends ProductSource {
         return $categories;
     }
 
-    protected function getMappedCategoriesUrls() {
+    protected function getMappedCategoryUrl($categoryUrl) {
         //TODO: Implement for mapped categories
     }
 
@@ -90,7 +90,7 @@ class TonyMoly extends ProductSource {
     {
         echo date('Y-m-d H:i:s') . "\n";
         $products = array();
-        $urls = $this->getCategoryUrls(); $currCategory = 1;
+        $urls = $this->getCategories(); $currCategory = 1;
         foreach ($urls as $url) {
             echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . "\n";
             $products = array_merge($products, $this->getCategoryProducts($url));
@@ -103,4 +103,12 @@ class TonyMoly extends ProductSource {
 
     //public function getSite() { return (object) array('id' => 3, 'name' => 'etonymoly.com'); }
     public function getUrl() { return 'http://etonymoly.com'; }
+
+    /**
+     * @param string $categoryUrl
+     * @return int
+     */
+    protected function getCategoryProductsCount($categoryUrl) {
+        // TODO: Implement getCategoryProductsCount() method.
+    }
 }
