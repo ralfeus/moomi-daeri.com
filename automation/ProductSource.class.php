@@ -177,7 +177,7 @@ abstract class ProductSource {
                     echo "skipped\n";
                 }
             }
-            break;
+//            break;
         }
         echo date('Y-m-d H:i:s') . " --- Finished\n";
         return $products;
