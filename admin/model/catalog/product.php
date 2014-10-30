@@ -273,7 +273,7 @@ class ModelCatalogProduct extends Model {
         if (!empty($data['filterPrice']) && is_numeric($data['filterPrice']))
             $filter .= ($filter ? " AND" : "") . " p.price LIKE '" . $this->db->escape($data['filterPrice']) . "%'";
         if (!empty($data['filterKoreanName'])) 
-            $filter .= ($filter ? " AND" : "") . " a.text LIKE '%" . $this->db->escape(utf8_strtolower($data['filterKoreanName'])) . "%'";
+            $filter .= ($filter ? " AND" : "") . " p.korean_name LIKE '%" . $this->db->escape(utf8_strtolower($data['filterKoreanName'])) . "%'";
         if (isset($data['filterStatus']))
             $filter .= ($filter ? " AND" : "") . " p.status = '" . (int)$data['filterStatus'] . "'";
         if (!empty($data['filterSupplierId']))
@@ -311,7 +311,7 @@ class ModelCatalogProduct extends Model {
 			    }
 			}
 		}
-		$this->db->query("
+		$this->getDb()->query("
 		    UPDATE product
 		    SET
 		        model = ?,
@@ -680,7 +680,7 @@ class ModelCatalogProduct extends Model {
 				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 			}	
 //            $this->getLogger()->write($sql);
-			$query = $this->db->query($sql);
+			$query = $this->getDb()->query($sql);
             $productData = $query->rows;
             if (empty($data))
                 $this->cache->set('product.' . (int)$this->config->get('config_language_id'), $productData);
@@ -689,7 +689,7 @@ class ModelCatalogProduct extends Model {
 	}
 	
 	public function getProductsByCategoryId($category_id) {
-		$query = $this->db->query("SELECT * FROM product p LEFT JOIN product_description pd ON (p.product_id = pd.product_id) LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p2c.category_id = '" . (int)$category_id . "' ORDER BY pd.name ASC");
+		$query = $this->getDb()->query("SELECT * FROM product p LEFT JOIN product_description pd ON (p.product_id = pd.product_id) LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p2c.category_id = '" . (int)$category_id . "' ORDER BY pd.name ASC");
 								  
 		return $query->rows;
 	} 
@@ -697,7 +697,7 @@ class ModelCatalogProduct extends Model {
 	public function getProductDescriptions($product_id) {
 		$product_description_data = array();
 		
-		$query = $this->db->query("SELECT * FROM product_description WHERE product_id = '" . (int)$product_id . "'");
+		$query = $this->getDb()->query("SELECT * FROM product_description WHERE product_id = '" . (int)$product_id . "'");
 		
 		foreach ($query->rows as $result) {
 			$product_description_data[$result['language_id']] = array(
