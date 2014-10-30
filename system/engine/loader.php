@@ -26,7 +26,13 @@ final class Loader extends OpenCartBase
 			exit();					
 		}
 	}
-	
+
+    /**
+     * @param $model
+     * @param null $scope
+     * @return Model
+     * @throws Exception
+     */
 	public function model($model, $scope = null) {
         $modelName = 'model_' . str_replace('/', '_', $model);
         if ($this->registry->has($modelName))

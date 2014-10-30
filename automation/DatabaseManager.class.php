@@ -28,14 +28,38 @@ class DatabaseManager {
         return self::$instance;
     }
 
-    private function addImages(Product $product) {
-        $sql = "
+    /**
+     * @param Product $product
+     */
+    private function addCategories($product) {
+        $sql = <<<SQL
+            DELETE FROM imported_product_source_categories
+            WHERE imported_product_id = :productId;
+            INSERT INTO imported_product_source_categories
+            SET
+                imported_product_id = :productId,
+                source_category_id = :categoryId
+SQL;
+        $statement = $this->connection->prepare($sql);
+        foreach ($product->getCategories() as $categoryId) {
+            $statement->execute(array(
+                ':productId' => $product->id,
+                ':categoryId' => $categoryId
+            ));
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function addImages($product) {
+        $sql = <<<SQL
             INSERT INTO imported_product_images
             SET
                 imported_product_id = :productId,
                 url = :url
             ON DUPLICATE KEY UPDATE imported_product_image_id = imported_product_image_id
-        ";
+SQL;
         $statement = $this->connection->prepare($sql);
         foreach ($product->getImages() as $imageUrl) {
             $statement->execute(array(
@@ -50,7 +74,6 @@ class DatabaseManager {
                 INSERT INTO imported_products
                 SET
                     source_site_id = :sourceSiteId,
-                    source_category_id = :sourceCategoryId,
                     source_url = :sourceUrl,
                     source_product_id = :sourceProductId,
                     image_url = :thumbnail,
@@ -61,7 +84,6 @@ class DatabaseManager {
                     time_modified = NOW(),
                     weight = :weight
                 ON DUPLICATE KEY UPDATE
-                    source_category_id = :sourceCategoryId,
                     source_url = :sourceUrl,
                     image_url = :thumbnail,
                     name = :name,
@@ -80,7 +102,6 @@ class DatabaseManager {
 //            echo date('Y-m-d H:i:s') . " Adding " . $product->sourceProductId . "\n";
             $statement->execute(array(
                 ':sourceSiteId' => $site->getSite()->getId(),
-                ':sourceCategoryId' => $product->categoryId,
                 ':sourceUrl' => $product->url,
                 ':sourceProductId' => $product->sourceProductId,
                 ':thumbnail' => $product->thumbnail,
@@ -91,8 +112,10 @@ class DatabaseManager {
                 ':weight' => $product->weight
             ));
             $product->id = $this->connection->lastInsertId();
-            if ($product->id)
-                self::addImages($product);
+            if ($product->id) {
+                $this->addImages($product);
+                $this->addCategories($product);
+            }
         }
         echo date('Y-m-d H:i:s') . " Added data to database\n";
     }

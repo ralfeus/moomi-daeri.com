@@ -1,6 +1,7 @@
 <?php
 namespace model\extension;
 
+use model\catalog\ImportCategory;
 use model\catalog\Manufacturer;
 use model\catalog\Supplier;
 use system\library\Mutable;
@@ -29,9 +30,13 @@ class ImportSourceSite {
         if (!is_null($defaultSupplier)) { $this->defaultSupplier = new Mutable($defaultSupplier); }
         if (!is_null($importMappedCategoriesOnly)) { $this->importMappedCategoriesOnly = new Mutable($importMappedCategoriesOnly); }
         if (!is_null($name)) { $this->name = new Mutable($name); }
-        if (!is_null($regularCustomerPriceRate)) { $this->regularCustomerPriceRate = new Mutable($regularCustomerPriceRate); }
+        $this->regularCustomerPriceRate = floatval($regularCustomerPriceRate)
+            ? new Mutable($regularCustomerPriceRate)
+            : new Mutable(IMPORT_PRICE_RATE_NORMAL_CUSTOMERS);
         if (!is_null($stores)) { $this->stores = new Mutable($stores); }
-        if (!is_null($wholesaleCustomerPriceRate)) { $this->wholesaleCustomerPriceRate = new Mutable($wholesaleCustomerPriceRate); }
+        $this->wholesaleCustomerPriceRate = floatval($wholesaleCustomerPriceRate)
+            ? new Mutable($wholesaleCustomerPriceRate)
+            : new Mutable(IMPORT_PRICE_RATE_WHOLESALES_CUSTOMERS);
     }
 
     /**

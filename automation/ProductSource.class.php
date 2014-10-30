@@ -2,7 +2,7 @@
 namespace automation;
 use ErrorException;
 use Exception;
-use model\extension\ImportCategory;
+use model\catalog\ImportCategory;
 use model\extension\ImportSourceSite;
 use model\extension\ImportSourceSiteDAO;
 use simple_html_dom;
@@ -46,28 +46,28 @@ abstract class ProductSource {
     protected abstract function fillDetails($product);
 
     /**
-     * @return string
+     * @return ImportCategory[]
      */
-    protected abstract function getAllCategoriesUrl();
+    protected abstract function getAllCategories();
 
     /**
-     * @param string $categoryUrl
+     * @param ImportCategory $category
      * @return Product[]
      * @throws Exception
      */
-    protected abstract function getCategoryProducts($categoryUrl);
+    protected abstract function getCategoryProducts($category);
 
     /**
-     * @param string $categoryUrl
+     * @param ImportCategory $category
      * @return int
      */
-    protected abstract function getCategoryProductsCount($categoryUrl);
+    protected abstract function getCategoryProductsCount($category);
 
     public function getCategories() {
         if ($this->getSite()->getImportMappedCategoriesOnly()) {
             return $this->getSite()->getCategoriesMap();
         } else {
-            return array(new ImportCategory(null, null, null));
+            return $this->getAllCategories();
         }
     }
 
@@ -75,7 +75,7 @@ abstract class ProductSource {
      * @param string $sourceSiteCategoryId
      * @return string
      */
-    protected abstract function getMappedCategoryUrl($sourceSiteCategoryId);
+    abstract public function getCategoryUrl($sourceSiteCategoryId);
 
      /**
       * Gets HTML page by URL.
@@ -163,23 +163,21 @@ abstract class ProductSource {
         $products = array();
         foreach ($categories as $category) {
             echo date('Y-m-d H:i:s ') . "Crawling category " . $urlCount++ . " of " . count($categories) . "\n";
-            if (is_null($category->getSourceSiteCategoryId())) {
-                $categoryUrl = $this->getAllCategoriesUrl();
-            } else {
-                $categoryUrl = $this->getMappedCategoryUrl($category->getSourceSiteCategoryId());
-            }
-            $productsCount = $this->getCategoryProductsCount($categoryUrl);
+            $productsCount = $this->getCategoryProductsCount($category);
             echo date('Y-m-d H:i:s') . " $productsCount products are to be imported\n";
-            $categoryProducts = $this->getCategoryProducts($categoryUrl);
+            $categoryProducts = $this->getCategoryProducts($category);
             $tmp = 1;
             foreach ($categoryProducts as $product) {
-                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . $productsCount . "\t- ";
+                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . sizeof($categoryProducts) . "\t- ";
                 if ((is_null($category->getPriceUpperLimit()) || ($product->price <= $category->getPriceUpperLimit())) &&
                     $this->addProductToList($product, $products)) {
                     $this->fillDetails($product);
+                    echo $product->sourceProductId . "\n";
+                } else {
+                    echo "skipped\n";
                 }
-                echo $product->sourceProductId . "\n";
             }
+            break;
         }
         echo date('Y-m-d H:i:s') . " --- Finished\n";
         return $products;

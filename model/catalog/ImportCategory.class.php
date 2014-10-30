@@ -1,24 +1,30 @@
 <?php
-namespace model\extension;
+namespace model\catalog;
 
+use automation\ProductSource;
 use system\library\Mutable;
 
 class ImportCategory {
     private $sourceSiteCategoryId;
     private $localCategoryIds;
     private $priceUpperLimit;
+    /** @var ProductSource */
+    private $sourceSite;
+    private $url;
 
-    function __construct($sourceSiteCategoryId, $localCategoryIds, $priceUpperLimit) {
+    function __construct($sourceSite, $sourceSiteCategoryId, $localCategoryIds, $priceUpperLimit, $url = null) {
+        $this->sourceSite = $sourceSite;
         $this->sourceSiteCategoryId = $sourceSiteCategoryId;
         $this->localCategoryIds = new Mutable($localCategoryIds);
         $this->priceUpperLimit = $priceUpperLimit;
+        if (!is_null($url)) { $this->url = $url; }
     }
 
     /**
      * @return int[]
      */
     public function getLocalCategoryIds() {
-        return $this->localCategoryIds;
+        return $this->localCategoryIds->get();
     }
 
     /**
@@ -47,5 +53,15 @@ class ImportCategory {
      */
     public function getSourceSiteCategoryId() {
         return $this->sourceSiteCategoryId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl() {
+        if (is_null($this->url)) {
+            $this->url = $this->sourceSite->getCategoryUrl($this->getSourceSiteCategoryId());
+        }
+        return $this->url;
     }
 }

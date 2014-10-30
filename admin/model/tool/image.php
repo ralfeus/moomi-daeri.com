@@ -1,23 +1,26 @@
 <?php
 class ModelToolImage extends Model {
-    public function download($url)
-    {
-        if (preg_match('/https?:\/\/([\w\-\.]+)/', $url))
-        {
+    /**
+     * @param $url
+     * @throws HttpRequestException
+     * @return string
+     */
+    public function download($url) {
+        if (preg_match('/https?:\/\/([\w\-\.]+)/', $url)) {
             $fileName = $this->getImageFileName($url);
-            if ($fileName)
-            {
+            if ($fileName) {
                 $dirName = DIR_IMAGE . 'upload/' . session_id();
-                if (!file_exists($dirName))
+                if (!file_exists($dirName)) {
                     mkdir($dirName);
+                }
                 file_put_contents($dirName . '/' . $fileName, file_get_contents($url));
                 return 'upload/' . session_id() . '/' . $fileName;
-            }
-            else
+            } else {
                 throw new HttpRequestException("Provided URL isn't image");
-        }
-        else
+            }
+        } else {
             throw new HttpRequestException("Provided URL isn't image");
+        }
     }
 
     private function getImageFileName($fileName)

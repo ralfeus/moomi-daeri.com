@@ -1,6 +1,7 @@
 <?php
 namespace model\extension;
 
+use model\catalog\ImportCategory;
 use model\catalog\Manufacturer;
 use model\catalog\ManufacturerDAO;
 use model\catalog\Supplier;
@@ -53,6 +54,15 @@ SQL
      * @return ImportCategory[]
      */
     public function getCategoriesMap($siteId) {
+        $sourceSiteClassName = $this->getDb()->queryScalar(<<<SQL
+            SELECT class_name
+            FROM imported_source_sites
+            WHERE imported_source_site_id = ?
+SQL
+            , array("i:$siteId")
+        );
+        $sourceSiteClassName = 'automation\\SourceSite\\' . $sourceSiteClassName;
+        $sourceSite = $sourceSiteClassName::getInstance();
         $query = $this->getDb()->query("
             SELECT source_site_category_id, local_category_id, price_upper_limit
             FROM imported_product_categories
@@ -62,9 +72,11 @@ SQL
         $result = array();
         foreach ($query->rows as $categoryMappingEntry) {
             $result[$categoryMappingEntry['source_site_category_id']] = new ImportCategory(
+                $sourceSite,
                 $categoryMappingEntry['source_site_category_id'],
                 explode(',', $categoryMappingEntry['local_category_id']),
-                $categoryMappingEntry['price_upper_limit']
+                $categoryMappingEntry['price_upper_limit'],
+                null
             );
         }
         return $result;
@@ -193,8 +205,8 @@ SQL
                 null,
                 $recordSet->row['class_name'],
                 explode(',', $recordSet->row['default_category_id']),
-                $recordSet->row['default_manufacturer_id'],
-                $recordSet->row['default_supplier_id'],
+                ManufacturerDAO::getInstance()->getManufacturer($recordSet->row['default_manufacturer_id'], true),
+                SupplierDAO::getInstance()->getSupplier($recordSet->row['default_supplier_id'], true),
                 $recordSet->row['import_mapped_categories_only'],
                 $recordSet->row['name'],
                 $recordSet->row['regular_customer_price_rate'],

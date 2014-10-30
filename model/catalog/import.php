@@ -1,4 +1,8 @@
 <?php
+use model\catalog\ImportProduct;
+use model\catalog\ImportProductDAO;
+use model\extension\ImportSourceSiteDAO;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -8,8 +12,6 @@
  */
 
 class ModelCatalogImport extends Model{
-    private $sourceSites;
-
     public function __construct($registry) {
         parent::__construct($registry);
 //        $this->sourceSites = self::getSourceSites();
@@ -30,6 +32,7 @@ class ModelCatalogImport extends Model{
     }
 
     private function getCorrespondingProductById($productId) {
+        /** @var ModelCatalogProduct $modelCatalogProduct */
         $modelCatalogProduct = $this->load->model('catalog/product');
         $correspondingProduct = $productId ? $modelCatalogProduct->getProduct($productId) : null;
         if ($correspondingProduct) {
@@ -48,39 +51,44 @@ class ModelCatalogImport extends Model{
         return $correspondingProduct;
     }
 
+    /**
+     * @param int $importedProductId
+     * @return ImportProduct
+     */
     public function getImportedProduct($importedProductId) {
-        $sql = "
+        $result = $this->getDb()->query("
             SELECT
                 ip.*,
                 iss.imported_source_site_id, iss.name AS source_site_name, iss.default_category_id, iss.default_manufacturer_id, iss.default_store_id, iss.default_supplier_id, iss.regular_customer_price_rate, iss.wholesale_customer_price_rate
             FROM
                 imported_products AS ip
                 JOIN imported_source_sites AS iss ON ip.source_site_id = iss.imported_source_site_id
-            WHERE imported_product_id = $importedProductId
-        ";
-        $result = $this->db->query($sql);
+            WHERE imported_product_id = ?
+            ", array("i:$importedProductId")
+        );
         if (!$result->num_rows)
             return null;
         $correspondingProduct = $this->getCorrespondingProductById($result->row['product_id']);
-        return new ImportedProduct(
+        return new ImportProduct(
             $result->row['imported_product_id'],
             $result->row['source_product_id'],
             $result->row['product_id'],
             $result->row['name'],
-            $result->row['source_category_id'] ? self::getMatchingCategories($result->row['source_category_id']) : array(),
+            $this->getMatchingCategories($importedProductId, $result->row['imported_source_site_id']),
             $result->row['description'],
             $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
             new Price($result->row['price'], $result->row['price_promo']),
-            new SourceSite(
-                $result->row['imported_source_site_id'],
-                $result->row['source_site_name'],
-                $result->row['default_category_id'],
-                $result->row['default_manufacturer_id'],
-                $result->row['default_store_id'],
-                $result->row['default_supplier_id'],
-                $result->row['regular_customer_price_rate'],
-                $result->row['wholesale_customer_price_rate']
-            ),
+//            new SourceSite(
+//                $result->row['imported_source_site_id'],
+//                $result->row['source_site_name'],
+//                $result->row['default_category_id'],
+//                $result->row['default_manufacturer_id'],
+//                $result->row['default_store_id'],
+//                $result->row['default_supplier_id'],
+//                $result->row['regular_customer_price_rate'],
+//                $result->row['wholesale_customer_price_rate']
+//            ),
+            ImportSourceSiteDAO::getInstance()->getSourceSite($result->row['imported_source_site_id']),
             $result->row['source_url'],
             $result->row['image_url'],
             $this->getProductImages($result->row['imported_product_id']),
@@ -90,6 +98,10 @@ class ModelCatalogImport extends Model{
         );
     }
 
+    /**
+     * @param array $data
+     * @return ImportProduct[]
+     */
     public function getImportedProducts(array $data) {
         $filter = $this->buildFilterString($data);
         $sql = "
@@ -103,28 +115,28 @@ class ModelCatalogImport extends Model{
             LIMIT " . $data['start'] . ", " . $data['limit']
         ;
         $result = array();
-        foreach ($this->db->query($sql)->rows as $row)
-        {
+        foreach ($this->db->query($sql)->rows as $row) {
             $correspondingProduct = $this->getCorrespondingProductById($row['product_id']);
-            $result[] = new ImportedProduct(
+            $result[] = new ImportProduct(
                 $row['imported_product_id'],
                 $row['source_product_id'],
                 $row['product_id'],
                 $row['name'],
-                $row['source_category_id'] ? self::getMatchingCategories($row['source_category_id']) : array(),
+                $this->getMatchingCategories($row['imported_product_id'], $row['imported_source_site_id']),
                 $row['description'],
                 $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
                 new Price($row['price'], $row['price_promo']),
-                new SourceSite(
-                    $row['imported_source_site_id'],
-                    $row['source_site_name'],
-                    $row['default_category_id'],
-                    $row['default_manufacturer_id'],
-                    $row['default_store_id'],
-                    $row['default_supplier_id'],
-                    $row['regular_customer_price_rate'],
-                    $row['wholesale_customer_price_rate']
-                ),
+//                new SourceSite(
+//                    $row['imported_source_site_id'],
+//                    $row['source_site_name'],
+//                    $row['default_category_id'],
+//                    $row['default_manufacturer_id'],
+//                    $row['default_store_id'],
+//                    $row['default_supplier_id'],
+//                    $row['regular_customer_price_rate'],
+//                    $row['wholesale_customer_price_rate']
+//                ),
+                ImportSourceSiteDAO::getInstance()->getSourceSite($row['imported_source_site_id']),
                 $row['source_url'],
                 $row['image_url'],
                 $this->getProductImages($row['imported_product_id']),
@@ -148,21 +160,37 @@ class ModelCatalogImport extends Model{
     }
 
     /**
-     * @param $sourceCategoryId
-     * @return array
+     * @param $productId
+     * @param $siteId
+     * @return int[]
      */
-    private function getMatchingCategories($sourceCategoryId) {
-        $sql = "
-            SELECT local_category_id
-            FROM imported_product_categories
-            WHERE source_site_category_id = '" . $this->db->escape($sourceCategoryId) . "'
-        ";
-        $categories = array();
-        $result = $this->db->query($sql);
-        foreach ($result->rows as $row)
-            $categories[] = $row['local_category_id'];
-
-        return $categories;
+    private function getMatchingCategories($productId, $siteId) {
+        $productCategories = array();
+        $productSourceCategories = ImportProductDAO::getInstance()->getSourceCategories($productId);
+        $sourceSiteCategoriesMapping = ImportSourceSiteDAO::getInstance()->getCategoriesMap($siteId);
+        if (sizeof($sourceSiteCategoriesMapping)) {
+            foreach ($productSourceCategories as $productSourceCategory) {
+                foreach ($sourceSiteCategoriesMapping as $siteCategory) {
+                    if ($productSourceCategory == $siteCategory->getSourceSiteCategoryId()) {
+                        $productCategories = array_merge($productCategories, $siteCategory->getLocalCategoryIds());
+                        break;
+                    }
+                }
+            }
+            if (sizeof($productCategories)) {
+                $tmp = array();
+                foreach ($productCategories as $productCategory) {
+                    if (!array_key_exists($productCategory, $tmp)) {
+                        $tmp[$productCategory] = null;
+                    }
+                }
+                $productCategories = array_keys($tmp);
+            }
+            sort($productCategories);
+        } else {
+            $productCategories = ImportSourceSiteDAO::getInstance()->getDefaultCategories($siteId);
+        }
+        return $productCategories;
     }
 
     private function getProductImages($productId) {
@@ -215,181 +243,6 @@ class ModelCatalogImport extends Model{
         ";
         $this->db->query($sql);
     }
-}
-
-class ImportedProduct {
-    private $id;
-    private $name;
-    private $categories;
-    private $description;
-    private $images;
-    private $isActive;
-    private $localPrice;
-    private $sourcePrice;
-    private $localProductId;
-    private $sourceProductId;
-    private $sourceSite;
-    private $sourceUrl;
-    private $thumbnailUrl;
-    private $timeModified;
-    private $weight;
-
-    public function __construct(
-        $id, $sourceProductId, $localProductId, $name, $categories, $description, Price $localPrice = null, Price $sourcePrice, SourceSite $sourceSite,
-        $sourceUrl, $thumbnailUrl, array $images, $weight, $timeModified, $isActive
-    ) {
-        $this->id = $id;
-        $this->localProductId = empty($localProductId) ? null : $localProductId;
-        $this->categories = $categories;
-        $this->name = $name;
-        $this->description = $description;
-        $this->isActive = $isActive;
-        $this->localPrice = empty($localPrice) ? null : $localPrice;
-        $this->sourcePrice = $sourcePrice;
-        $this->sourceSite = $sourceSite;
-        $this->sourceUrl = $sourceUrl;
-        $this->sourceProductId = $sourceProductId;
-        $this->thumbnailUrl = $thumbnailUrl;
-        $this->images = $images;
-        $this->timeModified = $timeModified;
-        $this->weight = $weight;
-    }
-
-    /**
-     * Returns categories of the imported product.
-     * In case of absence of categories specific for certain product returns categories for source site
-     *
-     * @return array
-     */
-    public function getCategories() {
-        return sizeof($this->categories) ? $this->categories : $this->sourceSite->getDefaultCategoryId();
-    }
-
-    public function getLocalProductId() { return $this->localProductId; }
-    public function getThumbnailUrl() { return $this->thumbnailUrl; }
-    /**
-     * @return string
-     */
-    public function getDescription() { return $this->description; }
-
-    /**
-     * @return integer
-     */
-    public function getId() { return $this->id; }
-
-    /**
-     * @return array
-     */
-    public function getImages() { return $this->images; }
-
-    /**
-     * @return bool
-     */
-    public function getIsActive() { return $this->isActive; }
-
-    /**
-     * @return Price
-     */
-    public function getLocalPrice() { return $this->localPrice; }
-
-    /**
-     * @return string
-     */
-    public function getName() { return $this->name; }
-
-    /**
-     * @return Price
-     */
-    public function getSourcePrice() { return $this->sourcePrice; }
-
-    /**
-     * @return int
-     */
-    public function getSourceProductId() { return $this->sourceProductId; }
-
-    /**
-     * @return SourceSite
-     */
-    public function getSourceSite() { return $this->sourceSite; }
-
-    /**
-     * @return string
-     */
-    public function getSourceUrl() { return $this->sourceUrl; }
-
-    /**
-     * @return datetime
-     */
-    public function getTimeModified() { return $this->timeModified; }
-
-    /**
-     * @return float
-     */
-    public function getWeight() { return $this->weight; }
-}
-
-class SourceSite {
-    private $id;
-    private $name;
-    private $defaultCategoryId;
-    private $defaultManufacturerId;
-    private $defaultStoreId;
-    private $defaultSupplierId;
-    private $regularCustomerPriceRate;
-    private $wholesaleCustomerPriceRate;
-
-    function __construct($id, $name, $defaultCategoryId, $defaultManufacturerId, $defaultStoreId, $defaultSupplierId,
-                         $regularCustomerPriceRate = null, $wholesaleCustomerPriceRate = null) {
-        $this->defaultCategoryId = explode(',', $defaultCategoryId);
-        $this->defaultManufacturerId = $defaultManufacturerId;
-        $this->defaultStoreId = explode(',', $defaultStoreId);
-        $this->defaultSupplierId = $defaultSupplierId;
-        $this->id = $id;
-        $this->name = $name;
-        $this->regularCustomerPriceRate = !floatval($regularCustomerPriceRate) ? IMPORT_PRICE_RATE_NORMAL_CUSTOMERS : $regularCustomerPriceRate;
-        $this->wholesaleCustomerPriceRate = !floatval($wholesaleCustomerPriceRate) ? IMPORT_PRICE_RATE_WHOLESALES_CUSTOMERS : $wholesaleCustomerPriceRate;
-    }
-
-    /**
-     * @return array
-     */
-    public function getDefaultCategoryId() { return $this->defaultCategoryId; }
-
-    /**
-     * @return int
-     */
-    public function getDefaultManufacturerId() { return $this->defaultManufacturerId; }
-
-    /**
-     *  List of default stores assigned to the site
-     *  @return array
-     */
-    public function getDefaultStoreId() { return $this->defaultStoreId; }
-
-    /**
-     * @return int
-     */
-    public function getDefaultSupplierId() { return $this->defaultSupplierId; }
-
-    /**
-     * @return int
-     */
-    public function getId() { return $this->id; }
-
-    /**
-     * @return string
-     */
-    public function getName() { return $this->name; }
-
-    /**
-     * @return float
-     */
-    public function getRegularCustomerPriceRate() { return $this->regularCustomerPriceRate; }
-
-    /**
-     * @return float
-     */
-    public function getWholesaleCustomerPriceRate() { return $this->wholesaleCustomerPriceRate; }
 }
 
 class Price

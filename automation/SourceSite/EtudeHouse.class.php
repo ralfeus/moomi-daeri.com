@@ -16,10 +16,14 @@ namespace automation\SourceSite;
 
 use automation\Product;
 use automation\ProductSource;
+use model\catalog\ImportCategory;
 
 class EtudeHouse extends ProductSource {
 
-    protected function getAllCategoriesUrl() {
+    /**
+     * @return ImportCategory[]
+     */
+    protected function getAllCategories() {
         $categories = array(); $xml = array();
         xml_parse_into_struct(
             xml_parser_create(),
@@ -30,46 +34,37 @@ class EtudeHouse extends ProductSource {
                 break;
             } elseif (($element['tag'] == 'MENU')
                 && (($element['level'] == 3) && ($element['type'] == 'open'))) {
-                $categories[] = $this->getRootUrl() . $element['attributes']['URL'];
+                $categories[] = new ImportCategory(
+                    $this,
+                    null, null, null, $this->getRootUrl() . $element['attributes']['URL']);
             }
         }
         return $categories;
     }
 
-    protected function getMappedCategoryUrl($categoryId) {
-        $categories = array();
-        foreach (array_keys($this->getSite()->getCategoriesMap()) as $sourceSiteCategory) {
-//                foreach ($xml as $element) {
-//                    if (($element['level'] == 2) && ($element['type'] == 'close')) {
-//                        break;
-//                    } elseif (($element['tag'] == 'MENU')
-//                        && ((($element['level'] == 3) && ($element['type'] == 'open')) || (($element['level'] == 4) && ($element['type'] == 'complete')))
-//                        && preg_match("/$sourceSiteCategory/", $element['attributes']['URL'])) {
-//                        $categories[] = $this->getRootUrl() . $element['attributes']['URL'];
-//                        break;
-//                    }
-//                }
-            if (preg_match('/\d{3}000/', $sourceSiteCategory)) {
-                $categories[] = $this->getRootUrl() . 'product.do?method=submain&catCd1=' . $sourceSiteCategory;
-            } elseif (preg_match('/\d{6}/', $sourceSiteCategory)) {
-                $categories[] = $this->getRootUrl() . 'product.do?method=list&catCd2=' . $sourceSiteCategory;
-            }
+    public function getCategoryUrl($sourceSiteCategoryId) {
+        if (preg_match('/\d{3}000/', $sourceSiteCategoryId)) {
+            return $this->getRootUrl() . 'product.do?method=submain&catCd1=' . $sourceSiteCategoryId;
+        } elseif (preg_match('/\d{6}/', $sourceSiteCategoryId)) {
+            return $this->getRootUrl() . 'product.do?method=list&catCd2=' . $sourceSiteCategoryId;
+        } else {
+            throw new \Exception("Wrong category ID format");
         }
-        return $categories;
     }
 
-    public function getProducts() {
-        echo date('Y-m-d H:i:s') . "\n";
-        $products = array();
-        $urls = $this->getCategories(); $currCategory = 1;
-        foreach ($urls as $url) {
-            echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . ": $url\n";
-            $products = array_merge($products, $this->getCategoryProducts($url));
-            //break;
-        }
-        echo "Totally found " . sizeof($products) . " products\n";
-        echo date('Y-m-d H:i:s') . " --- Finished\n";
-        return $products;    }
+//    public function getProducts() {
+//        echo date('Y-m-d H:i:s') . "\n";
+//        $products = array();
+//        $categories = $this->getCategories(); $currCategory = 1;
+//        foreach ($categories as $category) {
+//            echo "Crawling " . $currCategory++ . " of " . sizeof($categories) . ": " . $category->getUrl() . "\n";
+//            $products = array_merge($products, $this->getCategoryProducts($category));
+//            //break;
+//        }
+//        echo "Totally found " . sizeof($products) . " products\n";
+//        echo date('Y-m-d H:i:s') . " --- Finished\n";
+//        return $products;
+//    }
 
 //    /**
 //     * @return stdClass
@@ -80,20 +75,15 @@ class EtudeHouse extends ProductSource {
         return 'http://www.etude.co.kr';
     }
 
-    /**
-     * @param string $categoryUrl
-     * @return  array
-     */
-    protected function getCategoryProducts($categoryUrl) {
+    protected function getCategoryProducts($category) {
         $products = array(); $matches = array();
-
-        $categoryId = preg_match('/(?<=catCd2=)\d+/', $categoryUrl, $matches)
+        $categoryId = preg_match('/(?<=catCd2=)\d+/', $category->getUrl(), $matches)
             ? $matches[0]
-            : preg_match('/(?<=catCd1=)\d+/', $categoryUrl, $matches)
+            : preg_match('/(?<=catCd1=)\d+/', $category->getUrl(), $matches)
                 ? $matches[0]
                 : null;
 //        $categoryUrl = 'http://etonymoly.com/common/ajax/exec_getProdList.asp?cate=' . $categoryId;
-        $html = $this->getHtmlDocument($categoryUrl);
+        $html = $this->getHtmlDocument($category->getUrl());
         $pages = $html->find('a[href^=javascript:searchByTarget]', -1);
         $pagesNum = (!is_null($pages) && preg_match('/(?<=searchByTarget\(\')\\d+/', $pages->attr['href'], $matches))
             ? $matches[0] : 1;
@@ -107,9 +97,9 @@ class EtudeHouse extends ProductSource {
                     continue;
 //                preg_match('/(?<=guid=)\d+/', $item->attr['href'], $matches);
                 $itemId = preg_match('/(?<=View\(\')\d+/', $item->findOne('a[href^=javascript:productView]')->attr['href'], $matches) ? $matches[0] : null;
-                $product = new Product(
+                $products[] = new Product(
                     $this,
-                    $categoryId,
+                    array($categoryId),
                     $itemId,
                     $item->findOne('dl.prd_info dt.title a')->text(),
                     $this->getUrl() . "/product.do?method=view&prdCd=$itemId",
@@ -118,13 +108,9 @@ class EtudeHouse extends ProductSource {
                     null,
                     0.25
                 );
-                if ($this->addProductToList($product, $products)) {
-                    $this->fillDetails($product);
-                }
-//                $products[] = $product;
             }
             if ($currPage < $pagesNum)
-                $html = $this->getHtmlDocument($categoryUrl . "&pageNum=" . ($currPage + 1));
+                $html = $this->getHtmlDocument($category->getUrl() . "&pageNum=" . ($currPage + 1));
         }
         echo "Got " . sizeof($products) . " products\n";
         return $products;
@@ -165,6 +151,6 @@ class EtudeHouse extends ProductSource {
      * @return int
      */
     protected function getCategoryProductsCount($categoryUrl) {
-        // TODO: Implement getCategoryProductsCount() method.
+        return null;
     }
 }

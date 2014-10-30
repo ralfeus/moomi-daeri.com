@@ -3,13 +3,23 @@ namespace automation\SourceSite;
 
 use automation\ProductSource;
 use automation\Product;
+use model\catalog\ImportCategory;
 
 abstract class GMarketCoKr extends ProductSource {
     protected $shopId;
 
     protected function fillDetails($product) {
         $html = $this->getHtmlDocument($product->url);
-//        $matches = array();
+        $matches = array();
+        /// Get categories
+        $categoryItem = $html->find("div#headerCate span.last a", 0);
+        $GdlcCd = preg_match('/(?<=GdlcCd=)\d+/', $categoryItem->attr['href'], $matches) ? $matches[0] : null;
+        $GdmcCd = preg_match('/(?<=GdmcCd=)\d+/', $categoryItem->attr['href'], $matches) ? $matches[0] : null;
+        $GdscCd = preg_match('/(?<=GdscCd=)\d+/', $categoryItem->attr['href'], $matches) ? $matches[0] : null;
+        $product->categoryIds[] = $GdlcCd;
+        $product->categoryIds[] = "$GdlcCd\\$GdmcCd";
+        $product->categoryIds[] = "$GdlcCd\\$GdmcCd\\$GdscCd";
+
         /// Get images
         $product->images[] = $product->thumbnail;
 
@@ -50,15 +60,20 @@ abstract class GMarketCoKr extends ProductSource {
         $html->clear();
     }
 
-    protected function getAllCategoriesUrl() {
-	    return "http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax?GdlcCd=&GdmcCd=&GdscCd=&type=LIST&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop";
+    protected function getAllCategories() {
+        return
+            array(
+                new ImportCategory(
+                    $this, null, null, null,
+                    "http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax?GdlcCd=&GdmcCd=&GdscCd=&type=LIST&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop"
+                )
+            );
     }
 
-    protected function getCategoryProducts($categoryUrl) {
-        $page = 0; $productsToGet = $this->getCategoryProductsCount($categoryUrl); $productsCount = $productsToGet;
-        $tmp = 1;
+    protected function getCategoryProducts($category) {
+        $page = 0; $productsToGet = $this->getCategoryProductsCount($category);
         $categoryProducts = array();
-        list($address, $query) = explode('?', $categoryUrl);
+        list($address, $query) = explode('?', $category->getUrl());
         do {
             $chunk = min($productsToGet, 200); $page++; $productsToGet -= $chunk;
             $output = $this->getPage(
@@ -71,6 +86,7 @@ abstract class GMarketCoKr extends ProductSource {
             $htmlDom = str_get_html($json->message);
             $items = $htmlDom->find('tr');
             /** @var \simple_html_dom_node $item */
+            $tmp = 0;
             foreach ($items as $item) {
                 //            $aElement = $item->find('a[href*=category_detail.php]', 0);
                 $categoryProducts[] = new Product(
@@ -84,7 +100,7 @@ abstract class GMarketCoKr extends ProductSource {
                     null,
                     0.3
                 );
-                //                if ($tmp > 5) break;
+//                if ($tmp++ > 5) break;
             }
             $htmlDom->clear();
         } while ($productsToGet);
@@ -92,12 +108,12 @@ abstract class GMarketCoKr extends ProductSource {
     }
 
     /**
-     * @param string $categoryUrl
+     * @param ImportCategory $category
      * @throws \Exception
      * @return int
      */
-    protected function getCategoryProductsCount($categoryUrl) {
-        list($address, $query) = explode('?', $categoryUrl);
+    protected function getCategoryProductsCount($category) {
+        list($address, $query) = explode('?', $category->getUrl());
         $html = $this->getPage(
             $address,
             null,
@@ -112,9 +128,9 @@ abstract class GMarketCoKr extends ProductSource {
         }
     }
 
-    protected function getMappedCategoryUrl($sourceSiteCategoryId) {
+    public function getCategoryUrl($sourceSiteCategoryId) {
         echo date('Y-m-d H:i:s ') . $sourceSiteCategoryId . "\n";
-        list($GdlcCd, $GdmcCd, $GdscCd) = explode('/', $sourceSiteCategoryId);
+        @list($GdlcCd, $GdmcCd, $GdscCd) = explode('/', $sourceSiteCategoryId);
         return "http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax?GdlcCd=$GdlcCd&GdmcCd=$GdmcCd&GdscCd=$GdscCd&type=LIST&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop";
     }
 
@@ -123,7 +139,7 @@ abstract class GMarketCoKr extends ProductSource {
 //        echo date('Y-m-d H:i:s') . "\n";
 //	//echo date('Y-m-d H:i:s ') . print_r($this->getSite()->getCategoriesMap(), true);
 //	if ($this->getSite()->getImportMappedCategoriesOnly()) {
-//		$urls = $this->getMappedCategoryUrl();
+//		$urls = $this->getCategoryUrl();
 //	} else {
 //		$urls = $this->getAllCategoriesUrl();
 //		echo date('Y-m-d H:i:s ') . "Got " . sizeof($urls) . " category URLs\n";

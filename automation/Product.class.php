@@ -3,7 +3,7 @@ namespace automation;
 
 class Product {
     public $id;
-    public $categoryId;
+    public $categoryIds;
     public $images = array();
     public $description;
     public $name;
@@ -15,10 +15,21 @@ class Product {
     public $url;
     public $weight;
 
+    /**
+     * @param ProductSource $sourceSite
+     * @param string[] $categoryIds
+     * @param string $sourceProductId
+     * @param string $name
+     * @param string $url
+     * @param string $thumbnail
+     * @param float $price
+     * @param string $description
+     * @param float $weight
+     */
     public function __construct(
-        ProductSource $sourceSite, $categoryId, $sourceProductId, $name, $url, $thumbnail, $price, $description = null, $weight = null
+        $sourceSite, $categoryIds, $sourceProductId, $name, $url, $thumbnail, $price, $description = null, $weight = null
     ) {
-        $this->categoryId = $categoryId;
+        $this->categoryIds = $categoryIds;
         $this->description = $description;
         $this->name = $name;
         $this->price = $price;
@@ -27,6 +38,10 @@ class Product {
         $this->thumbnail = $thumbnail;
         $this->url = $url;
         $this->weight = $weight;
+    }
+
+    public function getCategories() {
+        return $this->categoryIds;
     }
 
     public function getImages() {

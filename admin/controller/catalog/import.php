@@ -1,4 +1,7 @@
 <?php
+use model\catalog\ImportProduct;
+use model\extension\ImportSourceSiteDAO;
+
 class ControllerCatalogImport extends Controller {
     /** @var ModelCatalogImport */
     private $modelCatalogImport;
@@ -13,7 +16,11 @@ class ControllerCatalogImport extends Controller {
         $this->modelCatalogImport = $this->load->model('catalog/import');
     }
 
-    private function addFromSource(ImportedProduct $productToAdd) {
+    /**
+     * @param ImportProduct $productToAdd
+     * @throws Exception
+     */
+    private function addFromSource($productToAdd) {
         /// Downloading images
         /** @var ModelToolImage $modelToolImage */
         $modelToolImage = $this->load->model('tool/image');
@@ -22,7 +29,7 @@ class ControllerCatalogImport extends Controller {
         foreach ($productToAdd->getImages() as $imageUrl)
             $images[] = array('image' => $modelToolImage->download($imageUrl));
         /// Preparing name, korean name, link and description
-        $product_description = array();
+//        $product_description = array();
 //        $koreanName = array(
 //            'attribute_id' => ATTRIBUTE_KOREAN_NAME,
 //            'product_attribute_description' => array()
@@ -47,7 +54,7 @@ class ControllerCatalogImport extends Controller {
             'image' => $thumbnail,
             'length' => null, 'length_class_id' => 1,
             'location' => null,
-            'manufacturer_id' => $productToAdd->getSourceSite()->getDefaultManufacturerId(),
+            'manufacturer_id' => $productToAdd->getSourceSite()->getDefaultManufacturer()->getId(),
             'meta_keywords' => null, 'meta_description' => null,
             'minimum' => 1,
             'model' => $productToAdd->getSourceProductId(),
@@ -59,7 +66,7 @@ class ControllerCatalogImport extends Controller {
             'product_image' => $images,
             'product_option' => $this->setProductOption($productToAdd),
             'product_special' => $this->getSpecialPrices($productToAdd),
-            'product_store' => $productToAdd->getSourceSite()->getDefaultStoreId(),
+            'product_store' => $productToAdd->getSourceSite()->getStores(),
             'product_tag' => null,
             'seo_title' => null, 'seo_h1' => null,
             'shipping' => 1,
@@ -68,7 +75,7 @@ class ControllerCatalogImport extends Controller {
             'status' => 0,
             'stock_status_id' => 8,
             'subtract' => null,
-            'supplier_id' => $productToAdd->getSourceSite()->getDefaultSupplierId(),
+            'supplier_id' => $productToAdd->getSourceSite()->getDefaultSupplier()->getId(),
             'tax_class' => null,
             'upc' => null,
             'user_id' => 0,
@@ -84,11 +91,13 @@ class ControllerCatalogImport extends Controller {
     public function delete() {
         $this->modelCatalogProduct = $this->load->model('catalog/product');
         $productsToDelete = array();
-        if ($this->parameters['what'] == 'selectedItems')
-            foreach ($this->parameters['selectedItems'] as $importedProductId)
+        if ($this->parameters['what'] == 'selectedItems') {
+            foreach ($this->parameters['selectedItems'] as $importedProductId) {
                 $productsToDelete[] = $this->modelCatalogImport->getImportedProduct($importedProductId);
-        elseif ($this->parameters['what'] == 'all')
+            }
+        } elseif ($this->parameters['what'] == 'all') {
             $productsToDelete = $this->modelCatalogImport->getImportedProducts($this->parameters);
+        }
         foreach ($productsToDelete as $productToDelete) {
             foreach ($this->modelCatalogProduct->getProductImages($productToDelete->getLocalProductId()) as $image) {
                 unlink(DIR_IMAGE . $image['image']);
@@ -98,6 +107,7 @@ class ControllerCatalogImport extends Controller {
             $this->modelCatalogProduct->deleteProduct($productToDelete->getLocalProductId());
             $this->modelCatalogImport->unpairImportedProduct($productToDelete->getId());
         }
+        unset($this->parameters['selectedItems']);
         $this->redirect($this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters)));
     }
 
@@ -114,7 +124,7 @@ class ControllerCatalogImport extends Controller {
             $this->data['products'][] = $productItem;
         }
 
-        foreach ($this->modelCatalogImport->getSourceSites() as $sourceSite)
+        foreach (ImportSourceSiteDAO::getInstance()->getSourceSites() as $sourceSite)
             $this->data['sourceSites'][$sourceSite->getId()] = $sourceSite->getName();
 
         /// Check import running status
@@ -198,12 +208,13 @@ class ControllerCatalogImport extends Controller {
     public function synchronize() {
         $this->modelCatalogProduct = $this->load->model('catalog/product');
         $productsToSynchronize = array();
-        if ($this->parameters['what'] == 'selectedItems')
-            foreach ($this->parameters['selectedItems'] as $importedProductId)
+        if ($this->parameters['what'] == 'selectedItems') {
+            foreach ($this->parameters['selectedItems'] as $importedProductId) {
                 $productsToSynchronize[] = $this->modelCatalogImport->getImportedProduct($importedProductId);
-        elseif ($this->parameters['what'] == 'all')
+            }
+        } elseif ($this->parameters['what'] == 'all') {
             $productsToSynchronize = $this->modelCatalogImport->getImportedProducts($this->parameters);
-
+        }
         foreach ($productsToSynchronize as $productToSynchronize) {
             if ($productToSynchronize->getLocalProductId()) {
                 $this->updateFromSource($productToSynchronize);
@@ -211,24 +222,29 @@ class ControllerCatalogImport extends Controller {
                 $this->addFromSource($productToSynchronize);
             }
         }
-
+        unset($this->parameters['selectedItems']);
         $this->redirect($this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters)));
     }
 
-    private function updateFromSource(ImportedProduct $productToUpdate) {
+    /**
+     * @param ImportProduct $productToUpdate
+     * @throws Exception
+     */
+    private function updateFromSource($productToUpdate) {
         $localProduct = $this->modelCatalogProduct->getProduct($productToUpdate->getLocalProductId());
         /// Downloading images
         foreach ($this->modelCatalogProduct->getProductImages($productToUpdate->getLocalProductId()) as $image) {
             unlink(DIR_IMAGE . $image['image']);
         }
         unlink(DIR_IMAGE . $localProduct['image']);
+        /** @var ModelToolImage $modelToolImage */
         $modelToolImage = $this->load->model('tool/image');
         $thumbnail = $modelToolImage->download($productToUpdate->getThumbnailUrl());
         $images = array();
         foreach ($productToUpdate->getImages() as $imageUrl)
             $images[] = array('image' => $modelToolImage->download($imageUrl));
         /// Preparing name, korean name and description
-        $product_description = array();
+//        $product_description = array();
 //        foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
 ////            $product_description[$language['language_id']] = array(
 ////                'name' => $productToUpdate->getName(),
@@ -247,7 +263,7 @@ class ControllerCatalogImport extends Controller {
             'image' => $thumbnail,
             'length' => null, 'length_class_id' => 1,
             'location' => null,
-            'manufacturer_id' => $productToUpdate->getSourceSite()->getDefaultManufacturerId(),
+            'manufacturer_id' => $productToUpdate->getSourceSite()->getDefaultManufacturer()->getId(),
             'meta_keywords' => null, 'meta_description' => null,
             'minimum' => null,
             'model' => $localProduct['model'],
@@ -259,7 +275,7 @@ class ControllerCatalogImport extends Controller {
             'product_image' => $images,
             'product_option' => $localProductOptions,
             'product_special' => $this->getSpecialPrices($productToUpdate),
-            'product_store' => $productToUpdate->getSourceSite()->getDefaultStoreId(),
+            'product_store' => $productToUpdate->getSourceSite()->getStores(),
             'product_tag' => null,
             'seo_title' => null, 'seo_h1' => null,
             'shipping' => null,
@@ -269,7 +285,7 @@ class ControllerCatalogImport extends Controller {
             'stock_status_id' => 8,
             'status' => $localProduct['status'],
             'subtract' => null,
-            'supplier_id' => $productToUpdate->getSourceSite()->getDefaultSupplierId(),
+            'supplier_id' => $productToUpdate->getSourceSite()->getDefaultSupplier()->getId(),
             'tax_class' => null,
             'upc' => null,
             'user_id' => 0,
@@ -294,7 +310,7 @@ class ControllerCatalogImport extends Controller {
     }
 
     /**
-     * @param ImportedProduct $product
+     * @param ImportProduct $product
      * @return array
      */
     private function getSpecialPrices($product) {

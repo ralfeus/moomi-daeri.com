@@ -614,14 +614,16 @@ class ModelCatalogProduct extends Model {
 	}
 	
 	public function getProduct($product_id) {
-		$query = $this->db->query("
+		$query = $this->getDb()->query(<<<SQL
 		    SELECT DISTINCT
 		        *,ua.keyword
             FROM
                 product AS p
                 LEFT JOIN url_alias AS ua ON ua.query =  'product_id=' + p.product_id
-                LEFT JOIN product_description AS pd ON p.product_id = pd.product_id
-            WHERE p.product_id = " . (int)$product_id . " AND pd.language_id = " . (int)$this->config->get('config_language_id')
+                LEFT JOIN product_description AS pd ON p.product_id = pd.product_id AND pd.language_id = ?
+            WHERE p.product_id = ?
+SQL
+            , array("i:" . $this->config->get('config_language_id'), "i:$product_id")
         );
 				
 		return $query->row;
