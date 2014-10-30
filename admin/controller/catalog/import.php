@@ -124,9 +124,9 @@ class ControllerCatalogImport extends Controller {
             $this->data['products'][] = $productItem;
         }
 
-        foreach (ImportSourceSiteDAO::getInstance()->getSourceSites() as $sourceSite)
+        foreach (ImportSourceSiteDAO::getInstance()->getSourceSites() as $sourceSite) {
             $this->data['sourceSites'][$sourceSite->getId()] = $sourceSite->getName();
-
+        }
         /// Check import running status
 
         if ($this->status()) {

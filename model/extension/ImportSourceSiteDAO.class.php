@@ -229,6 +229,7 @@ SQL
                 preg_split('/,/', $siteEntry['default_category_id']),
                 ManufacturerDAO::getInstance()->getManufacturer($siteEntry['default_manufacturer_id'], true),
                 SupplierDAO::getInstance()->getSupplier($siteEntry['default_supplier_id'], true),
+                $siteEntry['import_mapped_categories_only'],
                 $siteEntry['name'],
                 $siteEntry['regular_customer_price_rate'],
                 preg_split('/,/', $siteEntry['default_store_id']),
