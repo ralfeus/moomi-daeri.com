@@ -35,11 +35,17 @@ if ($sites = trim(file_get_contents("crawler.lck"))) {
 
     echo date('Y-m-d H:i:s') . " Starting\n";
     $startTime = time();
-    foreach (explode(',', $sites) as $siteId) {
-        $site = ImportSourceSiteDAO::getInstance()->getSourceSite((int)$siteId);
-        echo date('Y-m-d H:i:s') . " Crawling " . $site->getClassName() . "\n";
-        $className = 'automation\\SourceSite\\' . $site->getClassName();
-        DatabaseManager::getInstance()->addProducts($className::getInstance());
-        DatabaseManager::getInstance()->cleanup($className::getInstance(), $startTime);
+    try {
+        foreach (explode(',', $sites) as $siteId) {
+            $site = ImportSourceSiteDAO::getInstance()->getSourceSite((int)$siteId);
+            echo date('Y-m-d H:i:s') . " Crawling " . $site->getClassName() . "\n";
+            $className = 'automation\\SourceSite\\' . $site->getClassName();
+            DatabaseManager::getInstance()->addProducts($className::getInstance());
+            DatabaseManager::getInstance()->cleanup($className::getInstance(), $startTime);
+        }
+    }
+    catch (Exception $exc) {
+        print_r($exc);
+        die;
     }
 }
