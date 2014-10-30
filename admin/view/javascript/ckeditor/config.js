@@ -18,11 +18,23 @@ CKEDITOR.editorConfig = function( config )
 	config.filebrowserWindowWidth = '800';
 	config.filebrowserWindowHeight = '500';
 
-	config.resize_enabled = false;
+	config.resize_enabled = true;
 	
 	config.htmlEncodeOutput = false;
 	config.entities = false;
-	
+    // config.language = 'ru'; //Язык по умолчанию
+    // config.skin = 'v2'; //Скин редактора (смотри в папке skins)
+    // config.uiColor = '#AADC6E';
+    // config.width = '100%'; //Ширина редактора
+    // config.startupFocus = true; //При открытии стр. где есть радактор - брать фокус на себя
+    // config.smiley_columns = 10; //Столбики со смайлами
+    // config.scayt_uiTabs = '1,0,1';
+    // config.toolbarStartupExpanded = false; //Прятать панель инстр. (по дефолту true)
+    // config.resize_enabled = true;
+    // config.resize_minWidth = 900;
+ config.resize_minHeight = 400;
+ config.resize_dir = 'vertical'; //Изменять размер редактора только по высоте
+ config.height = '500px'; //Высота редактора	
 	config.toolbar = 'Custom';
 
 	config.toolbar_Custom = [
@@ -33,7 +45,7 @@ CKEDITOR.editorConfig = function( config )
 		['JustifyLeft','JustifyCenter','JustifyRight','JustifyFull'],
 		['SpecialChar'],
 		'/',
-		['Undo','Redo'],
+		['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
 		['Font','FontSize'],
 		['TextColor','BGColor'],
 		['Link','Unlink','Anchor'],
