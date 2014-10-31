@@ -4,7 +4,7 @@ html {
 	padding: 0;
 }
 body {
-	background: #ffffff;
+      background: linear-gradient(to right, rgba(0, 173, 239, 0.1) 0%, rgba(255, 255, 255, 0.1) 15%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 85%, rgba(238, 199, 0, 0.1) 100%) repeat scroll 0% 0% transparent;
     background-attachment: fixed;
 	color: #000000;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
@@ -183,7 +183,15 @@ label {
  	padding-top: 7px;
  	position: relative;
      }
-     
+#header a.bookmark {
+    position: absolute;
+    z-index: 99;
+    height: 40px;
+    top: 60px;
+    left: -40px;
+    width: 40px;
+  	background: url(../image/favorite.png) no-repeat;  
+}     
 .header-top #span-selectors {
     margin: 0px 10px;
     }

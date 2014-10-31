@@ -257,7 +257,11 @@ $(function(){
  });
 });
 </script>
-<style type="text/css">
+<script>
+function addBookmark() {
+if (document.all) window.external.addFavorite('http://moomidae.com', 'MooMi-DaeRi - ALL from KOREA!');
+}
+</script><style type="text/css">
   .width180 {
     width: 180px;
   }
@@ -406,7 +410,7 @@ body .one{overflow: hidden}
     </div>
 
 <div id="container">
-  <a id="toTop"></a>
+<a id="toTop"></a>
   <div id="header"
     <?php if ($logo): ?>
       style="background: url('<?php echo $logo; ?>');"
@@ -414,6 +418,7 @@ body .one{overflow: hidden}
   >
   <a href="<?= $home ?>" title="<?= $text_home ?>"></a>
 <!--  <div id="welcome"><?= (!$logged) ? $text_welcome :$text_logged ?></div>-->
+<a class="bookmark" href="javascript:void(0);" title="<?= $text_favorites ?>" onclick="var url=window.document.location; var title=window.document.title; function bookmark(a) {a.href = url; a.rel = 'sidebar'; a.title = title; return true;} bookmark(this); window.external.AddFavorite(location.href,document.title); return false;"></a>
   <div class="links">
 		      <a class="specaction" href="index.php?route=information/specaction"></a>
           <a class="agent" href="index.php?route=product/repurchase"><span><?= $text_repurchase_order ?></span></a>
