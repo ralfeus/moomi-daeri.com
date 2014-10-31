@@ -29,7 +29,7 @@ class ControllerCatalogImport extends Controller {
         foreach ($productToAdd->getImages() as $imageUrl)
             $images[] = array('image' => $modelToolImage->download($imageUrl));
         /// Preparing name, korean name, link and description
-//        $product_description = array();
+        $product_description = array();
 //        $koreanName = array(
 //            'attribute_id' => ATTRIBUTE_KOREAN_NAME,
 //            'product_attribute_description' => array()
@@ -38,14 +38,14 @@ class ControllerCatalogImport extends Controller {
 //            'attribute_id' => ATTRIBUTE_LINK,
 //            'product_attribute_description' => array()
 //        );
-//        foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
-//            $product_description[$language['language_id']] = array(
-//                'name' => $productToAdd->getName(),
+        foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
+            $product_description[$language['language_id']] = array(
+                'name' => $productToAdd->getName()
 //                'description' => $productToAdd->getDescription()
-//            );
+            );
 ////            $koreanName['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getName() );
 ////            $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getSourceUrl() );
-//        }
+        }
 
         $productId = $this->modelCatalogProduct->addProduct(array(
             'date_available' => date('Y-m-d'),
@@ -62,7 +62,7 @@ class ControllerCatalogImport extends Controller {
             'price' => $productToAdd->getSourcePrice()->getPrice() * $productToAdd->getSourceSite()->getRegularCustomerPriceRate(),
             //'product_attribute' => array($koreanName, $sourceUrl),
             'product_category' => $productToAdd->getCategories(),
-//            'product_description' => $product_description,
+            'product_description' => $product_description,
             'product_image' => $images,
             'product_option' => $this->setProductOption($productToAdd),
             'product_special' => $this->getSpecialPrices($productToAdd),
@@ -244,13 +244,13 @@ class ControllerCatalogImport extends Controller {
         foreach ($productToUpdate->getImages() as $imageUrl)
             $images[] = array('image' => $modelToolImage->download($imageUrl));
         /// Preparing name, korean name and description
-//        $product_description = array();
-//        foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
-////            $product_description[$language['language_id']] = array(
-////                'name' => $productToUpdate->getName(),
-////                'description' => $productToUpdate->getDescription()
-////            );
-//        }
+        $product_description = array();
+        foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
+            $product_description[$language['language_id']] = array(
+                'name' => $productToUpdate->getName(),
+//                'description' => $productToUpdate->getDescription()
+            );
+        }
 
         /// Copying product options in order to preserve ones
         $localProductOptions = $this->modelCatalogProduct->getProductOptions($productToUpdate->getLocalProductId());
@@ -271,7 +271,7 @@ class ControllerCatalogImport extends Controller {
             'price' => $productToUpdate->getSourcePrice()->getPrice() * $productToUpdate->getSourceSite()->getRegularCustomerPriceRate(),
 //            'product_attribute' => array($koreanName, $sourceUrl),
             'product_category' => $localProductCategories,
-            'product_description' => null,
+            'product_description' => $product_description,
             'product_image' => $images,
             'product_option' => $localProductOptions,
             'product_special' => $this->getSpecialPrices($productToUpdate),
