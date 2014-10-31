@@ -10,8 +10,16 @@ Options -Indexes
 </FilesMatch>
 # SEO URL Settings
 RewriteEngine On
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^http://(www.)?moomidae.com/ [nc]
+RewriteCond %{HTTP_HOST} ^www\.moomidae\.com$ [NC]
+RewriteCond %{HTTP_HOST} ^.*moomidae\.com$ [NC]
+RewriteCond %{HTTP_HOST} ^www\.moomidae\.net$ [NC]
+RewriteCond %{HTTP_HOST} ^.*moomidae\.net$ [NC]
 RewriteCond %{HTTP_HOST} ^www\.moomi-daeri\.com$ [NC]
-RewriteRule ^(.*)$ http://moomi-daeri.com/$1 [R=301,L]
+RewriteCond %{HTTP_HOST} ^.*moomi-daeri\.com$ [NC]
+RewriteRule ^(.*)$ http://moomidae.com/$1 [R=301,L]
+RewriteRule .*.(gif|jpg|png)$ http://moomidae.com/image/stop.jpg[nc]
 # If your opencart installation does not run on the main web folder make sure you folder it does run in ie. / becomes /shop/ 
 RewriteBase /
 RewriteRule ^sitemap.xml$ index.php?route=feed/google_sitemap [L]
