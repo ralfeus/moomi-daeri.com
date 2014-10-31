@@ -1,6 +1,7 @@
 <?php
 // Text
 $_['text_home']             = 'Главная';
+$_['text_favorites']        = 'Добавить в избранное';
 $_['text_wishlist']         = 'Заметки (%s)';
 $_['text_cart']             = 'Корзина (%s)';
 $_['text_items']            = '%s шт. - %s';

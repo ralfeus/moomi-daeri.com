@@ -1,6 +1,7 @@
 <?php
 // Text
 $_['text_home']             = 'Home';
+$_['text_favorites']        = 'Add to Favorites';
 $_['text_wishlist']         = 'Wish List (%s)';
 $_['text_cart']             = 'Cart (%s)';
 $_['text_items']            = '%s item(s) - %s';

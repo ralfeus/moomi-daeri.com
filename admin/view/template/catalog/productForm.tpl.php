@@ -251,11 +251,11 @@
             <tr>
               <td><?= $entry_manufacturer ?></td>
               <td><select name="manufacturer_id">
-                  <option value="0"><?= $text_none ?></option>
-<?php foreach ($manufacturers as $manufacturer):
-    $selected = ($manufacturer->getId() == $manufacturer_id) ? " selected" : ""; ?>
-                  <option value="<?= $manufacturer->getId() ?>" <?= $selected ?>><?= $manufacturer->getName() ?></option>
-<?php endforeach; ?>
+                  <option value="0" selected="selected"><?= $text_none ?></option>
+                  <?php foreach ($manufacturers as $manufacturer):
+                    $selected = ($manufacturer->getId() == $manufacturer_id) ? " selected" : ""; ?>
+                    <option value="<?= $manufacturer->getId() ?> <?= $selected ?>"><?= $manufacturer->getName() ?></option>
+                  <?php endforeach; ?>
                 </select></td>
             </tr>
             <tr>
@@ -322,27 +322,29 @@
                     <?php $i = 0; ?>
                     <?php $class = 'odd'; ?>
                     <table class="categories">
-                        <tr>
-                            <td>
-                                <?php foreach ($categories as $category) { ?>
-                                <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
-                                <?php if($i == $half_num) { ?>
-                            <td>
-                                <?php } ?>
-                                <div class="<?= $class ?>">
-                                    <?php if (in_array($category['category_id'], $product_category)) { ?>
-                                    <input type="checkbox" name="product_category[]" value="<?= $category['category_id'] ?>" checked="checked" />
-                                    <?= $category['name'] ?>
-                                    <?php } else { ?>
-                                    <input type="checkbox" name="product_category[]" value="<?= $category['category_id'] ?>" />
-                                    <?= $category['name'] ?>
-                                    <?php } ?>
-                                </div>
-                                <?php $i++; ?>
-                                <?php if($i == $half_num || $i == $num) { ?>
-                            </td>
+                      <tr>
+                        <td>
+                          <?php foreach ($categories as $category) { ?>
+                            <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
+                            <?php if($i == $half_num) { ?>
+                              <td>
                             <?php } ?>
+                            <div class="<?= $class ?>">
+
+                              <?php if (in_array($category['category_id'], $product_category)) { ?>
+                                <input type="checkbox" name="product_category[]" value="<?= $category['category_id'] ?>" checked="checked" />
+                                <?= $category['name'] ?>
+                              <?php } else { ?>
+                                <input type="checkbox" name="product_category[]" value="<?= $category['category_id'] ?>" />
+                                <?= $category['name'] ?>
+                              <?php } ?>
+
+                            </div>
+                            <?php $i++; ?>
+                            <?php if($i == $half_num || $i == $num) { ?>
+                              </td>
                             <?php } ?>
+                          <?php } ?>
                         </tr>
                     </table>
                     <a onclick="$(this).parent().find(':checkbox').attr('checked', true);"><?= $textSelectAll ?></a>

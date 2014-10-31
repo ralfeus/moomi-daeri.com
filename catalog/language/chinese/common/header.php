@@ -1,6 +1,7 @@
 <?php
 // Text
 $_['text_home']             = '家';
+$_['text_favorites']        = 'Add to Favorites';
 $_['text_wishlist']         = '願望清單 (%s)';
 $_['text_cart']             = '購物車 (%s)';
 $_['text_items']            = '%s 項目 - %s';
