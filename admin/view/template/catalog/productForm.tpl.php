@@ -251,10 +251,10 @@
             <tr>
               <td><?= $entry_manufacturer ?></td>
               <td><select name="manufacturer_id">
-                  <option value="0" selected="selected"><?= $text_none ?></option>
+                  <option value="0"><?= $text_none ?></option>
                   <?php foreach ($manufacturers as $manufacturer):
                     $selected = ($manufacturer->getId() == $manufacturer_id) ? " selected" : ""; ?>
-                    <option value="<?= $manufacturer->getId() ?> <?= $selected ?>"><?= $manufacturer->getName() ?></option>
+                    <option value="<?= $manufacturer->getId() ?>" <?= $selected ?>><?= $manufacturer->getName() ?></option>
                   <?php endforeach; ?>
                 </select></td>
             </tr>
