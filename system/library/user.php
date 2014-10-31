@@ -4,6 +4,10 @@ final class User {
 	private $username;
   	private $permission = array();
 
+/* [webme] deny order deletions by specified user_group - begin */
+private $usergroup_id;
+/* [webme] deny order deletions by specified user_group - end */
+
     public static function getInstance()
     {
 
@@ -21,6 +25,10 @@ final class User {
 				$this->user_id = $user_query->row['user_id'];
 				$this->username = $user_query->row['username'];
 				
+/* [webme] deny order deletions by specified user_group - begin */
+$this->usergroup_id = $user_query->row['user_group_id'];
+/* [webme] deny order deletions by specified user_group - end */
+
       			$this->db->query("UPDATE user SET ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "' WHERE user_id = '" . (int)$this->session->data['user_id'] . "'");
 
       			$user_group_query = $this->db->query("SELECT permission FROM user_group WHERE user_group_id = '" . (int)$user_query->row['user_group_id'] . "'");
@@ -46,6 +54,10 @@ final class User {
 			
 			$this->user_id = $user_query->row['user_id'];
 			$this->username = $user_query->row['username'];			
+
+/* [webme] deny order deletions by specified user_group - begin */
+$this->usergroup_id = $user_query->row['user_group_id'];
+/* [webme] deny order deletions by specified user_group - end */
 
       		$user_group_query = $this->db->query("SELECT permission FROM user_group WHERE user_group_id = '" . (int)$user_query->row['user_group_id'] . "'");
 
@@ -91,5 +103,10 @@ final class User {
   	public function getUserName() {
     	return $this->username;
   	}	
+/* [webme] deny order deletions by specified user_group - begin */
+public function getUsergroupId() {
+return $this->usergroup_id;
+}
+/* [webme] deny order deletions by specified user_group - end */
 }
 ?>

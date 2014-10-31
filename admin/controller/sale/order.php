@@ -1491,7 +1491,12 @@ foreach ($this->data['totals'] as $v) {
     	if (!$this->user->hasPermission('modify', 'sale/order')) {
 			$this->error['warning'] = $this->language->get('error_permission');
     	}
-
+/* [webme] deny order deletions by specified user_group - begin */
+$pureManagerGroupId = 11; // вот это ID созданной группы, которой ЗАПРЕЩАЕМ удалять заказы.
+if ($this->user->getUsergroupId() == $pureManagerGroupId) {
+$this->error['warning'] = $this->language->get('error_order_deletion_denied');
+}
+/* [webme] deny order deletions by specified user_group - end */
 		if (!$this->error) {
 	  		return true;
 		} else {
