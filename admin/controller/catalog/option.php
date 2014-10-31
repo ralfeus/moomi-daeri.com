@@ -457,6 +457,13 @@ class ControllerCatalogOption extends Controller {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
 		
+/* [webme] deny order deletions by specified user_group - begin */
+$pureManagerGroupId = 11; // вот это ID созданной группы, которой ЗАПРЕЩАЕМ удалять заказы.
+if ($this->user->getUsergroupId() == $pureManagerGroupId) {
+$this->error['warning'] = $this->language->get('error_options_deletion_denied');
+}
+/* [webme] deny order deletions by specified user_group - end */
+
 		$this->load->model('catalog/product');
 		
 		foreach ($this->request->post['selected'] as $option_id) {
