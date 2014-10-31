@@ -249,16 +249,6 @@
         <div id="tab-links">
           <table class="form">
             <tr>
-              <td><?= $entry_manufacturer ?></td>
-              <td><select name="manufacturer_id">
-                  <option value="0"><?= $text_none ?></option>
-<?php foreach ($manufacturers as $manufacturer):
-    $selected = ($manufacturer->getId() == $manufacturer_id) ? " selected" : ""; ?>
-                  <option value="<?= $manufacturer->getId() ?>" <?= $selected ?>><?= $manufacturer->getName() ?></option>
-<?php endforeach; ?>
-                </select></td>
-            </tr>
-            <tr>
                 <td><?= $entry_supplier ?></td>
                 <td>
                     <select name="supplier_id">
