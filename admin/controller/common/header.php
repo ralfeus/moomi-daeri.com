@@ -114,6 +114,7 @@ class ControllerCommonHeader extends Controller {
         $this->data['textContentManagement'] = $this->language->get('CONTENT_MANAGEMENT');
         $this->data['textFinishSupplierOrders'] = $this->language->get('FINISH_SUPPLIER_ORDERS_FOR_TODAY');
         $this->data['textCreditManagement'] = $this->language->get('CREDIT_MANAGEMENT');
+        $this->data['textImportModules'] = $this->language->get('IMPORT_MODULES');
         $this->data['textImportProducts'] = $this->language->get('IMPORT_PRODUCTS');
         $this->data['textStartImportProducts'] = $this->language->get('START_IMPORT_PRODUCTS');
         $this->data['textSelectAll'] = $this->language->get('SELECT_ALL');
@@ -200,6 +201,7 @@ class ControllerCommonHeader extends Controller {
 			$this->data['zone'] = $this->url->link('localisation/zone', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['page'] = $this->url->link('shop/page', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['action'] = $this->url->link('shop/action', 'token=' . $this->session->data['token'], 'SSL');
+            $this->data['urlImportModules'] = $this->url->link('extension/import', 'token=' . $this->session->data['token'], 'SSL');
             $this->data['urlFinishSupplierOrders'] = $this->url->link(
                 'sale/order_items/finishSupplierOrders', $this->buildUrlParameterString($this->parameters), 'SSL');
             $this->data['urlImportProducts'] = $this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters), 'SSL');
@@ -224,7 +226,7 @@ class ControllerCommonHeader extends Controller {
 			}
 		}
 
-		$this->template = 'common/header.tpl';
+		$this->template = 'common/header.tpl.php';
 
 		$this->render();
 	}
