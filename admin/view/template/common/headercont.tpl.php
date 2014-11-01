@@ -97,6 +97,9 @@ $(document).ready(function(){
         <ul>
           <li><a href="<?php echo $category; ?>"><?php echo $text_category; ?></a></li>
             <li><a class="parent" href="<?php echo $product; ?>"><?php echo $text_product; ?></a></li>
+              <ul>
+                  <li><a href="<?php echo $product; ?>&resetFilter=1"><?php echo $text_reset_filter_product; ?></a></li>
+              </ul>
             <li><a class="parent"><?php echo $text_attribute; ?></a>
               <ul>
                 <li><a href="<?php echo $attribute; ?>"><?php echo $text_attribute; ?></a></li>
