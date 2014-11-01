@@ -191,5 +191,9 @@ $(document).ready(function() {
 });
 //--></script>
   </div>
+  			<div id="toggle">
+				<a id="open" class="open"></a>
+				<a id="close" style="display: none;" class="close"></a>			
+			</div>
   <?php } ?>
 </div>
