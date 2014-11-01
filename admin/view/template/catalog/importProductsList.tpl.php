@@ -16,9 +16,11 @@
           <a id="importButton" onclick="<?= $importAction ?>Import();" class="button"><?= $textToggleImport ?></a>
           <a onclick="showProgress();" class="button"><?= $textViewImportStatus ?></a>
           <a onclick="submitForm('<?= $urlSyncSelected ?>');" class="button"><?= $textUpdateSelected ?></a>
-          <a onclick="submitForm('<?= $urlDeleteSelected ?>');" class="button"><?= $textDeleteSelected ?></a>
+          <?php /*<a onclick="submitForm('<?= $urlDeleteSelected ?>');" class="button"><?= $textDeleteSelected ?></a>*/ ?>
           <a onclick="submitForm('<?= $urlSyncAll ?>');" class="button"><?= $textUpdateAll ?></a>
-          <a onclick="submitForm('<?= $urlDeleteAll ?>');" class="button"><?= $textDeleteAll ?></a>
+          <?php /*<a onclick="submitForm('<?= $urlDeleteAll ?>');" class="button"><?= $textDeleteAll ?></a>*/ ?>
+          <a onclick="submitForm('<?= $urlDisableSelected ?>');" class="button"><?= $textDisableSelected ?></a>
+          <a onclick="submitForm('<?= $urlDisableInactive ?>');" class="button"><?= $textDisableInactive ?></a>
       </div>
     </div>
     <div class="content">
@@ -245,10 +247,8 @@ function stopImport() {
     })
 }
 
-function submitForm(action)
-{
-    if ($('[name^=selectedItems]:checked').length != 0)
-    {
+function submitForm(action) {
+    if ((action != /selectedItems/) || $('[name^=selectedItems]:checked').length != 0) {
         $('#form')
             .attr('action', action)
             .submit();

@@ -9,6 +9,9 @@
 $_['headingTitle'] = 'Import products from external sources';
 $_['DELETE_ALL'] = 'Delete all';
 $_['DELETE_SELECTED'] = 'Delete selected';
+$_['DISABLE_ALL'] = 'Disable all';
+$_['DISABLE_INACTIVE'] = 'Disable inactive';
+$_['DISABLE_SELECTED'] = 'Disable selected';
 $_['SELECT_SOURCE_SITES_TO_IMPORT'] = 'Select source sites to import from';
 $_['SOURCE_SITE'] = 'Source site';
 $_['START_IMPORT'] = "Start Import";

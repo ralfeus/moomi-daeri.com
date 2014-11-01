@@ -2,7 +2,6 @@
 namespace model\catalog;
 
 use model\extension\ImportSourceSite;
-use Price;
 
 class ImportProduct {
     private $id;
@@ -28,8 +27,8 @@ class ImportProduct {
      * @param string $name
      * @param int[] $categories
      * @param string $description
-     * @param Price $localPrice
-     * @param Price $sourcePrice
+     * @param ImportPrice $localPrice
+     * @param ImportPrice $sourcePrice
      * @param ImportSourceSite $sourceSite
      * @param string $sourceUrl
      * @param string $thumbnailUrl
@@ -38,17 +37,17 @@ class ImportProduct {
      * @param string $timeModified
      * @param bool $isActive
      */
-    public function __construct(
-        $id, $sourceProductId, $localProductId, $name, $categories, $description, $localPrice = null, $sourcePrice, $sourceSite,
-        $sourceUrl, $thumbnailUrl, array $images, $weight, $timeModified, $isActive
-    ) {
+    public function __construct($id, $sourceProductId = null, $localProductId = null, $name = null, $categories = null,
+                                $description = null, $localPrice = null, $sourcePrice = null, $sourceSite = null,
+                                $sourceUrl = null, $thumbnailUrl = null, $images = null, $weight = null,
+                                $timeModified = null, $isActive = null) {
         $this->id = $id;
         $this->localProductId = empty($localProductId) ? null : $localProductId;
         $this->categories = $categories;
         $this->name = $name;
         $this->description = $description;
         $this->isActive = $isActive;
-        $this->localPrice = empty($localPrice) ? null : $localPrice;
+        $this->localPrice = $localPrice;
         $this->sourcePrice = $sourcePrice;
         $this->sourceSite = $sourceSite;
         $this->sourceUrl = $sourceUrl;
@@ -69,7 +68,16 @@ class ImportProduct {
         return sizeof($this->categories) ? $this->categories : $this->sourceSite->getDefaultCategories();
     }
 
-    public function getLocalProductId() { return $this->localProductId; }
+    /**
+     * @return int
+     */
+    public function getLocalProductId() {
+        if (!isset($this->localProductId)) {
+            $this->localProductId = ImportProductDAO::getInstance()->getLocalProductId($this->id);
+        }
+        return $this->localProductId;
+    }
+
     public function getThumbnailUrl() { return $this->thumbnailUrl; }
     /**
      * @return string
@@ -92,7 +100,7 @@ class ImportProduct {
     public function getIsActive() { return $this->isActive; }
 
     /**
-     * @return Price
+     * @return ImportPrice
      */
     public function getLocalPrice() { return $this->localPrice; }
 
@@ -102,7 +110,7 @@ class ImportProduct {
     public function getName() { return $this->name; }
 
     /**
-     * @return Price
+     * @return ImportPrice
      */
     public function getSourcePrice() { return $this->sourcePrice; }
 

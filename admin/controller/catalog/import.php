@@ -1,10 +1,9 @@
 <?php
 use model\catalog\ImportProduct;
+use model\catalog\ImportProductDAO;
 use model\extension\ImportSourceSiteDAO;
 
 class ControllerCatalogImport extends Controller {
-    /** @var ModelCatalogImport */
-    private $modelCatalogImport;
     /** @var ModelCatalogProduct */
     private $modelCatalogProduct;
 
@@ -13,7 +12,7 @@ class ControllerCatalogImport extends Controller {
         parent::__construct($registry);
         $this->load->language('catalog/import');
         $this->document->setTitle($this->language->get('headingTitle'));
-        $this->modelCatalogImport = $this->load->model('catalog/import');
+        $this->modelCatalogProduct = $this->load->model('catalog/product');
     }
 
     /**
@@ -85,18 +84,16 @@ class ControllerCatalogImport extends Controller {
             'supplierUrl' => $productToAdd->getSourceUrl()
         ));
 
-        $this->modelCatalogImport->pairImportedProduct($productToAdd->getId(), $productId);
+        ImportProductDAO::getInstance()->pairImportedProduct($productToAdd->getId(), $productId);
     }
 
     public function delete() {
-        $this->modelCatalogProduct = $this->load->model('catalog/product');
         $productsToDelete = array();
         if ($this->parameters['what'] == 'selectedItems') {
-            foreach ($this->parameters['selectedItems'] as $importedProductId) {
-                $productsToDelete[] = $this->modelCatalogImport->getImportedProduct($importedProductId);
-            }
+            $productsToDelete = ImportProductDAO::getInstance()->getImportedProducts(array('selectedItems' => $this->parameters['selectedItems']));
         } elseif ($this->parameters['what'] == 'all') {
-            $productsToDelete = $this->modelCatalogImport->getImportedProducts($this->parameters);
+            $filter = $this->parameters; unset($filter['selectedItems']);
+            $productsToDelete = ImportProductDAO::getInstance()->getImportedProducts($filter);
         }
         foreach ($productsToDelete as $productToDelete) {
             foreach ($this->modelCatalogProduct->getProductImages($productToDelete->getLocalProductId()) as $image) {
@@ -105,17 +102,39 @@ class ControllerCatalogImport extends Controller {
             $localProduct = $this->modelCatalogProduct->getProduct($productToDelete->getLocalProductId());
             unlink(DIR_IMAGE . $localProduct['image']);
             $this->modelCatalogProduct->deleteProduct($productToDelete->getLocalProductId());
-            $this->modelCatalogImport->unpairImportedProduct($productToDelete->getId());
+            ImportProductDAO::getInstance()->unpairImportedProduct($productToDelete->getId());
         }
         unset($this->parameters['selectedItems']);
         $this->redirect($this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters)));
     }
 
-    private function showList() {
-        $this->parameters['start'] = ($this->parameters['page'] - 1) * $this->config->get('config_admin_limit');
-        $this->parameters['limit'] = $this->config->get('config_admin_limit');
+    public function disable() {
+        $productsToDisable = array();
+        if ($this->parameters['what'] == 'all') {
+            $filter = $this->parameters; unset($filter['selectedItems']);
+            $productsToDisable = ImportProductDAO::getInstance()->getImportedProducts($filter, true);
+        } elseif ($this->parameters['what'] == 'inactiveItems') {
+            $productsToDisable = ImportProductDAO::getInstance()->getImportedProducts(array('filterIsActive' => false), true);
+        } elseif ($this->parameters['what'] == 'selectedItems') {
+            $productsToDisable = ImportProductDAO::getInstance()->getImportedProducts(array('selectedItems' => $this->parameters['selectedItems']), true);
+        }
+        $this->modelCatalogProduct->changeStatusProducts(
+            array_map(
+                function(ImportProduct $element) {
+                    return $element->getLocalProductId();
+                },
+                $productsToDisable
+            ), false
+        );
+        unset($this->parameters['selectedItems']);
+        $this->redirect($this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters)));
+    }
 
-        foreach ($this->modelCatalogImport->getImportedProducts($this->parameters) as $product) {
+    private function showList() {
+        $this->parameters['start'] = intval(($this->parameters['page'] - 1) * $this->config->get('config_admin_limit'));
+        $this->parameters['limit'] = intval($this->config->get('config_admin_limit'));
+        $filter = $this->parameters; unset($filter['selectedItems']);
+        foreach (ImportProductDAO::getInstance()->getImportedProducts($filter) as $product) {
             $productItem = $product;
             $productItem->actions = $this->getProductActions($product);
             $productItem->isSelected = in_array($product->getId(), $this->parameters['selectedItems']);
@@ -139,14 +158,17 @@ class ControllerCatalogImport extends Controller {
 
         $this->data['urlDeleteAll'] = $this->url->link('catalog/import/delete', $this->buildUrlParameterString($this->parameters) . '&what=all', 'SSL');
         $this->data['urlDeleteSelected'] = $this->url->link('catalog/import/delete', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
+        $this->data['urlDisableAll'] = $this->url->link('catalog/import/disable', $this->buildUrlParameterString($this->parameters) . '&what=all', 'SSL');
+        $this->data['urlDisableInactive'] = $this->url->link('catalog/import/disable', $this->buildUrlParameterString($this->parameters) . '&what=inactiveItems', 'SSL');
+        $this->data['urlDisableSelected'] = $this->url->link('catalog/import/disable', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
         $this->data['urlSyncAll'] = $this->url->link('catalog/import/synchronize', $this->buildUrlParameterString($this->parameters) . '&what=all', 'SSL');
         $this->data['urlSyncSelected'] = $this->url->link('catalog/import/synchronize', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
 
-        $page = $this->parameters['page']; unset($this->parameters['page']);
+        $page = $this->parameters['page']; unset($filter['page']);
         $pagination = new Pagination(
             $page,
             $this->config->get('config_admin_limit'),
-            $this->modelCatalogImport->getImportedProductsQuantity($this->parameters),
+            ImportProductDAO::getInstance()->getImportedProductsQuantity($filter),
             $this->language->get('text_pagination'),
             $this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters) . '&page={page}', 'SSL')
         );
@@ -154,7 +176,7 @@ class ControllerCatalogImport extends Controller {
 
         $this->data = array_merge($this->data, $this->parameters);
         $this->setBreadcrumbs();
-        $this->template = 'catalog/importProductsList.php';
+        $this->template = 'catalog/importProductsList.tpl.php';
         $this->children = array(
             'common/header',
             'common/footer'
@@ -186,6 +208,9 @@ class ControllerCatalogImport extends Controller {
         $this->data['textActions'] = $this->language->get('ACTIONS');
         $this->data['textDeleteAll'] = $this->language->get('DELETE_ALL');
         $this->data['textDeleteSelected'] = $this->language->get('DELETE_SELECTED');
+        $this->data['textDisableAll'] = $this->language->get('DISABLE_ALL');
+        $this->data['textDisableInactive'] = $this->language->get('DISABLE_INACTIVE');
+        $this->data['textDisableSelected'] = $this->language->get('DISABLE_SELECTED');
         $this->data['textFilter'] = $this->language->get('FILTER');
         $this->data['textId'] = $this->language->get('ID');
         $this->data['textImage'] = $this->language->get('ITEM_IMAGE');
@@ -206,14 +231,12 @@ class ControllerCatalogImport extends Controller {
     }
 
     public function synchronize() {
-        $this->modelCatalogProduct = $this->load->model('catalog/product');
         $productsToSynchronize = array();
         if ($this->parameters['what'] == 'selectedItems') {
-            foreach ($this->parameters['selectedItems'] as $importedProductId) {
-                $productsToSynchronize[] = $this->modelCatalogImport->getImportedProduct($importedProductId);
-            }
+            $productsToSynchronize = ImportProductDAO::getInstance()->getImportedProducts(array('selectedItems' => $this->parameters['selectedItems']));
         } elseif ($this->parameters['what'] == 'all') {
-            $productsToSynchronize = $this->modelCatalogImport->getImportedProducts($this->parameters);
+            $filter = $this->parameters; unset($filter['selectedItems']);
+            $productsToSynchronize = ImportProductDAO::getInstance()->getImportedProducts($filter);
         }
         foreach ($productsToSynchronize as $productToSynchronize) {
             if ($productToSynchronize->getLocalProductId()) {

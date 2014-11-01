@@ -1,4 +1,5 @@
 <?php
+use model\catalog\ImportPrice;
 use model\catalog\ImportProduct;
 use model\catalog\ImportProductDAO;
 use model\extension\ImportSourceSiteDAO;
@@ -17,9 +18,11 @@ class ModelCatalogImport extends Model{
 //        $this->sourceSites = self::getSourceSites();
     }
 
-    private function buildFilterString(array $data)
-    {
+    private function buildFilterString(array $data) {
         $filter = "";
+        if (isset($data['selectedItems'])) {
+            return "ip.imported_product_id IN (" . implode(',', $data['selectedItems']) . ")";
+        }
         if (isset($data['filterIsActive']))
             $filter .= ($filter ? " AND" : "") . " ip.active = " . (int)$data['filterIsActive'];
         if (!empty($data['filterItem']))
@@ -29,6 +32,19 @@ class ModelCatalogImport extends Model{
             $filter .= ($filter ? " AND" : "") . " ip.source_site_id IN (" . implode(', ', $data['filterSourceSiteId']) . ")";
 
         return $filter;
+    }
+
+    /**
+     * @param int $start
+     * @param int $limit
+     * @return string
+     */
+    private function buildLimitString($start, $limit) {
+        if (isset($start) && isset($limit)) {
+            return "LIMIT $start, $limit";
+        } else {
+            return '';
+        }
     }
 
     private function getCorrespondingProductById($productId) {
@@ -72,8 +88,8 @@ class ModelCatalogImport extends Model{
             $result->row['name'],
             $this->getMatchingCategories($importedProductId, $result->row['source_site_id']),
             $result->row['description'],
-            $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
-            new Price($result->row['price'], $result->row['price_promo']),
+            $correspondingProduct ? new ImportPrice($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
+            new ImportPrice($result->row['price'], $result->row['price_promo']),
             ImportSourceSiteDAO::getInstance()->getSourceSite($result->row['source_site_id']),
             $result->row['source_url'],
             $result->row['image_url'],
@@ -90,11 +106,12 @@ class ModelCatalogImport extends Model{
      */
     public function getImportedProducts(array $data) {
         $filter = $this->buildFilterString($data);
+        $limit = $this->buildLimitString($data['start'], $data['limit']);
         $sql = "
             SELECT *
             FROM imported_products AS ip
             " . ($filter ? "WHERE $filter" : '') . "
-            LIMIT " . $data['start'] . ", " . $data['limit']
+            $limit"
         ;
         $result = array();
         foreach ($this->db->query($sql)->rows as $row) {
@@ -106,8 +123,8 @@ class ModelCatalogImport extends Model{
                 $row['name'],
                 $this->getMatchingCategories($row['imported_product_id'], $row['source_site_id']),
                 $row['description'],
-                $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
-                new Price($row['price'], $row['price_promo']),
+                $correspondingProduct ? new ImportPrice($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
+                new ImportPrice($row['price'], $row['price_promo']),
                 ImportSourceSiteDAO::getInstance()->getSourceSite($row['source_site_id']),
                 $row['source_url'],
                 $row['image_url'],
@@ -195,26 +212,4 @@ class ModelCatalogImport extends Model{
         ";
         $this->db->query($sql);
     }
-}
-
-class Price
-{
-    private $price;
-    private $promoPrice;
-
-    function __construct($price, $promoPrice = null)
-    {
-        $this->price = $price;
-        $this->promoPrice = $promoPrice;
-    }
-
-    /**
-     * @return float
-     */
-    public function getPrice() { return $this->price; }
-
-    /**
-     * @return float
-     */
-    public function getPromoPrice() { return $this->promoPrice; }
 }

@@ -1057,6 +1057,10 @@ SQL
 		return $query->row['total'];
 	}
 
+    /**
+     * @param int[] $products
+     * @param int $status
+     */
     public function changeStatusProducts($products, $status) {
         function check_int($a) {
             return (int)$a;
