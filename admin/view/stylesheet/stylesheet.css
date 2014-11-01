@@ -335,6 +335,7 @@ a.button, .list a.button {
 	border-left: 1px solid #DDDDDD;
 	margin-bottom: 20px;
 }
+
 .list td {
 	border-right: 1px solid #DDDDDD;
 	border-bottom: 1px solid #DDDDDD;
@@ -357,12 +358,14 @@ a.button, .list a.button {
 .list tbody td {
 	vertical-align: middle;
 	padding: 0px 5px;
-	background: #FFFFFF;
 }
 .list tbody td input {
 	padding: 1px 5px;   
     width: 95%; 
 }
+.list tbody tr:nth-child(2n) {
+    background: #EAFAFA; /* Цвет фона */
+   } 
 .list .left {
 	text-align: left;
 	padding: 7px;

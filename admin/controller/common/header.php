@@ -224,7 +224,11 @@ class ControllerCommonHeader extends Controller {
 			}
 		}
 
+if ($this->user->getUsergroupId() == 1) {
 		$this->template = 'common/header.tpl';
+} else {
+		$this->template = 'common/header-cont.tpl';
+}
 
 		$this->render();
 	}

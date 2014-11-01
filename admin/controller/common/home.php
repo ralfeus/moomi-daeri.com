@@ -106,8 +106,14 @@ class ControllerCommonHome extends Controller {
 		
 			$this->model_localisation_currency->updateCurrencies();
 		}
-		
+
+if ($this->user->getUsergroupId() == 1) {
 		$this->template = 'common/home.tpl.php';
+} else {
+		$this->template = 'common/homecont.tpl.php';
+}
+
+		
 		$this->children = array(
 			'common/header',
 			'common/footer'
