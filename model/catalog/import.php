@@ -57,12 +57,8 @@ class ModelCatalogImport extends Model{
      */
     public function getImportedProduct($importedProductId) {
         $result = $this->getDb()->query("
-            SELECT
-                ip.*,
-                iss.imported_source_site_id, iss.name AS source_site_name, iss.default_category_id, iss.default_manufacturer_id, iss.default_store_id, iss.default_supplier_id, iss.regular_customer_price_rate, iss.wholesale_customer_price_rate
-            FROM
-                imported_products AS ip
-                JOIN imported_source_sites AS iss ON ip.source_site_id = iss.imported_source_site_id
+            SELECT *
+            FROM imported_products AS ip
             WHERE imported_product_id = ?
             ", array("i:$importedProductId")
         );
@@ -74,21 +70,11 @@ class ModelCatalogImport extends Model{
             $result->row['source_product_id'],
             $result->row['product_id'],
             $result->row['name'],
-            $this->getMatchingCategories($importedProductId, $result->row['imported_source_site_id']),
+            $this->getMatchingCategories($importedProductId, $result->row['source_site_id']),
             $result->row['description'],
             $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
             new Price($result->row['price'], $result->row['price_promo']),
-//            new SourceSite(
-//                $result->row['imported_source_site_id'],
-//                $result->row['source_site_name'],
-//                $result->row['default_category_id'],
-//                $result->row['default_manufacturer_id'],
-//                $result->row['default_store_id'],
-//                $result->row['default_supplier_id'],
-//                $result->row['regular_customer_price_rate'],
-//                $result->row['wholesale_customer_price_rate']
-//            ),
-            ImportSourceSiteDAO::getInstance()->getSourceSite($result->row['imported_source_site_id']),
+            ImportSourceSiteDAO::getInstance()->getSourceSite($result->row['source_site_id']),
             $result->row['source_url'],
             $result->row['image_url'],
             $this->getProductImages($result->row['imported_product_id']),
@@ -105,12 +91,8 @@ class ModelCatalogImport extends Model{
     public function getImportedProducts(array $data) {
         $filter = $this->buildFilterString($data);
         $sql = "
-            SELECT
-                ip.*,
-                iss.imported_source_site_id, iss.name AS source_site_name, iss.default_category_id, iss.default_manufacturer_id, iss.default_store_id, iss.default_supplier_id, iss.regular_customer_price_rate, iss.wholesale_customer_price_rate
-            FROM
-                imported_products AS ip
-                JOIN imported_source_sites AS iss ON ip.source_site_id = iss.imported_source_site_id
+            SELECT *
+            FROM imported_products AS ip
             " . ($filter ? "WHERE $filter" : '') . "
             LIMIT " . $data['start'] . ", " . $data['limit']
         ;
@@ -122,21 +104,11 @@ class ModelCatalogImport extends Model{
                 $row['source_product_id'],
                 $row['product_id'],
                 $row['name'],
-                $this->getMatchingCategories($row['imported_product_id'], $row['imported_source_site_id']),
+                $this->getMatchingCategories($row['imported_product_id'], $row['source_site_id']),
                 $row['description'],
                 $correspondingProduct ? new Price($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
                 new Price($row['price'], $row['price_promo']),
-//                new SourceSite(
-//                    $row['imported_source_site_id'],
-//                    $row['source_site_name'],
-//                    $row['default_category_id'],
-//                    $row['default_manufacturer_id'],
-//                    $row['default_store_id'],
-//                    $row['default_supplier_id'],
-//                    $row['regular_customer_price_rate'],
-//                    $row['wholesale_customer_price_rate']
-//                ),
-                ImportSourceSiteDAO::getInstance()->getSourceSite($row['imported_source_site_id']),
+                ImportSourceSiteDAO::getInstance()->getSourceSite($row['source_site_id']),
                 $row['source_url'],
                 $row['image_url'],
                 $this->getProductImages($row['imported_product_id']),
@@ -202,26 +174,6 @@ class ModelCatalogImport extends Model{
         $result = array();
         foreach ($this->db->query($sql)->rows as $row)
             $result[] = $row['url'];
-        return $result;
-    }
-
-    public function getSourceSites() {
-        $sql = "
-            SELECT *
-            FROM imported_source_sites
-        ";
-        $result = array();
-        foreach ($this->db->query($sql)->rows as $row)
-            $result[] = new SourceSite(
-                $row['imported_source_site_id'],
-                $row['name'],
-                $row['default_category_id'],
-                $row['default_manufacturer_id'],
-                $row['default_store_id'],
-                $row['default_supplier_id'],
-                $row['regular_customer_price_rate'],
-                $row['wholesale_customer_price_rate']
-            );
         return $result;
     }
 
