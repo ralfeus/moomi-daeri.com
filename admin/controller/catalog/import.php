@@ -90,10 +90,10 @@ class ControllerCatalogImport extends Controller {
     public function delete() {
         $productsToDelete = array();
         if ($this->parameters['what'] == 'selectedItems') {
-            $productsToDelete = ImportProductDAO::getInstance()->getImportedProducts(array('selectedItems' => $this->parameters['selectedItems']));
+            $productsToDelete = ImportProductDAO::getInstance()->getImportedProducts(array('selectedItems' => $this->parameters['selectedItems']), true);
         } elseif ($this->parameters['what'] == 'all') {
             $filter = $this->parameters; unset($filter['selectedItems']);
-            $productsToDelete = ImportProductDAO::getInstance()->getImportedProducts($filter);
+            $productsToDelete = ImportProductDAO::getInstance()->getImportedProducts($filter, true);
         }
         foreach ($productsToDelete as $productToDelete) {
             foreach ($this->modelCatalogProduct->getProductImages($productToDelete->getLocalProductId()) as $image) {
