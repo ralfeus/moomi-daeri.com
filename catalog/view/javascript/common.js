@@ -111,13 +111,11 @@ function addToCart(product_id) {
 			}
 
 			if (json['success']) {
-				$('#notification').html('<div class="success" style="display: none;">' + json['success'] + '<img src="catalog/view/theme/default/image/close.png" alt="" class="close" /></div>');
+				$('#cart-success').after('<div class="success" style="display: none;">' + json['success'] + '</div>');
 
-				$('.success').fadeIn('slow');
+				$('.success').fadeIn(1000).delay(2000).fadeOut(1500);
 
-				$('#cart_total_data').html(json['total_data']);
-
-				$('html, body').animate({ scrollTop: 0 }, 'slow');
+			$('#cart_total_data').html(json['total_data']);
 			}
 		}
 	});
@@ -169,13 +167,11 @@ function addToWishList(product_id) {
 			$('.success, .warning, .attention, .information').remove();
 
 			if (json['success']) {
-				$('#notification').html('<div class="success" style="display: none;">' + json['success'] + '<img src="catalog/view/theme/default/image/close.png" alt="" class="close" /></div>');
-
-				$('.success').fadeIn('slow');
-
+				$('#cart-success').after('<div class="success" style="display: none;">' + json['success'] + '</div>');
+				
+				$('.success').fadeIn(1000).delay(3000).fadeOut(1500);
+				
 				$('#wishlist_total').html(json['total']);
-
-				$('html, body').animate({ scrollTop: 0 }, 'slow');
 			}
 		}
 	});
@@ -209,13 +205,11 @@ function addToCompare(product_id) {
 			$('.success, .warning, .attention, .information').remove();
 
 			if (json['success']) {
-				$('#notification').html('<div class="success" style="display: none;">' + json['success'] + '<img src="catalog/view/theme/default/image/close.png" alt="" class="close" /></div>');
-
-				$('.success').fadeIn('slow');
-
+				$('#cart-success').after('<div class="success" style="display: none;">' + json['success'] + '</div>');
+				
+				$('.success').fadeIn(1000).delay(3000).fadeOut(1500);
+				
 				$('#compare_total').html(json['total']);
-
-				$('html, body').animate({ scrollTop: 0 }, 'slow');
 			}
 		}
 	});

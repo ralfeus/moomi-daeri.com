@@ -210,7 +210,6 @@ class ControllerProductSearch extends Controller {
 					
 			$product_total = $this->model_catalog_product->getTotalProducts($data);
 			$results = $this->model_catalog_product->getProductsM($data);
-
             if ($sort == null) {
                 $results = $this->sortByRelevance($results, $filter_name);
             }
@@ -247,16 +246,16 @@ class ControllerProductSearch extends Controller {
 				}
 			
 				$this->data['products'][] = array(
-					'product_id'  => $results[$index]['product_id'],
-					'thumb'       => $image,
-					'name'        => $results[$index]['name'],
-					'description' => utf8_truncate(strip_tags(html_entity_decode($results[$index]['description'], ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
-					'price'       => $price,
-					'special'     => $special,
-					'tax'         => $tax,
-					'rating'      => $results[$index]['rating'],
-					'reviews'     => sprintf($this->language->get('text_reviews'), (int)$results[$index]['reviews']),
-					'href'        => $this->url->link('product/product', $url . '&product_id=' . $results[$index]['product_id'])
+					'product_id'  => (isset($results[$index]['product_id']) ? $results[$index]['product_id'] : ''),
+					'thumb'       => (isset($results[$index]['product_id']) ? $image : ''),
+					'name'        => (isset($results[$index]['product_id']) ? $results[$index]['name'] : ''),
+					'description' => (isset($results[$index]['product_id']) ? utf8_truncate(strip_tags(html_entity_decode($results[$index]['description'], ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true) : ''),
+					'price'       => (isset($results[$index]['product_id']) ? $price : ''),
+					'special'     => (isset($results[$index]['product_id']) ? $special : ''),
+					'tax'         => (isset($results[$index]['product_id']) ? $tax : ''),
+					'rating'      => (isset($results[$index]['product_id']) ? $results[$index]['rating'] : ''),
+					'reviews'     => (isset($results[$index]['product_id']) ? sprintf($this->language->get('text_reviews'), (int)$results[$index]['reviews']) : ''),
+					'href'        => (isset($results[$index]['product_id']) ? $this->url->link('product/product', $url . '&product_id=' . $results[$index]['product_id']) : '')
 				);
 			}
 					
@@ -282,9 +281,6 @@ class ControllerProductSearch extends Controller {
 				$url .= '&filter_sub_category=' . $this->request->get['filter_sub_category'];
 			}
 					
-			if (isset($this->request->get['limit'])) {
-				$url .= '&limit=' . $this->request->get['limit'];
-			}
 						
 			$this->data['sorts'] = array();
 			
@@ -349,36 +345,6 @@ class ControllerProductSearch extends Controller {
 				'href'  => $this->url->link('product/search', 'sort=p.model&order=DESC' . $url)
 			);
 	
-			$url = '';
-			
-			if (isset($this->request->get['filter_name'])) {
-				$url .= '&filter_name=' . $this->request->get['filter_name'];
-			}
-			
-			if (isset($this->request->get['filter_tag'])) {
-				$url .= '&filter_tag=' . $this->request->get['filter_tag'];
-			}
-					
-			if (isset($this->request->get['filter_description'])) {
-				$url .= '&filter_description=' . $this->request->get['filter_description'];
-			}
-			
-			if (isset($this->request->get['filter_category_id'])) {
-				$url .= '&filter_category_id=' . $this->request->get['filter_category_id'];
-			}
-			
-			if (isset($this->request->get['filter_sub_category'])) {
-				$url .= '&filter_sub_category=' . $this->request->get['filter_sub_category'];
-			}
-						
-			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
-			}	
-	
-			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
-			}
-			
 			$this->data['limits'] = array();
 			
 			$this->data['limits'][] = array(
@@ -411,39 +377,6 @@ class ControllerProductSearch extends Controller {
 				'href'  => $this->url->link('product/search', $url . '&limit=100')
 			);
 					
-			$url = '';
-	
-			if (isset($this->request->get['filter_name'])) {
-				$url .= '&filter_name=' . $this->request->get['filter_name'];
-			}
-			
-			if (isset($this->request->get['filter_tag'])) {
-				$url .= '&filter_tag=' . $this->request->get['filter_tag'];
-			}
-					
-			if (isset($this->request->get['filter_description'])) {
-				$url .= '&filter_description=' . $this->request->get['filter_description'];
-			}
-			
-			if (isset($this->request->get['filter_category_id'])) {
-				$url .= '&filter_category_id=' . $this->request->get['filter_category_id'];
-			}
-			
-			if (isset($this->request->get['filter_sub_category'])) {
-				$url .= '&filter_sub_category=' . $this->request->get['filter_sub_category'];
-			}
-										
-			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
-			}	
-	
-			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
-			}
-			
-			if (isset($this->request->get['limit'])) {
-				$url .= '&limit=' . $this->request->get['limit'];
-			}
 					
 			$pagination = new Pagination();
 			$pagination->total = $product_total;

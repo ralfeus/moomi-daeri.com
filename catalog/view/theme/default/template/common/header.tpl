@@ -50,6 +50,7 @@
   var warningMesssage = '<?= $text_no_select_images ?>';
 </script>
 <script type="text/javascript" src="catalog/view/javascript/common.js"></script>
+
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/ui-lightness/jquery-ui-1.8.23.custom.css" />
 <?php foreach ($scripts as $script) { ?>
 <script type="text/javascript" src="<?= $script ?>"></script>
@@ -410,6 +411,7 @@ body .one{overflow: hidden}
     </div>
 
 <div id="container">
+<div id="cart-success"></div>
 <a id="toTop"></a>
   <div id="header"
     <?php if ($logo): ?>
@@ -440,35 +442,7 @@ body .one{overflow: hidden}
           </table>-->
       </div>
   </div>
-<?php /*if ($categories) { ?>
-  <div id="menu">
-    <ul>
-      <?php foreach ($categories as $category) { ?>
-      <li><?php if ($category['active']) { ?>
-  	<a href="<?= $category['href'] ?>" class="active"><?= $category['name'] ?></a>
-  	<?php } else { ?>
-  	<a href="<?= $category['href'] ?>"><?= $category['name'] ?></a>
-  	<?php } ?>
 
-        <?php if ($category['children']) { ?>
-        <div>
-          <?php for ($i = 0; $i < count($category['children']);) { ?>
-          <ul>
-            <?php $j = $i + ceil(count($category['children']) / $category['column']); ?>
-            <?php for (; $i < $j; $i++) { ?>
-            <?php if (isset($category['children'][$i])) { ?>
-            <li><a href="<?= $category['children'][$i]['href'] ?>"><?= $category['children'][$i]['name'] ?></a></li>
-            <?php } ?>
-            <?php } ?>
-          </ul>
-          <?php } ?>
-        </div>
-        <?php } ?>
-      </li>
-      <?php } ?>
-    </ul>
-  </div>
-<?php }*/ ?>
 <div id="notification"></div>
 <script type="text/javascript">//<!--
 function changeCurrency(code)
