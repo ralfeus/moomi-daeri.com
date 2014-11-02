@@ -22,3 +22,5 @@ $_['text_currency']         = 'Currency';
 $_['text_repurchase_order'] = 'Agent';
 $_['text_shopping_guide']   = 'Shopping guide';
 $_['SEARCH_PROMPT'] = '検索...';
+$_['text_totop']             = 'Scroll To Top Page';
+$_['text_back']             = 'Back';

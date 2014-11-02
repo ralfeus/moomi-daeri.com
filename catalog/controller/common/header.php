@@ -113,6 +113,8 @@ class ControllerCommonHeader extends Controller {
         $this->data['text_special'] = $this->language->get('SPECIAL');
     $this->data['textGallery'] = $this->language->get('GALLERY');
     $this->data['textShoppingGuide'] = $this->language->get('text_shopping_guide');
+        $this->data['text_totop'] = $this->language->get('text_totop');
+        $this->data['text_back'] = $this->language->get('text_back');
 
 		$this->data['home'] = $this->url->link('common/home');
 		$this->data['wishlist'] = $this->url->link('account/wishlist');

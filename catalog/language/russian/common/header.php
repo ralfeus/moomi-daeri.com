@@ -22,3 +22,5 @@ $_['text_repurchase_order'] = 'Агент';
 $_['text_shopping_guide']   = 'Гид';
 $_['text_auction']   = 'Аукцион';
 $_['SEARCH_PROMPT'] = 'поиск...';
+$_['text_totop']             = 'В начало';
+$_['text_back']             = 'Назад';

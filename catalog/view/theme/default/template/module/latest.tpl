@@ -1,6 +1,17 @@
 <?php if ($products) { ?>
 <div class="box-latest">
-  <div class="box-heading"><?php echo $heading_title; ?></div>
+  <div class="box-heading">
+    <?php echo $heading_title; ?>: 
+    <?php $sumCategories = count($listCategories); $i = 0;?>
+    <?php foreach ($listCategories as $cat) { ?>
+        <img class="separator" src="image/data/separator.png">
+            <span><a href="<?php echo $cat['href']; ?>"><?php echo $cat['text']; ?></a></span>
+    <?php $i++; ?>
+    <?php if ($i == $sumCategories) { ?>
+        <img class="separator" src="image/data/separator.png">
+    <?php }?>
+    <?php } ?>
+  </div>
   <div class="box-content">
     <div class="box-product">
       <?php foreach ($products as $product) { ?>

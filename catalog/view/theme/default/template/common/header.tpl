@@ -255,6 +255,12 @@ $(function(){
   else {
     $('.links').removeClass('linksfixed');
   }
+  if($(window).scrollTop()=="0"){
+    $('#button-back').fadeOut("slow");
+  }
+  else {
+    $('#button-back').fadeIn("slow");
+  }
  });
 });
 </script>
@@ -412,7 +418,8 @@ body .one{overflow: hidden}
 
 <div id="container">
 <div id="cart-success"></div>
-<a id="toTop"></a>
+<a id="toTop" title="<?= $text_totop ?>"></a>
+<a id="button-back" title="<?= $text_back ?>" onclick="javascript:history.back();"></a>
   <div id="header"
     <?php if ($logo): ?>
       style="background: url('<?php echo $logo; ?>');"

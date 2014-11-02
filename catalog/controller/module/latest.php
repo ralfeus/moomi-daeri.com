@@ -5,6 +5,7 @@ class ControllerModuleLatest extends Controller {
         parent::__construct($registry);
         $this->language->load('module/latest');
         $this->data['heading_title'] = $this->language->get('heading_title');
+        $this->load->model('catalog/category');
         $this->load->model('catalog/product');
         $this->load->model('tool/image');
     }
@@ -90,6 +91,24 @@ class ControllerModuleLatest extends Controller {
 			);
 			//print_r($data['products']);exit();
 		}
+    $listCategoryId = array();
+    $strCategories = explode(",", $data['filter_category_id']); 
+    for($i=0; $i<count($strCategories); $i++) {
+      $strCategoryId = $strCategories[$i];
+      array_push($listCategoryId,$strCategoryId);
+    }
+    $listCategories = array();
+    foreach ($listCategoryId as $cat) {
+      
+				$category_info = $this->model_catalog_category->getCategory($cat);
+
+				if ($category_info) {
+	       			$this->data['listCategories'][] = array(
+  	    				'text'      => $category_info['name'],
+						'href'      => $this->url->link('product/category', 'path=' . $path),
+        			);
+				}
+    }
 
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/latest.tpl')) {
 			$this->template = $this->config->get('config_template') . '/template/module/latest.tpl';

@@ -22,3 +22,5 @@ $_['text_repurchase_order'] = 'Agent';
 $_['text_shopping_guide']   = 'Guide';
 $_['text_auction']   = 'Auction';
 $_['SEARCH_PROMPT'] = 'search...';
+$_['text_totop']             = 'Scroll To Top Page';
+$_['text_back']             = 'Back';

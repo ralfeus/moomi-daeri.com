@@ -33,6 +33,9 @@ p {
 	margin-top: 0px;
 	margin-bottom: 20px;
 }
+#content p {
+	margin-top: 10px;
+}
 a, a:visited, a b {
 	color: #38B0E3;
 	text-decoration: underline;
@@ -248,7 +251,27 @@ label {
     -khtml-border-radius: 5px 5px 5px 5px;
     border-radius: 5px 5px 5px 5px;
 }
+.hidden-button {
+  display: none;
+}
+#button-back {
+ display: none;
+ position:fixed;
+ z-index:9999;
+ bottom:10px;
+ right:80px;
+ background: url('../image/back.png') no-repeat;
+ width: 64px;
+ height: 64px;
+ border: none;
+ padding: 5px;
+ cursor: pointer;
+ color: transparent;
+ text-decoration: none;
+  
+}
 #toTop {
+ display:none;
  position:fixed;
  z-index:9999;
  bottom:10px;
@@ -1120,7 +1143,18 @@ a.button-disabled span {
 .box-latest {
 	margin-bottom: 20px;
 }
-.box-latest .box-heading {
+.box-heading a {
+  text-decoration: none;
+  font-size: 16px;
+  color: #6F797E;
+}
+.separator {
+  height: 13px;
+  width: 13px;
+  background-size: auto;
+  
+}
+.box-latest .box-heading, .box-heading {
 	-webkit-border-radius: 7px 7px 0px 0px;
 	-moz-border-radius: 7px 7px 0px 0px;
 	-khtml-border-radius: 7px 7px 0px 0px;
@@ -1134,7 +1168,7 @@ a.button-disabled span {
 	line-height: 14px;
 	color: #333;
 }
-.box-latest .box-content {
+.box-latest .box-content, .box-content {
 	background: #FFFFFF;
 	-webkit-border-radius: 0px 0px 7px 7px;
 	-moz-border-radius: 0px 0px 7px 7px;
@@ -1441,7 +1475,7 @@ a.button-disabled span {
 }
 .product-grid {
 	width: 100%;
-	overflow: auto;
+	overflow: hidden;
 }
 .product-grid > div {
 	width: 130px;
@@ -1467,6 +1501,7 @@ a.button-disabled span {
 	text-decoration: none;
 	display: block;
 	margin-bottom: 4px;
+  text-align: center;
 }
 .product-grid .description {
 	display: none;
@@ -1480,6 +1515,7 @@ a.button-disabled span {
 	font-weight: bold;
 	color: #333333;
 	margin-bottom: 4px;
+  text-align: center;
 }
 .product-grid .price-old {
 	color: #F00;

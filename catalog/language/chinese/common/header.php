@@ -22,3 +22,5 @@ $_['text_repurchase_order'] = '代理人';
 $_['text_shopping_guide']   = '導購';
 $_['text_auction']   = 'Auction';
 $_['SEARCH_PROMPT'] = '搜索...';
+$_['text_totop']             = 'Scroll To Top Page';
+$_['text_back']             = 'Back';
