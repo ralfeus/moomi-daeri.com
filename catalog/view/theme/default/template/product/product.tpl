@@ -278,9 +278,9 @@
                 <?php } ?>
                 <b><?php echo $option['name']; ?>:</b><br />
                 <textarea name="option[<?php echo $option['product_option_id']; ?>]" 
-                  cols="79" 
+                  cols="40" 
                   rows="5"
-                  style="resize: none;">
+                  style="width: 98%;">
                   <?php echo $option['option_value']; ?>
                 </textarea>
               </div>
