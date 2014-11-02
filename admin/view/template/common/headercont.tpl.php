@@ -35,6 +35,48 @@
         $('#Calculator').calculator({showOn: 'opbutton', buttonImageOnly: true, buttonImage: 'view/image/calculator.png'});
     });
 </script> 
+<script type="text/javascript">
+$(function(){
+  $.fn.scrollToTop=function(){
+    $(this).hide().removeAttr("href");
+    if($(window).scrollTop()!="0"){
+        $(this).fadeIn("slow")
+  }
+  var scrollDiv=$(this);
+  $(window).scroll(function(){
+    if($(window).scrollTop()=="0"){
+    $(scrollDiv).fadeOut("slow")
+    }else{
+    $(scrollDiv).fadeIn("slow")
+  }
+  });
+    $(this).click(function(){
+      $("html, body").animate({scrollTop:0},"slow")
+    })
+  }
+});
+$(function() {$("#toTop").scrollToTop();});
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+	// Expand Panel
+	$("#open").click(function(){
+		$("div#menu").slideUp("fast");
+	
+	});	
+	
+	// Collapse Panel
+	$("#close").click(function(){
+		$("div#menu").slideDown("fast");	
+	});		
+	
+	// Switch buttons from "Log In | Register" to "Close Panel" on click
+	$("#toggle a").click(function () {
+		$("#toggle a").toggle();
+	});		
+		
+});
+</script>
 <?php foreach ($scripts as $script) { ?>
 <script type="text/javascript" src="<?php echo $script; ?>"></script>
 <?php } ?>
@@ -83,6 +125,7 @@ $(document).ready(function(){
 </head>
 <body>
 <div id="container">
+  <a id="toTop"></a>
 <div id="header">
   <div class="div1">
     <div class="div2"><img src="view/image/logo.png" title="<?php echo $heading_title; ?>" onclick="location = '<?php echo $home; ?>'" /></div>
