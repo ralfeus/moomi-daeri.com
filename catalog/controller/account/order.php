@@ -1,5 +1,6 @@
 <?php
 use model\sale\OrderItemDAO;
+use model\catalog\ProductDAO;
 use system\engine\CustomerZoneController;
 
 class ControllerAccountOrder extends CustomerZoneController {
@@ -306,6 +307,7 @@ $products = $this->model_account_order->getOrderProducts($this->request->get['or
 					}
         		}
             //print_r($product);
+				$product_image = ProductDAO::getInstance()->getImage($product['product_id']);
                   if($product['image_path'] == '' || $product['image_path'] == "data/event/agent-moomidae.jpg") {
                     $options = OrderItemDAO::getInstance()->getOptions($product['order_product_id']);
                     $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
@@ -316,7 +318,7 @@ $products = $this->model_account_order->getOrderProducts($this->request->get['or
                   if ($product['image_path'] && file_exists(DIR_IMAGE . $product['image_path']))
                       $image = $this->modelToolImage->resize($product['image_path'], 100, 100);
                   else
-                      $image = $this->modelToolImage->resize('no_image.jpg', 100, 100);
+                      $image = $this->modelToolImage->resize($product_image, 100, 100);
 
         		$this->data['products'][] = array(
 					'order_product_id' => $product['order_product_id'],

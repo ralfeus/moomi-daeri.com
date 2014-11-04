@@ -53,9 +53,11 @@ foreach ($products as $product):
     <?php endif; ?>
             <tr>
               <td class="checkbox"><input type="checkbox" name="selected[]" value="<?= $product['key'] ?>"/></td>
-              <td class="image"><?php if ($product['thumb']) { ?>
-                <a href="<?php echo $product['href']; ?>"><img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>" /></a>
-                <?php } ?></td>
+              <td class="image">
+                <?php if ($product['thumb']) { ?>
+                  <a href="<?php echo $product['href']; ?>"><img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>" /></a>
+                <?php } ?>
+              </td>
               <td class="name"><a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a>
                 <?php if (!$product['stock']) { ?>
                 <span class="stock">***</span>

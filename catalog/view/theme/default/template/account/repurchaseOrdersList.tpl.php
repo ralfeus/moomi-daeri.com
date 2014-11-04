@@ -38,12 +38,12 @@
       <?php if (!empty($orders)):
         foreach ($orders as $order): ?>
           <div class="order-list" style="	padding-bottom: 20px; -webkit-border-radius: 7px; -moz-border-radius: 7px; -khtml-border-radius: 7px; border-radius: 7px; border: 1px solid #DBDEE1;">
-            <div class="order-id" style="width: 49%; float: left; margin-bottom: 2px;"><b><?= $textOrderItemId ?>:&nbsp;</b> #<?= $order['orderItemId'] ?></div>
-              <div class="order-status" style="width: 49%; float: right; text-align: right; margin-bottom: 2px;">
+            <div class="order-id" style="width: 50%; float: left; margin-bottom: 2px;"><b style="padding-left: 10px;"><?= $textOrderItemId ?>:&nbsp;</b> #<?= $order['orderItemId'] ?></div>
+              <div class="order-status" style="width: 50%; float: right; text-align: right; margin-bottom: 2px;">
                 <b><?= $textStatus ?>:&nbsp;</b>
-                <span id="orderStatus"><?= $order['statusName'] ?></span>
+                <span id="orderStatus" style="padding-right: 10px;"><?= $order['statusName'] ?></span>
               </div>
-              <div class="order-content<?= $order['orderItemId'] ?>" style="padding: 10px 0px; width: 100%; margin-bottom: 20px; border-top: 1px solid #EEEEEE; border-bottom: 1px solid #EEEEEE;">
+              <div class="order-content<?= $order['orderItemId'] ?>" style="padding: 10px 0px; width: 100%; ">
            
                 <?php 
                 $dataCart[$order['orderItemId']] = array(

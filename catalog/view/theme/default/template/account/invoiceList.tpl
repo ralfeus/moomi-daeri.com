@@ -8,12 +8,12 @@
     <h1><?php echo $headingTitle; ?></h1>
     <?php if (isset($invoices)): ?>
         <?php foreach ($invoices as $invoice): ?>
-            <div class="order-list">
-                <div class="order-id">
+            <div class="order-list" style="min-height: 60px">
+                <div class="order-id" style="width:100%">
                     <b><?php echo $textInvoiceId; ?></b>&nbsp;<?php echo $invoice['invoiceId']; ?>
                     <?= $invoice['status'] ?>
                     <?php if (!empty($invoice['transaction'])): ?>
-                        <a href="index.php?route=account/transaction">
+                        <a href="index.php?route=account/transaction" style="float: right; padding-right: 10px;">
                             <?= $textTransaction ?> #<?= $invoice['transaction']['customer_transaction_id'] ?>
                         </a>
                     <?php endif; ?>
@@ -24,7 +24,7 @@
                     <div><b><?= $textShippingMethod ?></b> <?php echo $invoice['shippingMethod']; ?><br />
                         <b><?php echo $textTotal; ?></b> <?php echo $invoice['total']; ?></div>
                     <div> <b><?php echo $textPackage; ?></b> <?php echo $invoice['package_number']; ?> </div>
-                    <div class="order-info"><a href="<?php echo $invoice['href']; ?>" class="button"><span><?php echo $buttonView; ?></span></a></div>
+                    <div class="order-info" style="float: right;"><a href="<?php echo $invoice['href']; ?>" style="margin-right: 15px; margin-top: 10px;" class="button"><span><?php echo $buttonView; ?></span></a></div>
                 </div>
             </div>
         <?php endforeach; ?>
