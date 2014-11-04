@@ -70,7 +70,7 @@ class ControllerAccountAccount extends CustomerZoneController {
         $this->data['orderItems'] = $this->url->link('account/orderItems', '', 'SSL');
 
 //        $this->log->write(print_r($this->data, true));
-        $templateName = '/template/account/account.tpl';
+        $templateName = '/template/account/account-fine.tpl';
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateName))
 			$this->template = $this->config->get('config_template') . $templateName;
 		else

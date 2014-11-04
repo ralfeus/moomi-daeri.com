@@ -1,5 +1,6 @@
 <?php
 use model\checkout\CartDAO;
+use model\catalog\ProductDAO;
 use system\engine\CustomerController;
 
 class ControllerCheckoutCart extends CustomerController {
@@ -176,11 +177,11 @@ class ControllerCheckoutCart extends CustomerController {
           ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
           $product['image'] = !empty($itemUrl) ? $itemUrl : $product['image'];
         }*/
-
-				if ($product['image']) {
+				$product_image = ProductDAO::getInstance()->getImage($product['product_id']);
+        if ($product['image']) {
 					$image = $this->model_tool_image->resize($product['image'], $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
 				} else {
-					$image = '';
+					$image = $this->model_tool_image->resize($product_image, $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
 				}
 
 				$option_data = array();

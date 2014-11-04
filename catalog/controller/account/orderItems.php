@@ -70,9 +70,9 @@ class ControllerAccountOrderItems extends CustomerZoneController {
                   $orderItem['image_path'] = !empty($itemUrl) ? $itemUrl : $orderItem['image_path'];
                 }
                 if ($orderItem['image_path'] && file_exists(DIR_IMAGE . $orderItem['image_path'])):
-                    $image = $this->model_tool_image->resize($orderItem['image_path'], 100, 100);
+                    $image = $this->model_tool_image->resize($orderItem['image_path'], 80, 80);
                 else:
-                    $image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+                    $image = $this->model_tool_image->resize('no_image.jpg', 80, 80);
                 endif;
 
                 $supplier_url = "";

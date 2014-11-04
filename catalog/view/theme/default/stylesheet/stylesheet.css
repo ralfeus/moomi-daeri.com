@@ -981,6 +981,8 @@ table.list thead td a, .list thead td {
 	text-decoration: none;
 	color: #222222;
 	font-weight: bold;
+  word-wrap: break-word;
+  text-align: center;
 }
 
 table.list tbody td a {
@@ -1863,6 +1865,7 @@ a.button-disabled span {
 }
 /* orders */
 .order-list {
+  margin: 10px 5px;
 	padding-bottom: 20px;
 	-webkit-border-radius: 7px;
 	-moz-border-radius: 7px;
@@ -1871,23 +1874,23 @@ a.button-disabled span {
 	border: 1px solid #DBDEE1;
     
 }
-.order-list .order-id {
-	width: 49%;
+.order-id {
+	width: 50%;
 	float: left;
-	margin-bottom: 2px;
+	padding-bottom: 5px;
+  background:#EFEFEF;
 }
-.order-list .order-status {
-	width: 49%;
+.order-status {
+	width: 50%;
 	float: right;
 	text-align: right;
-	margin-bottom: 2px;
+	padding-bottom: 5px;
+  background:#EFEFEF;
 }
 .order-list .order-content {
 	padding: 10px 0px;
 	width: 100%;
 	margin-bottom: 20px;
-	border-top: 1px solid #EEEEEE;
-	border-bottom: 1px solid #EEEEEE;
 }
 .order-list .order-content div {
 	float: left;
