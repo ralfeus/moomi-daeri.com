@@ -37,7 +37,7 @@ class HomePlus extends GMarketCoKr {
                 if (!sizeof($item->find('img')))
                     continue;
                 $itemId = preg_match('/(?<=goodscode=)\d+/', $item->firstChild()->firstChild()->attr['href'], $matches) ? $matches[0] : null;
-                $products[] = new Product(
+                $products[] = new Product(1,
                     $this,
                     null,
                     $itemId,
