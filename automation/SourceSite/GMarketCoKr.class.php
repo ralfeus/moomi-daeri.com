@@ -11,15 +11,7 @@ abstract class GMarketCoKr extends ProductSource {
     protected function fillDetails($product) {
         $html = $this->getHtmlDocument($product->url);
         $matches = array();
-        /// Get categories
-        $categoryItem = $html->find("div#headerCate span.last a", 0);
-        $GdlcCd = preg_match('/(?<=GdlcCd=)\d+/', $categoryItem->attr['href'], $matches) ? $matches[0] : null;
-        $GdmcCd = preg_match('/(?<=GdmcCd=)\d+/', $categoryItem->attr['href'], $matches) ? $matches[0] : null;
-        $GdscCd = preg_match('/(?<=GdscCd=)\d+/', $categoryItem->attr['href'], $matches) ? $matches[0] : null;
-        $product->categoryIds[] = $GdlcCd;
-        $product->categoryIds[] = "$GdlcCd\\$GdmcCd";
-        $product->categoryIds[] = "$GdlcCd\\$GdmcCd\\$GdscCd";
-
+        $this->parseProductCategories($product, $html);
         /// Get images
         $product->images[] = $product->thumbnail;
 
@@ -132,6 +124,20 @@ abstract class GMarketCoKr extends ProductSource {
         echo date('Y-m-d H:i:s ') . $sourceSiteCategoryId . "\n";
         @list($GdlcCd, $GdmcCd, $GdscCd) = explode('/', $sourceSiteCategoryId);
         return "http://gshop.gmarket.co.kr/SearchService/SeachListTemplateAjax?GdlcCd=$GdlcCd&GdmcCd=$GdmcCd&GdscCd=$GdscCd&type=LIST&searchType=LIST&isDiscount=False&isGmileage=False&isGStamp=False&listType=LIST&IsBookCash=False&CustNo=" . urlencode($this->shopId) . "&CurrPage=minishop";
+    }
+
+    /**
+     * @param Product $product
+     * @param \simple_html_dom $html
+     */
+    protected function parseProductCategories(&$product, $html) {
+        $categoryItem = $html->find("div#headerCate span.last a", 0);
+        $GdlcCd = preg_match('/(?<=GdlcCd=)\d+/', $categoryItem->attr['href'], $matches) ? $matches[0] : null;
+        $GdmcCd = preg_match('/(?<=GdmcCd=)\d+/', $categoryItem->attr['href'], $matches) ? $matches[0] : null;
+        $GdscCd = preg_match('/(?<=GdscCd=)\d+/', $categoryItem->attr['href'], $matches) ? $matches[0] : null;
+        $product->categoryIds[] = $GdlcCd;
+        $product->categoryIds[] = "$GdlcCd/$GdmcCd";
+        $product->categoryIds[] = "$GdlcCd/$GdmcCd/$GdscCd";
     }
 
 

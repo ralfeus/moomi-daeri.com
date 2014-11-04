@@ -32,9 +32,15 @@ class DatabaseManager {
      * @param Product $product
      */
     private function addCategories($product) {
-        $sql = <<<SQL
+        $statement = $this->connection->prepare(<<<SQL
             DELETE FROM imported_product_source_categories
             WHERE imported_product_id = :productId;
+SQL
+        );
+        $statement->execute(array(
+            ':productId' => $product->id
+        ));
+        $sql = <<<SQL
             INSERT INTO imported_product_source_categories
             SET
                 imported_product_id = :productId,

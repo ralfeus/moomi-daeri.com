@@ -1149,7 +1149,16 @@ class simple_html_dom
 		return $ret;
 	}
 
-	// find dom node by css selector
+    /**
+     * @param string $selector
+     * @param int $index
+     * @return simple_html_dom_node
+     */
+    function findOne($selector, $index = 0) {
+        return $this->find($selector, $index);
+    }
+
+    // find dom node by css selector
 	// Paperg - allow us to specify that we want case insensitive testing of the value of the selector.
 	function find($selector, $idx=null, $lowercase=false)
 	{
