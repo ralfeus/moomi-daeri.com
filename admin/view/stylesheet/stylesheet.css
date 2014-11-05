@@ -190,7 +190,20 @@ body > #container {
 	padding: 10px 30px 0px 30px;
 	min-width: 900px;
 	padding-top: 100px;
-    padding-bottom: 220px;
+  padding-bottom: 220px;
+}
+#content_scroll {
+    width: 100%;
+    overflow-x: scroll;
+}
+#topscrl  {
+    height: 20px;
+    width: 100%;
+    overflow-x: scroll;
+    display: none;
+}
+#topfake {
+    height: 1px;
 }
 #footer {
 	background: #FFFFFF url('../image/footer.png') repeat-x;
@@ -308,8 +321,8 @@ body > #container {
 	border-right: 1px solid #CCCCCC;
 	border-bottom: 1px solid #CCCCCC;
 	/*min-height: 300px;*/
-	overflow: auto;
 }
+
 a.button, .list a.button {
 	text-decoration: none;
 	color: #FFF;

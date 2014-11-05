@@ -303,6 +303,19 @@ label {
 	min-height: 400px;
 	margin-bottom: 25px;
 }
+#content_scroll {
+    width: 100%;
+    overflow-x: scroll;
+}
+#topscrl  {
+    height: 20px;
+    width: 100%;
+    overflow-x: scroll;
+    display: none;
+}
+#topfake {
+    height: 1px;
+}
 
 #column-left + #column-right + #content, #column-left + #content {
 	margin-left: 195px;

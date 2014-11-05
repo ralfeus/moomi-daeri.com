@@ -1,4 +1,5 @@
 <?php echo $header; ?>
+
 <div id="content">
   <div class="breadcrumb">
     <?php foreach ($breadcrumbs as $breadcrumb) { ?>
@@ -23,7 +24,26 @@
       </div>
     </div>
     <div class="content">
-      <form action="<?= $delete ?>" method="post" enctype="multipart/form-data" id="form">
+      <div class="pagination"><?php echo $pagination; ?></div>
+<script type="text/javascript">//<!--
+function topsclr() {
+    document.getElementById("content_scroll").scrollLeft = document.getElementById("topscrl").scrollLeft;
+}
+
+function bottomsclr() {
+    document.getElementById("topscrl").scrollLeft = document.getElementById("content_scroll").scrollLeft;
+}
+window.onload = function() {
+    document.getElementById("topfake").style.width = document.getElementById("content_scroll").scrollWidth + "px";
+    document.getElementById("topscrl").style.display = "block";
+    document.getElementById("topscrl").onscroll = topsclr;
+    document.getElementById("content_scroll").onscroll = bottomsclr;
+};
+//--></script>      <div id="topscrl">
+        <div id="topfake"></div>
+      </div>
+        <div id="content_scroll">
+        <form action="<?= $delete ?>" method="post" enctype="multipart/form-data" id="form">
         <table class="list">
           <thead>
             <tr>
@@ -175,12 +195,14 @@
           </tbody>
         </table>
       </form>
+      </div>
       <div class="pagination"><?php echo $pagination; ?></div>
     </div>
   </div>
 </div>
 <?php if (isset($notifications['confirm'])): ?>
 <div id="dialog-confirm" title="<?=$notifications['confirm']['title'] ?>"><?= $notifications['confirm']['text'] ?></div>
+
 <script type="text/javascript">//<!--
 $(document).ready(function() {
     $( "#dialog-confirm" ).dialog({

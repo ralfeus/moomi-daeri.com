@@ -21,6 +21,25 @@
             <a onclick="$('#form').attr('target', '_blank'); submitForm('<?= $print ?>');" class="button"><?= $textPrint ?></a>
             </div>
         </div>
+      <div class="pagination"><?php echo $pagination; ?></div>
+<script type="text/javascript">//<!--
+function topsclr() {
+    document.getElementById("content_scroll").scrollLeft = document.getElementById("topscrl").scrollLeft;
+}
+
+function bottomsclr() {
+    document.getElementById("topscrl").scrollLeft = document.getElementById("content_scroll").scrollLeft;
+}
+window.onload = function() {
+    document.getElementById("topfake").style.width = document.getElementById("content_scroll").scrollWidth + "px";
+    document.getElementById("topscrl").style.display = "block";
+    document.getElementById("topscrl").onscroll = topsclr;
+    document.getElementById("content_scroll").onscroll = bottomsclr;
+};
+//--></script>      <div id="topscrl">
+        <div id="topfake"></div>
+      </div>
+        <div id="content_scroll">
         <form action="" id="form" method="post" enctype="multipart/form-data">
             <table class="list">
                 <thead>
@@ -158,6 +177,7 @@
                 </tbody>
             </table>
         </form>
+    </div>
         <div class="pagination"><?= $pagination ?></div>
     </div>
 </div>
