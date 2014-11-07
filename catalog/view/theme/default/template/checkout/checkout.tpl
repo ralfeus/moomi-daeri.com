@@ -60,42 +60,38 @@ $(document).ready(function() {
 
 // Checkout options continue button handler
 $('#button-options').live('click', function() {
-    if ($('input[name="order_to_add"]:checked').val() != 0)
+    if ($('input[name="order_to_add"]:checked').val() != 0) {
         $.ajax({
             url: 'index.php?route=checkout/add_to_order&order_id=' + $('input[name="order_to_add"]:checked').val(),
             dataType: 'json',
-            beforeSend: function() {
+            beforeSend: function () {
                 $('#button-options').attr('disabled', true);
                 $('#button-options').after('<span class="wait">&nbsp;<img src="catalog/view/theme/default/image/loading.gif" alt="" /></span>');
             },
-            complete: function() {
+            complete: function () {
                 $('#button-options').attr('disabled', false);
                 $('.wait').remove();
             },
-            success: function(json)
-            {
-                if (json['output'])
-                {
+            success: function (json) {
+                if (json['output']) {
                     $('#confirm .checkout-content').html(json['output']);
                     $('#confirm .checkout-content').slideDown('slow');
                     $('#checkout .checkout-content').slideUp('slow');
                     $('#checkout .checkout-heading').append('<a><?= $text_modify ?></a>');
                 }
-                else
-                {
+                else {
                     alert(json);
                 }
             },
-            error: function(xhr, ajaxOptions, thrownError)
-            {
+            error: function (xhr, ajaxOptions, thrownError) {
                 alert(thrownError);
             }
         });
-    else
+    } else {
         $.ajax({
             url: 'index.php?route=checkout/address/shipping',
             dataType: 'json',
-            success: function(json) {
+            success: function (json) {
                 if (json['redirect']) {
                     location = json['redirect'];
                 }
@@ -111,6 +107,7 @@ $('#button-options').live('click', function() {
                 }
             }
         });
+    }
 });
 
 // Checkout

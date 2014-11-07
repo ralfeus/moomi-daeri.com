@@ -18,8 +18,7 @@ class ControllerSaleInvoice extends Controller {
     /** @var ModelSaleOrder */
     private $modelSaleOrder;
 
-    public function __construct($registry)
-    {
+    public function __construct($registry) {
         parent::__construct($registry);
         $this->load->language('sale/invoice');
         $this->load->library("Transaction");
@@ -33,12 +32,15 @@ class ControllerSaleInvoice extends Controller {
         $this->data['headingTitle'] = $this->language->get('headingTitle');
     }
 
-    private function checkAddresses($orderItems)
-    {
+    /**
+     * @param OrderItem[] $orderItems
+     * @return bool
+     */
+    private function checkAddresses($orderItems) {
         $firstAddress = "";
         foreach ($orderItems as $orderItem)
         {
-            $order = $this->registry->get('model_sale_order')->getOrder($orderItem['order_id']);
+            $order = $this->registry->get('model_sale_order')->getOrder($orderItem->getId());
             if (!$firstAddress)
                 $firstAddress = $this->getOrderAddressString($order);
             else
@@ -87,10 +89,8 @@ class ControllerSaleInvoice extends Controller {
         $this->index();
     }
 
-    public function delete()
-    {
-        if (!empty($this->parameters['invoiceId']))
-        {
+    public function delete() {
+        if (!empty($this->parameters['invoiceId'])) {
             $relatedTransaction = Transaction::getTransactionByInvoiceId($this->parameters['invoiceId']);
             if (!empty($relatedTransaction))
                 Transaction::deleteTransaction($relatedTransaction['customer_transaction_id']);
@@ -214,12 +214,16 @@ $temp = $invoice->getCustomer();
         return $this->modelReferenceAddress->toString($this->getOrderAddress($order));
     }
 
+    /**
+     * @param OrderItem[] $orderItems
+     * @return string
+     */
     private function getOrderItemsHavingInvoice($orderItems) {
         $result = "";
         foreach ($orderItems as $orderItem) {
-            $existingInvoices = InvoiceDAO::getInstance()->getInvoicesByOrderItem($orderItem['order_product_id']);
+            $existingInvoices = InvoiceDAO::getInstance()->getInvoicesByOrderItem($orderItem->getId());
             if ($existingInvoices) {
-                $result .= $orderItem['order_product_id'] . " ==> ";
+                $result .= $orderItem->getId() . " ==> ";
                 foreach ($existingInvoices as $existingInvoice)
                     $result .= $existingInvoice->getId() . ",";
                 $result = rtrim($result, ',') . "\n";
@@ -365,13 +369,16 @@ $temp = $invoice->getCustomer();
         );
     }
 
+    /**
+     * @param OrderItem[] $orderItems
+     */
     private function setOrderItemsStatusPacked($orderItems)
     {
         foreach ($orderItems as $orderItem)
-            if ($orderItem['product_id'] == REPURCHASE_ORDER_PRODUCT_ID)
-                OrderItemDAO::getInstance()->setStatus($orderItem['order_product_id'], REPURCHASE_ORDER_ITEM_STATUS_PACKED);
+            if ($orderItem->getProductId() == REPURCHASE_ORDER_PRODUCT_ID)
+                OrderItemDAO::getInstance()->setStatus($orderItem->getId(), REPURCHASE_ORDER_ITEM_STATUS_PACKED);
             else
-                OrderItemDAO::getInstance()->setStatus($orderItem['order_product_id'], ORDER_ITEM_STATUS_PACKED);
+                OrderItemDAO::getInstance()->setStatus($orderItem->getId(), ORDER_ITEM_STATUS_PACKED);
     }
 
     private function showCreateForm() {
@@ -379,9 +386,8 @@ $temp = $invoice->getCustomer();
         $this->setBreadcrumbs();
         if (!sizeof($this->parameters['selectedItems']))
             return;
-        $orderItems = OrderItemDAO::getInstance()->getOrderItems(array(
-            'selected_items' => $this->parameters['selectedItems']
-        ));
+        $orderItems = OrderItemDAO::getInstance()->getOrderItems(
+            array('selected_items' => $this->parameters['selectedItems']), null, true);
 
 
         //print_r($orderItems);
@@ -397,35 +403,39 @@ $temp = $invoice->getCustomer();
         $orderItemIdParam = '';
 //        $localShipping = array();
         foreach ($orderItems as $orderItem) {
-            $orderItemObject = new OrderItem($this->registry, $orderItem['affiliate_id'],
-                $orderItem['affiliate_transaction_id'], $orderItem['comment'], $orderItem['customer_id'], 
-                $orderItem['customer_name'], $orderItem['customer_nick'], $orderItem['order_item_id'], 
-                $orderItem['image_path'], $orderItem['internal_model'], $orderItem['model'], $orderItem['name'], 
-                $orderItem['order_id'], $orderItem['price'], $orderItem['product_id'], $orderItem['public_comment'],
-                $orderItem['quantity'], $orderItem['shipping'], $orderItem['status_date'], $orderItem['status_id'],
-                $orderItem['supplier_group_id'], $orderItem['supplier_id'], $orderItem['supplier_name'], $orderItem['total'],
-                $orderItem['weight'], $orderItem['weight_class_id']);
-            $this->data['orderItems'][$orderItemObject->getId()] = array(
-                'id' => $orderItemObject->getId(),
-                'comment' => $orderItemObject->getPublicComment(),
-                'image_path' => $this->registry->get('model_tool_image')->getImage($orderItemObject->getImagePath()),
-                'model' => $orderItemObject->getModel(),
-                'name' => $orderItemObject->getName(),
-                'order_id' => $orderItemObject->getOrderId(),
-                'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItemObject->getId()),
-                'price' => $this->getCurrency()->format($orderItemObject->getPrice(), $this->config->get('config_currency')),
-                'quantity' => $orderItemObject->getQuantity(),
-                'shipping' => $orderItemObject->getShippingCost(),
-                'subtotal' => $this->getCurrency()->format($orderItemObject->getPrice() * $orderItemObject->getQuantity() + $orderItemObject->getShippingCost(), $this->config->get('config_currency'))
+//            $orderItemObject = new OrderItem($this->registry, $orderItem['affiliate_id'],
+//                $orderItem['affiliate_transaction_id'], $orderItem['comment'], $orderItem['customer_id'],
+//                $orderItem['customer_name'], $orderItem['customer_nick'], $orderItem['order_item_id'],
+//                $orderItem['image_path'], $orderItem['internal_model'], $orderItem['model'], $orderItem['name'],
+//                $orderItem['order_id'], $orderItem['price'], $orderItem['product_id'], $orderItem['public_comment'],
+//                $orderItem['quantity'], $orderItem['shipping'], $orderItem['status_date'], $orderItem['status_id'],
+//                $orderItem['supplier_group_id'], $orderItem['supplier_id'], $orderItem['supplier_name'], $orderItem['total'],
+//                $orderItem['weight'], $orderItem['weight_class_id']);
+            $this->data['orderItems'][$orderItem->getId()] = array(
+                'id' => $orderItem->getId(),
+                'comment' => $orderItem->getPublicComment(),
+                'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
+                'model' => $orderItem->getModel(),
+                'name' => $orderItem->getName(),
+                'order_id' => $orderItem->getOrderId(),
+                'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
+                'price' => $this->getCurrency()->format($orderItem->getPrice(), $this->config->get('config_currency')),
+                'quantity' => $orderItem->getQuantity(),
+                'shipping' => $orderItem->getShippingCost(),
+                'subtotal' => $this->getCurrency()->format($orderItem->getPrice() * $orderItem->getQuantity() + $orderItem->getShippingCost(), $this->config->get('config_currency')),
+                'subtotalCustomerCurrency' => $this->getCurrency()->format(
+                    $orderItem->getPrice(true) * $orderItem->getQuantity() + $orderItem->getShippingCost(true),
+                    $orderItem->getCustomer()['base_currency_code'], 1
+                )
             );
             $totalWeight +=
               $this->weight->convert(
-                  $orderItem['weight'],
-                  $orderItem['weight_class_id'],
-                  $this->config->get('config_weight_class_id')) * $orderItem['quantity'];
-            $total += $orderItemObject->getPrice() * $orderItemObject->getQuantity();
-            $totalCustomerCurrency += $orderItemObject->getPrice(true) * $orderItemObject->getQuantity();
-            $orderItemIdParam .= '&orderItemId[]=' . $orderItem['order_product_id'];
+                  $orderItem->getWeight(),
+                  $orderItem->getWeightClassId(),
+                  $this->config->get('config_weight_class_id')) * $orderItem->getQuantity();
+            $total += $orderItem->getPrice() * $orderItem->getQuantity();
+            $totalCustomerCurrency += $orderItem->getPrice(true) * $orderItem->getQuantity();
+            $orderItemIdParam .= '&orderItemId[]=' . $orderItem->getId();
 //            /// Calculate local shipping
 //            if (array_key_exists($orderItemObject->getSupplierId(), $localShipping)) {
 //                $localShipping[$orderItemObject->getSupplierId()]['total'] += $orderItemObject->getTotal();
@@ -455,7 +465,7 @@ $temp = $invoice->getCustomer();
 //            );
 //        }
         /// Set invoice data
-        $firstItemOrder = $this->modelSaleOrder->getOrder($orderItems[0]['order_id']);
+        $firstItemOrder = $this->modelSaleOrder->getOrder($orderItems[0]->getOrderId());
 //        $this->log->write(print_r($firstItemOrder, true));
         $customer = $this->modelSaleCustomer->getCustomer($firstItemOrder['customer_id']);
         $this->data['comment'] = '';
@@ -596,8 +606,7 @@ $temp = $invoice->getCustomer();
         $this->response->setOutput($this->render());
     }
 
-    public function showForm()
-    {
+    public function showForm() {
         $this->data['buttonRecalculateShippingCost'] = $this->language->get('RECALCULATE_SHIPPING_COST');
         $this->data['textDiscount'] = $this->language->get('DISCOUNT');
         $this->data['textComment'] = $this->language->get('textComment');
@@ -615,6 +624,7 @@ $temp = $invoice->getCustomer();
         $this->data['textShippingMethod'] = $this->language->get('textShippingMethod');
         $this->data['textShippingDate'] = $this->language->get('textShippingDate');
         $this->data['textSubtotal'] = $this->language->get('textSubtotal');
+        $this->data['textSubtotalCustomerCurrency'] = $this->language->get('SUBTOTAL_CUSTOMER_CURRENCY');
         $this->data['textTotal'] = $this->language->get('textTotal');
 
         $this->data['textTotalCustomerCurrency'] = $this->language->get('TOTAL_CUSTOMER_CURRENCY');
@@ -640,8 +650,7 @@ $temp = $invoice->getCustomer();
                 $this->language->get('ERROR_RELATED_TRANSACTION_EXISTS'), $relatedTransaction['customer_transaction_id'], $invoiceId);
     }
 
-    private function validateInput($orderItems)
-    {
+    private function validateInput($orderItems) {
         $this->data['notifications']['warning'] = '';
         if (!$this->checkAddresses($orderItems))
             $this->data['notifications']['warning'] .= $this->language->get('errorDifferentAddresses') . "\n";

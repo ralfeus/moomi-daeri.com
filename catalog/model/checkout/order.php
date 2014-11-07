@@ -131,7 +131,7 @@ class ModelCheckoutOrder extends Model {
 				ip = '" . $this->db->escape($data['ip']) . "', 
 				date_added = NOW(), 
 				date_modified = NOW()";
-        $this->log->write($sql);
+        //$this->log->write($sql);
         $this->db->query($sql);
 		$order_id = $this->db->getLastId();
 

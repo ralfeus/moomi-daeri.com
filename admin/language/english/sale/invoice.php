@@ -6,6 +6,7 @@ Invoice status is %s.
 Invoice amount is %s.
 You current balance is %s';
 $_['SAVE_DISCOUNT'] = 'Save discount';
+$_['SUBTOTAL_CUSTOMER_CURRENCY'] = 'Subtotal in customer currency';
 $_['SUCCESS_INVOICE_DELETED'] = 'The invoice %s was successfully deleted';
 $_['TOTAL_CUSTOMER_CURRENCY'] = 'Total in customer currency';
 $_['errorDifferentAddresses'] = 'Order items in invoice belong to orders, which have different shipping addresses';

@@ -89,6 +89,7 @@
                             <td class="right"><?= $textQuantity ?></td>
                             <td class="right"><?= $textShipping ?></td>
                             <td class="right"><?= $textSubtotal ?></td>
+                            <td class="right"><?= $textSubtotalCustomerCurrency ?></td>
                             <td class="left"><?= $textComment ?></td>
                         </tr>
                     </thead>
@@ -117,6 +118,7 @@
                                         <?= $readOnly ?> />
                                 </td>
                                 <td class="right"><?= $orderItem['subtotal'] ?></td>
+                                <td class="right"><?= $orderItem['subtotalCustomerCurrency'] ?></td>
                                 <td class="left"><?= $orderItem['comment'] ?></td>
                             </tr>
 <?php endforeach; ?>

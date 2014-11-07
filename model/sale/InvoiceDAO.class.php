@@ -5,11 +5,11 @@ use model\DAO;
 
 class InvoiceDAO extends DAO {
     public function addInvoice($orderId, $order_items, $shippingMethod = null, $weight = 0, $discount = 0, $comment = "", $shippingDate = '') {
-        /** @var ModelSaleOrder $orderModel */
+        /** @var \ModelSaleOrder $orderModel */
         $orderModel = $this->load->model('sale/order');
-        /** @var ModelSaleCustomer $customerModel */
+        /** @var \ModelSaleCustomer $customerModel */
         $customerModel = $this->load->model('sale/customer');
-        /** @var ModelSaleOrderItemHistory $orderItemHistoryModel */
+        /** @var \ModelSaleOrderItemHistory $orderItemHistoryModel */
         $orderItemHistoryModel = $this->load->model('sale/order_item_history');
         /// Get customer and shipping data from the primary order
         $order = $orderModel->getOrder($orderId);
@@ -38,9 +38,9 @@ class InvoiceDAO extends DAO {
 //                $customer['base_currency_code']
 //            );
 //        }
-        if (!$weight)
+        if (!$weight) {
             $weight = $tmpWeight;
-
+        }
         /// Get shipping cost according to destination and order items
         /// The shipping cost calculation can take different order items factors into account
         /// Therefore it's better to pass whole items and let shipping calculation classes use it
