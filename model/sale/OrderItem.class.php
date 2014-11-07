@@ -375,16 +375,6 @@ class OrderItem {
     }
 
     /**
-     * @return float
-     */
-    public function getTotalCustomerCurrency() {
-        if (!isset($this->totalCustomerCurrency)) {
-            $this->totalCustomerCurrency = OrderItemDAO::getInstance()->getOrderItemTotalCustomerCurrency($this);
-        }
-        return $this->totalCustomerCurrency;
-    }
-
-    /**
      * @return Currency
      */
     public function getCurrency() {

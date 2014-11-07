@@ -222,30 +222,6 @@ class OrderItemDAO extends DAO {
     }
 
     /**
-     * @param OrderItem $orderItem
-     * @return float
-     */
-    public function getOrderItemTotalCustomerCurrency($orderItem) {
-	$temp = $orderItem->getCustomer();
-        $rate = $this->getDb()->queryScalar(<<<SQL
-            SELECT rate
-            FROM
-              currency AS c
-              JOIN currency_history AS ch ON c.currency_id = ch.currency_id
-            WHERE c.code = ? AND ch.date_added <= ?
-            ORDER BY ch.date_added DESC
-            LIMIT 0,1
-SQL
-        , array("s:" . $temp['base_currency_code'], "s:" . $orderItem->getTimeCreated())
-        );
-        if ($rate) {
-            return $orderItem->getTotal() * $rate;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
      * @param array $data
      * @param \stdClass $filter
      * @return int

@@ -4,7 +4,18 @@ namespace model\sale;
 use model\DAO;
 
 class InvoiceDAO extends DAO {
-    public function addInvoice($orderId, $order_items, $shippingMethod = null, $weight = 0, $discount = 0, $comment = "", $shippingDate = '') {
+    /**
+     * @param int $orderId
+     * @param OrderItem[] $orderItems
+     * @param mixed $shippingMethod
+     * @param float $weight
+     * @param float $discount
+     * @param string $comment
+     * @param string $shippingDate
+     * @return int
+     * @throws \Exception
+     */
+    public function addInvoice($orderId, $orderItems, $shippingMethod = null, $weight = 0, $discount = 0, $comment = "", $shippingDate = '') {
         /** @var \ModelSaleOrder $orderModel */
         $orderModel = $this->load->model('sale/order');
         /** @var \ModelSaleCustomer $customerModel */
@@ -17,14 +28,13 @@ class InvoiceDAO extends DAO {
 
         /// Calculate total weight and price in shop currency and customer currency
         $tmpWeight = 0; $tmpSubtotal = 0; $subtotalCustomerCurrency = 0;
-        foreach ($order_items as $orderItem) {
-            $orderItemObject = OrderItemDAO::getInstance()->getOrderItem($orderItem['order_item_id']);
+        foreach ($orderItems as $orderItem) {
             /// If weight isn't defined by administrator it's calculated
             if (!$weight)
-                $tmpWeight += $this->weight->format($orderItem['weight'], $this->config->get('config_weight_class_id')) * $orderItem['quantity'];
-            $itemCost = $orderItem['price'] * $orderItem['quantity'] + $orderItem['shipping'];
+                $tmpWeight += $this->weight->format($orderItem->getWeight(), $this->config->get('config_weight_class_id')) * $orderItem->getQuantity();
+            $itemCost = $orderItem->getPrice() * $orderItem->getQuantity() + $orderItem->getShippingCost();
             $tmpSubtotal += $itemCost;
-            $subtotalCustomerCurrency += $orderItemObject->getTotalCustomerCurrency();
+            $subtotalCustomerCurrency += $orderItem->getTotal(true);
         }
         $subtotal = $tmpSubtotal;
         /// It seems to originate from time when subtotal could be edited manually.
@@ -46,7 +56,7 @@ class InvoiceDAO extends DAO {
         /// Therefore it's better to pass whole items and let shipping calculation classes use it
         if (empty($shippingMethod))
             $shippingMethod = $order['shipping_method'];
-        $shippingCost = \Shipping::getCost($order_items, $shippingMethod, array('weight' => $weight) ,$this->registry);
+        $shippingCost = \Shipping::getCost($orderItems, $shippingMethod, array('weight' => $weight) ,$this->registry);
 
         /// Calculate total. Currently it's subtotal, shipping and discount. In the future it can be something else
         $total = $subtotal + $shippingCost - $discount;
@@ -91,22 +101,26 @@ class InvoiceDAO extends DAO {
 
         /// Add invoice items
         $invoiceId = $this->getDb()->getLastId();
-        $this->addInvoiceItems($invoiceId, $order_items);
+        $this->addInvoiceItems($invoiceId, $orderItems);
         return $invoiceId;
     }
 
-    private function addInvoiceItems($invoiceId, $order_items) {
+    /**
+     * @param int $invoiceId
+     * @param OrderItem[] $orderItems
+     */
+    private function addInvoiceItems($invoiceId, $orderItems) {
         $query = "
             INSERT INTO invoice_items
             (invoice_id, order_item_id)
             VALUES
         ";
 
-        foreach ($order_items as $order_item)
-            $query .= "($invoiceId, " . (int)$order_item['order_product_id'] . "),\n";
+        foreach ($orderItems as $orderItem)
+            $query .= "($invoiceId, " . $orderItem->getId() . "),\n";
 
         //$this->log->write(substr($query, 0, strlen($query) - 2));
-        $this->db->query(substr($query, 0, strlen($query) - 2));
+        $this->getDb()->query(substr($query, 0, strlen($query) - 2));
     }
 
     private function buildFilterString($data)

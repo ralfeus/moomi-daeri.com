@@ -69,11 +69,10 @@ class ControllerSaleInvoice extends Controller {
         } else {
             $totalWeight = $_REQUEST['totalWeight'];
         }
-        $orderItems = OrderItemDAO::getInstance()->getOrderItems(array(
-            'selected_items' => $_REQUEST['selectedItems']
-        ));
+        $orderItems = OrderItemDAO::getInstance()->getOrderItems(
+            array('selected_items' => $_REQUEST['selectedItems']), null, true);
         $newInvoiceId = InvoiceDAO::getInstance()->addInvoice(
-            $orderItems[0]['order_id'],
+            $orderItems[0]->getOrderId(),
             $orderItems,
             $this->parameters['shippingMethod'],
             $totalWeight,
@@ -433,8 +432,8 @@ $temp = $invoice->getCustomer();
                   $orderItem->getWeight(),
                   $orderItem->getWeightClassId(),
                   $this->config->get('config_weight_class_id')) * $orderItem->getQuantity();
-            $total += $orderItem->getPrice() * $orderItem->getQuantity();
-            $totalCustomerCurrency += $orderItem->getPrice(true) * $orderItem->getQuantity();
+            $total += $orderItem->getPrice() * $orderItem->getQuantity() + $orderItem->getShippingCost();
+            $totalCustomerCurrency += $orderItem->getPrice(true) * $orderItem->getQuantity() + $orderItem->getShippingCost(true);
             $orderItemIdParam .= '&orderItemId[]=' . $orderItem->getId();
 //            /// Calculate local shipping
 //            if (array_key_exists($orderItemObject->getSupplierId(), $localShipping)) {
@@ -468,15 +467,14 @@ $temp = $invoice->getCustomer();
         $firstItemOrder = $this->modelSaleOrder->getOrder($orderItems[0]->getOrderId());
 //        $this->log->write(print_r($firstItemOrder, true));
         $customer = $this->modelSaleCustomer->getCustomer($firstItemOrder['customer_id']);
+        $shippingCost = \Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry);
         $this->data['comment'] = '';
         $this->data['discount'] = 0;
         $this->data['invoiceId'] = 0;
         $this->data['packageNumber'] = '';
         $this->data['shippingAddress'] = nl2br($this->getOrderAddressString($firstItemOrder)) . " (" . $firstItemOrder['shipping_phone'] . ")";
         $this->data['shippingCost'] =
-            $this->getCurrency()->format(
-               \Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry),
-                $this->config->get('config_currency'));
+            $this->getCurrency()->format($shippingCost, $this->config->get('config_currency'));
         $this->data['shippingCostRoute'] =
             $this->url->link(
                 'sale/invoice/getShippingCost',
@@ -489,17 +487,10 @@ $temp = $invoice->getCustomer();
         $this->data['total'] = $this->getCurrency()->format($total, $this->config->get('config_currency'));
         $this->data['totalRaw'] = $total;
         $this->data['totalWeight'] = $totalWeight;
-        $this->data['grandTotal'] =
-            $this->getCurrency()->format(
-                $total +\Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry),
-                $this->config->get('config_currency'));
+        $this->data['grandTotal'] = $this->getCurrency()->format($total + $shippingCost, $this->config->get('config_currency'));
         $this->data['totalCustomerCurrency'] = $this->getCurrency()->format(
             $totalCustomerCurrency +
-            $this->getCurrency()->convert(Shipping::getCost(
-                $orderItems,
-                $firstItemOrder['shipping_method'],
-                array('weight' => $totalWeight),
-                $this->registry), $this->config->get('config_currency'), $customer['base_currency_code']),
+            $this->getCurrency()->convert($shippingCost, $this->config->get('config_currency'), $customer['base_currency_code']),
             $customer['base_currency_code'], 1);
         $this->data['shippingMethods'] =\Shipping::getShippingMethods(
             $this->getOrderAddress($firstItemOrder), $this->registry);
