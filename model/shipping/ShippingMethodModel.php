@@ -1,4 +1,6 @@
 <?php
+use model\sale\OrderItem;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -15,6 +17,13 @@ abstract class ShippingMethodModel extends Model
         parent::__construct($registry);
         $this->log = new Log('shippingModel.log');
     }
+
+    /**
+     * @param string $destination
+     * @param OrderItem[] $orderItems
+     * @param array $ext
+     * @return float
+     */
     abstract function getCost($destination, $orderItems, $ext = null);
     abstract public function getMethodData($address);
     protected function getName($languageResource = null)

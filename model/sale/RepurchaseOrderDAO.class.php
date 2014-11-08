@@ -115,47 +115,45 @@ class RepurchaseOrderDAO extends OrderItemDAO {
     public function getOrders($data = array()) {
         $data['filterProductId'] = REPURCHASE_ORDER_PRODUCT_ID;
         $data['filterOrderItemId'] = $data['filterOrderId'];
-        $repurchaseOrderItems = OrderItemDAO::getInstance()->getOrderItems($data, $this->buildFilter($data));
+        $repurchaseOrderItems = OrderItemDAO::getInstance()->getOrderItems($data, $this->buildFilter($data), true);
 //        $this->log->write(print_r($repurchaseOrderItems, true));
         $items = array();
         if (!$repurchaseOrderItems)
             return $items;
         foreach ($repurchaseOrderItems as $repurchaseOrderItem) {
-            $options = $this->getOptions($repurchaseOrderItem['order_item_id']);
+            $options = $this->getOptions($repurchaseOrderItem->getId());
 //            $this->log->write(print_r($options, true));
             if (!empty($data['filterWhoOrders']) && !empty($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]))
                 if ($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value_id'] != $data['filterWhoOrders'])
                     continue;
             $items[] = array(
-                'orderId' => $repurchaseOrderItem['order_id'],
-                'orderItemId' => $repurchaseOrderItem['order_item_id'],
-                'privateComment' => $repurchaseOrderItem['comment'],
-                'customerId' => $repurchaseOrderItem['customer_id'],
-                'customerName' => $repurchaseOrderItem['customer_name'],
-                'customerNick' => $repurchaseOrderItem['customer_nick'],
-//                'whoOrders' => !empty($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID])
-//                    ? $options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value'] : '',
+                'orderId' => $repurchaseOrderItem->getOrderId(),
+                'orderItemId' => $repurchaseOrderItem->getId(),
+                'privateComment' => $repurchaseOrderItem->getPrivateComment(),
+                'customerId' => $repurchaseOrderItem->getCustomer()['customer_id'],
+                'customerName' => $repurchaseOrderItem->getCustomer()['firstname'] . ' ' . $repurchaseOrderItem->getCustomer()['lastname'],
+                'customerNick' => $repurchaseOrderItem->getCustomer()['nickname'],
                 'imagePath' => !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID])
                         ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '',
                 'itemName' => !empty($options[REPURCHASE_ORDER_ITEM_NAME_OPTION_ID]['value'])
                         ? $options[REPURCHASE_ORDER_ITEM_NAME_OPTION_ID]['value'] : '',
                 'itemUrl' => !empty($options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'])
                         ? $options[REPURCHASE_ORDER_ITEM_URL_OPTION_ID]['value'] : '',
-                'orderItemStatusId' => $repurchaseOrderItem['status'],
-                'price' => $repurchaseOrderItem['price'],
-                'whiteprice' => $repurchaseOrderItem['whiteprice'],
-                'comment' => !empty($repurchaseOrderItem['public_comment'])
-                        ? $repurchaseOrderItem['public_comment']
+                'orderItemStatusId' => $repurchaseOrderItem->getStatusId(),
+                'price' => $repurchaseOrderItem->getPrice(),
+                'whiteprice' => $repurchaseOrderItem->getWhitePrice(),
+                'comment' => !empty($repurchaseOrderItem->getPublicComment())
+                        ? $repurchaseOrderItem->getPublicComment()
                         : (!empty($options[REPURCHASE_ORDER_COMMENT_OPTION_ID])
                             ? $options[REPURCHASE_ORDER_COMMENT_OPTION_ID]['value'] : ''),
-                'quantity' => $repurchaseOrderItem['quantity'],
-                'shipping' => $repurchaseOrderItem['shipping'],
+                'quantity' => $repurchaseOrderItem->getQuantity(),
+                'shipping' => $repurchaseOrderItem->getShippingCost(),
                 'shopName' => !empty($options[REPURCHASE_ORDER_SHOP_NAME_OPTION_ID])
                         ? $options[REPURCHASE_ORDER_SHOP_NAME_OPTION_ID]['value'] : '',
-                'status' => $repurchaseOrderItem['status'] >> 16 == GROUP_REPURCHASE_ORDER_ITEM_STATUS
-                        ? $repurchaseOrderItem['status'] : REPURCHASE_ORDER_ITEM_STATUS_WAITING,
-                'timeAdded' => $repurchaseOrderItem['date_added'],
-                'total' => $repurchaseOrderItem['total']
+                'status' => $repurchaseOrderItem->getStatusId() >> 16 == GROUP_REPURCHASE_ORDER_ITEM_STATUS
+                        ? $repurchaseOrderItem->getStatusId() : REPURCHASE_ORDER_ITEM_STATUS_WAITING,
+                'timeAdded' => $repurchaseOrderItem->getTimeCreated(),
+                'total' => $repurchaseOrderItem->getTotal()
             );
         }
         return $items;

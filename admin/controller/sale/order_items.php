@@ -179,56 +179,57 @@ class ControllerSaleOrderItems extends Controller {
 		$data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
 		$data['limit']           = $this->config->get('config_admin_limit');
 
-		$orderItems = OrderItemDAO::getInstance()->getOrderItems($data);
+		$orderItems = OrderItemDAO::getInstance()->getOrderItems($data, null, true);
 
 		$arrReady = array();
 
 		if ($orderItems) {
-
 			foreach ($orderItems as $orderItem) {
+                $temp = $this->model_sale_order->getOrderTotals($orderItem->getOrderId());
 
-            $temp = $this->model_sale_order->getOrderTotals($orderItem['order_id']);
-
-            $cuoponed = 0;
-            foreach ($temp as $v) {
-                if ($v['code'] == 'coupon') {
-                $_code = explode('(',$v['title']);
-                $_code = explode(')',$_code[1]);
-                $code = $_code[0];
-                $coupon_products = $this->model_sale_order->getCouponProducts($code);
-                    if ($coupon_products) {
-                        if (in_array($orderItem['product_id'],$coupon_products)){
-                        $cuoponed = 1;
+                $cuoponed = 0;
+                foreach ($temp as $v) {
+                    if ($v['code'] == 'coupon') {
+                    $_code = explode('(',$v['title']);
+                    $_code = explode(')',$_code[1]);
+                    $code = $_code[0];
+                    $coupon_products = $this->model_sale_order->getCouponProducts($code);
+                        if ($coupon_products) {
+                            if (in_array($orderItem->getProductId(), $coupon_products)){
+                            $cuoponed = 1;
+                            } else {
+                            $cuoponed = 0;
+                            }
                         } else {
-                        $cuoponed = 0;
+                            $cuoponed = 1;
                         }
-                    } else {
-                        $cuoponed = 1;
                     }
                 }
-            }
 
-				if (!empty($orderItem['affiliate_id'])) {
-					$orderItem['affiliate_transaction_amount'] = $this->getCurrency()->format($orderItem['total'] * $modelSaleAffiliate->getProductAffiliateCommission($orderItem['product_id']) / 100, $this->config->get('config_currency'));
+				if (!empty($orderItem->getAffiliateId())) {
+					$orderItem->setAffiliateTransactionAmount($this->getCurrency()->format(
+                            $orderItem->getTotal() * $modelSaleAffiliate->getProductAffiliateCommission($orderItem->getProductId()) / 100, 
+                            $this->config->get('config_currency')
+                    ));
 				}
 
-				if(!isset($arrReady[$orderItem['order_id']])) {
-				  $arrReady[$orderItem['order_id']] = $this->isOrderReady($orderItem['order_id']);
-				  /*if($arrReady[$orderItem['order_id']]) {
-					echo $orderItem['order_id']; die();
+				if(!isset($arrReady[$orderItem->getOrderId()])) {
+				  $arrReady[$orderItem->getOrderId()] = $this->isOrderReady($orderItem->getOrderId());
+				  /*if($arrReady[$orderItem->getOrderId()]) {
+					echo $orderItem->getOrderId(); die();
 				  }*/
 				}
-				if ($orderItem['product_id'] == REPURCHASE_ORDER_PRODUCT_ID)
+				if ($orderItem->getProductId() == REPURCHASE_ORDER_PRODUCT_ID)
 				{
-					$productOptions = OrderItemDAO::getInstance()->getOptions($orderItem['order_product_id']);
+					$productOptions = OrderItemDAO::getInstance()->getOptions($orderItem->getId());
 					if (!empty($productOptions[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]))
 					{
-						$orderItem['image_path'] = $productOptions[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'];
+						$orderItem->setImagePath($productOptions[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value']);
 					}
 				}
 
-				if ($orderItem['image_path'] && file_exists(DIR_IMAGE . $orderItem['image_path'])) {
-					$image = $this->model_tool_image->resize($orderItem['image_path'], 100, 100);
+				if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath())) {
+					$image = $this->model_tool_image->resize($orderItem->getImagePath(), 100, 100);
 				} else {
 					$image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
 				}
@@ -248,17 +249,17 @@ class ControllerSaleOrderItems extends Controller {
 
 				$action = array();
 
-				if (!empty($orderItem['affiliate_id'])) {
-					if (empty($orderItem['affiliate_transaction_id'])) {
+				if (!empty($orderItem->getAffiliateId())) {
+					if (empty($orderItem->getAffiliateTransactionId())) {
 						$action[] = array(
-							'text' => '<a href="#" class="commissionAction" data-onclick="commissionAction(\'add\', ' . $orderItem['order_product_id'] . ')">' .
-							$this->language->get('text_commission_add') . " {$orderItem['affiliate_transaction_amount']}"
+							'text' => '<a href="#" class="commissionAction" data-onclick="commissionAction(\'add\', ' . $orderItem->getId() . ')">' .
+							$this->language->get('text_commission_add') . " {$orderItem->getAffiliateTransactionAmount()}"
 							.'</a>',
 							);
 					} else {
 						$action[] = array(
-							'text' => '<a href="#" class="commissionAction" data-onclick="commissionAction(\'del\', ' . $orderItem['order_product_id'] . ')">' .
-							$this->language->get('text_commission_remove') . " {$orderItem['affiliate_transaction_amount']}"
+							'text' => '<a href="#" class="commissionAction" data-onclick="commissionAction(\'del\', ' . $orderItem->getId() . ')">' .
+							$this->language->get('text_commission_remove') . " {$orderItem->getAffiliateTransactionAmount()}"
 							.'</a>',
 							);
 					}
@@ -266,38 +267,38 @@ class ControllerSaleOrderItems extends Controller {
 
 				$action[] = array(
 					'text' => $this->language->get('text_supplier_url'),
-					'href' => $orderItem['supplier_url']
+					'href' => $orderItem->getSupplierUrl()
 				);
 				$action[] = array(
 					'text' => $this->language->get('text_get_history'),
-					'href' => 'javascript:getStatusHistory(' . $orderItem['order_product_id'] . ')'
+					'href' => 'javascript:getStatusHistory(' . $orderItem->getId() . ')'
 				);
 
 				$this->data['order_items'][] = array(
-					'comment'                   => $orderItem['comment'],
-					'id'			                  => $orderItem['order_product_id'],
+					'comment'                   => $orderItem->getPrivateComment(),
+					'id'			                  => $orderItem->getId(),
 					'image_path'	              => $image,
-					'name'			                => $orderItem['name'],
-					'model'                     => $orderItem['model'],
-					'name_korean'	              => $orderItem['korean_name'],
-					'order_id'					        => $orderItem['order_id'],
-					'isOrderReady'              => $arrReady[$orderItem['order_id']],
-                    'order_url'					        => $this->url->link('sale/order/info', 'order_id=' . $orderItem['order_id'] . '&token=' . $this->session->data['token'], 'SSL'),
-					'customer_name'             => $orderItem['customer_name'],
-					'customer_nick'             => $orderItem['customer_nick'],
-					'options'                   => nl2br(OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem['order_product_id'])),
-					'publicComment'             => $orderItem['public_comment'],
-					'supplier_name'	            => $orderItem['supplier_name'],
-					'supplier_url'	            => $orderItem['supplier_url'],
-					'supplier_internal_model'   => $orderItem['internal_model'],
-					'status'       	            => $orderItem['status'] ? Status::getStatus($orderItem['status'], $this->config->get('language_id')) : "",
-					'price'			                => $this->currency->format($orderItem['price'], $this->config->get('config_currency')),
-					'weight'		                => $this->weight->format($orderItem['weight'],$orderItem['weight_class_id']),
-					'quantity'		              => $orderItem['quantity'],
+					'name'			                => $orderItem->getName(),
+					'model'                     => $orderItem->getModel(),
+					'name_korean'	              => $orderItem->getKoreanName(),
+					'order_id'					        => $orderItem->getOrderId(),
+					'isOrderReady'              => $arrReady[$orderItem->getOrderId()],
+                    'order_url' => $this->url->link('sale/order/info', 'order_id=' . $orderItem->getOrderId() . '&token=' . $this->session->data['token'], 'SSL'),
+					'customer_name'             => $orderItem->getCustomer()['firstname'] . ' ' . $orderItem->getCustomer()['lastname'],
+					'customer_nick'             => $orderItem->getCustomer()['nickname'],
+					'options'                   => nl2br(OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId())),
+					'publicComment'             => $orderItem->getPublicComment(),
+					'supplier_name'	            => $orderItem->getSupplier()->getName(),
+					'supplier_url'	            => $orderItem->getSupplierUrl(),
+					'supplier_internal_model'   => $orderItem->getInternalModel(),
+					'status'       	            => $orderItem->getStatusId() ? Status::getStatus($orderItem->getStatusId(), $this->config->get('language_id')) : "",
+					'price'			                => $this->getCurrency()->format($orderItem->getPrice(), $this->config->get('config_currency')),
+					'weight'		                => $this->weight->format($orderItem->getWeight(), $orderItem->getWeightClassId()),
+					'quantity'		              => $orderItem->getQuantity(),
 					'selected'                  =>
 						isset($_REQUEST['selectedItems'])
 						&& is_array($_REQUEST['selectedItems'])
-						&& in_array($orderItem['order_product_id'], $_REQUEST['selectedItems']),
+						&& in_array($orderItem->getId(), $_REQUEST['selectedItems']),
 					'action'                    => $action,
 					'cuoponed'                    => $cuoponed
 				); 
@@ -473,36 +474,35 @@ class ControllerSaleOrderItems extends Controller {
 			'order'             => $order
 		);
 
-		foreach (OrderItemDAO::getInstance()->getOrderItems($data) as $order_item)
-		{
-			if ($order_item['image_path'] && file_exists(DIR_IMAGE . $order_item['image_path'])) {
-				$image = $this->model_tool_image->resize($order_item['image_path'], 100, 100);
+		foreach (OrderItemDAO::getInstance()->getOrderItems($data, null, true) as $orderItem) {
+			if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath())) {
+				$image = $this->model_tool_image->resize($orderItem->getImagePath(), 100, 100);
 			} else {
 				$image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
 			}
 
-			if (SupplierGroupDAO::getInstance()->getSupplierGroup($order_item['supplier_group_id']))
+			if (SupplierGroupDAO::getInstance()->getSupplierGroup($orderItem->getSupplierGroupId()))
 			{
-				$supplier_group = SupplierGroupDAO::getInstance()->getSupplierGroup($order_item['supplier_group_id']);
+				$supplier_group = SupplierGroupDAO::getInstance()->getSupplierGroup($orderItem->getSupplierGroupId());
 				$supplier_group_name = $supplier_group['name'];
 			}
 			else
 				$supplier_group_name = "";
 
 			$this->data['order_items'][] = array(
-				'comment'       => $order_item['comment'],
-				'customer_name' => $order_item['customer_name'],
-				'customer_nick' => $order_item['customer_nick'],
-				'id'            => $order_item['order_product_id'],
+				'comment'       => $orderItem->getPrivateComment(),
+				'customer_name' => $orderItem->getCustomer()['firstname'] . ' ' . $orderItem->getCustomer()['lastname'],
+				'customer_nick' => $orderItem->getCustomer()['nickname'],
+				'id'            => $orderItem->getId(),
 				'image_path'	=> $image,
-				'name'			=> $order_item['name'],
-				'name_korean'	=> $order_item['korean_name'],
-				'options'       => OrderItemDAO::getInstance()->getOrderItemOptionsString($order_item['order_item_id']),
-				'order_id'      => $order_item['order_id'],
-				'quantity'		=> $order_item['quantity'],
-				'status'       	    => $order_item['status'],
+				'name'			=> $orderItem->getName(),
+				'name_korean'	=> $orderItem->getKoreanName(),
+				'options'       => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
+				'order_id'      => $orderItem->getOrderId(),
+				'quantity'		=> $orderItem->getQuantity(),
+				'status'       	    => $orderItem->getStatusId(),
 				'supplier_group'    => $supplier_group_name,
-				'supplier_name'	    => $order_item['supplier_name']
+				'supplier_name'	    => $orderItem->getSupplier()->getName()
 			);
 		}
 
@@ -541,7 +541,7 @@ class ControllerSaleOrderItems extends Controller {
 			$this->data['success'] = '';
 		}
 
-		$this->data['sort'] = $sort;
+//		$this->data['sort'] = $sort;
 		$this->data['order'] = $order;
 
 		$this->template = 'sale/order_items_list_print.tpl';
@@ -579,36 +579,36 @@ class ControllerSaleOrderItems extends Controller {
 			'order'             => $order
 		);
 
-		foreach (OrderItemDAO::getInstance()->getOrderItems($data) as $order_item)
+		foreach (OrderItemDAO::getInstance()->getOrderItems($data, null, true) as $orderItem)
 		{
-			if ($order_item['image_path'] && file_exists(DIR_IMAGE . $order_item['image_path'])) {
-				$image = $this->model_tool_image->resize($order_item['image_path'], 100, 100);
+			if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath())) {
+				$image = $this->model_tool_image->resize($orderItem->getImagePath(), 100, 100);
 			} else {
 				$image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
 			}
 
-			if (SupplierGroupDAO::getInstance()->getSupplierGroup($order_item['supplier_group_id']))
+			if (SupplierGroupDAO::getInstance()->getSupplierGroup($orderItem->getSupplierGroupId()))
 			{
-				$supplier_group = SupplierGroupDAO::getInstance()->getSupplierGroup($order_item['supplier_group_id']);
+				$supplier_group = SupplierGroupDAO::getInstance()->getSupplierGroup($orderItem->getSupplierGroupId());
 				$supplier_group_name = $supplier_group['name'];
 			}
 			else
 				$supplier_group_name = "";
 
 			$this->data['order_items'][] = array(
-				'comment'       => $order_item['comment'],
+				'comment'       => $orderItem->getPrivateComment(),
 			   // 'customer_name' => $order_item['customer_name'],
 			  //  'customer_nick' => $order_item['customer_nick'],
-				'id'            => $order_item['order_product_id'],
+				'id'            => $orderItem->getId(),
 				'image_path'	=> $image,
-				'name'			=> $order_item['name'],
-				'name_korean'	=> $this->getProductAttribute($order_item['product_id'], "Name Korean"),
-				'options'       => OrderItemDAO::getInstance()->getOrderItemOptionsString($order_item['order_item_id']),
-				'order_id'      => $order_item['order_id'],
-				'quantity'		=> $order_item['quantity'],
-				'status'       	    => $order_item['status'],
+				'name'			=> $orderItem->getName(),
+				'name_korean'	=> $orderItem->getKoreanName(),
+				'options'       => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
+				'order_id'      => $orderItem->getOrderId(),
+				'quantity'		=> $orderItem->getQuantity(),
+				'status'       	    => $orderItem->getStatusId(),
 				'supplier_group'    => $supplier_group_name,
-				'supplier_name'	    => $order_item['supplier_name']
+				'supplier_name'	    => $orderItem->getSupplier()->getName()
 			);
 		}
 		$this->data['storeAddress'] = $this->config->get('config_address');

@@ -1,21 +1,19 @@
 <?php
 require_once("ShippingMethodModel.php");
-class ModelShippingEMS extends ShippingMethodModel
-{
-  	public function getCost($destination, $orderItems, $ext = array())
-    {
+class ModelShippingEMS extends ShippingMethodModel {
+  	public function getCost($destination, $orderItems, $ext = array()) {
 //        $this->log->write(print_r($orderItems, true));
         $cost = 0;
         $rates = explode(',', $this->config->get($destination . '_rate'));
-        if (empty($ext['weight']))
-        {
+        if (empty($ext['weight'])) {
             $totalWeight = 0;
-            foreach ($orderItems as $orderItem)
+            foreach ($orderItems as $orderItem) {
                 $totalWeight +=
                     $this->weight->convert(
-                        $orderItem['weight'],
-                        $orderItem['weight_class_id'],
-                        $this->config->get('config_weight_class_id')) * $orderItem['quantity'];
+                        $orderItem->getWeight(),
+                        $orderItem->getWeightClassId(),
+                        $this->config->get('config_weight_class_id')) * $orderItem->getQuantity();
+            }
         }
         else
             $totalWeight = $ext['weight'];

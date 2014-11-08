@@ -273,22 +273,22 @@ class ControllerAccountOrder extends CustomerZoneController {
 
 			$this->data['products'] = array();
 
-			$products = OrderItemDAO::getInstance()->getOrderItems(
-                array('filterOrderId' => $this->request->get['order_id'])
+			$orderItems = OrderItemDAO::getInstance()->getOrderItems(
+                array('filterOrderId' => $this->request->get['order_id']), null, true
             );
-$products = $this->model_account_order->getOrderProducts($this->request->get['order_id']);
+//            $products = $this->model_account_order->getOrderProducts($this->request->get['order_id']);
 
-      		foreach ($products as $product) {
+      		foreach ($orderItems as $orderItem) {
                 $actions = array();
-                if (($product['status'] & 0x0000FFFF) <= 2)
+                if (($orderItem->getStatusId() & 0x0000FFFF) <= 2)
                     $actions[] = array(
                         'text' => $this->language->get('CANCEL'),
                         'href' => $this->url->link(
                             'account/orderItems/cancel',
-                            'orderItemId=' . $product['order_product_id'] . '&returnUrl=' . urlencode($this->selfUrl))
+                            'orderItemId=' . $orderItem->getId() . '&returnUrl=' . urlencode($this->selfUrl))
                     );
                 $option_data = array();
-				$options = OrderItemDAO::getInstance()->getOptions($product['order_product_id']);
+				$options = OrderItemDAO::getInstance()->getOptions($orderItem->getId());
 //                $this->log->write(print_r($options, true));
 
          		foreach ($options as $option) {
@@ -307,31 +307,32 @@ $products = $this->model_account_order->getOrderProducts($this->request->get['or
 					}
         		}
             //print_r($product);
-				$product_image = ProductDAO::getInstance()->getImage($product['product_id']);
-                  if($product['image_path'] == '' || $product['image_path'] == "data/event/agent-moomidae.jpg") {
-                    $options = OrderItemDAO::getInstance()->getOptions($product['order_product_id']);
+				$product_image = ProductDAO::getInstance()->getImage($orderItem->getProductId());
+                  if($orderItem->getImagePath() == '' || $orderItem->getImagePath() == "data/event/agent-moomidae.jpg") {
+                    $options = OrderItemDAO::getInstance()->getOptions($orderItem->getId());
                     $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
-                    ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
-                    $product['image_path'] = !empty($itemUrl) ? $itemUrl : $product['image_path'];
+                        ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] 
+                        : '';
+                    $orderItem->setImagePath(!empty($itemUrl) ? $itemUrl : $orderItem->getImagePath());
                   }
 
-                  if ($product['image_path'] && file_exists(DIR_IMAGE . $product['image_path']))
-                      $image = $this->modelToolImage->resize($product['image_path'], 100, 100);
+                  if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath()))
+                      $image = $this->modelToolImage->resize($orderItem->getImagePath(), 100, 100);
                   else
                       $image = $this->modelToolImage->resize($product_image, 100, 100);
 
         		$this->data['products'][] = array(
-					'order_product_id' => $product['order_product_id'],
+					'order_product_id' => $orderItem->getId(),
                     'actions' => $actions,
-                    'comment' => $product['public_comment'],
-          			'name'             => $product['name'],
-          			'model'            => $product['model'],
+                    'comment' => $orderItem->getPublicComment(),
+          			'name'             => $orderItem->getName(),
+          			'model'            => $orderItem->getModel(),
           			'option'           => $option_data,
-          			'quantity'         => $product['quantity'],
-          			'price'            => $this->currency->format($product['price'], $order_info['currency_code'], $order_info['currency_value']),
-					'total'            => $this->currency->format($product['total'], $order_info['currency_code'], $order_info['currency_value']),
+          			'quantity'         => $orderItem->getModel(),
+          			'price'            => $this->getCurrency()->format($orderItem->getPrice(true), $order_info['currency_code'], 1),
+					'total'            => $this->getCurrency()->format($orderItem->getTotal(true), $order_info['currency_code'], 1),
                     'imagePath' => $image,
-                    'item_status'      => Status::getStatus($product['status_id'], $this->config->get('language_id'), true),
+                    'item_status'      => Status::getStatus($orderItem->getStatusId(), $this->config->get('language_id'), true),
                     'selected'         => false //isset($this->request->post['selected']) && in_array($result['order_product_id'], $this->request->post['selected'])
         		);
       		}
@@ -552,7 +553,7 @@ $products = $this->model_account_order->getOrderProducts($this->request->get['or
 			foreach ($products as $product) {
 				$option_data = array();
 
-				$options = $this->model_account_order->getOrderOptions($order_id, $product['order_product_id']);
+				$options = $this->model_account_order->getOrderOptions($order_id, $product->getId());
 
 				foreach ($options as $option) {
 					if ($option['type'] != 'file') {

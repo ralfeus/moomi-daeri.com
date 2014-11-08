@@ -58,54 +58,43 @@ class ControllerAccountOrderItems extends CustomerZoneController {
         $data['limit']           = $this->config->get('config_admin_limit');
         $data['order']           = 'DESC';
 //		$this->log->write(print_r($data, true));
-        $orderItems = OrderItemDAO::getInstance()->getOrderItems($data);
+        $orderItems = OrderItemDAO::getInstance()->getOrderItems($data, null, true);
 //        $this->log->write(count($orderItems));
         if ($orderItems) {
             foreach ($orderItems as $orderItem) {
-                $orderItemObject = OrderItemDAO::getInstance()->getOrderItem($orderItem['order_item_id']);
-                if($orderItem['image_path'] == '' || $orderItem['image_path'] == "data/event/agent-moomidae.jpg") {
-                  $options = OrderItemDAO::getInstance()->getOptions($orderItem['order_product_id']);
+                if($orderItem->getImagePath() == '' || $orderItem->getImagePath() == "data/event/agent-moomidae.jpg") {
+                  $options = OrderItemDAO::getInstance()->getOptions($orderItem->getId());
                   $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
-                  ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] : '';
-                  $orderItem['image_path'] = !empty($itemUrl) ? $itemUrl : $orderItem['image_path'];
+                    ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] 
+                      : '';
+                  $orderItem->setImagePath(!empty($itemUrl) ? $itemUrl : $orderItem->getImagePath());
                 }
-                if ($orderItem['image_path'] && file_exists(DIR_IMAGE . $orderItem['image_path'])):
-                    $image = $this->model_tool_image->resize($orderItem['image_path'], 80, 80);
+                if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath())):
+                    $image = $this->model_tool_image->resize($orderItem->getImagePath(), 80, 80);
                 else:
                     $image = $this->model_tool_image->resize('no_image.jpg', 80, 80);
                 endif;
 
-                $supplier_url = "";
-                foreach ($this->model_catalog_product->getProductAttributes($orderItem['product_id']) as $attribute) {
-                    if ($attribute['name'] == 'Supplier URL') {
-                        foreach ($attribute['product_attribute_description'] as $attribute_language_version)
-                            if ($attribute_language_version['text']) {
-                                $supplier_url = $attribute_language_version['text'];
-                                break;
-                            }
-                        break;
-                    }
-                }
                 $action = array();
 
                 $this->data['order_items'][] = [
-                    'id'			            => $orderItem['order_product_id'],
+                    'id'			            => $orderItem->getId(),
                     'image_path'	            => $image,
-                    'name'			 => $orderItem['name'],
-                    'model'                     => $orderItem['model'],
-                    'name_korean'	            => $this->getProductAttribute($orderItem['product_id'], "Name Korean"),
-                    'order_id'					=> $orderItem['order_id'],
-					'order_url'					=> $this->url->link('sale/order/info', 'order_id=' . $orderItem['order_id'], 'SSL'),
-                    'options'       => nl2br(OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem['order_product_id'])),
-                    'publicComment'                   => $orderItemObject->getPublicComment(),
-					'status'       	=> $orderItem['status'] ? Status::getStatus($orderItem['status'], $this->config->get('language_id'), true) : "",
-                    'price'			=> $orderItemObject->getCurrency()->getString($orderItemObject->getPrice(true)),
-		            'weight'		=> $this->weight->format($orderItem['weight'],$orderItem['weight_class_id']),
-                    'quantity'		=> $orderItem['quantity'],
+                    'name'			 => $orderItem->getName(),
+                    'model'                     => $orderItem->getModel(),
+                    'name_korean'	            => $orderItem->getKoreanName(),
+                    'order_id'					=> $orderItem->getOrderId(),
+					'order_url'					=> $this->url->link('account/order/info', 'order_id=' . $orderItem->getOrderId(), 'SSL'),
+                    'options'       => nl2br(OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId())),
+                    'publicComment'                   => $orderItem->getPublicComment(),
+					'status'       	=> $orderItem->getStatusId() ? Status::getStatus($orderItem->getStatusId(), $this->config->get('language_id'), true) : "",
+                    'price'			=> $orderItem->getCurrency()->getString($orderItem->getPrice(true)),
+		            'weight'		=> $this->weight->format($orderItem->getWeight(), $orderItem->getWeightClassId()),
+                    'quantity'		=> $orderItem->getQuantity(),
 					'selected'      =>
                         isset($_REQUEST['selectedItems'])
                         && is_array($_REQUEST['selectedItems'])
-                        && in_array($orderItem['order_product_id'], $_REQUEST['selectedItems']),
+                        && in_array($orderItem->getId(), $_REQUEST['selectedItems']),
                     'action'                    => $action
                 ];
             }
@@ -171,18 +160,6 @@ class ControllerAccountOrderItems extends CustomerZoneController {
 //        $this->log->write(print_r($this->data, true));
 		$this->response->setOutput($this->render());
   	}
-
-    private function getProductAttribute($product_id, $attribute_name)
-    {
-        foreach ($this->model_catalog_product->getProductAttributes($product_id) as $attribute)
-            if ($attribute['name'] == $attribute_name)
-            {
-                foreach ($attribute['product_attribute_description'] as $attribute_language_version)
-                    if ($attribute_language_version['text'])
-                        return $attribute_language_version['text'];
-            }
-        return "";
-    }
 
     protected function initParameters() {
         $this->log->write(print_r($_REQUEST, true));
@@ -295,19 +272,4 @@ class ControllerAccountOrderItems extends CustomerZoneController {
 
         $this->response->setOutput('');
     }
-
-//    public function saveQuantity()
-//    {
-//        if (isset($_REQUEST['orderItemId']))
-//            $orderItemId = $_REQUEST['orderItemId'];
-//        if (isset($_REQUEST['quantity']))
-//            $quantity = $_REQUEST['quantity'];
-//
-//        if (!$this->isValidOrderItemId($orderItemId))
-//            $this->response->addHeader("HTTP/1.0 400 Bad request");
-//        else
-//            OrderItemDAO::getInstance()->setOrderItemQuantity($orderItemId, $quantity);
-//        $this->response->setOutput('');
-//    }
 }
-?>

@@ -10,9 +10,11 @@ class OrderItem {
     /** @var \Registry */
     private $registry;
     private $affiliateId;
+    private $affiliateTransactionAmount;
     private $affiliateTransactionId;
     protected $downloadData;
     private $id;
+    private $koreanName;
     private $orderId;
     protected $product;
     private $productId;
@@ -23,7 +25,6 @@ class OrderItem {
     private $price;
     private $whiteprice;
     private $total;
-    private $totalCustomerCurrency;
     private $statusId;
     private $timeCreated;
     private $timeModified;
@@ -37,6 +38,7 @@ class OrderItem {
     /** @var Supplier */
     private $supplier;
     private $supplierId;
+    private $supplierUrl;
     private $imagePath;
     private $weight;
     private $weightClassId;
@@ -58,6 +60,7 @@ class OrderItem {
      * @param int $id
      * @param string $imagePath
      * @param string $internalModel
+     * @param string $koreanName
      * @param string $model
      * @param string $name
      * @param int $orderId
@@ -71,14 +74,15 @@ class OrderItem {
      * @param int $supplierGroupId
      * @param int $supplierId
      * @param string $supplierName
+     * @param string $supplierUrl
      * @param float $total
      * @param float $weight
      * @param int $weightClassId
      */
     function __construct($registry, $affiliateId, $affiliateTransactionId, $privateComment, $customerId, $customerName,
-                         $customerNick, $id, $imagePath, $internalModel, $model, $name, $orderId, $price/*, $whiteprice*/, $productId,
+                         $customerNick, $id, $imagePath, $internalModel, $koreanName, $model, $name, $orderId, $price/*, $whiteprice*/, $productId,
                          $publicComment, $quantity, $shippingCost, $statusDate, $statusId, $supplierGroupId,
-                         $supplierId, $supplierName, $total, $weight, $weightClassId) {
+                         $supplierId, $supplierName, $supplierUrl, $total, $weight, $weightClassId) {
         $this->registry = $registry;
         $this->affiliateId = $affiliateId;
         $this->affiliateTransactionId = $affiliateTransactionId;
@@ -89,6 +93,7 @@ class OrderItem {
         $this->id = $id;
         $this->imagePath = $imagePath;
         $this->internalModel = $internalModel;
+        $this->koreanName = $koreanName;
         $this->model = $model;
         $this->name = $name;
         $this->orderId = $orderId;
@@ -103,6 +108,7 @@ class OrderItem {
         $this->supplierGroupId = $supplierGroupId;
         $this->supplierId = $supplierId;
         $this->supplierName = $supplierName;
+        $this->supplierUrl = $supplierUrl;
 //        $this->timeCreated = $timeCreated;
 //        $this->timeModified = $timeModified;
         $this->total = $total;
@@ -116,6 +122,20 @@ class OrderItem {
     public function getAffiliateId()
     {
         return $this->affiliateId;
+    }
+
+    /**
+     * @return float
+     */
+    public function getAffiliateTransactionAmount() {
+        return $this->affiliateTransactionAmount;
+    }
+
+    /**
+     * @param float $value
+     */
+    public function setAffiliateTransactionAmount($value) {
+        $this->affiliateTransactionAmount = $value;
     }
 
     /**
@@ -177,9 +197,15 @@ class OrderItem {
     /**
      * @return string
      */
-    public function getImagePath()
-    {
+    public function getImagePath() {
         return $this->imagePath;
+    }
+
+    /**
+     * @param string $value
+     */
+    public function setImagePath($value) {
+        $this->imagePath = $value;
     }
 
     /**
@@ -188,6 +214,13 @@ class OrderItem {
     public function getInternalModel()
     {
         return $this->internalModel;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKoreanName() {
+        return $this->koreanName;
     }
 
     /**
@@ -324,6 +357,13 @@ class OrderItem {
     public function getSupplierName()
     {
         return $this->supplierName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSupplierUrl() {
+        return $this->supplierUrl;
     }
 
     /**

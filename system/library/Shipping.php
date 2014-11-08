@@ -6,10 +6,8 @@
  * Time: 23:32
  * To change this template use File | Settings | File Templates.
  */
-class Shipping
-{
-    public static function getCost($orderItems, $shippingMethod, $ext = null, $registry = null)
-    {
+class Shipping {
+    public static function getCost($orderItems, $shippingMethod, $ext = null, $registry = null) {
         $shipping_method = explode(".", $shippingMethod);
         $shippingModel = $registry->get('load')->model("shipping/" . $shipping_method[0]);
         return $shippingModel->getCost($shipping_method[1], $orderItems, $ext);

@@ -6,7 +6,7 @@ class ModelShippingItem extends ShippingMethodModel
     {
         $cost = 0;
         foreach ($orderItems as $orderItem)
-            $cost += $this->config->get('item_cost') * $orderItem['quantity'];
+            $cost += $this->config->get('item_cost') * $orderItem->getQuantity();
 
         return $cost;
   	}

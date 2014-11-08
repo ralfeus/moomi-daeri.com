@@ -28,11 +28,11 @@ class OrderItemDAO extends DAO {
         if ($result) {
             return new OrderItem($this->registry, $result[0]['affiliate_id'], $result[0]['affiliate_transaction_id'],
                 $result[0]['comment'], $result[0]['customer_id'], $result[0]['customer_name'], $result[0]['customer_nick'],
-                $result[0]['order_item_id'], $result[0]['image_path'], $result[0]['internal_model'], $result[0]['model'],
-                $result[0]['name'], $result[0]['order_id'], $result[0]['price'], $result[0]['product_id'], $result[0]['public_comment'],
-                $result[0]['quantity'], $result[0]['shipping'], $result[0]['status_date'], $result[0]['status_id'],
-                $result[0]['supplier_group_id'], $result[0]['supplier_id'], $result[0]['supplier_name'], $result[0]['total'],
-                $result[0]['weight'], $result[0]['weight_class_id']);
+                $result[0]['order_item_id'], $result[0]['image_path'], $result[0]['internal_model'], $result[0]['korean_name'],
+                $result[0]['model'], $result[0]['name'], $result[0]['order_id'], $result[0]['price'], $result[0]['product_id'],
+                $result[0]['public_comment'], $result[0]['quantity'], $result[0]['shipping'], $result[0]['status_date'],
+                $result[0]['status_id'], $result[0]['supplier_group_id'], $result[0]['supplier_id'], $result[0]['supplier_name'],
+                $result[0]['supplier_url'], $result[0]['total'], $result[0]['weight'], $result[0]['weight_class_id']);
         } else {
             return null;
         }
@@ -166,10 +166,11 @@ class OrderItemDAO extends DAO {
                 $objectArray[] = new OrderItem($this->registry, $orderItemInfo['affiliate_id'], $orderItemInfo['affiliate_transaction_id'],
                     $orderItemInfo['comment'], $orderItemInfo['customer_id'], $orderItemInfo['customer_name'], $orderItemInfo['customer_nick'],
                     $orderItemInfo['order_item_id'], $orderItemInfo['image_path'], $orderItemInfo['internal_model'],
-                    $orderItemInfo['model'], $orderItemInfo['name'], $orderItemInfo['order_id'], $orderItemInfo['price'],
-                    $orderItemInfo['product_id'], $orderItemInfo['public_comment'], $orderItemInfo['quantity'], $orderItemInfo['shipping'],
-                    $orderItemInfo['time_modified'], $orderItemInfo['status'], $orderItemInfo['supplier_group_id'],
-                    $orderItemInfo['supplier_id'], $orderItemInfo['supplier_name'], $orderItemInfo['total'],
+                    $orderItemInfo['korean_name'], $orderItemInfo['model'], $orderItemInfo['name'], $orderItemInfo['order_id'],
+                    $orderItemInfo['price'], $orderItemInfo['product_id'], $orderItemInfo['public_comment'],
+                    $orderItemInfo['quantity'], $orderItemInfo['shipping'], $orderItemInfo['time_modified'],
+                    $orderItemInfo['status'], $orderItemInfo['supplier_group_id'], $orderItemInfo['supplier_id'],
+                    $orderItemInfo['supplier_name'], $orderItemInfo['supplier_url'], $orderItemInfo['total'],
                     $orderItemInfo['weight'], $orderItemInfo['weight_class_id']);
             }
             return $objectArray;
@@ -231,16 +232,14 @@ class OrderItemDAO extends DAO {
         return $this->fetchOrderItemsCount($filter);
     }
 
-    public function getOrderItemsTotals($data = array())
-    {
-        $order_items = $this->getOrderItems($data);
+    public function getOrderItemsTotals($data = array()) {
+        $orderItems = $this->getOrderItems($data, null, true);
         $subtotal = 0;
         $total_weight = 0;
 
-        foreach ($order_items as $order_item)
-        {
-            $subtotal += $order_item['total'];
-            $total_weight += $this->weight->convert($order_item['weight'], $order_item['weight_class_id'], $this->config->get('config_weight_class_id')) * $order_item['quantity'];
+        foreach ($orderItems as $orderItem) {
+            $subtotal += $orderItem->getTotal();
+            $total_weight += $this->weight->convert($orderItem->getWeight(), $orderItem->getWeightClassId(), $this->config->get('config_weight_class_id')) * $orderItem->getQuantity();
         }
         return
             array(

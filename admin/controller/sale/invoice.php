@@ -233,7 +233,7 @@ $temp = $invoice->getCustomer();
 
     public function getShippingCost() {
         $this->log->write(print_r($this->parameters, true));
-        $orderItems = OrderItemDAO::getInstance()->getOrderItems(array('filterOrderItemId' => $this->parameters['orderItemId']));
+        $orderItems = OrderItemDAO::getInstance()->getOrderItems(array('filterOrderItemId' => $this->parameters['orderItemId']), null, true);
         $cost =\Shipping::getCost(
             $orderItems,
             $this->parameters['method'],

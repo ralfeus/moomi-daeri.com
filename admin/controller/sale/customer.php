@@ -866,22 +866,18 @@ class ControllerSaleCustomer extends Controller {
 		}
 	}
 
-    public function orderItemsHistory()
-    {
-        $orderItems = OrderItemDAO::getInstance()->getOrderItems(array(
-            'filterCustomerId' => array($this->parameters['customerId'])
-        ));
-//        $this->log->write(print_r($orderItems, true));
+    public function orderItemsHistory() {
+        $orderItems = OrderItemDAO::getInstance()->getOrderItems(
+            array('filterCustomerId' => array($this->parameters['customerId'])), null, true);
         $this->data = array();
         $this->data['events'] = array();
-        foreach ($orderItems as $orderItem)
-        {
-            $orderItemHistory = OrderItemDAO::getInstance()->getOrderItemHistory($orderItem['order_product_id']);
+        foreach ($orderItems as $orderItem) {
+            $orderItemHistory = OrderItemDAO::getInstance()->getOrderItemHistory($orderItem->getId());
 //            $this->log->write(print_r($orderItemHistory, true));
             foreach ($orderItemHistory as $orderItemHistoryEntry)
                 $this->data['events'][] = array(
-                    'orderId' => $orderItem['order_id'],
-                    'orderItemId' => $orderItem['order_product_id'],
+                    'orderId' => $orderItem->getOrderId(),
+                    'orderItemId' => $orderItem->getId(),
                     'eventDate' => $orderItemHistoryEntry['date_added'],
                     'statusName' => $orderItemHistoryEntry['name']
                 );
