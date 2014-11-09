@@ -1,4 +1,6 @@
 <?php
+use model\sale\CustomerDAO;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -32,16 +34,18 @@ class ModelSaleTransaction extends Model
         );
     }
 
-    public function deleteTransaction($transactionId)
-    {
+    /**
+     * @param int $transactionId
+     */
+    public function deleteTransaction($transactionId) {
         $transaction = $this->getTransaction($transactionId);
-        $customer = $this->load->model('sale/customer')->getCustomer($transaction['customer_id']);
+        $customer = CustomerDAO::getInstance()->getCustomer($transaction['customer_id']);
         $amountToReturn = $this->currency->convert($transaction['amount'], $transaction['currency_code'], $customer['base_currency_code']);
-        $this->db->query("
+        $this->getDb()->query("
             DELETE FROM customer_transaction
             WHERE customer_transaction_id = " . (int)$transactionId
         );
-        $this->db->query("
+        $this->getDb()->query("
             UPDATE customer
             SET balance = balance + $amountToReturn
             WHERE customer_id = " . $transaction['customer_id']

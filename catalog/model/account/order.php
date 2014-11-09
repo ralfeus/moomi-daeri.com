@@ -129,14 +129,16 @@ class ModelAccountOrder extends Model {
 	
 		return $query->rows;
 	}
-	
-	public function getOrderProducts($order_id) {
-		$query = $this->db->query("
-		    SELECT * FROM order_product WHERE order_id = '" . (int)$order_id . "'
-        ");
-	
-		return $query->rows;
-	}
+
+//    Removed due to replacement with OrderItemDAO::getOrderItems.
+// DO NOT RESTORE!!! Use OrderItemDAO::getOrderItems instead.
+//	public function getOrderProducts($order_id) {
+//		$query = $this->db->query("
+//		    SELECT * FROM order_product WHERE order_id = '" . (int)$order_id . "'
+//        ");
+//
+//		return $query->rows;
+//	}
 
 	public function getOrderOptions($order_id, $order_product_id) {
 		$query = $this->db->query("SELECT * FROM order_option WHERE order_id = '" . (int)$order_id . "' AND order_product_id = '" . (int)$order_product_id . "'");

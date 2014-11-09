@@ -1,4 +1,6 @@
 <?php
+use model\sale\CustomerDAO;
+
 class ControllerSaleOrder extends Controller {
 	private $error = array();
     /** @var ModelSaleOrder */
@@ -778,12 +780,10 @@ class ControllerSaleOrder extends Controller {
       		$this->data['fax'] = '';
     	}	
 
-		$this->load->model('sale/customer');
-
 		if (isset($this->request->post['customer_id'])) {
-			$this->data['addresses'] = $this->model_sale_customer->getAddresses($this->request->post['customer_id']);
+			$this->data['addresses'] = CustomerDAO::getInstance()->getAddresses($this->request->post['customer_id']);
 		} elseif (!empty($order_info)) {
-			$this->data['addresses'] = $this->model_sale_customer->getAddresses($order_info['customer_id']);
+			$this->data['addresses'] = CustomerDAO::getInstance()->getAddresses($order_info['customer_id']);
 		} else {
 			$this->data['addresses'] = array();
 		}
@@ -1225,11 +1225,9 @@ class ControllerSaleOrder extends Controller {
 				$this->data['credit'] = 0;
 			}
 			
-			$this->load->model('sale/customer');
+			$this->data['credit_total'] = 0; //CustomerDAO::getInstance()->getTotalTransactionsByOrderId($this->request->get['order_id']);
 						
-			$this->data['credit_total'] = 0; //$this->model_sale_customer->getTotalTransactionsByOrderId($this->request->get['order_id']);
-						
-			$this->data['reward_total'] = $this->model_sale_customer->getTotalCustomerRewardsByOrderId($this->request->get['order_id']);
+			$this->data['reward_total'] = CustomerDAO::getInstance()->getTotalCustomerRewardsByOrderId($this->request->get['order_id']);
 
 			$this->data['affiliate_firstname'] = $order_info['affiliate_firstname'];
 			$this->data['affiliate_lastname'] = $order_info['affiliate_lastname'];
@@ -1492,7 +1490,7 @@ foreach ($this->data['totals'] as $v) {
 			$this->error['warning'] = $this->language->get('error_permission');
     	}
 /* [webme] deny order deletions by specified user_group - begin */
-$pureManagerGroupId = 11; // вот это ID созданной группы, которой ЗАПРЕЩАЕМ удалять заказы.
+$pureManagerGroupId = 11; // пїЅпїЅпїЅ пїЅпїЅпїЅ ID пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
 if ($this->user->getUsergroupId() == $pureManagerGroupId) {
 $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 }
@@ -1566,12 +1564,10 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			$order_info = $this->model_sale_order->getOrder($this->request->get['order_id']);
 			
 			if ($order_info && $order_info['customer_id']) {
-				$this->load->model('sale/customer');
-				
-				$credit_total = $this->model_sale_customer->getTotalTransactionsByOrderId($this->request->get['order_id']);
+				$credit_total = CustomerDAO::getInstance()->getTotalTransactionsByOrderId($this->request->get['order_id']);
 				
 				if (!$credit_total) {
-					$this->model_sale_customer->addTransaction($order_info['customer_id'], $this->language->get('text_order_id') . ' #' . $this->request->get['order_id'], $order_info['total'], $this->request->get['order_id']);
+					CustomerDAO::getInstance()->addTransaction($order_info['customer_id'], $this->language->get('text_order_id') . ' #' . $this->request->get['order_id'], $order_info['total'], $this->request->get['order_id']);
 					
 					$json['success'] = $this->language->get('text_credit_added');
 				} else {
@@ -1592,9 +1588,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			$order_info = $this->model_sale_order->getOrder($this->request->get['order_id']);
 			
 			if ($order_info && $order_info['customer_id']) {
-				$this->load->model('sale/customer');
-				
-				$this->model_sale_customer->deleteTransaction($this->request->get['order_id']);
+				CustomerDAO::getInstance()->deleteTransaction($this->request->get['order_id']);
 					
 				$json['success'] = $this->language->get('text_credit_removed');
 			} else {
@@ -1614,12 +1608,10 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			$order_info = $this->model_sale_order->getOrder($this->request->get['order_id']);
 			
 			if ($order_info && $order_info['customer_id']) {
-				$this->load->model('sale/customer');
-
-				$reward_total = $this->model_sale_customer->getTotalCustomerRewardsByOrderId($this->request->get['order_id']);
+				$reward_total = CustomerDAO::getInstance()->getTotalCustomerRewardsByOrderId($this->request->get['order_id']);
 				
 				if (!$reward_total) {
-					$this->model_sale_customer->addReward($order_info['customer_id'], $this->language->get('text_order_id') . ' #' . $this->request->get['order_id'], $order_info['reward'], $this->request->get['order_id']);
+					CustomerDAO::getInstance()->addReward($order_info['customer_id'], $this->language->get('text_order_id') . ' #' . $this->request->get['order_id'], $order_info['reward'], $this->request->get['order_id']);
 					
 					$json['success'] = $this->language->get('text_reward_added');
 				} else {
@@ -1642,9 +1634,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			$order_info = $this->model_sale_order->getOrder($this->request->get['order_id']);
 			
 			if ($order_info && $order_info['customer_id']) {
-				$this->load->model('sale/customer');
-
-				$this->model_sale_customer->deleteReward($this->request->get['order_id']);
+				CustomerDAO::getInstance()->deleteReward($this->request->get['order_id']);
 				
 				$json['success'] = $this->language->get('text_reward_removed');
 			} else {

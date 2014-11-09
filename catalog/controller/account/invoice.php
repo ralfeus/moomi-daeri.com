@@ -65,10 +65,7 @@ class ControllerAccountInvoice extends CustomerZoneController {
                 ));
     }
 
-    public function index()
-    {
-//        $modelAccountInvoice = $this->registry->get('model_account_invoice');
-        //$modelSaleCustomer = $this->load->model('sale/customer');
+    public function index() {
         $invoices = InvoiceDAO::getInstance()->getInvoices(array('filterCustomerId' => array($this->getCustomer()->getId())), "invoice_id DESC");
         if ($invoices)
         {

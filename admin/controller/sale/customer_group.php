@@ -1,4 +1,6 @@
 <?php
+use model\sale\CustomerDAO;
+
 class ControllerSaleCustomerGroup extends Controller {
 	private $error = array();
 
@@ -337,7 +339,6 @@ class ControllerSaleCustomerGroup extends Controller {
 		}
 		
 		$this->load->model('setting/store');
-		$this->load->model('sale/customer');
       	
 		foreach ($this->request->post['selected'] as $customer_group_id) {
     		if ($this->config->get('config_registred_group_id') == $customer_group_id) {
@@ -354,7 +355,7 @@ class ControllerSaleCustomerGroup extends Controller {
 				$this->error['warning'] = sprintf($this->language->get('error_store'), $store_total);
 			}
 			
-			$customer_total = $this->model_sale_customer->getTotalCustomersByCustomerGroupId($customer_group_id);
+			$customer_total = CustomerDAO::getInstance()->getTotalCustomersByCustomerGroupId($customer_group_id);
 
 			if ($customer_total) {
 				$this->error['warning'] = sprintf($this->language->get('error_customer'), $customer_total);

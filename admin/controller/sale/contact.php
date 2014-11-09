@@ -1,4 +1,6 @@
-<?php 
+<?php
+use model\sale\CustomerDAO;
+
 class ControllerSaleContact extends Controller {
 	private $error = array();
 	 
@@ -7,10 +9,7 @@ class ControllerSaleContact extends Controller {
  
 		$this->document->setTitle($this->language->get('heading_title'));
 		
-		$this->load->model('sale/customer');
-		
 		$this->load->model('sale/customer_group');
-		
 		$this->load->model('sale/affiliate');
 		
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && ($this->validate())) {
@@ -28,21 +27,21 @@ class ControllerSaleContact extends Controller {
 			
 			switch ($this->request->post['to']) {
 				case 'newsletter':
-					$results = $this->model_sale_customer->getCustomersByNewsletter();
+					$results = CustomerDAO::getInstance()->getCustomersByNewsletter();
 				
 					foreach ($results as $result) {
 						$emails[] = $result['email'];
 					}
 					break;
 				case 'customer_all':
-					$results = $this->model_sale_customer->getCustomers();
+					$results = CustomerDAO::getInstance()->getCustomers();
 			
 					foreach ($results as $result) {
 						$emails[] = $result['email'];
 					}						
 					break;
 				case 'customer_group':
-					$results = $this->model_sale_customer->getCustomersByCustomerGroupId($this->request->post['customer_group_id']);
+					$results = CustomerDAO::getInstance()->getCustomersByCustomerGroupId($this->request->post['customer_group_id']);
 			
 					foreach ($results as $result) {
 						$emails[$result['customer_id']] = $result['email'];
@@ -51,7 +50,7 @@ class ControllerSaleContact extends Controller {
 				case 'customer':
 					if (isset($this->request->post['customer'])) {					
 						foreach ($this->request->post['customer'] as $customer_id) {
-							$customer_info = $this->model_sale_customer->getCustomer($customer_id);
+							$customer_info = CustomerDAO::getInstance()->getCustomer($customer_id);
 							
 							if ($customer_info) {
 								$emails[] = $customer_info['email'];
@@ -80,7 +79,7 @@ class ControllerSaleContact extends Controller {
 				case 'product':
 					if (isset($this->request->post['product'])) {
 						foreach ($this->request->post['product'] as $product_id) {
-							$results = $this->model_sale_customer->getCustomersByProduct($product_id);
+							$results = CustomerDAO::getInstance()->getCustomersByProduct($product_id);
 							
 							foreach ($results as $result) {
 								$emails[] = $result['email'];
@@ -241,7 +240,7 @@ class ControllerSaleContact extends Controller {
 		
 		if (isset($this->request->post['customer'])) {					
 			foreach ($this->request->post['customer'] as $customer_id) {
-				$customer_info = $this->model_sale_customer->getCustomer($customer_id);
+				$customer_info = CustomerDAO::getInstance()->getCustomer($customer_id);
 					
 				if ($customer_info) {
 					$this->data['customers'][] = array(

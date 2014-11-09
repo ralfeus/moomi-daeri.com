@@ -1,4 +1,6 @@
 <?php
+use model\sale\CustomerDAO;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -6,12 +8,8 @@
  * Time: 11:22
  * To change this template use File | Settings | File Templates.
  */
-class ControllerSaleCreditManagement extends Controller
-{
-    private $modelSaleCustomer;
-
-    public function __construct($registry)
-    {
+class ControllerSaleCreditManagement extends Controller {
+    public function __construct($registry) {
         parent::__construct($registry);
 //        $this->log->write("Starting");
         $this->takeSessionVariables();
@@ -19,7 +17,6 @@ class ControllerSaleCreditManagement extends Controller
         $this->load->language('sale/creditManagement');
         $this->document->setTitle($this->language->get('HEADING_TITLE'));
         $this->data['headingTitle'] = $this->language->get('HEADING_TITLE');
-        $this->modelSaleCustomer = $this->load->model('sale/customer');
     }
 
     public function accept()
@@ -41,7 +38,7 @@ class ControllerSaleCreditManagement extends Controller
         }
         unset($data['filterCustomerId']);
         $tmpResult = array();
-        foreach ($this->modelSaleCustomer->getCustomers($data) as $customer)
+        foreach (CustomerDAO::getInstance()->getCustomers($data) as $customer)
             if (!in_array($customer['customer_id'], $tmpResult))
                 $tmpResult[$customer['customer_id']] = $customer['name'] . ' / ' . $customer['nickname'];
         natcasesort($tmpResult);
@@ -59,7 +56,7 @@ class ControllerSaleCreditManagement extends Controller
         $this->data['requests'] = array();
         foreach ($addCreditRequests as $addCreditRequest)
         {
-            $customer = $this->modelSaleCustomer->getCustomer($addCreditRequest['senderId']);
+            $customer = CustomerDAO::getInstance()->getCustomer($addCreditRequest['senderId']);
             $actions = array();
             if ($addCreditRequest['data']->status == ADD_CREDIT_STATUS_PENDING)
             {

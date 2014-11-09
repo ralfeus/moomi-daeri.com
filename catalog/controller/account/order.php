@@ -117,15 +117,14 @@ class ControllerAccountOrder extends CustomerZoneController {
 		$order_info = $this->model_account_order->getOrder($order_id);
 
 		if ($order_info) {
+            $orderItems = OrderItemDAO::getInstance()->getOrderItems(array('filterOrderId' => $order_id), null, true);
 			if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
 				if ($this->request->post['action'] == 'reorder') {
-					$order_products = $this->model_account_order->getOrderProducts($order_id);
-
-					foreach ($order_products as $order_product) {
-						if (in_array($order_product['order_product_id'], $this->request->post['selected'])) {
+					foreach ($orderItems as $orderItem) {
+						if (in_array($orderItem->getId(), $this->request->post['selected'])) {
 							$option_data = array();
 
-							$order_options = $this->model_account_order->getOrderOptions($order_id, $order_product['order_product_id']);
+							$order_options = $this->model_account_order->getOrderOptions($order_id, $orderItem->getId());
 
 							foreach ($order_options as $order_option) {
 								if ($order_option['type'] == 'select' || $order_option['type'] == 'radio') {
@@ -137,10 +136,9 @@ class ControllerAccountOrder extends CustomerZoneController {
 								}
 							}
 
-							$this->cart->add($order_product['product_id'], $order_product['quantity'], $option_data);
+							$this->cart->add($orderItem->getProductId(), $orderItem->getQuantity(), $option_data);
 						}
 					}
-
 					$this->redirect($this->url->link('checkout/cart', '', 'SSL'));
 				}
 			}
@@ -273,9 +271,9 @@ class ControllerAccountOrder extends CustomerZoneController {
 
 			$this->data['products'] = array();
 
-			$orderItems = OrderItemDAO::getInstance()->getOrderItems(
-                array('filterOrderId' => $this->request->get['order_id']), null, true
-            );
+//			$orderItems = OrderItemDAO::getInstance()->getOrderItems(
+//                array('filterOrderId' => $this->request->get['order_id']), null, true
+//            );
 //            $products = $this->model_account_order->getOrderProducts($this->request->get['order_id']);
 
       		foreach ($orderItems as $orderItem) {
@@ -289,7 +287,6 @@ class ControllerAccountOrder extends CustomerZoneController {
                     );
                 $option_data = array();
 				$options = OrderItemDAO::getInstance()->getOptions($orderItem->getId());
-//                $this->log->write(print_r($options, true));
 
          		foreach ($options as $option) {
           			if ($option['type'] != 'file') {
@@ -306,15 +303,14 @@ class ControllerAccountOrder extends CustomerZoneController {
 						);
 					}
         		}
-            //print_r($product);
 				$product_image = ProductDAO::getInstance()->getImage($orderItem->getProductId());
-                  if($orderItem->getImagePath() == '' || $orderItem->getImagePath() == "data/event/agent-moomidae.jpg") {
+                if($orderItem->getImagePath() == '' || $orderItem->getImagePath() == "data/event/agent-moomidae.jpg") {
                     $options = OrderItemDAO::getInstance()->getOptions($orderItem->getId());
                     $itemUrl = !empty($options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'])
                         ? $options[REPURCHASE_ORDER_IMAGE_URL_OPTION_ID]['value'] 
                         : '';
                     $orderItem->setImagePath(!empty($itemUrl) ? $itemUrl : $orderItem->getImagePath());
-                  }
+                }
 
                   if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath()))
                       $image = $this->modelToolImage->resize($orderItem->getImagePath(), 100, 100);
@@ -548,12 +544,13 @@ class ControllerAccountOrder extends CustomerZoneController {
 
 			$product_data = array();
 
-			$products = $this->model_account_order->getOrderProducts($order_id);
+//			$products = $this->model_account_order->getOrderProducts($order_id);
+            $orderItems = OrderItemDAO::getInstance()->getOrderItems(array('filterOrderId' => $order_id), null, true);
 
-			foreach ($products as $product) {
+			foreach ($orderItems as $orderItem) {
 				$option_data = array();
 
-				$options = $this->model_account_order->getOrderOptions($order_id, $product->getId());
+				$options = $this->model_account_order->getOrderOptions($order_id, $orderItem->getId());
 
 				foreach ($options as $option) {
 					if ($option['type'] != 'file') {
@@ -570,13 +567,13 @@ class ControllerAccountOrder extends CustomerZoneController {
 				}
 
 				$product_data[] = array(
-					'name'     => $product['name'],
-					'model'    => $product['model'],
+					'name'     => $orderItem->getName(),
+					'model'    => $orderItem->getModel(),
 					'option'   => $option_data,
-					'quantity' => $product['quantity'],
-					'price'    => $this->currency->format($product['price'], $order_info['currency_code'], $order_info['currency_value']),
-					'total'    => $this->currency->format($product['total'], $order_info['currency_code'], $order_info['currency_value'])
-					);
+					'quantity' => $orderItem->getQuantity(),
+					'price'    => $this->currency->format($orderItem->getPrice(true), $order_info['currency_code'], 1),
+					'total'    => $this->currency->format($orderItem->getTotal(true), $order_info['currency_code'], 1)
+                );
 			}
 
 			$total_data = $this->model_account_order->getOrderTotals($order_id);

@@ -1,4 +1,6 @@
-<?php 
+<?php
+use model\sale\CustomerDAO;
+
 class ControllerLocalisationZone extends Controller {
 	private $error = array(); 
 
@@ -397,7 +399,6 @@ class ControllerLocalisationZone extends Controller {
 		}
 		
 		$this->load->model('setting/store');
-		$this->load->model('sale/customer');
 		$this->load->model('sale/affiliate');
 		$this->load->model('localisation/geo_zone');
 		
@@ -412,7 +413,7 @@ class ControllerLocalisationZone extends Controller {
 				$this->error['warning'] = sprintf($this->language->get('error_store'), $store_total);
 			}
 		
-			$address_total = $this->model_sale_customer->getTotalAddressesByZoneId($zone_id);
+			$address_total = CustomerDAO::getInstance()->getTotalAddressesByZoneId($zone_id);
 
 			if ($address_total) {
 				$this->error['warning'] = sprintf($this->language->get('error_address'), $address_total);

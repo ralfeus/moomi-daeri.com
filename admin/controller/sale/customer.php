@@ -6,13 +6,11 @@ use model\setting\StoreDAO;
 class ControllerSaleCustomer extends Controller {
 	private $error = array();
     private $modelLocalisationCurrency;
-    private $modelSaleCustomer;
 
     public function __construct($registry)
     {
         parent::__construct($registry);
         $this->load->language('sale/customer');
-        $this->modelSaleCustomer = $this->load->model('sale/customer');
         $this->modelLocalisationCurrency = $this->load->model('localisation/currency');
         $this->document->setTitle($this->language->get('heading_title'));
         $this->data['error_warning'] = '';
@@ -29,7 +27,7 @@ class ControllerSaleCustomer extends Controller {
         }
         unset($data['filterCustomerId']);
         $tmpResult = array();
-        foreach ($this->modelSaleCustomer->getCustomers($data) as $customer)
+        foreach (CustomerDAO::getInstance()->getCustomers($data) as $customer)
             if (!in_array($customer['customer_id'], $tmpResult))
                 $tmpResult[$customer['customer_id']] = $customer['name'] . ' / ' . $customer['nickname'];
         natcasesort($tmpResult);
@@ -105,8 +103,8 @@ class ControllerSaleCustomer extends Controller {
             'limit' => 10
         );
 
-        $transaction_total = $this->modelSaleCustomer->getTotalTransactions($customer['customer_id']);
-        $transactions = $this->modelSaleCustomer->getTransactions($customer['customer_id'], $data['start'], $data['limit']);
+        $transaction_total = CustomerDAO::getInstance()->getTotalTransactions($customer['customer_id']);
+        $transactions = CustomerDAO::getInstance()->getTransactions($customer['customer_id'], $data['start'], $data['limit']);
 
         $this->data['transactions'] = array();
         foreach ($transactions as $transaction) {
@@ -175,7 +173,7 @@ class ControllerSaleCustomer extends Controller {
   
   	public function insert() {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-      	  	$this->model_sale_customer->addCustomer($this->request->post);
+      	  	CustomerDAO::getInstance()->addCustomer($this->request->post);
 			$this->session->data['success'] = $this->language->get('text_success');
 			$this->redirect($this->url->link('sale/customer', $this->buildUrlParameterString($this->parameters), 'SSL'));
 		}
@@ -184,7 +182,7 @@ class ControllerSaleCustomer extends Controller {
    
   	public function update() {
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_sale_customer->editCustomer($_REQUEST['customer_id'], $this->request->post);
+			CustomerDAO::getInstance()->editCustomer($_REQUEST['customer_id'], $this->request->post);
 			$this->session->data['success'] = $this->language->get('text_success');
 			$this->redirect($this->url->link('sale/customer', $this->buildUrlParameterString($this->parameters), 'SSL'));
 		}
@@ -195,7 +193,7 @@ class ControllerSaleCustomer extends Controller {
   	public function delete() {
     	if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $customer_id) {
-				$this->model_sale_customer->deleteCustomer($customer_id);
+				CustomerDAO::getInstance()->deleteCustomer($customer_id);
 			}
 			$this->session->data['success'] = $this->language->get('text_success');
 			$this->redirect($this->url->link('sale/customer', $this->buildUrlParameterString($this->parameters), 'SSL'));
@@ -210,10 +208,10 @@ class ControllerSaleCustomer extends Controller {
 			$approved = 0;
 			
 			foreach ($this->request->post['selected'] as $customer_id) {
-				$customer_info = $this->model_sale_customer->getCustomer($customer_id);
+				$customer_info = CustomerDAO::getInstance()->getCustomer($customer_id);
 				
 				if ($customer_info && !$customer_info['approved']) {
-					$this->model_sale_customer->approve($customer_id);
+					CustomerDAO::getInstance()->approve($customer_id);
 					
 					$approved++;
 				}
@@ -254,8 +252,8 @@ class ControllerSaleCustomer extends Controller {
         $this->data = array_merge($this->data, $this->parameters);
 
         $this->data['customersToFilterBy'] = $this->getCustomers();
-		$customer_total = $this->model_sale_customer->getTotalCustomers($data);
-		$results = $this->model_sale_customer->getCustomers($data);
+		$customer_total = CustomerDAO::getInstance()->getTotalCustomers($data);
+		$results = CustomerDAO::getInstance()->getCustomers($data);
         /** @var ModelSaleOrder $modelSaleOrder */
         $modelSaleOrder = $this->load->model('sale/order');
     	foreach ($results as $result) {
@@ -579,8 +577,10 @@ class ControllerSaleCustomer extends Controller {
     	$this->data['cancel'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
     	if (isset($_REQUEST['customer_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
-      		$customer_info = $this->model_sale_customer->getCustomer($_REQUEST['customer_id']);
-    	}
+      		$customer_info = CustomerDAO::getInstance()->getCustomer($_REQUEST['customer_id']);
+    	} else {
+            $customer_info = null;
+        }
 
           if (isset($this->request->post['baseCurrency']))
               $selectedCurrency = $this->request->post['baseCurrency'];
@@ -690,7 +690,7 @@ class ControllerSaleCustomer extends Controller {
 		if (isset($this->request->post['address'])) { 
       		$this->data['addresses'] = $this->request->post['address'];
 		} elseif (isset($_REQUEST['customer_id'])) {
-			$this->data['addresses'] = $this->model_sale_customer->getAddresses($_REQUEST['customer_id']);
+			$this->data['addresses'] = CustomerDAO::getInstance()->getAddresses($_REQUEST['customer_id']);
 		} else {
 			$this->data['addresses'] = array();
     	}
@@ -698,12 +698,12 @@ class ControllerSaleCustomer extends Controller {
 		$this->data['ips'] = array();
     	
 		if (!empty($customer_info)) {
-			$results = $this->model_sale_customer->getIpsByCustomerId($_REQUEST['customer_id']);
+			$results = CustomerDAO::getInstance()->getIpsByCustomerId($_REQUEST['customer_id']);
 		
 			foreach ($results as $result) {
 				$this->data['ips'][] = array(
 					'ip'         => $result['ip'],
-					'total'      => $this->model_sale_customer->getTotalCustomersByIp($result['ip']),
+					'total'      => CustomerDAO::getInstance()->getTotalCustomersByIp($result['ip']),
 					'date_added' => date('d/m/y', strtotime($result['date_added'])),
 					'filter_ip'  => HTTPS_SERVER . 'index.php?route=sale/customer&token=' . $this->session->data['token'] . '&filter_ip=' . $result['ip']
 				);
@@ -738,7 +738,7 @@ class ControllerSaleCustomer extends Controller {
       		$this->error['email'] = $this->language->get('error_email');
     	}
 		
-		$customer_info = $this->model_sale_customer->getCustomerByEmail($this->request->post['email']);
+		$customer_info = CustomerDAO::getInstance()->getCustomerByEmail($this->request->post['email']);
 		
 		if (!isset($_REQUEST['customer_id'])) {
 			if ($customer_info) {
@@ -896,8 +896,8 @@ class ControllerSaleCustomer extends Controller {
 
     public function purgeCart()
     {
-        $this->modelSaleCustomer->purgeCart($this->parameters['customerId']);
-        $customer = $this->modelSaleCustomer->getCustomer($this->parameters['customerId']);
+        CustomerDAO::getInstance()->purgeCart($this->parameters['customerId']);
+        $customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
         $json = array('success' => sprintf($this->language->get('SUCCESS_CART_PURGED'), $customer['nickname']));
         $this->response->setOutput(json_encode($json));
     }
@@ -928,7 +928,7 @@ class ControllerSaleCustomer extends Controller {
 	
 	public function transaction() {
         $this->load->library('Transaction');
-        $customer = $this->modelSaleCustomer->getCustomer($this->parameters['customerId']);
+        $customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
         if ($this->request->server['REQUEST_METHOD'] == 'POST') {
             if ($this->user->hasPermission('modify', 'sale/customer')) {
                 if ($this->request->post['action'] == 'add')
@@ -973,7 +973,7 @@ class ControllerSaleCustomer extends Controller {
                             $this->language->get('SUCCESS_TRANSACTION_DELETED'), $this->request->post['transactionId']);
                     }
                 }
-                $customer = $this->modelSaleCustomer->getCustomer($this->parameters['customerId']);
+                $customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
             }
             else
                 $this->data['error_warning'] = $this->language->get('error_permission');
@@ -1007,7 +1007,7 @@ class ControllerSaleCustomer extends Controller {
 		
 		$this->data['transactions'] = array();
 			
-		$results = $this->model_sale_customer->getTransactions($_REQUEST['customer_id'], ($page - 1) * 10, 10);
+		$results = CustomerDAO::getInstance()->getTransactions($_REQUEST['customer_id'], ($page - 1) * 10, 10);
 
 		foreach ($results as $result) {
             $actions = array();
@@ -1028,9 +1028,9 @@ class ControllerSaleCustomer extends Controller {
       	}			
 		
 		$this->data['balance'] = $this->currency->format(
-            $this->model_sale_customer->getCustomerBalance($_REQUEST['customer_id']), $customer['base_currency_code'], 1);
+            CustomerDAO::getInstance()->getCustomerBalance($_REQUEST['customer_id']), $customer['base_currency_code'], 1);
 		
-		$transaction_total = $this->model_sale_customer->getTotalTransactions($_REQUEST['customer_id']);
+		$transaction_total = CustomerDAO::getInstance()->getTotalTransactions($_REQUEST['customer_id']);
 			
 		$pagination = new Pagination();
 		$pagination->total = $transaction_total;
@@ -1054,11 +1054,8 @@ class ControllerSaleCustomer extends Controller {
         else
         {
             $this->data['error_fatal'] = '';
-
-            $this->load->model('sale/customer');
-
             if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->user->hasPermission('modify', 'sale/customer')) {
-                $this->model_sale_customer->addReward($_REQUEST['customer_id'], $this->request->post['description'], $this->request->post['points']);
+                CustomerDAO::getInstance()->addReward($_REQUEST['customer_id'], $this->request->post['description'], $this->request->post['points']);
 
                 $this->data['success'] = $this->language->get('text_success');
             } else {
@@ -1083,7 +1080,7 @@ class ControllerSaleCustomer extends Controller {
 
             $this->data['rewards'] = array();
 
-            $results = $this->model_sale_customer->getRewards($_REQUEST['customer_id'], ($page - 1) * 10, 10);
+            $results = CustomerDAO::getInstance()->getRewards($_REQUEST['customer_id'], ($page - 1) * 10, 10);
 
             foreach ($results as $result) {
                 $this->data['rewards'][] = array(
@@ -1093,9 +1090,9 @@ class ControllerSaleCustomer extends Controller {
                 );
             }
 
-            $this->data['balance'] = $this->model_sale_customer->getRewardTotal($_REQUEST['customer_id']);
+            $this->data['balance'] = CustomerDAO::getInstance()->getRewardTotal($_REQUEST['customer_id']);
 
-            $reward_total = $this->model_sale_customer->getTotalRewards($_REQUEST['customer_id']);
+            $reward_total = CustomerDAO::getInstance()->getTotalRewards($_REQUEST['customer_id']);
 
             $pagination = new Pagination();
             $pagination->total = $reward_total;
@@ -1115,15 +1112,13 @@ class ControllerSaleCustomer extends Controller {
 		$json = array();
 		
 		if (isset($_REQUEST['filter_name'])) {
-			$this->load->model('sale/customer');
-			
 			$data = array(
 				'filter_name' => $_REQUEST['filter_name'],
 				'start'       => 0,
 				'limit'       => 20
 			);
 		
-			$results = $this->model_sale_customer->getCustomers($data);
+			$results = CustomerDAO::getInstance()->getCustomers($data);
 			
 			foreach ($results as $result) {
 				$json[] = array(
@@ -1136,7 +1131,7 @@ class ControllerSaleCustomer extends Controller {
 					'email'          => $result['email'],
 					'telephone'      => $result['telephone'],
 					'fax'            => $result['fax'],
-					'address'        => $this->model_sale_customer->getAddresses($result['customer_id'])
+					'address'        => CustomerDAO::getInstance()->getAddresses($result['customer_id'])
 				);					
 			}
 		}
@@ -1156,9 +1151,7 @@ class ControllerSaleCustomer extends Controller {
 		$json = array();
 		
 		if (isset($_REQUEST['address_id']) && $_REQUEST['address_id']) {
-			$this->load->model('sale/customer');
-			
-			$json = $this->model_sale_customer->getAddress($_REQUEST['address_id']);
+			$json = CustomerDAO::getInstance()->getAddress($_REQUEST['address_id']);
 		}
 
 		$this->response->setOutput(json_encode($json));		

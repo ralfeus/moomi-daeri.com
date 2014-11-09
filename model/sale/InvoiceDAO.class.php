@@ -18,13 +18,9 @@ class InvoiceDAO extends DAO {
     public function addInvoice($orderId, $orderItems, $shippingMethod = null, $weight = 0, $discount = 0, $comment = "", $shippingDate = '') {
         /** @var \ModelSaleOrder $orderModel */
         $orderModel = $this->load->model('sale/order');
-        /** @var \ModelSaleCustomer $customerModel */
-        $customerModel = $this->load->model('sale/customer');
-        /** @var \ModelSaleOrderItemHistory $orderItemHistoryModel */
-        $orderItemHistoryModel = $this->load->model('sale/order_item_history');
         /// Get customer and shipping data from the primary order
         $order = $orderModel->getOrder($orderId);
-        $customer = $customerModel->getCustomer($order['customer_id']);
+        $customer = CustomerDAO::getInstance()->getCustomer($order['customer_id']);
 
         /// Calculate total weight and price in shop currency and customer currency
         $tmpWeight = 0; $tmpSubtotal = 0; $subtotalCustomerCurrency = 0;

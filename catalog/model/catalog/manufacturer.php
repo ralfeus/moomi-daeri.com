@@ -8,7 +8,16 @@ class ModelCatalogManufacturer extends Model {
 	
 	public function getManufacturers($data = array()) {
 		if ($data) {
-			$sql = "SELECT * FROM manufacturer m LEFT JOIN manufacturer_description md ON (m.manufacturer_id = md.manufacturer_id) LEFT JOIN manufacturer_to_store m2s ON (m.manufacturer_id = m2s.manufacturer_id) WHERE m2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND md.language_id = '" . (int)$this->config->get('config_language_id') . "'";
+			$sql = "
+			    SELECT *
+			    FROM
+			        manufacturer m
+			        LEFT JOIN manufacturer_description md ON (m.manufacturer_id = md.manufacturer_id)
+			        LEFT JOIN manufacturer_to_store m2s ON (m.manufacturer_id = m2s.manufacturer_id)
+                WHERE
+                    m2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
+                    AND md.language_id = '" . (int)$this->config->get('config_language_id') . "'
+            ";
 			
 			$sort_data = array(
 				'name',

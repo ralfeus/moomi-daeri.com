@@ -1,14 +1,5 @@
 <?php
-
-/**
- * class add_to_order
- *
- * Description for class add_to_order
- *
- * @author:
-*/
-class ControllerCheckoutAddToOrder extends Controller
-{
+class ControllerCheckoutAddToOrder extends Controller {
 	private $modelCheckoutOrder;
 	
 	public function __construct($registry)
@@ -25,12 +16,10 @@ class ControllerCheckoutAddToOrder extends Controller
 		$this->data['labels']['button_continue'] = $this->language->get('CONFIRM');
 	}
 	
-	public function confirm()
-	{
+	public function confirm() {
 		$this->modelCheckoutOrder = $this->load->model('checkout/order');
         $orderItems = array();
-		foreach ($this->cart->getProducts(true) as $orderItem)
-		{
+		foreach ($this->cart->getProducts(true) as $orderItem) {
 			$orderItems[] = array(
 				'product_id'	=> $orderItem['product_id'],
 				'name'			=> $orderItem['name'],
@@ -89,5 +78,3 @@ class ControllerCheckoutAddToOrder extends Controller
 //        $this->log->write(print_r($this->parameters, true));
     }
 }
-
-?>

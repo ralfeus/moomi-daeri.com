@@ -1,4 +1,6 @@
-<?php   
+<?php
+use model\sale\CustomerDAO;
+
 class ControllerCommonHome extends Controller {
     public function __construct($registry) {
         parent::__construct($registry);
@@ -57,10 +59,8 @@ class ControllerCommonHome extends Controller {
 		$this->data['total_sale_year'] = $this->currency->format($this->model_sale_order->getTotalSalesByYear(date('Y')), $this->config->get('config_currency'));
 		$this->data['total_order'] = $this->model_sale_order->getTotalOrders();
 		
-		$this->load->model('sale/customer');
-		
-		$this->data['total_customer'] = $this->model_sale_customer->getTotalCustomers();
-		$this->data['total_customer_approval'] = $this->model_sale_customer->getTotalCustomersAwaitingApproval();
+		$this->data['total_customer'] = CustomerDAO::getInstance()->getTotalCustomers();
+		$this->data['total_customer_approval'] = CustomerDAO::getInstance()->getTotalCustomersAwaitingApproval();
 		
 		$this->load->model('catalog/review');
 		

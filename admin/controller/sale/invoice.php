@@ -1,4 +1,5 @@
 <?php
+use model\sale\CustomerDAO;
 use model\sale\InvoiceDAO;
 use model\sale\OrderItem;
 use model\sale\OrderItemDAO;
@@ -13,8 +14,6 @@ use model\sale\OrderItemDAO;
 class ControllerSaleInvoice extends Controller {
     /** @var ModelReferenceAddress */
     private $modelReferenceAddress;
-    /** @var ModelSaleCustomer */
-    private $modelSaleCustomer;
     /** @var ModelSaleOrder */
     private $modelSaleOrder;
 
@@ -23,7 +22,6 @@ class ControllerSaleInvoice extends Controller {
         $this->load->language('sale/invoice');
         $this->load->library("Transaction");
         $this->modelReferenceAddress = $this->load->model('reference/address');
-        $this->modelSaleCustomer = $this->load->model('sale/customer');
         $this->modelSaleOrder = $this->load->model('sale/order');
         $this->load->model('tool/image');
 
@@ -249,7 +247,7 @@ $temp = $invoice->getCustomer();
     private function handleCredit($invoiceId) {
 //        $modelTransaction = $this->load->model('sale/transaction');
         $invoice = InvoiceDAO::getInstance()->getInvoice($invoiceId);
-//        $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
+//        $customer = CustomerDAO::getInstance()->getCustomer($invoice['customer_id']);
 $temp = $invoice->getCustomer();
         if ($temp['await_invoice_confirmation'])
             InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_CUSTOMER_CONFIRMATION);
@@ -280,7 +278,7 @@ $temp = $invoice->getCustomer();
                 $this->load->model('localisation/invoice')->getInvoiceStatus($invoiceId),
                 $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1),
                 $this->getCurrency()->format(
-                    $this->modelSaleCustomer->getCustomerBalance($temp['customer_id']),
+                    CustomerDAO::getInstance()->getCustomerBalance($temp['customer_id']),
                     $temp['base_currency_code'],
                     1)
             ),
@@ -466,7 +464,7 @@ $temp = $invoice->getCustomer();
         /// Set invoice data
         $firstItemOrder = $this->modelSaleOrder->getOrder($orderItems[0]->getOrderId());
 //        $this->log->write(print_r($firstItemOrder, true));
-        $customer = $this->modelSaleCustomer->getCustomer($firstItemOrder['customer_id']);
+        $customer = CustomerDAO::getInstance()->getCustomer($firstItemOrder['customer_id']);
         $shippingCost = \Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry);
         $this->data['comment'] = '';
         $this->data['discount'] = 0;
@@ -563,7 +561,7 @@ $temp = $invoice->getCustomer();
         $this->load->model('sale/order');
         $order_info = $this->model_sale_order->getOrderByShippingAddressId($invoice->getShippingAddressId());
         /// Set invoice data
-//        $customer = $this->modelSaleCustomer->getCustomer($invoice['customer_id']);
+//        $customer = CustomerDAO::getInstance()->getCustomer($invoice['customer_id']);
         $this->data['comment'] = $invoice->getComment();
         $this->data['discount'] = $invoice->getDiscount();
         $this->data['invoiceId'] = $invoice->getId();
