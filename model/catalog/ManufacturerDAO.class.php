@@ -14,68 +14,68 @@ class ManufacturerDAO extends DAO {
     }
 
     public function addManufacturer($data) {
-        $this->db->query("INSERT INTO manufacturer SET name = '" . $this->db->escape($data['name']) . "', sort_order = '" . (int)$data['sort_order'] . "'");
+        $this->getDb()->query("INSERT INTO manufacturer SET name = '" . $this->getDb()->escape($data['name']) . "', sort_order = '" . (int)$data['sort_order'] . "'");
 
-        $manufacturer_id = $this->db->getLastId();
+        $manufacturer_id = $this->getDb()->getLastId();
 
         if (isset($data['image'])) {
-            $this->db->query("UPDATE manufacturer SET image = '" . $this->db->escape($data['image']) . "' WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+            $this->getDb()->query("UPDATE manufacturer SET image = '" . $this->getDb()->escape($data['image']) . "' WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
         }
 
         foreach ($data['manufacturer_description'] as $language_id => $value) {
-            $this->db->query("INSERT INTO manufacturer_description SET manufacturer_id = '" . (int)$manufacturer_id . "', language_id = '" . (int)$language_id . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', description = '" . $this->db->escape($value['description']) . "', seo_title = '" . $this->db->escape($value['seo_title']) . "', seo_h1 = '" . $this->db->escape($value['seo_h1']) . "'");
+            $this->getDb()->query("INSERT INTO manufacturer_description SET manufacturer_id = '" . (int)$manufacturer_id . "', language_id = '" . (int)$language_id . "', meta_keyword = '" . $this->getDb()->escape($value['meta_keyword']) . "', meta_description = '" . $this->getDb()->escape($value['meta_description']) . "', description = '" . $this->getDb()->escape($value['description']) . "', seo_title = '" . $this->getDb()->escape($value['seo_title']) . "', seo_h1 = '" . $this->getDb()->escape($value['seo_h1']) . "'");
         }
 
         if (isset($data['manufacturer_store'])) {
             foreach ($data['manufacturer_store'] as $store_id) {
-                $this->db->query("INSERT INTO manufacturer_to_store SET manufacturer_id = '" . (int)$manufacturer_id . "', store_id = '" . (int)$store_id . "'");
+                $this->getDb()->query("INSERT INTO manufacturer_to_store SET manufacturer_id = '" . (int)$manufacturer_id . "', store_id = '" . (int)$store_id . "'");
             }
         }
 
         if ($data['keyword']) {
-            $this->db->query("INSERT INTO url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
+            $this->getDb()->query("INSERT INTO url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->getDb()->escape($data['keyword']) . "'");
         }
 
-        $this->cache->delete('manufacturer');
+        $this->getCache()->deleteAll('/^manufacturers\./');
     }
 
     public function editManufacturer($manufacturer_id, $data) {
-        $this->db->query("UPDATE manufacturer SET name = '" . $this->db->escape($data['name']) . "', sort_order = '" . (int)$data['sort_order'] . "' WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+        $this->getDb()->query("UPDATE manufacturer SET name = '" . $this->getDb()->escape($data['name']) . "', sort_order = '" . (int)$data['sort_order'] . "' WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
 
         if (isset($data['image'])) {
-            $this->db->query("UPDATE manufacturer SET image = '" . $this->db->escape($data['image']) . "' WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+            $this->getDb()->query("UPDATE manufacturer SET image = '" . $this->getDb()->escape($data['image']) . "' WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
         }
 
-        $this->db->query("DELETE FROM manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+        $this->getDb()->query("DELETE FROM manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
 
         foreach ($data['manufacturer_description'] as $language_id => $value) {
-            $this->db->query("INSERT INTO manufacturer_description SET manufacturer_id = '" . (int)$manufacturer_id . "', language_id = '" . (int)$language_id . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', description = '" . $this->db->escape($value['description']) . "', seo_title = '" . $this->db->escape($value['seo_title']) . "', seo_h1 = '" . $this->db->escape($value['seo_h1']) . "'");
+            $this->getDb()->query("INSERT INTO manufacturer_description SET manufacturer_id = '" . (int)$manufacturer_id . "', language_id = '" . (int)$language_id . "', meta_keyword = '" . $this->getDb()->escape($value['meta_keyword']) . "', meta_description = '" . $this->getDb()->escape($value['meta_description']) . "', description = '" . $this->getDb()->escape($value['description']) . "', seo_title = '" . $this->getDb()->escape($value['seo_title']) . "', seo_h1 = '" . $this->getDb()->escape($value['seo_h1']) . "'");
         }
 
-        $this->db->query("DELETE FROM manufacturer_to_store WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+        $this->getDb()->query("DELETE FROM manufacturer_to_store WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
 
         if (isset($data['manufacturer_store'])) {
             foreach ($data['manufacturer_store'] as $store_id) {
-                $this->db->query("INSERT INTO manufacturer_to_store SET manufacturer_id = '" . (int)$manufacturer_id . "', store_id = '" . (int)$store_id . "'");
+                $this->getDb()->query("INSERT INTO manufacturer_to_store SET manufacturer_id = '" . (int)$manufacturer_id . "', store_id = '" . (int)$store_id . "'");
             }
         }
 
-        $this->db->query("DELETE FROM url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id. "'");
+        $this->getDb()->query("DELETE FROM url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id. "'");
 
         if ($data['keyword']) {
-            $this->db->query("INSERT INTO url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
+            $this->getDb()->query("INSERT INTO url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->getDb()->escape($data['keyword']) . "'");
         }
 
-        $this->cache->delete('manufacturer');
+        $this->getCache()->deleteAll('/^manufacturers\./');
     }
 
     public function deleteManufacturer($manufacturer_id) {
-        $this->db->query("DELETE FROM manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
-        $this->db->query("DELETE FROM manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
-        $this->db->query("DELETE FROM manufacturer_to_store WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
-        $this->db->query("DELETE FROM url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "'");
+        $this->getDb()->query("DELETE FROM manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+        $this->getDb()->query("DELETE FROM manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+        $this->getDb()->query("DELETE FROM manufacturer_to_store WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+        $this->getDb()->query("DELETE FROM url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "'");
 
-        $this->cache->delete('manufacturer');
+        $this->getCache()->deleteAll('/^manufacturers\./');
     }
 
     /**
@@ -122,7 +122,7 @@ SQL
         if ($shallow) {
             return new Manufacturer($manufacturerId);
         }
-        $query = $this->db->query("SELECT DISTINCT *, (SELECT keyword FROM url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturerId . "') AS keyword FROM manufacturer WHERE manufacturer_id = '" . (int)$manufacturerId . "'");
+        $query = $this->getDb()->query("SELECT DISTINCT *, (SELECT keyword FROM url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturerId . "') AS keyword FROM manufacturer WHERE manufacturer_id = '" . (int)$manufacturerId . "'");
 
         return $query->row;
     }
@@ -181,7 +181,7 @@ SQL
     public function getManufacturerStores($manufacturer_id) {
         $manufacturer_store_data = array();
 
-        $query = $this->db->query("SELECT * FROM manufacturer_to_store WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+        $query = $this->getDb()->query("SELECT * FROM manufacturer_to_store WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
 
         foreach ($query->rows as $result) {
             $manufacturer_store_data[] = $result['store_id'];
@@ -207,13 +207,13 @@ SQL
     }
 
     public function getTotalManufacturersByImageId($image_id) {
-        $query = $this->db->query("SELECT COUNT(*) AS total FROM manufacturer WHERE image_id = '" . (int)$image_id . "'");
+        $query = $this->getDb()->query("SELECT COUNT(*) AS total FROM manufacturer WHERE image_id = '" . (int)$image_id . "'");
 
         return $query->row['total'];
     }
 
     public function getTotalManufacturers() {
-        $query = $this->db->query("SELECT COUNT(*) AS total FROM manufacturer");
+        $query = $this->getDb()->query("SELECT COUNT(*) AS total FROM manufacturer");
 
         return $query->row['total'];
     }
@@ -221,7 +221,7 @@ SQL
     public function getManufacturerDescriptions($manufacturer_id) {
         $manufacturer_description_data = array();
 
-        $query = $this->db->query("SELECT * FROM manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+        $query = $this->getDb()->query("SELECT * FROM manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
 
         foreach ($query->rows as $result) {
             $manufacturer_description_data[$result['language_id']] = array(
