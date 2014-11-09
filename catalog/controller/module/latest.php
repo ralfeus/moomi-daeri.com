@@ -101,11 +101,11 @@ class ControllerModuleLatest extends Controller {
     foreach ($listCategoryId as $cat) {
       
 				$category_info = $this->model_catalog_category->getCategory($cat);
-
+//print_r($category_info);
 				if ($category_info) {
 	       			$this->data['listCategories'][] = array(
   	    				'text'      => $category_info['name'],
-						'href'      => $this->url->link('product/category', 'path=' . $path),
+						'href'      => $this->url->link('product/category', 'path=' . $category_info['category_id']),
         			);
 				}
     }
