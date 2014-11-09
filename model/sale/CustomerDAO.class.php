@@ -66,8 +66,7 @@ class CustomerDAO extends DAO {
 	public function editCustomer($customer_id, $data) {
         /// Convert deposit amount in case currency is changed
         $customer = $this->getCustomer($customer_id);
-        if ($customer['base_currency_code'] != $data['baseCurrency'])
-        {
+        if ($customer['base_currency_code'] != $data['baseCurrency']) {
             $balance = round(
                 $this->currency->convert(
                     $this->currency->convert(

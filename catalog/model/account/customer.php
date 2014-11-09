@@ -82,7 +82,7 @@ class ModelAccountCustomer extends Model {
 	}
 	
 	public function editCustomer($data) {
-        /// Currency change is turned off temporary
+        /// Currency change is turned off temporary //TODO: restore when RUB problem will have gone
 		$this->db->query("
 		    UPDATE customer
 		    SET
@@ -96,17 +96,17 @@ class ModelAccountCustomer extends Model {
             WHERE customer_id = '" . (int)$this->customer->getId() . "'"
         );
         /// Change customer base currency
-        if ($this->customer->getBaseCurrency()->getCode() != $data['baseCurrency']) {
-            $this->customer->setBalance(round(
-                $this->currency->convert(
-                    $this->currency->convert(
-                        $this->customer->getBalance(),
-                        $this->customer->getBaseCurrency()->getCode(),
-                        $this->config->get('config_currency')),
-                    $this->config->get('config_currency'),
-                    $data['baseCurrency'])),
-                $this->currency->getDecimalPlace($data['baseCurrency']));
-        }
+//        if ($this->customer->getBaseCurrency()->getCode() != $data['baseCurrency']) {
+//            $this->customer->setBalance(round(
+//                $this->currency->convert(
+//                    $this->currency->convert(
+//                        $this->customer->getBalance(),
+//                        $this->customer->getBaseCurrency()->getCode(),
+//                        $this->config->get('config_currency')),
+//                    $this->config->get('config_currency'),
+//                    $data['baseCurrency'])),
+//                $this->currency->getDecimalPlace($data['baseCurrency']));
+//        }
 	}
 
 	public function editPassword($email, $password) {

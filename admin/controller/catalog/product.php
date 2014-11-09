@@ -314,7 +314,6 @@ class ControllerCatalogProduct extends Controller {
 		$data['order']           = $order;
 
 		$this->load->model('tool/image');
-		$this->load->model('catalog/manufacturer');
 
 		$product_total = $this->model_catalog_product->getTotalProducts($data);
 
