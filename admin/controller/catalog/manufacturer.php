@@ -22,7 +22,7 @@ class ControllerCatalogManufacturer extends Controller {
 		$this->load->model('catalog/manufacturer');
 			
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_catalog_manufacturer->addManufacturer($this->request->post);
+			ManufacturerDAO::getInstance()->addManufacturer($this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');
 			
@@ -54,7 +54,7 @@ class ControllerCatalogManufacturer extends Controller {
 		$this->load->model('catalog/manufacturer');
 		
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_catalog_manufacturer->editManufacturer($this->request->get['manufacturer_id'], $this->request->post);
+			ManufacturerDAO::getInstance()->editManufacturer($this->request->get['manufacturer_id'], $this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -87,7 +87,7 @@ class ControllerCatalogManufacturer extends Controller {
 			
     	if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $manufacturer_id) {
-				$this->model_catalog_manufacturer->deleteManufacturer($manufacturer_id);
+				ManufacturerDAO::getInstance()->deleteManufacturer($manufacturer_id);
 			}
 
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -171,7 +171,7 @@ class ControllerCatalogManufacturer extends Controller {
 			'limit' => $this->config->get('config_admin_limit')
 		);
 		
-		$manufacturer_total = $this->model_catalog_manufacturer->getTotalManufacturers();
+		$manufacturer_total = ManufacturerDAO::getInstance()->getTotalManufacturers();
 	
 		$results = ManufacturerDAO::getInstance()->getManufacturers($data);
  
@@ -343,7 +343,7 @@ class ControllerCatalogManufacturer extends Controller {
 		$this->data['token'] = $this->session->data['token'];
 		
     	if (isset($this->request->get['manufacturer_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
-      		$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($this->request->get['manufacturer_id']);
+      		$manufacturer_info = ManufacturerDAO::getInstance()->getManufacturer($this->request->get['manufacturer_id']);
     	}
 
 		$this->load->model('localisation/language');
@@ -353,7 +353,7 @@ class ControllerCatalogManufacturer extends Controller {
 		if (isset($this->request->post['manufacturer_description'])) {
 			$this->data['manufacturer_description'] = $this->request->post['manufacturer_description'];
 		} elseif (!empty($manufacturer_info)) {
-			$this->data['manufacturer_description'] = $this->model_catalog_manufacturer->getManufacturerDescriptions($this->request->get['manufacturer_id']);
+			$this->data['manufacturer_description'] = ManufacturerDAO::getInstance()->getManufacturerDescriptions($this->request->get['manufacturer_id']);
 		} else {
 			$this->data['manufacturer_description'] = array();
 		}
@@ -373,7 +373,7 @@ class ControllerCatalogManufacturer extends Controller {
 		if (isset($this->request->post['manufacturer_store'])) {
 			$this->data['manufacturer_store'] = $this->request->post['manufacturer_store'];
 		} elseif (isset($this->request->get['manufacturer_id'])) {
-			$this->data['manufacturer_store'] = $this->model_catalog_manufacturer->getManufacturerStores($this->request->get['manufacturer_id']);
+			$this->data['manufacturer_store'] = ManufacturerDAO::getInstance()->getManufacturerStores($this->request->get['manufacturer_id']);
 		} else {
 			$this->data['manufacturer_store'] = array(0);
 		}	

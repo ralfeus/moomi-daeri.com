@@ -357,9 +357,9 @@ class ControllerCatalogProduct extends Controller {
 			if (empty($supplier))
 				$supplier['name'] = "";
 
-            $manufacturers = $this->model_catalog_manufacturer->getManufacturer($result['manufacturer_id']);
-			if (empty($manufacturers))
-				$manufacturers['name'] = "";
+            $manufacturer = ManufacturerDAO::getInstance()->getManufacturer($result['manufacturer_id']);
+			if (empty($manufacturer))
+				$manufacturer['name'] = "";
 
       $this->data['products'][] = array(
 				'product_id' => $result['product_id'],
@@ -371,7 +371,7 @@ class ControllerCatalogProduct extends Controller {
 				'image'      => $image,
 				'user_name'  => $result['user_name'],
 				'status'     => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
-				'manufacturer'=> $manufacturers['name'],
+				'manufacturer'=> $manufacturer['name'],
 				'supplier'	 => $supplier->getName(),
 				'selected'   => isset($this->request->post['selected']) && in_array($result['product_id'], $this->request->post['selected']),
 				'action'     => $action,

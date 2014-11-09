@@ -12,7 +12,7 @@ class SubtotalDAO extends TotalBaseDAO {
         /// Calculate subtotal of order items in the database
         $this->load->language('total/sub_total');
 
-        $query = $this->db->query("
+        $query = $this->getDb()->query("
             SELECT sum(total) AS total
             FROM order_product
             WHERE order_id = " . (int)$orderId

@@ -113,8 +113,10 @@ class OrderItemDAO extends DAO {
      * @param \stdClass $filter
      * @param bool $objects Defines whether OrderItem object should be returned instead of array TODO: to make only option
      * @return array|OrderItem[]
+     * Best approach is to use OrderItemDAO::getOrderItems(<bla>, <bla>, true) to get array of objects as array of arrays
+     * Will be removed
      */
-    public function getOrderItems($data = array(), $filter = null, $objects = false) {
+    public function getOrderItems($data = array(), $filter = null, $objects = true) {
 
         if (is_null($filter)) { $filter = $this->buildFilter($data); }
         $sort = "";
