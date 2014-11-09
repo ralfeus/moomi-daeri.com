@@ -71,7 +71,7 @@
             <tr>
                 <td><span class="required">*</span> <?= $textBaseCurrency ?></td>
                 <td>
-                    <select name="baseCurrency">
+                    <select name="baseCurrency" disabled="disabled">
                         <?php foreach ($currencies as $currency): ?>
                             <option value="<?= $currency['currencyCode'] ?>" <?= $currency['selected'] ?>><?= $currency['name'] ?></option>
                         <?php endforeach; ?>

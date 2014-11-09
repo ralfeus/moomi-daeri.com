@@ -134,20 +134,21 @@ class ControllerAccountEdit extends CustomerZoneController {
 			$this->data['fax'] = '';
 		}
 
-        if (isset($this->request->post['baseCurrency']))
-            $selectedCurrency = $this->request->post['baseCurrency'];
-        else
-            $selectedCurrency = $customer_info['base_currency_code'];
-
-        $this->data['currencies'] = array();
-        foreach ($this->modelLocalisationCurrency->getCurrencies() as $currency)
-        {
-            $this->data['currencies'][] = array(
-                'currencyCode' => $currency['code'],
-                'name' => $currency['title'],
-                'selected' => ($currency['code'] == $selectedCurrency) ? "selected=\"true\"" : ""
-            );
-        }
+        /// Disabled to prevent RUB customers set RUB back
+//        if (isset($this->request->post['baseCurrency']))
+//            $selectedCurrency = $this->request->post['baseCurrency'];
+//        else
+//            $selectedCurrency = $customer_info['base_currency_code'];
+//
+//        $this->data['currencies'] = array();
+//        foreach ($this->modelLocalisationCurrency->getCurrencies() as $currency)
+//        {
+//            $this->data['currencies'][] = array(
+//                'currencyCode' => $currency['code'],
+//                'name' => $currency['title'],
+//                'selected' => ($currency['code'] == $selectedCurrency) ? "selected=\"true\"" : ""
+//            );
+//        }
 
 		$this->data['back'] = $this->url->link('account/account', '', 'SSL');
 
