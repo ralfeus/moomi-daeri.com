@@ -95,18 +95,18 @@ class ModelAccountCustomer extends Model {
 		        base_currency_code = '" . $this->db->escape($data['baseCurrency']) . "'*/
             WHERE customer_id = '" . (int)$this->customer->getId() . "'"
         );
-//        if ($this->customer->getBaseCurrency()->getCode() != $data['baseCurrency'])
-//        {
-//            $this->customer->setBalance(round(
-//                $this->currency->convert(
-//                    $this->currency->convert(
-//                        $this->customer->getBalance(),
-//                        $this->customer->getBaseCurrency()->getCode(),
-//                        $this->config->get('config_currency')),
-//                    $this->config->get('config_currency'),
-//                    $data['baseCurrency'])),
-//                $this->currency->getDecimalPlace($data['baseCurrency']));
-//        }
+        /// Change customer base currency
+        if ($this->customer->getBaseCurrency()->getCode() != $data['baseCurrency']) {
+            $this->customer->setBalance(round(
+                $this->currency->convert(
+                    $this->currency->convert(
+                        $this->customer->getBalance(),
+                        $this->customer->getBaseCurrency()->getCode(),
+                        $this->config->get('config_currency')),
+                    $this->config->get('config_currency'),
+                    $data['baseCurrency'])),
+                $this->currency->getDecimalPlace($data['baseCurrency']));
+        }
 	}
 
 	public function editPassword($email, $password) {
