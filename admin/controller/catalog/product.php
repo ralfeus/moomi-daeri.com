@@ -846,8 +846,6 @@ class ControllerCatalogProduct extends Controller {
 			$this->data['thumb'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
 		}
 	
-		$this->load->model('catalog/manufacturer');
-		
     	$this->data['manufacturers'] = ManufacturerDAO::getInstance()->getManufacturers();
     	if (isset($this->request->post['manufacturer_id'])) {
       		$this->data['manufacturer_id'] = $this->request->post['manufacturer_id'];
