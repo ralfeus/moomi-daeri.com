@@ -134,7 +134,7 @@ class ControllerAccountEdit extends CustomerZoneController {
 			$this->data['fax'] = '';
 		}
 
-        /// Disabled to prevent RUB customers set RUB back
+        /// Disabled to prevent RUB customers set RUB back //TODO: return as RUB problem will have gone
 //        if (isset($this->request->post['baseCurrency']))
 //            $selectedCurrency = $this->request->post['baseCurrency'];
 //        else
