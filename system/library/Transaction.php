@@ -1,11 +1,5 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: dev
- * Date: 27.7.12
- * Time: 15:05
- * To change this template use File | Settings | File Templates.
- */
+use model\sale\CustomerDAO;
 use model\sale\InvoiceDAO;
 
 include_once("ILibrary.php");
@@ -23,8 +17,7 @@ class Transaction extends OpenCartBase implements ILibrary {
     public static function addCredit($customerId, $amount, $currency, $registry, $description = "")
     {
 //        Transaction::$instance->log->write("Starting");
-        $modelCustomer = Transaction::$instance->load->model('sale/customer', 'admin');
-        $customer = $modelCustomer->getCustomer($customerId);
+//        $customer = CustomerDAO::getInstance()->getCustomer($customerId);
 //        Transaction::$instance->log->write("Adding transaction");
         Transaction::addTransaction(0, $customerId, -$amount, $currency, $description);
 
@@ -48,11 +41,7 @@ class Transaction extends OpenCartBase implements ILibrary {
      */
     public static function addPayment($customerId, $invoiceId, $registry, $description = "") {
         Transaction::$instance->log->write("Starting");
-        $modelCustomer = Transaction::$instance->load->model('sale/customer', 'admin');
-        /** @var \ModelSaleInvoice $modelInvoice */
-        $currency = $registry->get('currency');
-        $config = $registry->get('config');
-        $customer = $modelCustomer->getCustomer($customerId);
+        $customer = CustomerDAO::getInstance()->getCustomer($customerId);
         $invoice = InvoiceDAO::getInstance()->getInvoice($invoiceId);
         $transactionAmount = $invoice->getTotalCustomerCurrency();
         if (($customer['balance'] < $transactionAmount) && !$customer['allow_overdraft']) {
@@ -72,8 +61,7 @@ class Transaction extends OpenCartBase implements ILibrary {
 
     public static function addTransaction($invoiceId, $customer, $amount, $currency_code, $description = '') {
         if (is_numeric($customer)) { /// customer ID is passed. Need to get customer object
-            $modelCustomer = Transaction::$instance->load->model('sale/customer', 'admin');
-            $customer = $modelCustomer->getCustomer($customer);
+            $customer = CustomerDAO::getInstance()->getCustomer($customer);
         }
 
         /// Now need to convert transaction amount to customer base currency
