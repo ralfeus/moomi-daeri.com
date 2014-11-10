@@ -1,7 +1,12 @@
 <?php
 class ModelCatalogProduct extends Model {
 	public function updateViewed($product_id) {
-		$this->db->query("UPDATE product SET viewed = (viewed + 1) WHERE product_id = '" . (int)$product_id . "'");
+		$this->getDb()->query("
+		    UPDATE product
+		    SET viewed = (viewed + 1)
+		    WHERE product_id = ?
+		    ", array('i:' . $product_id)
+        );
 	}
 
 	public function getProduct($product_id) {
@@ -11,7 +16,7 @@ class ModelCatalogProduct extends Model {
 			$customer_group_id = $this->config->get('config_customer_group_id');
 		}
 
-		$query = $this->db->query("
+		$query = $this->getDb()->query(<<<SQL
 		    SELECT DISTINCT
 		        *, pd.name AS name, p.image, m.name AS manufacturer,
 		        (
@@ -19,11 +24,11 @@ class ModelCatalogProduct extends Model {
 		            FROM product_discount pd2
 		            WHERE
 		                pd2.product_id = p.product_id
-		                AND pd2.customer_group_id = '" . (int)$customer_group_id . "'
+		                AND pd2.customer_group_id = ?
 		                AND pd2.quantity = '1'
 		                AND (
-		                    (pd2.date_start = '0000-00-00' OR pd2.date_start < '" . date('Y-m-d H:00:00') . "')
-		                    AND (pd2.date_end = '0000-00-00' OR pd2.date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "')
+		                    (pd2.date_start = '0000-00-00' OR pd2.date_start < ?)
+		                    AND (pd2.date_end = '0000-00-00' OR pd2.date_end > ?)
                         )
                     ORDER BY pd2.priority ASC, pd2.price ASC
                     LIMIT 1
@@ -33,31 +38,31 @@ class ModelCatalogProduct extends Model {
                     FROM product_special ps
                     WHERE
                         ps.product_id = p.product_id
-                        AND ps.customer_group_id = '" . (int)$customer_group_id . "'
-                        AND ((ps.date_start = '0000-00-00' OR ps.date_start < '" . date('Y-m-d H:00:00') . "')
-                        AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "'))
+                        AND ps.customer_group_id = ?
+                        AND ((ps.date_start = '0000-00-00' OR ps.date_start < ?)
+                        AND (ps.date_end = '0000-00-00' OR ps.date_end > ?))
                     ORDER BY ps.priority ASC, ps.price ASC
                     LIMIT 1
                 ) AS special,
                 (
                     SELECT points
                     FROM product_reward pr
-                    WHERE pr.product_id = p.product_id AND customer_group_id = '" . (int)$customer_group_id . "'
+                    WHERE pr.product_id = p.product_id AND customer_group_id = ?
                 ) AS reward,
                 (
                     SELECT ss.name
                     FROM stock_status ss
-                    WHERE ss.stock_status_id = p.stock_status_id AND ss.language_id = '" . (int)$this->config->get('config_language_id') . "'
+                    WHERE ss.stock_status_id = p.stock_status_id AND ss.language_id = ?
                 ) AS stock_status,
                 (
                     SELECT wcd.unit
                     FROM weight_class_description wcd
-                    WHERE p.weight_class_id = wcd.weight_class_id AND wcd.language_id = '" . (int)$this->config->get('config_language_id') . "'
+                    WHERE p.weight_class_id = wcd.weight_class_id AND wcd.language_id = ?
                 ) AS weight_class,
                 (
                     SELECT lcd.unit
                     FROM length_class_description lcd
-                    WHERE p.length_class_id = lcd.length_class_id AND lcd.language_id = '" . (int)$this->config->get('config_language_id') . "'
+                    WHERE p.length_class_id = lcd.length_class_id AND lcd.language_id = ?
                 ) AS length_class,
                 (
                     SELECT AVG(rating) AS total
@@ -78,12 +83,29 @@ class ModelCatalogProduct extends Model {
                 LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
                 LEFT JOIN manufacturer m ON (p.manufacturer_id = m.manufacturer_id)
             WHERE
-                p.product_id = '" . (int)$product_id . "'
-                AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
+                p.product_id = ?
+                AND pd.language_id = ?
                 AND p.status = '1'
-                AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
-                AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
-        ");
+                AND p.date_available <= ?
+                AND p2s.store_id = ?
+SQL
+            , array(
+                'i:' . $customer_group_id,
+                's:' . date('Y-m-d H:00:00'),
+                's:' . date('Y-m-d H:00:00', strtotime('+1 hour')),
+                'i:' . $customer_group_id,
+                's:' . date('Y-m-d H:00:00'),
+                's:' . date('Y-m-d H:00:00', strtotime('+1 hour')),
+                'i:' . $customer_group_id,
+                'i:' . $this->config->get('config_language_id'),
+                'i:' . $this->config->get('config_language_id'),
+                'i:' . $this->config->get('config_language_id'),
+                'i:' . $product_id,
+                'i:' . $this->config->get('config_language_id'),
+                's:' . date('Y-m-d H:00:00'),
+                's:' . $this->config->get('config_store_id')
+            )
+        );
 
 		if ($query->num_rows) {
 			$query->row['price'] = ($query->row['discount'] ? $query->row['discount'] : $query->row['price']);
@@ -342,25 +364,30 @@ class ModelCatalogProduct extends Model {
 	}
 
 	public function getLatestProducts($limit) {
-		$product_data = $this->cache->get('product.latest.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$limit);
+		$product_data = $this->getCache()->get('product.latest.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$limit);
 
 		if (!$product_data) {
-			$query = $this->db->query("
+			$query = $this->getDb()->query("
 			    SELECT p.product_id
 			    FROM
 			        product p
 			        LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
                 WHERE
-                    p.status = '1' AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
-                    AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
-                ORDER BY p.date_added DESC LIMIT " . (int)$limit
+                    p.status = '1' AND p.date_available <= ?
+                    AND p2s.store_id = ?
+                ORDER BY p.date_added DESC LIMIT ?
+                ", array(
+                    's:' . date('Y-m-d H:00:00'),
+                    'i:' . $this->config->get('config_store_id'),
+                    'i:' . $limit
+                )
             );
 
 			foreach ($query->rows as $result) {
 				$product_data[$result['product_id']] = $this->getProduct($result['product_id']);
 			}
 
-			$this->cache->set('product.latest.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$limit, $product_data);
+			$this->getCache()->set('product.latest.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$limit, $product_data);
 		}
 
 		return $product_data;
@@ -867,4 +894,3 @@ class ModelCatalogProduct extends Model {
 		return $product_data;
 	}
 }
-?>
