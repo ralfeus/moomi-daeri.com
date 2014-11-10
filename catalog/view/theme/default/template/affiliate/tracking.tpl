@@ -10,6 +10,12 @@
   <p><?php echo $text_code; ?><br />
     <textarea cols="40" rows="5"><?php echo $code; ?></textarea>
   </p>
+  <p><?php echo $text_banner; ?><br />
+    <textarea cols="40" rows="5"><?php echo $banner; ?></textarea>&nbsp;
+<a href="http://moomi-daeri.com/index.php?route=common/home&tracking=<?php echo $code; ?>" target=_blank><img src="http://moomi-daeri.com/image/cache/data/brand/new-logo1-100x100.jpg" border="0" title="MooMi-DaeRi - ALL from KOREA!" width="100" height="100" alt="MooMi-DaeRi - ALL from KOREA!"></a>
+  </p>
+
+
   <p><?php echo $text_generator; ?><br />
     <input type="text" name="product" value="" />
   </p>
