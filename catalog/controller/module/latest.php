@@ -48,7 +48,6 @@ class ControllerModuleLatest extends Controller {
         }
 
 		$results = $this->model_catalog_product->getProducts($data);
-        //print_r($results);exit();
 
 		foreach ($results as $result) {
 			if ($result['image']) {
@@ -89,7 +88,6 @@ class ControllerModuleLatest extends Controller {
 				'href'    	 => $this->url->link('product/product', 'product_id=' . $result['product_id']),
                 'hot'           => $date_added + 86400 * $this->config->get('config_product_hotness_age') > time()
 			);
-			//print_r($data['products']);exit();
 		}
     $listCategoryId = array();
     $strCategories = explode(",", $data['filter_category_id']); 
@@ -101,7 +99,7 @@ class ControllerModuleLatest extends Controller {
     foreach ($listCategoryId as $cat) {
       
 				$category_info = $this->model_catalog_category->getCategory($cat);
-//print_r($category_info);
+
 				if ($category_info) {
 	       			$this->data['listCategories'][] = array(
   	    				'text'      => $category_info['name'],
