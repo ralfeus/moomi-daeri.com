@@ -17,10 +17,10 @@ class ModelCatalogCategory extends Model {
 			        LEFT JOIN category_description cd ON (c.category_id = cd.category_id)
 			        LEFT JOIN category_to_store c2s ON (c.category_id = c2s.category_id)
                 WHERE
-                    cd.language_id = '" . (int)$this->config->get('config_language_id') . "'
-                    AND c2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
+                    cd.language_id = ?
+                    AND c2s.store_id = ?
                     AND c.status = '1' ORDER BY c.parent_id, c.sort_order, cd.name
-                "
+                ", array('i:' . $this->config->get('config_language_id'), 'i:' . $this->config->get('config_store_id'))
             );
 
 			foreach ($query->rows as $row) {
@@ -58,8 +58,8 @@ class ModelCatalogCategory extends Model {
 		$query = $this->getDb()->query("
 		    SELECT *
 		    FROM category_to_layout
-		    WHERE category_id = '" . (int)$category_id . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "'
-		    "
+		    WHERE category_id = ? AND store_id = ?
+		    ", array('i:' . $category_id, 'i:' . $this->config->get('config_store_id'))
         );
 
 		if ($query->num_rows) {
