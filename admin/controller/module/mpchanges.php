@@ -168,7 +168,6 @@ class ControllerModuleMpchanges extends Controller {
     }
 	public function index() {
         $this->load->language('module/mpchanges');
-		$this->load->model('catalog/manufacturer');
         $this->load->model('catalog/category');
         $this->load->model('setting/store');
         $this->load->model('sale/customer_group');
