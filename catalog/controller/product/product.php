@@ -1,4 +1,6 @@
 <?php
+use model\catalog\ManufacturerDAO;
+
 class ControllerProductProduct extends Controller {
 	private $error = array();
 
@@ -37,8 +39,6 @@ class ControllerProductProduct extends Controller {
 			}
 		}
 
-		$this->load->model('catalog/manufacturer');
-
 		if (isset($this->request->get['manufacturer_id'])) {
 			$this->data['breadcrumbs'][] = array(
 				'text'      => $this->language->get('text_brand'),
@@ -46,7 +46,7 @@ class ControllerProductProduct extends Controller {
 				'separator' => $this->language->get('text_separator')
 			);
 
-			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($this->request->get['manufacturer_id']);
+			$manufacturer_info = ManufacturerDAO::getInstance()->getManufacturer($this->request->get['manufacturer_id']);
 
 			if ($manufacturer_info) {
 				$this->data['breadcrumbs'][] = array(

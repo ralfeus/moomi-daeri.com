@@ -24,8 +24,6 @@ class ControllerFeedGoogleSitemap extends Controller {
 
 			$output .= $this->getCategories(0);
 
-			$this->load->model('catalog/manufacturer');
-
 			$manufacturers = ManufacturerDAO::getInstance()->getManufacturers();
 
 			foreach ($manufacturers as $manufacturer) {

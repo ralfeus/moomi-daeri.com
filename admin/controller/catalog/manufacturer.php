@@ -3,24 +3,18 @@ use model\catalog\ManufacturerDAO;
 
 class ControllerCatalogManufacturer extends Controller {
 	private $error = array();
+
+    public function __construct($registry) {
+        parent::__construct($registry);
+        $this->load->language('catalog/manufacturer');
+        $this->document->setTitle($this->language->get('heading_title'));
+    }
   
   	public function index() {
-		$this->load->language('catalog/manufacturer');
-		
-		$this->document->setTitle($this->language->get('heading_title'));
-		 
-		$this->load->model('catalog/manufacturer');
-		
     	$this->getList();
   	}
   
   	public function insert() {
-		$this->load->language('catalog/manufacturer');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/manufacturer');
-			
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			ManufacturerDAO::getInstance()->addManufacturer($this->request->post);
 
@@ -47,12 +41,6 @@ class ControllerCatalogManufacturer extends Controller {
   	} 
    
   	public function update() {
-		$this->load->language('catalog/manufacturer');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/manufacturer');
-		
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			ManufacturerDAO::getInstance()->editManufacturer($this->request->get['manufacturer_id'], $this->request->post);
 
@@ -79,12 +67,6 @@ class ControllerCatalogManufacturer extends Controller {
   	}   
 
   	public function delete() {
-		$this->load->language('catalog/manufacturer');
-
-    	$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('catalog/manufacturer');
-			
     	if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $manufacturer_id) {
 				ManufacturerDAO::getInstance()->deleteManufacturer($manufacturer_id);

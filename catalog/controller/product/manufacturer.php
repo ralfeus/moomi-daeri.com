@@ -1,16 +1,17 @@
-<?php 
-class ControllerProductManufacturer extends Controller {  
+<?php
+use model\catalog\ManufacturerDAO;
+
+class ControllerProductManufacturer extends Controller {
+    public function __construct($registry) {
+        parent::__construct($registry);
+        $this->language->load('product/manufacturer');
+        $this->document->setTitle($this->language->get('heading_title'));
+        $this->data['heading_title'] = $this->language->get('heading_title');
+    }
+    
 	public function index() { 
-		$this->language->load('product/manufacturer');
-		
-		$this->load->model('catalog/manufacturer');
 		
 		$this->load->model('tool/image');		
-		
-		$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->data['heading_title'] = $this->language->get('heading_title');
-		
 		$this->data['text_index'] = $this->language->get('text_index');
 		$this->data['text_empty'] = $this->language->get('text_empty');
 		
@@ -32,13 +33,13 @@ class ControllerProductManufacturer extends Controller {
 		
 		$this->data['categories'] = array();
 									
-		$results = $this->model_catalog_manufacturer->getManufacturers();
+		$manufacturers = ManufacturerDAO::getInstance()->getManufacturers();
 	
-		foreach ($results as $result) {
-			if (is_numeric(utf8_substr($result['name'], 0, 1))) {
+		foreach ($manufacturers as $manufacturer) {
+			if (is_numeric(utf8_substr($manufacturer->getName(), 0, 1))) {
 				$key = '0 - 9';
 			} else {
-				$key = utf8_truncate(utf8_strtoupper($result['name']), 1, '');
+				$key = utf8_truncate(utf8_strtoupper($manufacturer->getName()), 1, '');
 			}
 			
 			if (!isset($this->data['manufacturers'][$key])) {
@@ -46,8 +47,8 @@ class ControllerProductManufacturer extends Controller {
 			}
 			
 			$this->data['categories'][$key]['manufacturer'][] = array(
-				'name' => $result['name'],
-				'href' => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $result['manufacturer_id'])
+				'name' => $manufacturer->getName(),
+				'href' => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $manufacturer->getId())
 			);
 		}
 		
@@ -72,10 +73,6 @@ class ControllerProductManufacturer extends Controller {
   	}
 	
 	public function product() {
-    	$this->language->load('product/manufacturer');
-		
-		$this->load->model('catalog/manufacturer');
-		
 		$this->load->model('catalog/product');
 		
 		$this->load->model('tool/image'); 
@@ -124,17 +121,17 @@ class ControllerProductManufacturer extends Controller {
       		'separator' => $this->language->get('text_separator')
    		);
 		
-		$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
+		$manufacturer = ManufacturerDAO::getInstance()->getManufacturer($manufacturer_id);
 	
-		if ($manufacturer_info) {
-			if ($manufacturer_info['seo_title']) {
-				$this->document->setTitle($manufacturer_info['seo_title']);
+		if ($manufacturer) {
+			if ($manufacturer['seo_title']) {
+				$this->document->setTitle($manufacturer['seo_title']);
 			} else {
-				$this->document->setTitle($manufacturer_info['name']);
+				$this->document->setTitle($manufacturer['name']);
 			}
 
-			$this->document->setDescription($manufacturer_info['meta_description']);
-			$this->document->setKeywords($manufacturer_info['meta_keyword']);
+			$this->document->setDescription($manufacturer['meta_description']);
+			$this->document->setKeywords($manufacturer['meta_keyword']);
 			
 			$url = '';
 			
@@ -155,16 +152,16 @@ class ControllerProductManufacturer extends Controller {
 			}
 		   			
 			$this->data['breadcrumbs'][] = array(
-       			'text'      => $manufacturer_info['name'],
+       			'text'      => $manufacturer['name'],
 				'href'      => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url),
       			'separator' => $this->language->get('text_separator')
    			);
 
-			$this->data['seo_h1'] = $manufacturer_info['seo_h1'];
+			$this->data['seo_h1'] = $manufacturer['seo_h1'];
 
-			$this->data['description'] = html_entity_decode($manufacturer_info['description'], ENT_QUOTES, 'UTF-8');
+			$this->data['description'] = html_entity_decode($manufacturer['description'], ENT_QUOTES, 'UTF-8');
 		
-			$this->data['heading_title'] = $manufacturer_info['name'];
+			$this->data['heading_title'] = $manufacturer['name'];
 			
 			$this->data['text_empty'] = $this->language->get('text_empty');
 			$this->data['text_quantity'] = $this->language->get('text_quantity');
