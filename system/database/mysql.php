@@ -7,18 +7,26 @@ final class MySQL implements DBDriver{
     private $statements = array();
     /** @var string */
     private static $queriesLog = "";
+    private $hostName;
+    private $userName;
+    private $password;
+    private $database;
 	
 	public function __construct($hostname, $username, $password, $database) {
-		$this->connect($hostname, $username, $password, $database);
+        $this->hostName = $hostname;
+        $this->userName = $username;
+        $this->password = $password;
+        $this->database = $database;
+		$this->connect();
   	}
 
-    private function connect($hostName, $userName, $password, $database) {
-        if (!$this->connection = new mysqli($hostName, $userName, $password)) {
-            throw new mysqli_sql_exception("Could not make a database connection using $userName@$hostName");
+    private function connect() {
+        if (!$this->connection = new mysqli($this->hostName, $this->userName, $this->password)) {
+            throw new mysqli_sql_exception("Could not make a database connection using " . $this->userName . '@' . $this->hostName);
         }
 
-        if (!$this->connection->select_db($database)) {
-            throw new mysqli_sql_exception("Could not connect to database '$database'");
+        if (!$this->connection->select_db($this->database)) {
+            throw new mysqli_sql_exception("Could not connect to database '" . $this->database . "'");
         }
 
         $this->connection->query("SET NAMES 'utf8'");
@@ -34,15 +42,22 @@ final class MySQL implements DBDriver{
      */
     private function prepareQuery($sql) {
         $statementHash = md5($sql);
-        if (!array_key_exists($statementHash, $this->statements)) {
-            $this->statements[$statementHash] = $this->connection->prepare($sql);
-        }
-
-        if ( $this->statements[$statementHash]) {
+        if (array_key_exists($statementHash, $this->statements)) {
             return $this->statements[$statementHash];
-        } else {
-            throw new mysqli_sql_exception($this->connection->error . "\n" . $sql, $this->connection->errno);
         }
+        $statement = null;
+        $attempts = 3; $lastError = null;
+        while ($attempts--) {
+            $statement = $this->connection->prepare($sql);
+            if ($statement) {
+                $this->statements[$statementHash] = $statement;
+                return $this->statements[$statementHash];
+            } else {
+                $lastError = new mysqli_sql_exception($this->connection->error . "\n" . $sql, $this->connection->errno);
+                $this->reconnect();
+            }
+        }
+        throw $lastError;
     }
 
     /**
@@ -145,6 +160,13 @@ final class MySQL implements DBDriver{
             return null;
         }
     }
+
+    private function reconnect() {
+        $this->connection->close();
+        unset($this->connection);
+        $this->connect();
+    }
+
 	public function escape($value) {
 		return $this->connection->real_escape_string($value);
 	}
@@ -170,6 +192,7 @@ final class MySQL implements DBDriver{
 	
 	public function __destruct() {
 		$this->connection->close();
+        unset($this->connection);
         file_put_contents(DIR_LOGS . '/sql.queries.log', self::$queriesLog, FILE_APPEND);
 	}
 }

@@ -68,7 +68,12 @@ abstract class Controller extends OpenCartBase
 		header('Location: ' . str_replace('&amp;', '&', $url));
 		exit();
 	}
-	
+
+    /**
+     * @param string $child
+     * @param array $args
+     * @return string
+     */
 	protected function getChild($child, $args = array()) {
 		$action = new Action($child, $args);
 		$file = $action->getFile();
@@ -140,7 +145,7 @@ abstract class Controller extends OpenCartBase
 			
       		ob_start();
       
-	  		require(DIR_TEMPLATE . $this->template);
+	  		require_once(DIR_TEMPLATE . $this->template);
       
 	  		$this->output = ob_get_contents();
 

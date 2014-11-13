@@ -5,6 +5,10 @@ final class Action {
 	protected $method;
 	protected $args = array();
 
+    /**
+     * @param string $route
+     * @param array $args
+     */
 	public function __construct($route, $args = array()) {
 		$path = '';
 		

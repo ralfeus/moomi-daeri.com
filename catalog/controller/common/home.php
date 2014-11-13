@@ -1,4 +1,6 @@
 <?php
+use SebastianBergmann\Exporter\Exception;
+
 class ControllerCommonHome extends Controller {
 
 	public function index() {
@@ -25,4 +27,3 @@ class ControllerCommonHome extends Controller {
         $this->response->setOutput($this->render());
 	}
 }
-?>
