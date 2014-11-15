@@ -343,7 +343,7 @@ a.button, .list a.button {
 .list {
 	border-collapse: collapse;
 	width: 100%;
-  max-width: 1260px;
+    /*max-width: 1260px;*/
 	border-top: 1px solid #DDDDDD;
 	border-left: 1px solid #DDDDDD;
 	margin-bottom: 20px;
@@ -377,7 +377,7 @@ a.button, .list a.button {
     width: 95%; 
 }
 .list tbody tr:nth-child(2n) {
-    background: #EAFAFA; /* Цвет фона */
+    background: #EAFAFA; /* пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ */
    } 
 .list .left {
 	text-align: left;

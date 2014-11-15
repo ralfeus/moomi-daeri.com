@@ -85,7 +85,6 @@ window.onload = function() {
                     <?= $columnWeight ?>
                 </td>
                 <td class="left"><?= $column_status ?></td>
-              <td class="left">Comment</td>
 			  <td class="left">Action</td>
             </tr>
             <tr class="filter">
@@ -134,8 +133,11 @@ window.onload = function() {
                         </optgroup>
                     </select>
                 </td>
-                <td><input name="filterComment" value="<?= $filterComment ?>" onkeydown="filterKeyDown(event)" /></td>
-                <td align="right"><a onclick="filter();" class="button"><?= $button_filter ?></a></td>
+                <td align="right" rowspan="2"><a onclick="filter();" class="button"><?= $button_filter ?></a></td>
+            </tr>
+            <tr class="filter">
+                <td colspan="2">Comment</td>
+                <td colspan="7"><input style="width: 100%;" name="filterComment" value="<?= $filterComment ?>" onkeydown="filterKeyDown(event)" /></td>
             </tr>
           </thead>
           <tbody>
@@ -168,21 +170,6 @@ window.onload = function() {
                             <?= $order_item['weight'] ?>
                         </td>
                         <td class="left"><?= $order_item['status'] ?></td>
-                        <td class="left">
-                            Private<br />
-                            <input
-                                    alt="<?= $order_item['comment'] ?>"
-                                    onblur="saveComment(<?= $order_item['id'] ?>, this, true);"
-                                    onkeydown="if (event.keyCode == 13) saveComment(<?= $order_item['id'] ?>, this, true);"
-                                    value="<?= $order_item['comment'] ?>"/><br />
-                            Public<br />
-                            <input
-                                    alt="<?= $order_item['publicComment'] ?>"
-                                    onblur="saveComment(<?= $order_item['id'] ?>, this, false);"
-                                    onkeydown="if (event.keyCode == 13) saveComment(<?= $order_item['id'] ?>, this, false);"
-                                    value="<?= $order_item['publicComment'] ?>"/>
-
-                        </td>
                         <td class="right">
                             <?php foreach ($order_item['action'] as $action):
                                 if ($action['href']): ?>
@@ -193,10 +180,46 @@ window.onload = function() {
                             endforeach; ?>
                         </td>
 					</tr>
+                    <tr><td colspan="10">
+                        <table border="0" width="100%">
+                            <tr>
+                                <td style="width: 130px; padding: 0; border: 0;">
+                                    <label for="inputPrivateComment<?= $order_item['id'] ?>">Private&nbsp;comment</label>
+                                </td>
+                                <td style="width: 100%; padding: 0 0 0 5px; border: 0;" align="left">
+                                    <div>
+                                        <input
+                                            alt="<?= $order_item['comment'] ?>"
+                                            id="inputPrivateComment<?= $order_item['id'] ?>"
+                                            onblur="saveComment(<?= $order_item['id'] ?>, this, true);"
+                                            onkeydown="if (event.keyCode == 13) saveComment(<?= $order_item['id'] ?>, this, true);"
+                                            style="width: 100%;"
+                                            value="<?= $order_item['comment'] ?>"/>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 130px; padding: 0; border: 0;">
+                                    <label for="inputPublicComment<?= $order_item['id'] ?>">Public&nbsp;comment</label>
+                                </td>
+                                <td style="width: 100%; padding: 0 0 0 5px; border: 0;" align="left">
+                                    <div>
+                                        <input
+                                            alt="<?= $order_item['publicComment'] ?>"
+                                            id="inputPublicComment<?= $order_item['id'] ?>"
+                                            onblur="saveComment(<?= $order_item['id'] ?>, this, false);"
+                                            onkeydown="if (event.keyCode == 13) saveComment(<?= $order_item['id'] ?>, this, false);"
+                                            style="width: 100%;"
+                                            value="<?= $order_item['publicComment'] ?>"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td></tr>
     <?php endforeach; ?>
 <?php else: ?>
 				<tr>
-				  <td class="center" colspan="11"><?= $text_no_results ?></td>
+				  <td class="center" colspan="10"><?= $text_no_results ?></td>
 				</tr>
 <?php endif; ?>
           </tbody>
@@ -256,10 +279,14 @@ function saveComment(orderItemId, control, isPrivate) {
             private: Number(isPrivate)
         },
         beforeSend: function() {
-            $(control).after('<div class="wait"><img src="view/image/loading.gif" alt="" /></div>');
+            $(control).after(
+                '<div class="wait" style="position: absolute; top: 0px; left: ' + (control.clientWidth - 25) + 'px;">' +
+                '   <img src="view/image/loading.gif" alt="" />' +
+                '</div>'
+            );
         },
         complete: function() {
-            $('.wait').remove();
+            //$('.wait').remove();
             control.onblur = tempHandler;
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -280,7 +307,11 @@ function saveQuantity(orderItemId, control) {
         url: 'index.php?route=sale/order_items/saveQuantity&token=<?= $token ?>&orderItemId=' + orderItemId + '&quantity=' + encodeURIComponent(control.value),
         beforeSend: function() {
             $(control).attr("disabled", true);
-            $(control).after('<div class="wait"><img src="view/image/loading.gif" alt="" /></div>');
+            $(control).after(
+                '<div class="wait" style="position: absolute; top: 0px; left: ' + (control.clientWidth - 25) + 'px;">' +
+                '   <img src="view/image/loading.gif" alt="" />' +
+                '</div>'
+            );
         },
         complete: function() {
             $(control).attr("disabled", false);
