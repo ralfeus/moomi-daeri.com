@@ -130,6 +130,29 @@ class ControllerCatalogImport extends Controller {
         $this->redirect($this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters)));
     }
 
+    public function enable() {
+        $productsToEnable = array();
+        if ($this->parameters['what'] == 'all') {
+            $filter = $this->parameters; unset($filter['selectedItems']);
+            $productsToEnable = ImportProductDAO::getInstance()->getImportedProducts($filter, true);
+        } elseif ($this->parameters['what'] == 'inactiveItems') {
+            $productsToEnable = ImportProductDAO::getInstance()->getImportedProducts(array('filterIsActive' => false), true);
+        } elseif ($this->parameters['what'] == 'selectedItems') {
+            $productsToEnable = ImportProductDAO::getInstance()->getImportedProducts(array('selectedItems' => $this->parameters['selectedItems']), true);
+        }
+        $this->modelCatalogProduct->changeStatusProducts(
+            array_map(
+                function(ImportProduct $element) {
+                    return $element->getLocalProductId();
+                },
+                $productsToEnable
+            ), true
+        );
+        unset($this->parameters['selectedItems']);
+        $this->redirect($this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters)));
+    }
+
+
     private function showList() {
         $this->parameters['start'] = intval(($this->parameters['page'] - 1) * $this->config->get('config_admin_limit'));
         $this->parameters['limit'] = intval($this->config->get('config_admin_limit'));
@@ -161,6 +184,7 @@ class ControllerCatalogImport extends Controller {
         $this->data['urlDisableAll'] = $this->url->link('catalog/import/disable', $this->buildUrlParameterString($this->parameters) . '&what=all', 'SSL');
         $this->data['urlDisableInactive'] = $this->url->link('catalog/import/disable', $this->buildUrlParameterString($this->parameters) . '&what=inactiveItems', 'SSL');
         $this->data['urlDisableSelected'] = $this->url->link('catalog/import/disable', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
+        $this->data['urlEnableSelected'] = $this->url->link('catalog/import/enable', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
         $this->data['urlSyncAll'] = $this->url->link('catalog/import/synchronize', $this->buildUrlParameterString($this->parameters) . '&what=all', 'SSL');
         $this->data['urlSyncSelected'] = $this->url->link('catalog/import/synchronize', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
 
@@ -211,6 +235,7 @@ class ControllerCatalogImport extends Controller {
         $this->data['textDisableAll'] = $this->language->get('DISABLE_ALL');
         $this->data['textDisableInactive'] = $this->language->get('DISABLE_INACTIVE');
         $this->data['textDisableSelected'] = $this->language->get('DISABLE_SELECTED');
+        $this->data['textEnableSelected'] = $this->language->get('ENABLE_SELECTED');
         $this->data['textFilter'] = $this->language->get('FILTER');
         $this->data['textId'] = $this->language->get('ID');
         $this->data['textImage'] = $this->language->get('ITEM_IMAGE');

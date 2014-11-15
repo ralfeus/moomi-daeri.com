@@ -5,3 +5,5 @@ image/cache/*
 system/logs
 system/logs/*
 *.bak
+test/*
+vendor/*

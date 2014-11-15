@@ -76,7 +76,7 @@ SQL;
     }
 
     public function addProducts(ProductSource $site) {
-        $sql = '
+        $sql = <<<SQL
                 INSERT INTO imported_products
                 SET
                     source_site_id = :sourceSiteId,
@@ -99,7 +99,7 @@ SQL;
                     active = TRUE,
                     time_modified = NOW(),
                     weight = :weight
-            ';
+SQL;
         $products = $site->getProducts();
         $this->dbConnect();
         $statement = $this->connection->prepare($sql);

@@ -12,6 +12,7 @@ $_['DELETE_SELECTED'] = 'Delete selected';
 $_['DISABLE_ALL'] = 'Disable all';
 $_['DISABLE_INACTIVE'] = 'Disable inactive';
 $_['DISABLE_SELECTED'] = 'Disable selected';
+$_['ENABLE_SELECTED'] = 'Enable selected';
 $_['SELECT_SOURCE_SITES_TO_IMPORT'] = 'Select source sites to import from';
 $_['SOURCE_SITE'] = 'Source site';
 $_['START_IMPORT'] = "Start Import";

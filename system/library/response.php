@@ -60,9 +60,9 @@ final class Response {
 	    if (!defined('HTTP_CATALOG')) $this->output = str_replace('index.php?route=common/home', '', $this->output);
 		if ($this->output) {
 			if ($this->level) {
-				$ouput = $this->compress($this->output, $this->level);
+				$output = $this->compress($this->output, $this->level);
 			} else {
-				$ouput = $this->output;
+				$output = $this->output;
 			}	
 				
 			if (!headers_sent()) {
@@ -71,8 +71,7 @@ final class Response {
 				}
 			}
 			
-			echo $ouput;
+			echo $output;
 		}
 	}
 }
-?>

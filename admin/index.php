@@ -16,8 +16,10 @@ if (!defined('DIR_APPLICATION')) {
  * new operator is called but the class definition is not found.
  */
 spl_autoload_register(function($class) {
-    if (strpos($class, '\\') !== false) {
+    if ((strpos($class, '\\') !== false) && (strpos($class, '\\') > 0)) {
         $class = DIR_ROOT . preg_replace('/\\\\/', '/', $class) . '.class.php';
+    } else if (strpos($class, '\\') == 0) { // legacy classes
+        $class = DIR_SYSTEM . 'library/' . substr(strtolower($class), 1) . '.php';
     } else {
         return false;
     }
