@@ -89,7 +89,7 @@ class ControllerModuleLatest extends Controller {
 		
 		$this->data['layouts'] = $this->model_design_layout->getLayouts();
 
-		$this->template = 'module/latest.tpl';
+		$this->template = 'module/latest.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'
