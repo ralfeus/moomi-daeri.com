@@ -187,6 +187,14 @@ class ControllerCommonHeader extends Controller {
 				);
 			}
 		}
+        $tmpQuery = $this->request->get;
+        unset($tmpQuery['language']);
+        $this->data['languagelessQuery'] =
+            implode('&',
+                array_map(function($key, $value) {
+                    return "$key=$value";
+                }, $tmpQuery, $tmpQuery)
+            );
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && !empty($this->request->post['currency_code'])) {
       		$this->currency->set($this->request->post['currency_code']);
@@ -221,12 +229,11 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_button_download'] = $this->language->get('text_button_download');
         $this->setBreadcrumbs();
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/header.tpl'))
-			$this->template = $this->config->get('config_template') . '/template/common/header.tpl';
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/header.tpl.php'))
+			$this->template = $this->config->get('config_template') . '/template/common/header.tpl.php';
 		else
-			$this->template = 'default/template/common/header.tpl';
+			$this->template = 'default/template/common/header.tpl.php';
 
         $this->render();
 	}
 }
-?>
