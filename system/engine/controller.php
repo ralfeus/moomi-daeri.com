@@ -145,7 +145,7 @@ abstract class Controller extends OpenCartBase
 			
       		ob_start();
       
-	  		require_once(DIR_TEMPLATE . $this->template);
+	  		require(DIR_TEMPLATE . $this->template);
       
 	  		$this->output = ob_get_contents();
 
