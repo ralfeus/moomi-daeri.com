@@ -144,11 +144,8 @@ abstract class Controller extends OpenCartBase
 			extract($this->data);
 			
       		ob_start();
-      
 	  		require(DIR_TEMPLATE . $this->template);
-      
 	  		$this->output = ob_get_contents();
-
       		ob_end_clean();
       		
 			return $this->output;
