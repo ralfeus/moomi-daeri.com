@@ -23,27 +23,27 @@ class ControllerCatalogImport extends Controller {
         /// Downloading images
         /** @var ModelToolImage $modelToolImage */
         $modelToolImage = $this->load->model('tool/image');
-        $thumbnail = $modelToolImage->download($productToAdd->getThumbnailUrl());
+        try {
+            $thumbnail = $modelToolImage->download($productToAdd->getThumbnailUrl());
+        } catch (Exception $exc) {
+            $this->getLogger()->write("Couldn't download a thumbnail '" . $productToAdd->getThumbnailUrl() .
+                "' for product " . $productToAdd->getId());
+        }
         $images = array();
-        foreach ($productToAdd->getImages() as $imageUrl)
-            $images[] = array('image' => $modelToolImage->download($imageUrl));
+        foreach ($productToAdd->getImages() as $imageUrl) {
+            try {
+                $images[] = array('image' => $modelToolImage->download($imageUrl));
+            } catch (Exception $exc) {
+                $this->getLogger()->write("Couldn't download an image '$imageUrl' for product " . $productToAdd->getId());
+            }
+        }
         /// Preparing name, korean name, link and description
         $product_description = array();
-//        $koreanName = array(
-//            'attribute_id' => ATTRIBUTE_KOREAN_NAME,
-//            'product_attribute_description' => array()
-//        );
-//        $sourceUrl = array(
-//            'attribute_id' => ATTRIBUTE_LINK,
-//            'product_attribute_description' => array()
-//        );
         foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
             $product_description[$language['language_id']] = array(
                 'name' => $productToAdd->getName()
 //                'description' => $productToAdd->getDescription()
             );
-////            $koreanName['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getName() );
-////            $sourceUrl['product_attribute_description'][$language['language_id']] = array( 'text' => $productToAdd->getSourceUrl() );
         }
 
         $productId = $this->modelCatalogProduct->addProduct(array(
@@ -205,7 +205,7 @@ class ControllerCatalogImport extends Controller {
             'common/header',
             'common/footer'
         );
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     private function getProductActions($product) {
@@ -435,7 +435,7 @@ class ControllerCatalogImport extends Controller {
         } else {
             $status['log'] = 'No log file found';
         }
-        $this->response->setOutput(json_encode($status));
+        $this->getResponse()->setOutput(json_encode($status));
     }
 
     public function start() {
@@ -445,7 +445,7 @@ class ControllerCatalogImport extends Controller {
 //            chdir(DIR_AUTOMATION);
             //$pid = shell_exec("php -f crawler.php $sites > import.log 2>&1 & printf \"%u\" $!");
             file_put_contents(DIR_AUTOMATION . '/crawler.lck', $sites);
-            $this->response->setOutput(json_encode(array(
+            $this->getResponse()->setOutput(json_encode(array(
                 'result' => 'started'
             )));
         }
@@ -460,7 +460,7 @@ class ControllerCatalogImport extends Controller {
                 shell_exec("kill $pid");
             }
         }
-        $this->response->setOutput(null);
+        $this->getResponse()->setOutput(null);
     }
 
 }

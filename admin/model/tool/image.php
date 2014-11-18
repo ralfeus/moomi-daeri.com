@@ -2,7 +2,7 @@
 class ModelToolImage extends Model {
     /**
      * @param $url
-     * @throws HttpRequestException
+     * @throws Exception
      * @return string
      */
     public function download($url) {
@@ -16,10 +16,10 @@ class ModelToolImage extends Model {
                 file_put_contents($dirName . '/' . $fileName, file_get_contents($url));
                 return 'upload/' . session_id() . '/' . $fileName;
             } else {
-                throw new HttpRequestException("Provided URL isn't image");
+                throw new Exception("Provided URL isn't image: $url");
             }
         } else {
-            throw new HttpRequestException("Provided URL isn't image");
+            throw new Exception("Provided URL isn't image: $url");
         }
     }
 
@@ -83,4 +83,3 @@ class ModelToolImage extends Model {
 		}
 	}
 }
-?>
