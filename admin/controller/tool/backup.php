@@ -79,21 +79,21 @@ class ControllerToolBackup extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 	
 	public function backup() {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-			$this->response->addheader('Pragma: public');
-			$this->response->addheader('Expires: 0');
-			$this->response->addheader('Content-Description: File Transfer');
-			$this->response->addheader('Content-Type: application/octet-stream');
-			$this->response->addheader('Content-Disposition: attachment; filename=backup.sql');
-			$this->response->addheader('Content-Transfer-Encoding: binary');
+			$this->getResponse()->addheader('Pragma: public');
+			$this->getResponse()->addheader('Expires: 0');
+			$this->getResponse()->addheader('Content-Description: File Transfer');
+			$this->getResponse()->addheader('Content-Type: application/octet-stream');
+			$this->getResponse()->addheader('Content-Disposition: attachment; filename=backup.sql');
+			$this->getResponse()->addheader('Content-Transfer-Encoding: binary');
 			
 			$this->load->model('tool/backup');
 			
-			$this->response->setOutput($this->model_tool_backup->backup($this->request->post['backup']));
+			$this->getResponse()->setOutput($this->model_tool_backup->backup($this->request->post['backup']));
 		} else {
 			return $this->forward('error/permission');
 		}

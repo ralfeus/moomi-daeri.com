@@ -7,7 +7,9 @@ class RepurchaseOrderDAO extends OrderItemDAO {
         if (isset($data['selectedItems']) && count($data['selectedItems'])) {
             $this->buildSimpleFieldFilterEntry('op.order_product_id', $data['selectedItems'], $filter, $params, 'i');
         } else {
-            $this->buildSimpleFieldFilterEntry('op.total', $data['filterAmount'], $filter, $params, 'd');
+            if (isset($data['filterAmount'])) {
+                $this->buildSimpleFieldFilterEntry('op.total', $data['filterAmount'], $filter, $params, 'd');
+            }
             if (!empty($data['filterItemName'])) {
                 $filter .= " AND EXISTS (
                     SELECT order_option_id
@@ -39,7 +41,9 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                 $params[] = 's:%' . $data['filterSiteName'] . '%';
             }
             $this->buildSimpleFieldFilterEntry('c.customer_id', $data['filterCustomerId'], $filter, $params, 'i');
-            $this->buildSimpleFieldFilterEntry('op.order_product_id', $data['filterOrderId'], $filter, $params, 'i');
+            if (isset($data['filterOrderId'])) {
+                $this->buildSimpleFieldFilterEntry('op.order_product_id', $data['filterOrderId'], $filter, $params, 'i');
+            }
             $this->buildSimpleFieldFilterEntry('op.status_id', $data['filterStatusId'], $filter, $params, 'i');
             if (!empty($data['filterStatusIdDateSet']) && !empty($data['filterStatusSetDate'])) {
                 $filter .= " AND EXISTS (

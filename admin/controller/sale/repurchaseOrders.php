@@ -175,7 +175,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
             'common/header',
             'common/footer'
         );
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     protected function initParameters()
@@ -274,7 +274,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
         $this->data['textWhoOrders'] = $this->getLanguage()->get('WHO_ORDERS');
 
         $this->template = 'sale/repurchaseOrdersListPrint.tpl.php';
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     public function recalculateShipping() {
@@ -292,7 +292,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
                 $selectedOrdersShops[] = $repurchaseOrder['shopName'];
             }
         }
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     public function setProperty() {
@@ -331,7 +331,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
         $json['total'] = $row['total'];
         $json['result'] = 'Done';
 //        $this->log->write(print_r($json, true));
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     protected function setBreadcrumbs()
@@ -365,6 +365,6 @@ class ControllerSaleRepurchaseOrders extends Controller {
         $json['newStatusName'] = Status::getStatus(
             $_REQUEST['statusId'], $this->config->get('config_language_id'));
 
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 }

@@ -26,21 +26,21 @@ abstract class Model extends OpenCartBase {
             $paramName = ':' . preg_replace('/\W+/', '', $fieldName);
             if (is_array($filterValues)) {
                 if (sizeof($filterValues)) {
-                    $tmp = 0;
-                    $filterString .= $filterString ? " AND " : "";
+                    $tmp = 0; $tmpFilterString = '';
                     foreach ($filterValues as $filterValue) {
-                        $filterString .= " OR $fieldName = $paramName$tmp";
+                        $tmpFilterString .= " OR $fieldName = $paramName$tmp";
                         $params["$paramName$tmp"] = $filterValue;
                         $tmp++;
                     }
-                    $filterString = sizeof($filterValues) > 1
-                        ? '(' . substr($filterString, 4) . ')'
-                        : substr($filterString, 4);
+                    $filterString .= ($filterString ? " AND " : "");
+                    $filterString .= sizeof($filterValues) > 1
+                        ? '(' . substr($tmpFilterString, 4) . ')'
+                        : substr($tmpFilterString, 4);
                 }
             } elseif (is_null($filterValues)) {
                 $filterString .= ($filterString ? " AND " : "") . "$fieldName IS NULL" ;
             } else {
-                $filterString .= ($filterString ? "AND " : "") . "$fieldName = $paramName";
+                $filterString .= ($filterString ? " AND " : "") . "$fieldName = $paramName";
                 $params[$paramName] = $filterValues;
             }
         }
