@@ -185,7 +185,7 @@ SQL
      * @return ImportSourceSite
      */
     public function getSourceSite($sourceSite) {
-        if  (is_int($sourceSite)) {
+        if  (is_numeric($sourceSite)) {
             $searchedColumn = "imported_source_site_id";
             $columnType = 'i';
         } else {
@@ -196,8 +196,8 @@ SQL
         $recordSet = $this->getDb()->query("
             SELECT *
             FROM imported_source_sites
-            WHERE $searchedColumn = ?
-            ", array("$columnType:$sourceSite")
+            WHERE $searchedColumn = :searchedValue
+            ", array(":searchedValue" => $sourceSite)
         );
         return
             new ImportSourceSite(
@@ -233,7 +233,7 @@ SQL
                 $siteEntry['name'],
                 $siteEntry['regular_customer_price_rate'],
                 preg_split('/,/', $siteEntry['default_store_id']),
-                $siteEntry['wholesale_customer_price_id']
+                $siteEntry['wholesale_customer_price_rate']
             );
         }
         return $result;
