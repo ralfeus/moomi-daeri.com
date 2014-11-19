@@ -180,7 +180,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
 
     protected function initParameters()
     {
-        $this->parameters['filterAmount'] = !isset($_REQUEST['filterAmount']) ? null : $_REQUEST['filterAmount'];
+        $this->parameters['filterAmount'] = is_numeric($this->getRequest()->getParam('filterAmount')) ? $this->getRequest()->getParam('filterAmount') : null;
         $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
         $this->parameters['filterItemName'] = empty($_REQUEST['filterItemName']) ? null : $_REQUEST['filterItemName'];
         $this->parameters['filterOrderId'] = empty($_REQUEST['filterOrderId']) ? null : $_REQUEST['filterOrderId'];
