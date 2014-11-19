@@ -95,6 +95,13 @@ abstract class Controller extends OpenCartBase
 	}
 
     /**
+     * @return Request
+     */
+    protected function getRequest() {
+        return $this->registry->get('request');
+    }
+
+    /**
      * @return Response
      */
     protected function getResponse() {

@@ -22,7 +22,7 @@ abstract class Model extends OpenCartBase {
      * @param string $entryType Not used. Kept for back compatibility. Will be removed
      */
     protected function buildSimpleFieldFilterEntry($fieldName, $filterValues, &$filterString, &$params, $entryType = null) {
-        if (isset($filterValues) || is_null($filterValues)) {
+        if (isset($filterValues)) {
             $paramName = ':' . preg_replace('/\W+/', '', $fieldName);
             if (is_array($filterValues)) {
                 if (sizeof($filterValues)) {
@@ -37,8 +37,6 @@ abstract class Model extends OpenCartBase {
                         ? '(' . substr($tmpFilterString, 4) . ')'
                         : substr($tmpFilterString, 4);
                 }
-            } elseif (is_null($filterValues)) {
-                $filterString .= ($filterString ? " AND " : "") . "$fieldName IS NULL" ;
             } else {
                 $filterString .= ($filterString ? " AND " : "") . "$fieldName = $paramName";
                 $params[$paramName] = $filterValues;

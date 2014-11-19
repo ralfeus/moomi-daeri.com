@@ -37,5 +37,19 @@ final class Request {
 
 		return $data;
 	}
+
+    /**
+     * @param string $param
+     * @param mixed $defaultValue
+     * @return mixed
+     */
+    public function getParam($param, $defaultValue = null) {
+        if (isset($_GET[$param])) {
+            return $_GET[$param];
+        } elseif (isset($_POST[$param])) {
+            return $_POST[$param];
+        } else {
+            return $defaultValue;
+        }
+    }
 }
-?>
