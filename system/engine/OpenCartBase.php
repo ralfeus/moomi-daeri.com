@@ -57,8 +57,12 @@ class OpenCartBase {
     /**
      * @return \Customer
      */
-    protected  function getCustomer() {
+    protected  function getCurrentCustomer() {
         return $this->registry->get('customer');
+    }
+
+    protected function getCustomer() {
+        return $this->getCurrentCustomer();
     }
 
     /**

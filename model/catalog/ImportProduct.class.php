@@ -78,11 +78,22 @@ class ImportProduct {
         return $this->localProductId;
     }
 
-    public function getThumbnailUrl() { return $this->thumbnailUrl; }
+    public function getThumbnailUrl() {
+        if (!isset($this->thumbnailUrl)) {
+            $this->thumbnailUrl = ImportProductDAO::getInstance()->getThumbnailUrl($this->id);
+        }
+        return $this->thumbnailUrl;
+    }
     /**
      * @return string
      */
-    public function getDescription() { return $this->description; }
+    public function getDescription() {
+        if (!isset($this->description)) {
+            $this->description = ImportProductDAO::getInstance()->getDescription($this->id);
+        }
+
+        return $this->description;
+    }
 
     /**
      * @return integer
@@ -92,12 +103,22 @@ class ImportProduct {
     /**
      * @return array
      */
-    public function getImages() { return $this->images; }
+    public function getImages() {
+        if (!isset($this->images)) {
+            $this->images = ImportProductDAO::getInstance()->getImages($this->id);
+        }
+        return $this->images;
+    }
 
     /**
      * @return bool
      */
-    public function getIsActive() { return $this->isActive; }
+    public function getIsActive() {
+        if (!isset($this->isActive)) {
+            $this->isActive = ImportProductDAO::getInstance()->getIsActive($this->id);
+        }
+        return $this->isActive;
+    }
 
     /**
      * @return ImportPrice

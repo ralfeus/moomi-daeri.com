@@ -419,7 +419,7 @@ class OrderItem {
      */
     public function getCurrency() {
         if (!isset($this->currency)) {
-	    $temp = $this->getCustomer();
+	    $temp = $this->getCurrentCustomer();
             $this->currency = CurrencyDAO::getInstance()->getCurrency($temp['base_currency_code']);
         }
         return $this->currency;

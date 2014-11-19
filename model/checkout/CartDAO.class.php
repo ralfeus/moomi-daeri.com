@@ -201,7 +201,7 @@ class CartDAO extends DAO {
                 }
 
                 if ($this->customer->isLogged()) {
-                    $customer_group_id = $this->getCustomer()->getCustomerGroupId();
+                    $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
                 } else {
                     $customer_group_id = $this->config->get('config_customer_group_id');
                 }

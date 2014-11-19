@@ -122,15 +122,19 @@ class SupplierDAO extends DAO {
              return new Supplier($supplierId);
         } else {
             $query = $this->getDb()->query("SELECT * FROM supplier WHERE supplier_id = ?", array("i:$supplierId"));
-            return
-                new Supplier(
-                    $query->row['supplier_id'],
-                    $query->row['supplier_group_id'],
-                    $query->row['internal_model'],
-                    $query->row['name'],
-                    $query->row['shipping_cost'],
-                    $query->row['free_shipping_threshold']
-                );
+            if ($query->num_rows) {
+                return
+                    new Supplier(
+                        $query->row['supplier_id'],
+                        $query->row['supplier_group_id'],
+                        $query->row['internal_model'],
+                        $query->row['name'],
+                        $query->row['shipping_cost'],
+                        $query->row['free_shipping_threshold']
+                    );
+            } else {
+                return new Supplier($supplierId);
+            }
         }
     }
 

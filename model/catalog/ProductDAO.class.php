@@ -30,8 +30,8 @@ class ProductDAO extends DAO {
         if ($shallow) {
             return new Product($productId);
         }
-        $customerGroupId = $this->getCustomer()->isLogged()
-            ? $this->getCustomer()->getCustomerGroupId()
+        $customerGroupId = $this->getCurrentCustomer()->isLogged()
+            ? $this->getCurrentCustomer()->getCustomerGroupId()
             : $this->config->get('config_customer_group_id');
 
         $query = $this->getDb()->query(<<<SQL
@@ -154,8 +154,8 @@ SQL
     }
 
     public function getProducts($data = array()) {
-        if ($this->getCustomer()->isLogged()) {
-            $customer_group_id = $this->getCustomer()->getCustomerGroupId();
+        if ($this->getCurrentCustomer()->isLogged()) {
+            $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
         } else {
             $customer_group_id = $this->config->get('config_customer_group_id');
         }
@@ -320,8 +320,8 @@ SQL
     }
 
     public function getProductSpecials($data = array()) {
-        if ($this->getCustomer()->isLogged()) {
-            $customer_group_id = $this->getCustomer()->getCustomerGroupId();
+        if ($this->getCurrentCustomer()->isLogged()) {
+            $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
         } else {
             $customer_group_id = $this->config->get('config_customer_group_id');
         }
@@ -600,8 +600,8 @@ SQL
     }
 
     public function getProductDiscounts($product_id) {
-        if ($this->getCustomer()->isLogged()) {
-            $customer_group_id = $this->getCustomer()->getCustomerGroupId();
+        if ($this->getCurrentCustomer()->isLogged()) {
+            $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
         } else {
             $customer_group_id = $this->config->get('config_customer_group_id');
         }
@@ -919,8 +919,8 @@ SQL
     }
 
     public function getTotalProductSpecials() {
-        if ($this->getCustomer()->isLogged()) {
-            $customer_group_id = $this->getCustomer()->getCustomerGroupId();
+        if ($this->getCurrentCustomer()->isLogged()) {
+            $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
         } else {
             $customer_group_id = $this->config->get('config_customer_group_id');
         }
@@ -980,8 +980,8 @@ SQL
 
     public function getProductsM($data = array()) {
 //        $this->log->write(print_r($data, true));
-        if ($this->getCustomer()->isLogged()) {
-            $customer_group_id = $this->getCustomer()->getCustomerGroupId();
+        if ($this->getCurrentCustomer()->isLogged()) {
+            $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
         } else {
             $customer_group_id = $this->config->get('config_customer_group_id');
         }
