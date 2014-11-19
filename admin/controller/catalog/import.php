@@ -20,7 +20,12 @@ class ControllerCatalogImport extends Controller {
      * @throws Exception
      */
     private function addFromSource($productToAdd) {
+
         /// Downloading images
+
+
+
+
         /** @var ModelToolImage $modelToolImage */
         $modelToolImage = $this->load->model('tool/image');
         try {
@@ -45,6 +50,11 @@ class ControllerCatalogImport extends Controller {
 //                'description' => $productToAdd->getDescription()
             );
         }
+
+
+
+
+
 
         $productId = $this->modelCatalogProduct->addProduct(array(
             'date_available' => date('Y-m-d'),
@@ -95,15 +105,7 @@ class ControllerCatalogImport extends Controller {
             $filter = $this->parameters; unset($filter['selectedItems']);
             $productsToDelete = ImportProductDAO::getInstance()->getImportedProducts($filter, true);
         }
-        foreach ($productsToDelete as $productToDelete) {
-            foreach ($this->modelCatalogProduct->getProductImages($productToDelete->getLocalProductId()) as $image) {
-                unlink(DIR_IMAGE . $image['image']);
-            }
-            $localProduct = $this->modelCatalogProduct->getProduct($productToDelete->getLocalProductId());
-            unlink(DIR_IMAGE . $localProduct['image']);
-            $this->modelCatalogProduct->deleteProduct($productToDelete->getLocalProductId());
-            ImportProductDAO::getInstance()->unpairImportedProduct($productToDelete->getId());
-        }
+        ImportProductDAO::getInstance()->deleteImportedProducts($productsToDelete);
         unset($this->parameters['selectedItems']);
         $this->redirect($this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters)));
     }
@@ -287,10 +289,21 @@ class ControllerCatalogImport extends Controller {
         unlink(DIR_IMAGE . $localProduct['image']);
         /** @var ModelToolImage $modelToolImage */
         $modelToolImage = $this->load->model('tool/image');
-        $thumbnail = $modelToolImage->download($productToUpdate->getThumbnailUrl());
+        $thumbnail = null;
+        try {
+            $thumbnail = $modelToolImage->download($productToUpdate->getThumbnailUrl());
+        } catch (Exception $e) {
+            $this->getLogger()->write("Couldn't download a thumbnail '" . $productToUpdate->getThumbnailUrl() .
+                "' for product " . $productToUpdate->getId());
+        }
         $images = array();
-        foreach ($productToUpdate->getImages() as $imageUrl)
-            $images[] = array('image' => $modelToolImage->download($imageUrl));
+        foreach ($productToUpdate->getImages() as $imageUrl) {
+            try {
+                $images[] = array('image' => $modelToolImage->download($imageUrl));
+            } catch (Exception $e) {
+                $this->getLogger()->write("Couldn't download a thumbnail '$imageUrl' for product " . $productToUpdate->getId());
+            }
+        }
         /// Preparing name, korean name and description
         $product_description = array();
         foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
@@ -304,7 +317,7 @@ class ControllerCatalogImport extends Controller {
         $localProductOptions = $this->modelCatalogProduct->getProductOptions($productToUpdate->getLocalProductId());
         /// Copying product categories in order to preserve ones
         $localProductCategories = $this->modelCatalogProduct->getProductCategories($productToUpdate->getLocalProductId());
-
+        $this->getLogger()->write(print_r($productToUpdate->getSourceSite(), true));
         $this->modelCatalogProduct->editProduct($productToUpdate->getLocalProductId(), array(
             'date_available' => $localProduct['date_available'],
             'height' => null,
