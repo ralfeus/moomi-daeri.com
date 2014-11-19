@@ -317,7 +317,6 @@ class ControllerCatalogImport extends Controller {
         $localProductOptions = $this->modelCatalogProduct->getProductOptions($productToUpdate->getLocalProductId());
         /// Copying product categories in order to preserve ones
         $localProductCategories = $this->modelCatalogProduct->getProductCategories($productToUpdate->getLocalProductId());
-        $this->getLogger()->write(print_r($productToUpdate->getSourceSite(), true));
         $this->modelCatalogProduct->editProduct($productToUpdate->getLocalProductId(), array(
             'date_available' => $localProduct['date_available'],
             'height' => null,

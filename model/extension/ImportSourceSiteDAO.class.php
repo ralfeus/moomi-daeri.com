@@ -187,11 +187,9 @@ SQL
     public function getSourceSite($sourceSite) {
         if  (is_numeric($sourceSite)) {
             $searchedColumn = "imported_source_site_id";
-            $columnType = 'i';
         } else {
             $sourceSite = str_replace('automation\\SourceSite\\', '', $sourceSite);
             $searchedColumn = 'class_name';
-            $columnType = 's';
         }
         $recordSet = $this->getDb()->query("
             SELECT *
