@@ -95,7 +95,7 @@ class ControllerModuleLatest extends Controller {
       $strCategoryId = $strCategories[$i];
       array_push($listCategoryId,$strCategoryId);
     }
-    $listCategories = array();
+    $this->data['listCategories'] = array();
     foreach ($listCategoryId as $cat) {
       
 				$category_info = $this->model_catalog_category->getCategory($cat);
