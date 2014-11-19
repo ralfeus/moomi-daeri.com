@@ -6,32 +6,60 @@ use model\extension\ImportSourceSiteDAO;
 use \ModelCatalogProduct;
 
 class ImportProductDAO extends DAO {
-    private function buildFilterString(array $data) {
-        $filter = "";
+    /**
+     * @param array $data
+     * @return null|\stdClass
+     */
+    private function buildFilter(array $data) {
+        $filter = ""; $params = array();
         if (isset($data['selectedItems'])) {
-            return "ip.imported_product_id IN (" . implode(',', $data['selectedItems']) . ")";
+            $this->buildSimpleFieldFilterEntry('ip.imported_product_id', $data['selectedItems'], $filter, $params);
         }
-        if (isset($data['filterIsActive']))
-            $filter .= ($filter ? " AND" : "") . " ip.active = " . (int)$data['filterIsActive'];
-        if (!empty($data['filterItem']))
+        if (isset($data['filterIsActive'])) {
+            $this->buildSimpleFieldFilterEntry('ip.active', $data['filterIsActive'], $filter, $params);
+//            $filter .= ($filter ? " AND" : "") . " ip.active = " . (int)$data['filterIsActive'];
+        }
+        if (!empty($data['filterItem'])) {
             $filter .= ($filter ? " AND" : "") . " ip.name LIKE '%" . $this->db->escape($data['filterItem']) . "%' " .
                 "OR ip.description LIKE '%" . $this->db->escape($data['filterItem']) . "%'";
-        if (!empty($data['filterSourceSiteId']))
+        }
+        if (isset($data['filterLocalProductId'])) {
+            if ($data['filterLocalProductId'] == '*') {
+                $filter .= ($filter ? " AND " : "") .  "product_id IS NOT NULL";
+            } else {
+                $this->buildSimpleFieldFilterEntry("product_id", $data['filterLocalProductId'], $filter, $params);
+            }
+        }
+        if (!empty($data['filterSourceSiteId'])) {
             $filter .= ($filter ? " AND" : "") . " ip.source_site_id IN (" . implode(', ', $data['filterSourceSiteId']) . ")";
-
-        return $filter;
+        }
+        if (!$filter) {
+            return null;
+        }
+        $result = new \stdClass();
+        $result->filterString = $filter;
+        $result->params = $params;
+        return $result;
     }
 
     /**
-     * @param int $start
-     * @param int $limit
-     * @return string
+     * @param ImportProduct[] $products
      */
-    private function buildLimitString($start, $limit) {
-        if (isset($start) && isset($limit)) {
-            return "LIMIT $start, $limit";
-        } else {
-            return '';
+    public function deleteImportedProducts($products) {
+        /** @var \ModelCatalogProduct $modelCatalogProduct */
+        $modelCatalogProduct = $this->registry->get('load')->model('catalog/product');
+        foreach ($products as $productToDelete) {
+            foreach ($modelCatalogProduct->getProductImages($productToDelete->getLocalProductId()) as $image) {
+                if (file_exists(DIR_IMAGE . $image['image'])) {
+                    unlink(DIR_IMAGE . $image['image']);
+                }
+            }
+            $localProduct = $modelCatalogProduct->getProduct($productToDelete->getLocalProductId());
+            if (file_exists(DIR_IMAGE . $localProduct['image'])) {
+                unlink(DIR_IMAGE . $localProduct['image']);
+            }
+            $modelCatalogProduct->deleteProduct($productToDelete->getLocalProductId());
+            $this->unpairImportedProduct($productToDelete->getId());
         }
     }
 
@@ -103,16 +131,16 @@ class ImportProductDAO extends DAO {
      * @return ImportProduct[]
      */
     public function getImportedProducts(array $data, $shallow = false) {
-        $filter = $this->buildFilterString($data);
-        $limit = $this->buildLimitString($data['start'], $data['limit']);
+        $filter = $this->buildFilter($data);
+        $limit = isset($data['start']) && isset($data['limit']) ? $this->buildLimitString($data['start'], $data['limit']) : '';
         $sql = "
             SELECT *
             FROM imported_products AS ip
-            " . ($filter ? "WHERE $filter" : '') . "
+            " . ($filter ? "WHERE " . $filter->filterString : '') . "
             $limit"
         ;
         $result = array();
-        foreach ($this->db->query($sql)->rows as $row) {
+        foreach ($this->getDb()->query($sql, $filter ? $filter->params : null)->rows as $row) {
             if ($shallow) {
                 $result[] = new ImportProduct($row['imported_product_id']);
             } else {
@@ -140,14 +168,22 @@ class ImportProductDAO extends DAO {
     }
 
     public function getImportedProductsQuantity(array $data) {
-        $filter = $this->buildFilterString($data);
+        $filter = $this->buildFilter($data);
         $sql = "
             SELECT COUNT(*) AS quantity
             FROM imported_products AS ip
-            " . ($filter ? "WHERE $filter" : '')
+            " . ($filter ? "WHERE " . $filter->filterString : '')
         ;
-        $result = $this->db->query($sql);
+        $result = $this->getDb()->query($sql, $filter ? $filter->params : null);
         return $result->row['quantity'];
+    }
+
+    /**
+     * @param int $importProductId
+     * @return bool
+     */
+    public function getIsActive($importProductId) {
+        return boolval($this->getSingleValue($importProductId, 'active'));
     }
 
     /**
