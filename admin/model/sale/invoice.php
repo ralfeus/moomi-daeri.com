@@ -6,10 +6,8 @@
  * Time: 18:25
  * To change this template use File | Settings | File Templates.
  */
-class ModelSaleInvoice extends Model
-{
-    public function addInvoice($orderId, $order_items, $shippingMethod = null, $weight = 0, $discount = 0, $comment = "", $subtotal = 0, $shippingDate = '')
-    {
+class ModelSaleInvoice extends Model {
+    public function addInvoice($orderId, $order_items, $shippingMethod = null, $weight = 0, $discount = 0, $comment = "", $subtotal = 0, $shippingDate = '') {
         $orderModel = $this->load->model('sale/order');
         /// Get customer and shipping data from the primary order
         $order = $orderModel->getOrder($orderId);
@@ -123,7 +121,7 @@ class ModelSaleInvoice extends Model
         {
             foreach ($query->rows as $row)
                 $data['filterInvoiceId'][] = $row['invoice_id'];
-//            $this->log->write(print_r($this->buildFilterString($data), true));
+//            $this->log->write(print_r($this->buildFilter($data), true));
             return $this->getInvoices($data);
         }
     }

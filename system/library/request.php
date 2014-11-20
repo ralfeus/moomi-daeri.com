@@ -52,4 +52,12 @@ final class Request {
             return $defaultValue;
         }
     }
+
+    public function getServerVariable($variable) {
+        if (isset($_SERVER[$variable])) {
+            return $_SERVER[$variable];
+        } else {
+            return null;
+        }
+    }
 }

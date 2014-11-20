@@ -184,7 +184,7 @@ class ControllerReportSaleOrder extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 }
 ?>

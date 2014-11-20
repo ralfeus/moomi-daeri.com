@@ -164,7 +164,7 @@ class ControllerSaleInvoice extends Controller {
 
             $arrTemp = explode(" ", $invoice->getTimeModified());
             $invoiceDate = $arrTemp[0];
-$temp = $invoice->getCustomer();
+            $temp = $invoice->getCustomer();
             $this->data['invoices'][] = array(
                 'invoiceId' => $invoice->getId(),
                 'action' => $action,
@@ -241,7 +241,7 @@ $temp = $invoice->getCustomer();
         $json = array(
             'cost' => $cost
         );
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     private function handleCredit($invoiceId) {
@@ -295,7 +295,7 @@ $temp = $invoice->getCustomer();
             'common/header',
             'common/footer'
         );
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     protected function initParameters() {
@@ -306,7 +306,7 @@ $temp = $invoice->getCustomer();
         $this->parameters['method'] = empty($_REQUEST['method']) ? null : $_REQUEST['method'];
         $this->parameters['orderItemId'] = empty($_REQUEST['orderItemId']) || !is_array($_REQUEST['orderItemId']) ? array() : $_REQUEST['orderItemId'];
         $this->parameters['param'] = empty($_REQUEST['param']) ? null : $_REQUEST['param'];
-        $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
+        $this->parameters['selectedItems'] = $this->getRequest()->getParam('selectedItems', array());
         $this->parameters['shippingMethod'] = empty($_REQUEST['shippingMethod']) ? null : $_REQUEST['shippingMethod'];
         $this->parameters['token'] = $this->session->data['token'];
         $this->parameters['weight'] = empty($_REQUEST['weight']) ? null : $_REQUEST['weight'];
@@ -332,7 +332,7 @@ $temp = $invoice->getCustomer();
         else
             $discount = $_REQUEST['discount'];
         InvoiceDAO::getInstance()->setDiscount($invoiceId, $discount);
-        $this->response->setOutput("");
+        $this->getResponse()->setOutput("");
     }
 
     public function saveTextField()
@@ -343,7 +343,7 @@ $temp = $invoice->getCustomer();
             InvoiceDAO::getInstance()->setPackageNumber($this->parameters['invoiceId'], $this->parameters['data']);
         else if ($this->parameters['param'] == 'shippingDate')
             InvoiceDAO::getInstance()->setShippingDate($this->parameters['invoiceId'], $this->parameters['data']);
-        $this->response->setOutput('');
+        $this->getResponse()->setOutput('');
     }
 
     protected function setBreadcrumbs()
@@ -498,7 +498,7 @@ $temp = $invoice->getCustomer();
             'common/header',
             'common/footer'
         );
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     private function showEditForm() {
@@ -592,7 +592,7 @@ $temp = $invoice->getCustomer();
             'common/header',
             'common/footer'
         );
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     public function showForm() {
@@ -619,13 +619,10 @@ $temp = $invoice->getCustomer();
         $this->data['textTotalCustomerCurrency'] = $this->language->get('TOTAL_CUSTOMER_CURRENCY');
         $this->data['textWeight'] = $this->language->get('textWeight');
 
-        if ($this->request->server['REQUEST_METHOD'] == 'GET')
-        {
+        if ($this->getRequest()->getServerVariable('REQUEST_METHOD') == 'GET') {
           $this->data['submitAction'] = "javascript:window.close();";
           $this->showEditForm();
-        }
-        elseif ($this->request->server['REQUEST_METHOD'] == 'POST')
-        {
+        } elseif ($this->getRequest()->getServerVariable('REQUEST_METHOD') == 'POST') {
           $this->data['submitAction'] = $this->url->link('sale/invoice/create', 'token=' . $this->session->data['token'], 'SSL');
           $this->showCreateForm();
         }
