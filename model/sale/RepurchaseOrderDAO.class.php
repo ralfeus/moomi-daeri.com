@@ -17,8 +17,8 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                     WHERE
                         order_product_id = op.order_product_id
                         AND product_option_id = " . REPURCHASE_ORDER_ITEM_NAME_OPTION_ID . "
-                        AND value LIKE ?)";
-                $params[] = 's:%' . $data['filterItemName'] . '%';
+                        AND value LIKE :itemName)";
+                $params[':itemName'] = '%' . $data['filterItemName'] . '%';
             }
             if (!empty($data['filterShopName'])) {
                 $filter .= " AND EXISTS (
@@ -27,8 +27,8 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                     WHERE
                         order_product_id = op.order_product_id
                         AND product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID . "
-                        AND value LIKE ?)";
-                $params[] = 's:%' . $data['filterShopName'] . '%';
+                        AND value LIKE :shopName)";
+                $params[':shopName'] = '%' . $data['filterShopName'] . '%';
             }
             if (!empty($data['filterSiteName'])) {
                 $filter .= " AND EXISTS (
@@ -37,27 +37,31 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                     WHERE
                         order_product_id = op.order_product_id
                         AND product_option_id = " . REPURCHASE_ORDER_ITEM_URL_OPTION_ID . "
-                        AND value LIKE ?)";
-                $params[] = 's:%' . $data['filterSiteName'] . '%';
+                        AND value LIKE :siteName)";
+                $params[':siteName'] = '%' . $data['filterSiteName'] . '%';
             }
-            $this->buildSimpleFieldFilterEntry('c.customer_id', $data['filterCustomerId'], $filter, $params, 'i');
+            if (isset($data['filterCustomerId'])) {
+                $this->buildSimpleFieldFilterEntry('c.customer_id', $data['filterCustomerId'], $filter, $params, 'i');
+            }
             if (isset($data['filterOrderId'])) {
                 $this->buildSimpleFieldFilterEntry('op.order_product_id', $data['filterOrderId'], $filter, $params, 'i');
             }
-            $this->buildSimpleFieldFilterEntry('op.status_id', $data['filterStatusId'], $filter, $params, 'i');
+            if (isset($data['filterStatusId'])) {
+                $this->buildSimpleFieldFilterEntry('op.status_id', $data['filterStatusId'], $filter, $params, 'i');
+            }
             if (!empty($data['filterStatusIdDateSet']) && !empty($data['filterStatusSetDate'])) {
                 $filter .= " AND EXISTS (
                     SELECT order_item_history_id
                     FROM order_item_history
                     WHERE
                         order_item_id = op.order_product_id
-                        AND order_item_status_id IN (" . substr(str_repeat(',?', sizeof($data['filterStatusIdDateSet'])), 1) . ")
-                        AND date_added = ?
+                        AND (order_item_status_id = :statusIdDateSet" . implode(' OR order_item_status_id = :statusIdDateSet', array_keys($data['filterStatusIdDateSet'])) . ")
+                        AND date_added = :dateStatusSet
                 )";
-                foreach ($data['filterStatusIdDateSet'] as $filterValue) {
-                    $params[] = 'i:' . $filterValue;
+                foreach ($data['filterStatusIdDateSet'] as $key => $filterValue) {
+                    $params[":statusIdDateSet$key"] = $filterValue;
                 }
-                $params[] = 's:' . $data['filterStatusSetDate'];
+                $params[':dateStatusSet'] = $data['filterStatusSetDate'];
             }
         }
 
