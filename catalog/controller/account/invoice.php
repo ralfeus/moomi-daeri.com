@@ -42,7 +42,7 @@ class ControllerAccountInvoice extends CustomerZoneController {
             );
         }
 //        $this->log->write(print_r($json, true));
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     private function getOrderAddress($order)
@@ -66,7 +66,7 @@ class ControllerAccountInvoice extends CustomerZoneController {
     }
 
     public function index() {
-        $invoices = InvoiceDAO::getInstance()->getInvoices(array('filterCustomerId' => array($this->getCustomer()->getId())), "invoice_id DESC");
+        $invoices = InvoiceDAO::getInstance()->getInvoices(array('filterCustomerId' => array($this->getCurrentCustomer()->getId())), "invoice_id DESC");
         if ($invoices)
         {
             foreach ($invoices as $invoice)
@@ -125,7 +125,7 @@ class ControllerAccountInvoice extends CustomerZoneController {
             'common/column_left',
             'common/column_right'
         );
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     protected function setBreadcrumbs()
@@ -148,13 +148,11 @@ class ControllerAccountInvoice extends CustomerZoneController {
         );
     }
 
-    public function showForm()
-    {
+    public function showForm() {
 //        $this->log->write(print_r($this->session, true));
-        if (!isset($this->request->request['invoiceId']))
+        if (is_null($this->getRequest()->getParam('invoiceId')))
             return;
 
-	$modelInvoice = $this->load->model('account/invoice');
         $modelOrderItem = $this->load->model('account/order_item');
         $modelReferenceAddress = $this->load->model('reference/address');
         $invoice = InvoiceDAO::getInstance()->getInvoice($this->request->request['invoiceId']);
@@ -180,8 +178,8 @@ class ControllerAccountInvoice extends CustomerZoneController {
         $this->data['textSubtotal'] = $this->language->get('SUBTOTAL');
         $this->data['textTotal'] = $this->language->get('TOTAL');
         $this->data['textWeight'] = $this->language->get('WEIGHT');
-$temp = $invoice->getCustomer();
-        if ($temp['customer_id'] != $this->getCustomer()->getId()) {
+        $temp = $invoice->getCustomer();
+        if ($temp['customer_id'] != $this->getCurrentCustomer()->getId()) {
             $invoice = null;
             $this->data['notifications']['error'] = $this->language->get('errorAccessDenied');
         } else {
@@ -208,9 +206,9 @@ $temp = $invoice->getCustomer();
 		$ids[] = $item['id'];
 	    }
 
-	    $_invoice = $modelInvoice->getInvoice($this->request->request['invoiceId']);
+	    $_invoice = InvoiceDAO::getInstance()->getInvoice($this->getRequest()->getParam('invoiceId'));
 
-	    foreach ($modelInvoice->getInvoiceItems($_invoice['invoice_id']) as $invoiceItem) {
+	    foreach (InvoiceDAO::getInstance()->getInvoiceItems($_invoice['invoice_id']) as $invoiceItem) {
 		    if (!in_array($invoiceItem['order_item_id'],$ids)) {
 			$orderItem = $this->model_account_order->getOrderProduct($invoiceItem['order_item_id']);
 			$this->data['orderItems'][] = array(
@@ -230,7 +228,7 @@ $temp = $invoice->getCustomer();
             /// Set invoice data
             $this->data['invoiceId'] = $invoice->getId();
             $this->data['comment'] = $invoice->getComment();
-            $this->data['discount'] = $this->getCurrency()->format($invoice->getDiscount(), $this->getCustomer()->getBaseCurrency());
+            $this->data['discount'] = $this->getCurrency()->format($invoice->getDiscount(), $this->getCurrentCustomer()->getBaseCurrency());
             $this->data['packageNumber'] = $invoice->getPackageNumber();
             $this->data['shippingAddress'] = nl2br($modelReferenceAddress->toString($invoice->getShippingAddressId()));
             $this->data['shippingCost'] = $this->getCurrency()->format($invoice->getShippingCost());
@@ -239,9 +237,9 @@ $temp = $invoice->getCustomer();
                 $invoice->getStatusId(),
                 $this->session->data['language_id']);
             $this->data['statusId'] = $invoice->getStatusId();
-            $this->data['total'] = $this->getCurrency()->format($subTotalCustomerCurrency, $this->getCustomer()->getBaseCurrency(), 1);
+            $this->data['total'] = $this->getCurrency()->format($subTotalCustomerCurrency, $this->getCurrentCustomer()->getBaseCurrency(), 1);
             $this->data['totalWeight'] = $invoice->getWeight();
-            $this->data['grandTotal'] = $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $this->getCustomer()->getBaseCurrency(), 1);
+            $this->data['grandTotal'] = $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $this->getCurrentCustomer()->getBaseCurrency(), 1);
         }
         $templateName = '/template/account/invoiceForm.tpl.php';
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateName))
@@ -257,6 +255,6 @@ $temp = $invoice->getCustomer();
             'common/column_left',
             'common/column_right'
         );
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 }
