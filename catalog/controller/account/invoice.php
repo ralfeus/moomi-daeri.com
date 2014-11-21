@@ -202,28 +202,29 @@ class ControllerAccountInvoice extends CustomerZoneController {
                 $subTotalCustomerCurrency += $orderItem->getTotal(true);
             }
 
-	    foreach ($this->data['orderItems'] as $item) {
-		$ids[] = $item['id'];
-	    }
+            foreach ($this->data['orderItems'] as $item) {
+                $ids[] = $item['id'];
+            }
 
-	    $_invoice = InvoiceDAO::getInstance()->getInvoice($this->getRequest()->getParam('invoiceId'));
+            $_invoice = InvoiceDAO::getInstance()->getInvoice($this->getRequest()->getParam('invoiceId'));
 
-	    foreach (InvoiceDAO::getInstance()->getInvoiceItems($_invoice['invoice_id']) as $invoiceItem) {
-		    if (!in_array($invoiceItem['order_item_id'],$ids)) {
-			$orderItem = $this->model_account_order->getOrderProduct($invoiceItem['order_item_id']);
-			$this->data['orderItems'][] = array(
-			'id' => $orderItem['order_product_id'],
-			'comment' => $orderItem['public_comment'],
-			'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
-			'model' => $orderItem['model'],
-			'name' => $orderItem['name'],
-			'options' => $modelOrderItem->getOrderItemOptionsString($orderItem['order_product_id']),
-			'order_id' => $orderItem['order_id'],
-			'price' => $this->currency->format($orderItem['price']),
-			'quantity' => $orderItem['quantity'],
-			'subtotal' => $this->currency->format($orderItem['price'] * $orderItem['quantity'])
-			);
-		    }
+            foreach (InvoiceDAO::getInstance()->getInvoiceItems($_invoice->getId()) as $invoiceItem) {
+                if (!in_array($invoiceItem['order_item_id'], $ids)) {
+                    $orderItem = $this->model_account_order->getOrderProduct($invoiceItem['order_item_id']);
+
+                    $this->data['orderItems'][] = array(
+                        'id' => $orderItem['order_product_id'],
+                        'comment' => $orderItem['public_comment'],
+                        'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem['image_path']),
+                        'model' => $orderItem['model'],
+                        'name' => $orderItem['name'],
+                        'options' => $modelOrderItem->getOrderItemOptionsString($orderItem['order_product_id']),
+                        'order_id' => $orderItem['order_id'],
+                        'price' => $this->getCurrency()->format($orderItem['price']),
+                        'quantity' => $orderItem['quantity'],
+                        'subtotal' => $this->getCurrency()->format($orderItem['price'] * $orderItem['quantity'])
+                    );
+                }
             }
             /// Set invoice data
             $this->data['invoiceId'] = $invoice->getId();
