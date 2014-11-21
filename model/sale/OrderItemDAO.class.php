@@ -29,10 +29,11 @@ class OrderItemDAO extends DAO {
             return new OrderItem($this->registry, $result[0]['affiliate_id'], $result[0]['affiliate_transaction_id'],
                 $result[0]['comment'], $result[0]['customer_id'], $result[0]['customer_name'], $result[0]['customer_nick'],
                 $result[0]['order_item_id'], $result[0]['image_path'], $result[0]['internal_model'], $result[0]['korean_name'],
-                $result[0]['model'], $result[0]['name'], $result[0]['order_id'], $result[0]['price'], $result[0]['product_id'],
-                $result[0]['public_comment'], $result[0]['quantity'], $result[0]['shipping'], $result[0]['status_date'],
-                $result[0]['status_id'], $result[0]['supplier_group_id'], $result[0]['supplier_id'], $result[0]['supplier_name'],
-                $result[0]['supplier_url'], $result[0]['total'], $result[0]['weight'], $result[0]['weight_class_id']);
+                $result[0]['model'], $result[0]['name'], $result[0]['order_id'], $result[0]['price'], $result[0]['whiteprice'],
+                $result[0]['product_id'], $result[0]['public_comment'], $result[0]['quantity'], $result[0]['shipping'],
+                $result[0]['status_date'], $result[0]['status_id'], $result[0]['supplier_group_id'], $result[0]['supplier_id'],
+                $result[0]['supplier_name'], $result[0]['supplier_url'], $result[0]['total'], $result[0]['weight'],
+                $result[0]['weight_class_id']);
         } else {
             return null;
         }
@@ -169,11 +170,11 @@ class OrderItemDAO extends DAO {
                     $orderItemInfo['comment'], $orderItemInfo['customer_id'], $orderItemInfo['customer_name'], $orderItemInfo['customer_nick'],
                     $orderItemInfo['order_item_id'], $orderItemInfo['image_path'], $orderItemInfo['internal_model'],
                     $orderItemInfo['korean_name'], $orderItemInfo['model'], $orderItemInfo['name'], $orderItemInfo['order_id'],
-                    $orderItemInfo['price'], $orderItemInfo['product_id'], $orderItemInfo['public_comment'],
-                    $orderItemInfo['quantity'], $orderItemInfo['shipping'], $orderItemInfo['time_modified'],
-                    $orderItemInfo['status'], $orderItemInfo['supplier_group_id'], $orderItemInfo['supplier_id'],
-                    $orderItemInfo['supplier_name'], $orderItemInfo['supplier_url'], $orderItemInfo['total'],
-                    $orderItemInfo['weight'], $orderItemInfo['weight_class_id']);
+                    $orderItemInfo['price'], $orderItemInfo['whiteprice'], $orderItemInfo['product_id'],
+                    $orderItemInfo['public_comment'], $orderItemInfo['quantity'], $orderItemInfo['shipping'],
+                    $orderItemInfo['time_modified'], $orderItemInfo['status'], $orderItemInfo['supplier_group_id'],
+                    $orderItemInfo['supplier_id'], $orderItemInfo['supplier_name'], $orderItemInfo['supplier_url'],
+                    $orderItemInfo['total'], $orderItemInfo['weight'], $orderItemInfo['weight_class_id']);
             }
             return $objectArray;
         } else {
@@ -509,9 +510,9 @@ class OrderItemDAO extends DAO {
     public function setWhitePrice($orderItemId, $amount)
     {
         $query = "UPDATE order_product SET whiteprice = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
-        $this->db->query($query);
+        $this->getDb()->query($query);
         $query = "UPDATE order_product SET price = " . (float)$amount . " WHERE order_product_id = " . (int)$orderItemId;
-        $this->db->query($query);
+        $this->getDb()->query($query);
     }
 
     public function setShipping($orderItemId, $amount)

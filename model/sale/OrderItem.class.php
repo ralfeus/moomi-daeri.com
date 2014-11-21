@@ -65,6 +65,7 @@ class OrderItem {
      * @param string $name
      * @param int $orderId
      * @param float $price
+     * @param float $whiteprice
      * @param int $productId
      * @param string $publicComment
      * @param int $quantity
@@ -80,7 +81,7 @@ class OrderItem {
      * @param int $weightClassId
      */
     function __construct($registry, $affiliateId, $affiliateTransactionId, $privateComment, $customerId, $customerName,
-                         $customerNick, $id, $imagePath, $internalModel, $koreanName, $model, $name, $orderId, $price/*, $whiteprice*/, $productId,
+                         $customerNick, $id, $imagePath, $internalModel, $koreanName, $model, $name, $orderId, $price, $whiteprice, $productId,
                          $publicComment, $quantity, $shippingCost, $statusDate, $statusId, $supplierGroupId,
                          $supplierId, $supplierName, $supplierUrl, $total, $weight, $weightClassId) {
         $this->registry = $registry;
@@ -98,7 +99,7 @@ class OrderItem {
         $this->name = $name;
         $this->orderId = $orderId;
         $this->price = $price;
-//        $this->whiteprice = $whiteprice;
+        $this->whiteprice = $whiteprice;
         $this->productId = $productId;
         $this->publicComment = $publicComment;
         $this->quantity = $quantity;
