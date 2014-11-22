@@ -24,7 +24,7 @@ class Filter {
     public function addChunk($filter, $params = null) {
         if ($filter instanceof Filter) {
             $this->addChunk($filter->getFilterString(), $filter->getParams());
-        } else {
+        } elseif ($filter) {
             if ($this->filterString) {
                 $this->filterString .= ' AND ';
             }
