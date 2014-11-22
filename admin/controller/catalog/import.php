@@ -46,8 +46,8 @@ class ControllerCatalogImport extends Controller {
         $product_description = array();
         foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
             $product_description[$language['language_id']] = array(
-                'name' => $productToAdd->getName()
-//                'description' => $productToAdd->getDescription()
+                'name' => $productToAdd->getName(),
+                'description' => null
             );
         }
 
@@ -219,13 +219,13 @@ class ControllerCatalogImport extends Controller {
     }
 
     protected function initParameters() {
-        $this->parameters['filterIsActive'] = isset($_REQUEST['filterIsActive']) && is_numeric($_REQUEST['filterIsActive']) ? $_REQUEST['filterIsActive'] : null;
-        $this->parameters['filterItem'] = empty($_REQUEST['filterItem']) ? null : $_REQUEST['filterItem'];
-        $this->parameters['filterSourceSiteId'] = empty($_REQUEST['filterSourceSiteId']) ? array() : $_REQUEST['filterSourceSiteId'];
-        $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
-        $this->parameters['selectedItems'] = empty($_REQUEST['selectedItems']) ? array() : $_REQUEST['selectedItems'];
+        $this->parameters['filterIsActive'] = is_numeric($this->getRequest()->getParam('filterIsActive')) ? $this->getRequest()->getParam('filterIsActive') : null;
+        $this->parameters['filterItem'] = $this->getRequest()->getParam('filterItem');
+        $this->parameters['filterSourceSiteId'] = $this->getRequest()->getParam('filterSourceSiteId', array());
+        $this->parameters['page'] = $this->getRequest()->getParam('page', 1);
+        $this->parameters['selectedItems'] = $this->getRequest()->getParam('selectedItems', array());
         $this->parameters['token'] = $this->session->data['token'];
-        $this->parameters['what'] = empty($_REQUEST['what']) ? null : $_REQUEST['what'];
+        $this->parameters['what'] = $this->getRequest()->getParam('what');
     }
 
     protected function loadStrings() {
@@ -284,9 +284,13 @@ class ControllerCatalogImport extends Controller {
         $localProduct = $this->modelCatalogProduct->getProduct($productToUpdate->getLocalProductId());
         /// Downloading images
         foreach ($this->modelCatalogProduct->getProductImages($productToUpdate->getLocalProductId()) as $image) {
-            unlink(DIR_IMAGE . $image['image']);
+            if (file_exists(DIR_IMAGE . $image['image']) && is_file(DIR_IMAGE . $image['image'])) {
+                unlink(DIR_IMAGE . $image['image']);
+            }
         }
-        unlink(DIR_IMAGE . $localProduct['image']);
+        if (file_exists(DIR_IMAGE . $localProduct['image']) && is_file(DIR_IMAGE . $localProduct['image'])) {
+            unlink(DIR_IMAGE . $localProduct['image']);
+        }
         /** @var ModelToolImage $modelToolImage */
         $modelToolImage = $this->load->model('tool/image');
         $thumbnail = null;
@@ -309,7 +313,7 @@ class ControllerCatalogImport extends Controller {
         foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
             $product_description[$language['language_id']] = array(
                 'name' => $productToUpdate->getName(),
-//                'description' => $productToUpdate->getDescription()
+                'description' => null
             );
         }
 
@@ -319,6 +323,7 @@ class ControllerCatalogImport extends Controller {
         $localProductCategories = $this->modelCatalogProduct->getProductCategories($productToUpdate->getLocalProductId());
         $this->modelCatalogProduct->editProduct($productToUpdate->getLocalProductId(), array(
             'date_available' => $localProduct['date_available'],
+            'image_description' => $localProduct['image_description'],
             'height' => null,
             'image' => $thumbnail,
             'length' => null, 'length_class_id' => 1,
@@ -331,7 +336,7 @@ class ControllerCatalogImport extends Controller {
             'price' => $productToUpdate->getSourcePrice()->getPrice() * $productToUpdate->getSourceSite()->getRegularCustomerPriceRate(),
 //            'product_attribute' => array($koreanName, $sourceUrl),
             'product_category' => $localProductCategories,
-            'product_description' => $product_description,
+            'product_description' => $this->modelCatalogProduct->getProductDescriptions($productToUpdate->getLocalProductId()), //$product_description,
             'product_image' => $images,
             'product_option' => $localProductOptions,
             'product_special' => $this->getSpecialPrices($productToUpdate),
@@ -407,7 +412,7 @@ class ControllerCatalogImport extends Controller {
 
         defined('DIR_AUTOMATION') || define('DIR_AUTOMATION', dirname(DIR_APPLICATION) . '/automation/');
 
-        switch ($this->request->get['a']) {
+        switch ($this->getRequest()->get['a']) {
             case 'run':
                 if ($this->parserStatus()) {
                     echo 'cant';

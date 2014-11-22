@@ -261,7 +261,7 @@ class ControllerCatalogAttribute extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
   
   	private function getForm() {
@@ -364,7 +364,7 @@ class ControllerCatalogAttribute extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());	
+		$this->getResponse()->setOutput($this->render());
   	}
   	
 	private function validateForm() {
@@ -440,7 +440,7 @@ class ControllerCatalogAttribute extends Controller {
 
 		array_multisort($sort_order, SORT_ASC, $json);
 
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}		  
 }
 ?>

@@ -261,7 +261,7 @@ class ControllerCatalogSupplier extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
     /**
@@ -363,7 +363,7 @@ class ControllerCatalogSupplier extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
     /**

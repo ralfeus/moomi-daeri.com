@@ -153,7 +153,7 @@ class ControllerCatalogWkauctionbids extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	} */
 	protected function getList() {
 		$this->language->load('catalog/wkauction_bids');
@@ -261,7 +261,7 @@ class ControllerCatalogWkauctionbids extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 /*
   	public function update() {

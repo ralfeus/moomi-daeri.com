@@ -371,7 +371,7 @@ class ControllerSaleOrderItems extends Controller {
 			'common/footer'
 		);
 
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	private function isOrderReady($order_id) {
@@ -550,7 +550,7 @@ class ControllerSaleOrderItems extends Controller {
 			'common/footer'
 		);
 
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	public function print_page_removed_nickname() {
@@ -657,7 +657,7 @@ class ControllerSaleOrderItems extends Controller {
 			'common/footer'
 		);
 
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 	public function set_status() {
 		$this->load->language('sale/order_items');
@@ -703,7 +703,7 @@ class ControllerSaleOrderItems extends Controller {
 	public function save_comment() {
 
 		if (!$this->isValidOrderItemId($this->parameters['orderItemId']))
-			$this->response->addHeader("HTTP/1.0 400 Bad request");
+			$this->getResponse()->addHeader("HTTP/1.0 400 Bad request");
 		else
 			OrderItemDAO::getInstance()->setOrderItemComment(
 				$this->parameters['orderItemId'],
@@ -711,7 +711,7 @@ class ControllerSaleOrderItems extends Controller {
 				$this->parameters['private']
 			);
 
-		$this->response->setOutput('');
+		$this->getResponse()->setOutput('');
 	}
 
 	public function saveQuantity() {
@@ -721,10 +721,10 @@ class ControllerSaleOrderItems extends Controller {
 			$quantity = $_REQUEST['quantity'];
 
 		if (!$this->isValidOrderItemId($orderItemId))
-			$this->response->addHeader("HTTP/1.0 400 Bad request");
+			$this->getResponse()->addHeader("HTTP/1.0 400 Bad request");
 		else
 			OrderItemDAO::getInstance()->setOrderItemQuantity($orderItemId, $quantity);
-		$this->response->setOutput('');
+		$this->getResponse()->setOutput('');
 	}
 
     public function saveShipping() {
@@ -732,13 +732,13 @@ class ControllerSaleOrderItems extends Controller {
         $shipping = isset($_REQUEST['shipping']) ? $_REQUEST['shipping'] : null;
 
         if (!$this->isValidOrderItemId($orderItemId))
-            $this->response->addHeader("HTTP/1.0 400 Bad request");
+            $this->getResponse()->addHeader("HTTP/1.0 400 Bad request");
         else {
             $orderItem = OrderItemDAO::getInstance()->getOrderItem($orderItemId);
             $orderItem->setShippingCost($shipping);
             OrderItemDAO::getInstance()->saveOrderItem($orderItem, true);
         }
-        $this->response->setOutput('');
+        $this->getResponse()->setOutput('');
     }
 
 	protected function setBreadcrumbs()
@@ -791,7 +791,7 @@ class ControllerSaleOrderItems extends Controller {
 			$json['error'] = $this->language->get('error_bad_request'); 
 		}
 
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 
 

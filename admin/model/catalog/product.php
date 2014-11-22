@@ -32,7 +32,6 @@ class ModelCatalogProduct extends Model {
 		        height = ?,
 		        length_class_id = ?,
 		        status = ?,
-                tax_class_id = ?,
 		        sort_order = ?,
 		        date_added = NOW(),
 		        affiliate_commission =  ?,
@@ -61,7 +60,6 @@ class ModelCatalogProduct extends Model {
                 'd:' . $data['height'],
                 'i:' . $data['length_class_id'],
                 'i:' . $data['status'],
-                'i:' . (isset($data['tax_class_id']) ? $data['tax_class_id'] : 0),
                 'i:' . $data['sort_order'],
                 'd:' . (isset($data['affiliate_commission']) ? $data['affiliate_commission'] : 0),
                 's:' . $data['koreanName'],
@@ -334,7 +332,6 @@ class ModelCatalogProduct extends Model {
 		        height = ?,
 		        length_class_id = ?,
 		        status = ?,
-		        tax_class_id = ?,
 		        sort_order = ?,
 		        date_modified = NOW(),
 		        affiliate_commission = ?,
@@ -364,9 +361,8 @@ class ModelCatalogProduct extends Model {
                 'd:' . $data['height'],
                 'i:' . $data['length_class_id'],
                 'i:' . $data['status'],
-                's:' . $data['tax_class_id'],
                 'i:' . $data['sort_order'],
-                'd:' . $data['affiliate_commission'],
+                'd:' . (isset($data['affiliate_commission']) ? $data['affiliate_commission'] : 0),
                 's:' . $data['koreanName'],
                 's:' . $data['supplierUrl'],
                 's:' . $data['image_description'],
@@ -379,9 +375,25 @@ class ModelCatalogProduct extends Model {
 		}
 		
 		if (isset($data['product_description']) && is_array($data['product_description'])) {
-            $this->db->query("DELETE FROM product_description WHERE product_id = '" . (int)$product_id . "'");
+            $this->getDb()->query("
+                DELETE FROM product_description
+                WHERE product_id = :productId
+                ", [':productId' => $product_id]
+            );
             foreach ($data['product_description'] as $language_id => $value) {
-                $this->db->query("INSERT INTO product_description SET product_id = '" . (int)$product_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', description = '" . $this->db->escape($value['description']) . "', seo_title = '" . $this->db->escape($value['seo_title']) . "', seo_h1 = '" . $this->db->escape($value['seo_h1']) . "'");
+                $this->getDb()->query("
+                    INSERT INTO product_description
+                    SET
+                        product_id = '" . (int)$product_id . "',
+                        language_id = '" . (int)$language_id . "',
+                        name = '" . $this->db->escape($value['name']) . "',
+                        meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "',
+                        meta_description = '" . $this->db->escape($value['meta_description']) . "',
+                        description = '" . $this->db->escape($value['description']) . "',
+                        seo_title = '" . $this->db->escape($value['seo_title']) . "',
+                        seo_h1 = '" . $this->db->escape($value['seo_h1']) . "'
+                    "
+                );
             }
         }
 
@@ -465,11 +477,22 @@ class ModelCatalogProduct extends Model {
 			}
 		}
 		
-		$this->db->query("DELETE FROM product_image WHERE product_id = '" . (int)$product_id . "'");
+		$this->getDb()->query("DELETE FROM product_image WHERE product_id = '" . (int)$product_id . "'");
 		
 		if (isset($data['product_image'])) {
 			foreach ($data['product_image'] as $product_image) {
-				$this->db->query("INSERT INTO product_image SET product_id = '" . (int)$product_id . "', image = '" . $this->db->escape($product_image['image']) . "', sort_order = '" . (int)$product_image['sort_order'] . "'");
+				$this->getDb()->query("
+				    INSERT INTO product_image
+				    SET
+				        product_id = :productId,
+				        image = :imageUrl,
+				        sort_order = :sortOrder
+                    ", array(
+                        ':productId' => $product_id,
+                        ':imageUrl' => $product_image['image'],
+                        ':sortOrder' => isset($product_image['sort_order']) ? $product_image['sort_order'] : 0
+                    )
+                );
 			}
 		}
 		
@@ -526,24 +549,26 @@ class ModelCatalogProduct extends Model {
 		}
 		
 		$this->db->query("DELETE FROM product_tag WHERE product_id = '" . (int)$product_id. "'");
-		
-		foreach ($data['product_tag'] as $language_id => $value) {
-			if ($value) {
-				$tags = explode(',', $value);
-			
-				foreach ($tags as $tag) {
-					$this->db->query("INSERT INTO product_tag SET product_id = '" . (int)$product_id . "', language_id = '" . (int)$language_id . "', tag = '" . $this->db->escape(trim($tag)) . "'");
-				}
-			}
-		}
+
+        if (isset($data['product_tag']) && is_array($data['product_tag'])) {
+            foreach ($data['product_tag'] as $language_id => $value) {
+                if ($value) {
+                    $tags = explode(',', $value);
+
+                    foreach ($tags as $tag) {
+                        $this->db->query("INSERT INTO product_tag SET product_id = '" . (int)$product_id . "', language_id = '" . (int)$language_id . "', tag = '" . $this->db->escape(trim($tag)) . "'");
+                    }
+                }
+            }
+        }
 						
 		$this->db->query("DELETE FROM url_alias WHERE query = 'product_id=" . (int)$product_id. "'");
 		
-		if ($data['keyword']) {
+		if (isset($data['keyword'])) {
 			$this->db->query("INSERT INTO url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
 		}
 						
-		$this->cache->delete('product');
+		$this->getCache()->delete('product');
 	}
 	
 	public function copyProduct($product_id) {

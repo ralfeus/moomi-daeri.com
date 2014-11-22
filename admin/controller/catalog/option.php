@@ -258,7 +258,7 @@ class ControllerCatalogOption extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	private function getForm() {
@@ -417,7 +417,7 @@ class ControllerCatalogOption extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	private function validateForm() {
@@ -458,7 +458,7 @@ class ControllerCatalogOption extends Controller {
 		}
 		
 /* [webme] deny order deletions by specified user_group - begin */
-$pureManagerGroupId = 11; // вот это ID созданной группы, которой ЗАПРЕЩАЕМ удалять заказы.
+$pureManagerGroupId = 11; // пїЅпїЅпїЅ пїЅпїЅпїЅ ID пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
 if ($this->user->getUsergroupId() == $pureManagerGroupId) {
 $this->error['warning'] = $this->language->get('error_options_deletion_denied');
 }
@@ -564,7 +564,7 @@ $this->error['warning'] = $this->language->get('error_options_deletion_denied');
 
 		array_multisort($sort_order, SORT_ASC, $json);
 				
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 }
 ?>

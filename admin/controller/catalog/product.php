@@ -458,18 +458,18 @@ class ControllerCatalogProduct extends Controller {
 		}
 					
 		$this->data['sort_name'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=pd.name' . $url, 'SSL');
+        $this->data['sort_manufacturer'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.manufacturer' . $url, 'SSL');
 		$this->data['sort_model'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.model' . $url, 'SSL');
 		$this->data['sort_price'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.price' . $url, 'SSL');
 		$this->data['sort_korean_name'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=a.text' . $url, 'SSL');
+        $this->data['sort_status'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.status' . $url, 'SSL');
+        $this->data['sort_supplier'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.supplier' . $url, 'SSL');
 		$this->data['sort_user_name'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=u.username' . $url, 'SSL');
-		$this->data['sort_status'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.status' . $url, 'SSL');
-		$this->data['manufacturer'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.manufacturer' . $url, 'SSL');
-		$this->data['supplier'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.supplier' . $url, 'SSL');
 		$this->data['sort_order'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.sort_order' . $url, 'SSL');
 
 		$pagination = new Pagination();
 		$pagination->total = $product_total;
-		$pagination->page = $this->request->get['page'];
+		$pagination->page = isset($this->request->get['page']) ? $this->request->get['page'] : 1;
 		$pagination->limit = $this->config->get('config_admin_limit');
 		$pagination->text = $this->language->get('text_pagination');
         unset($this->parameters['page']);
@@ -487,7 +487,7 @@ class ControllerCatalogProduct extends Controller {
 			'common/header',
 			'common/footer'
 		);
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   }
 
   private function getForm() {
@@ -1225,7 +1225,7 @@ class ControllerCatalogProduct extends Controller {
 			'common/header',
 			'common/footer'
 		);
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 
   	private function getUserNames()
@@ -1372,7 +1372,7 @@ class ControllerCatalogProduct extends Controller {
 			$output .= '>' . $result['name'] . '</option>';
 		}
 
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
 	}
 		
 	public function autocomplete() {
@@ -1471,7 +1471,7 @@ class ControllerCatalogProduct extends Controller {
 			}
 		}
 
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 
 	private function getAllCategories($categories, $parent_id = 0, $parent_name = '') {
@@ -1724,7 +1724,7 @@ class ControllerCatalogProduct extends Controller {
 
     	$json['data'] = $this->getOptionForm();
 
-    	$this->response->setOutput(json_encode($json));
+    	$this->getResponse()->setOutput(json_encode($json));
     }
 
     private function validateOptionForm() {

@@ -365,7 +365,7 @@ class ControllerSaleCustomer extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
   
   	private function getForm() {
@@ -716,7 +716,7 @@ class ControllerSaleCustomer extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 			 
   	private function validateForm() {
@@ -862,7 +862,7 @@ class ControllerSaleCustomer extends Controller {
 				'common/footer'
 			);
 		
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
 		}
 	}
 
@@ -891,7 +891,7 @@ class ControllerSaleCustomer extends Controller {
         $result = $this->render();
         $json = array('content' => $result);
 //        $this->log->write(print_r($json, true));
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     public function purgeCart()
@@ -899,7 +899,7 @@ class ControllerSaleCustomer extends Controller {
         CustomerDAO::getInstance()->purgeCart($this->parameters['customerId']);
         $customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
         $json = array('success' => sprintf($this->language->get('SUCCESS_CART_PURGED'), $customer['nickname']));
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 		
 	public function zone() {
@@ -923,7 +923,7 @@ class ControllerSaleCustomer extends Controller {
 			$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
 		}
 
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
 	}
 	
 	public function transaction() {
@@ -996,7 +996,7 @@ class ControllerSaleCustomer extends Controller {
         $this->getTransactions($customer);
         $this->getCreditRequests($customer);
         $this->template = 'sale/customerTransaction.php';
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
         return;
 
 		if (isset($_REQUEST['page'])) {
@@ -1043,7 +1043,7 @@ class ControllerSaleCustomer extends Controller {
 
 		$this->template = 'sale/customer_transaction.tpl';		
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 			
 	public function reward() {
@@ -1105,7 +1105,7 @@ class ControllerSaleCustomer extends Controller {
         }
 		$this->template = 'sale/customer_reward.tpl';		
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	public function autocomplete() {
@@ -1144,7 +1144,7 @@ class ControllerSaleCustomer extends Controller {
 
 		array_multisort($sort_order, SORT_ASC, $json);
 
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}		
 	
 	public function address() {
@@ -1154,7 +1154,7 @@ class ControllerSaleCustomer extends Controller {
 			$json = CustomerDAO::getInstance()->getAddress($_REQUEST['address_id']);
 		}
 
-		$this->response->setOutput(json_encode($json));		
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 }
 ?>

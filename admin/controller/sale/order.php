@@ -473,7 +473,7 @@ class ControllerSaleOrder extends Controller {
 			'common/footer'
 		);
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 
   	public function getForm() {
@@ -1041,7 +1041,7 @@ class ControllerSaleOrder extends Controller {
 			'common/footer'
 		);
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 	
 	public function info() {
@@ -1357,7 +1357,7 @@ foreach ($this->data['totals'] as $v) {
 				'common/footer'
 			);
 			
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
 		} else {
 			$this->load->language('error/not_found');
 
@@ -1387,7 +1387,7 @@ foreach ($this->data['totals'] as $v) {
 				'common/footer'
 			);
 		
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
 		}	
 	}
 	
@@ -1523,7 +1523,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
 		}
 
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
 	}
 	
 	public function createInvoiceNo() {
@@ -1552,7 +1552,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			}
 		}
 
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
   	}
 
 	public function addCredit() {
@@ -1576,7 +1576,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			}
 		}
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
   	}
 	
 	public function removeCredit() {
@@ -1596,7 +1596,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			}
 		}
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
   	}
 				
 	public function addReward() {
@@ -1622,7 +1622,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			}
 		}
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
   	}
 	
 	public function removeReward() {
@@ -1642,14 +1642,14 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			}
 		}
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
   	}
 		
 	public function addCommission() {
 		$json = array();
 
 		$json['error'] = $this->language->get('error_action');
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 		return;
 
      	if (!$this->user->hasPermission('modify', 'sale/order')) {
@@ -1674,14 +1674,14 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			}
 		}
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
   	}
 	
 	public function removeCommission() {
 		$json = array(); 
 
 		$json['error'] = $this->language->get('error_action');
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 		return;
 
      	if (!$this->user->hasPermission('modify', 'sale/order')) {
@@ -1700,7 +1700,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			}
 		}
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
   	}
 
 	public function history() {
@@ -1762,7 +1762,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 		
 		$this->template = 'sale/order_history.tpl';		
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 
     protected function initParameters()
@@ -1840,7 +1840,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 				'common/footer'
 			);
 		
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
 		}	
 	}
 
@@ -1885,7 +1885,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 			$json['success'] = $this->language->get('text_upload');
 		}	
 		
-		$this->response->setOutput(json_encode($json));		
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 			
   	public function invoice() {
@@ -2083,7 +2083,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 
 		$this->template = 'sale/order_invoice.tpl';
 
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
     public function setStatus() {

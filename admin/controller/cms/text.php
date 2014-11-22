@@ -91,6 +91,6 @@ class ControllerCmsText extends Controller
         $this->setBreadcrumbs();
         $this->children = array('common/header', 'common/footer');
         $this->template = 'cms/textForm.php';
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 }

@@ -381,8 +381,9 @@ $temp = $invoice->getCustomer();
     private function showCreateForm() {
         //$this->log->write(print_r($this->request->request, true));
         $this->setBreadcrumbs();
-        if (!sizeof($this->parameters['selectedItems']))
+        if (!sizeof($this->parameters['selectedItems'])) {
             return;
+        }
         $orderItems = OrderItemDAO::getInstance()->getOrderItems(
             array('selected_items' => $this->parameters['selectedItems']), null, true);
 

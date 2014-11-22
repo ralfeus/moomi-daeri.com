@@ -277,7 +277,7 @@ class ControllerSaleVoucher extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 
   	private function getForm() {
@@ -474,7 +474,7 @@ class ControllerSaleVoucher extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());		
+		$this->getResponse()->setOutput($this->render());
   	}
 	
   	private function validateForm() {
@@ -568,7 +568,7 @@ class ControllerSaleVoucher extends Controller {
 		
 		$this->template = 'sale/voucher_history.tpl';		
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 	
 	public function send() {
@@ -586,7 +586,7 @@ class ControllerSaleVoucher extends Controller {
 			$json['success'] = $this->language->get('text_sent');
 		}	
 		
-		$this->response->setOutput(json_encode($json));			
+		$this->getResponse()->setOutput(json_encode($json));
   	}			
 }
 ?>

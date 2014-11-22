@@ -270,7 +270,7 @@ class ControllerSaleCoupon extends Controller {
 			'common/footer'	
 		);
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 
   	private function getForm() {
@@ -512,7 +512,7 @@ class ControllerSaleCoupon extends Controller {
 			'common/footer'	
 		);
 		
-		$this->response->setOutput($this->render());		
+		$this->getResponse()->setOutput($this->render());
   	}
 	
   	private function validateForm() {
@@ -590,7 +590,7 @@ class ControllerSaleCoupon extends Controller {
 		
 		$this->template = 'sale/coupon_history.tpl';		
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}		
 }
 ?>

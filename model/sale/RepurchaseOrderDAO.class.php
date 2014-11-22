@@ -1,16 +1,30 @@
 <?php
 namespace model\sale;
 
+use system\library\Filter;
+
 class RepurchaseOrderDAO extends OrderItemDAO {
+    /**
+     * @param array $data
+     * @return Filter
+     */
     private function buildFilter($data = array()) {
-        $filter = "op.product_id = " . REPURCHASE_ORDER_PRODUCT_ID;
+        $filterObject = new Filter("op.product_id = " . REPURCHASE_ORDER_PRODUCT_ID);
+        $filter = "op.product_id = " . REPURCHASE_ORDER_PRODUCT_ID; $params = array();
         if (isset($data['selectedItems']) && count($data['selectedItems'])) {
-            $this->buildSimpleFieldFilterEntry('op.order_product_id', $data['selectedItems'], $filter, $params, 'i');
+            $filterObject->addChunk($this->buildSimpleFieldFilterEntry('op.order_product_id', $data['selectedItems'], $filter, $params, 'i'));
         } else {
-            if (isset($data['filterAmount'])) {
-                $this->buildSimpleFieldFilterEntry('op.total', $data['filterAmount'], $filter, $params, 'd');
+            if (isset($data['filterAmount']) && is_numeric($data['filterAmount'])) {
+                $filterObject->addChunk($this->buildSimpleFieldFilterEntry('op.total', $data['filterAmount'], $filter, $params, 'd'));
             }
             if (!empty($data['filterItemName'])) {
+                $filterObject->addChunk("EXISTS (
+                    SELECT order_option_id
+                    FROM order_option
+                    WHERE
+                        order_product_id = op.order_product_id
+                        AND product_option_id = " . REPURCHASE_ORDER_ITEM_NAME_OPTION_ID . "
+                        AND value LIKE :itemName)", [':itemName' => '%' . $data['filterItemName'] . '%']);
                 $filter .= " AND EXISTS (
                     SELECT order_option_id
                     FROM order_option
@@ -21,6 +35,13 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                 $params[':itemName'] = '%' . $data['filterItemName'] . '%';
             }
             if (!empty($data['filterShopName'])) {
+                $filterObject->addChunk("EXISTS (
+                    SELECT order_option_id
+                    FROM order_option
+                    WHERE
+                        order_product_id = op.order_product_id
+                        AND product_option_id = " . REPURCHASE_ORDER_SHOP_NAME_OPTION_ID . "
+                        AND value LIKE :shopName)", [':shopName'=> '%' . $data['filterShopName'] . '%']);
                 $filter .= " AND EXISTS (
                     SELECT order_option_id
                     FROM order_option
@@ -31,6 +52,13 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                 $params[':shopName'] = '%' . $data['filterShopName'] . '%';
             }
             if (!empty($data['filterSiteName'])) {
+                $filterObject->addChunk("EXISTS (
+                    SELECT order_option_id
+                    FROM order_option
+                    WHERE
+                        order_product_id = op.order_product_id
+                        AND product_option_id = " . REPURCHASE_ORDER_ITEM_URL_OPTION_ID . "
+                        AND value LIKE :siteName)", [':siteName'=> '%' . $data['filterSiteName'] . '%']);
                 $filter .= " AND EXISTS (
                     SELECT order_option_id
                     FROM order_option
@@ -41,15 +69,23 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                 $params[':siteName'] = '%' . $data['filterSiteName'] . '%';
             }
             if (isset($data['filterCustomerId'])) {
-                $this->buildSimpleFieldFilterEntry('c.customer_id', $data['filterCustomerId'], $filter, $params, 'i');
+                $filterObject->addChunk($this->buildSimpleFieldFilterEntry('c.customer_id', $data['filterCustomerId'], $filter, $params, 'i'));
             }
             if (isset($data['filterOrderId'])) {
-                $this->buildSimpleFieldFilterEntry('op.order_product_id', $data['filterOrderId'], $filter, $params, 'i');
+                $filterObject->addChunk($this->buildSimpleFieldFilterEntry('op.order_product_id', $data['filterOrderId'], $filter, $params, 'i'));
             }
             if (isset($data['filterStatusId'])) {
-                $this->buildSimpleFieldFilterEntry('op.status_id', $data['filterStatusId'], $filter, $params, 'i');
+                $filterObject->addChunk($this->buildSimpleFieldFilterEntry('op.status_id', $data['filterStatusId'], $filter, $params, 'i'));
             }
             if (!empty($data['filterStatusIdDateSet']) && !empty($data['filterStatusSetDate'])) {
+                $tmpFilterString = "EXISTS (
+                    SELECT order_item_history_id
+                    FROM order_item_history
+                    WHERE
+                        order_item_id = op.order_product_id
+                        AND (order_item_status_id = :statusIdDateSet" . implode(' OR order_item_status_id = :statusIdDateSet', array_keys($data['filterStatusIdDateSet'])) . ")
+                        AND date_added = :dateStatusSet
+                )";
                 $filter .= " AND EXISTS (
                     SELECT order_item_history_id
                     FROM order_item_history
@@ -59,9 +95,12 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                         AND date_added = :dateStatusSet
                 )";
                 foreach ($data['filterStatusIdDateSet'] as $key => $filterValue) {
+                    $tmpParams[":statusIdDateSet$key"] = $filterValue;
                     $params[":statusIdDateSet$key"] = $filterValue;
                 }
+                $tmpParams[':dateStatusSet'] = $data['filterStatusSetDate'];
                 $params[':dateStatusSet'] = $data['filterStatusSetDate'];
+                $filterObject->addChunk($tmpFilterString, $tmpParams);
             }
         }
 
@@ -71,7 +110,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
         $result = new \stdClass();
         $result->filterString = $filter;
         $result->params = $params;
-        return $result;
+        return $filterObject; // $result; //
     }
 
     public function deleteOrderItem($repurchaseOrderItemId) {

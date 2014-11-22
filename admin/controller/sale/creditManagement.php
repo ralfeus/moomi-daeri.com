@@ -104,7 +104,7 @@ class ControllerSaleCreditManagement extends Controller {
             'common/footer',
             'common/header'
         );
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     protected function initParameters()

@@ -119,8 +119,7 @@ class InvoiceDAO extends DAO {
         $this->getDb()->query(substr($query, 0, strlen($query) - 2));
     }
 
-    private function buildFilterString($data)
-    {
+    private function buildFilterString($data) {
         $filter = "";
         if (!empty($data['filterCustomerId']))
             $filter .= ($filter ? " AND" : "") . " i.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";

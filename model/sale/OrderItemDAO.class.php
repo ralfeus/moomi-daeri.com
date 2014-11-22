@@ -4,6 +4,7 @@ namespace model\sale;
 use model\catalog\Supplier;
 use model\catalog\SupplierDAO;
 use model\DAO;
+use system\library\Filter;
 
 class OrderItemDAO extends DAO {
     private $orderItemsFromQuery = "
@@ -52,7 +53,7 @@ class OrderItemDAO extends DAO {
     }
 
     /**
-     * @param \stdClass $filter
+     * @param Filter $filter
      * @param string $sort
      * @param string $limit
      * @return array
@@ -68,13 +69,13 @@ class OrderItemDAO extends DAO {
 			FROM
 				" . $this->orderItemsFromQuery .
             " LEFT JOIN affiliate_transaction at ON op.order_product_id = at.order_product_id
-            " . (!is_null($filter) ? "WHERE " . $filter->filterString : "") . "
+            " . ($filter->isFilterSet() ? "WHERE " . $filter->getFilterString() : "") . "
         	" . ($sort ? "ORDER BY $sort" : "") . "
             /*ORDER BY supplier_name, op.model, op.order_product_id*/
 			" . ($limit ? "LIMIT $limit" : "");
 
 //        $this->getLogger()->write($query);
-        $order_item_query = $this->getDb()->query($query, !is_null($filter) && isset($filter->params) ? $filter->params : null);
+        $order_item_query = $this->getDb()->query($query, $filter->isFilterSet() ? $filter->getParams() : null);
 
         if ($order_item_query->num_rows) {
             $response = $order_item_query->rows;
@@ -95,30 +96,32 @@ class OrderItemDAO extends DAO {
     }
 
     /**
-     * @param \stdClass $filter
+     * @param Filter $filter
      * @return int
      */
-    private function fetchOrderItemsCount($filter = null)	{
+    private function fetchOrderItemsCount($filter = null) {
+        if (is_null($filter)) {
+            $filter = new Filter();
+        }
         $query = "
 			SELECT COUNT(*) as total
 			FROM
 				" . $this->orderItemsFromQuery . "
-			" . (!is_null($filter) ? "WHERE " . $filter->filterString : "");
-        $order_item_query = $this->getDb()->query($query, !is_null($filter) && isset($filter->params) ? $filter->params : null);
+			" . ($filter->isFilterSet() ? "WHERE " . $filter->getFilterString(): "");
+        $order_item_query = $this->getDb()->query($query, $filter->getParams());
 
         return $order_item_query->row['total'];
     }
 
     /**
      * @param array $data
-     * @param \stdClass $filter
+     * @param Filter $filter
      * @param bool $objects Defines whether OrderItem object should be returned instead of array TODO: to make only option
      * @return array|OrderItem[]
      * Best approach is to use OrderItemDAO::getOrderItems(<bla>, <bla>, true) to get array of objects as array of arrays
      * Will be removed
      */
     public function getOrderItems($data = array(), $filter = null, $objects = true) {
-
         if (is_null($filter)) { $filter = $this->buildFilter($data); }
         $sort = "";
         $limit = "";
@@ -192,10 +195,10 @@ class OrderItemDAO extends DAO {
         $query = "
             SELECT DISTINCT c.*
             FROM " . $this->orderItemsFromQuery
-            . (!is_null($filter) ? "WHERE " . $filter->filterString : "")
+            . ($filter->isFilterSet() ? "WHERE " . $filter->getFilterString() : "")
         ;
         $result = array();
-        foreach ($this->getDb()->query($query, $filter ? $filter->params : null)->rows as $customerEntry) {
+        foreach ($this->getDb()->query($query, $filter->getParams())->rows as $customerEntry) {
             $result[] = new Customer($customerEntry['address_id'], $customerEntry['approved'], $customerEntry['balance'],
                 $customerEntry['base_currency_code'], $customerEntry['cart'], $customerEntry['customer_group_id'],
                 $customerEntry['date_added'], $customerEntry['email'], $customerEntry['fax'], $customerEntry['firstname'],
@@ -216,10 +219,10 @@ class OrderItemDAO extends DAO {
         $query = "
             SELECT DISTINCT s.supplier_id
             FROM " . $this->orderItemsFromQuery
-            . (!is_null($filter) ? "WHERE " . $filter->filterString : "")
+            . ($filter->isFilterSet() ? "WHERE " . $filter->getFilterString() : "")
         ;
         $result = array();
-        foreach ($this->getDb()->query($query, $filter ? $filter->params : null)->rows as $supplierId) {
+        foreach ($this->getDb()->query($query, $filter->getParams())->rows as $supplierId) {
             $result[] = SupplierDAO::getInstance()->getSupplier($supplierId['supplier_id']);
         }
         return $result;
@@ -227,7 +230,7 @@ class OrderItemDAO extends DAO {
 
     /**
      * @param array $data
-     * @param \stdClass $filter
+     * @param Filter $filter
      * @return int
      */
     public function getOrderItemsCount($data = array(), $filter = null)	{
@@ -284,14 +287,17 @@ class OrderItemDAO extends DAO {
      * filterTimeModified: string
      * selected_items: int[] - item IDs
      * @param array $data
-     * @return \stdClass
+     * @return Filter
      */
     private function buildFilter($data = array()) {
-        $filter = ""; $params = array();
+        $filter = ""; $params = array(); $filterObject = new Filter();
         if (isset($data['selected_items']) && count($data['selected_items'])) {
-            $this->buildSimpleFieldFilterEntry('op.order_product_id', $data['selected_items'], $filter, $params, 'i');
+            $filterObject->addChunk($this->buildSimpleFieldFilterEntry('op.order_product_id', $data['selected_items'], $filter, $params, 'i'));
         } else {
             if (!empty($data['filterComment'])) {
+                $filterObject->addChunk("LCASE(op.comment) LIKE :filterComment
+                    OR LCASE(op.public_comment) LIKE :filterComment",
+                    [':filterComment' => '%' . utf8_strtolower($data['filterComment']) . '%']);
                 $filter .= ($filter ? " AND " : "") . "
                     LCASE(op.comment) LIKE ?
                     OR LCASE(op.public_comment) LIKE ?";
@@ -299,9 +305,12 @@ class OrderItemDAO extends DAO {
                 $params[] = 's:%' . utf8_strtolower($data['filterComment']) . '%';
             }
             if (isset($data['filterCustomerId'])) {
-                $this->buildSimpleFieldFilterEntry('c.customer_id', $data['filterCustomerId'], $filter, $params, 'i');
+                $filterObject->addChunk($this->buildSimpleFieldFilterEntry('c.customer_id', $data['filterCustomerId'], $filter, $params, 'i'));
             }
             if (!empty($data['filterItem'])) {
+                $filterObject->addChunk("LCASE(op.model) LIKE :filterItem
+                    OR LCASE(op.name) LIKE :filterItem",
+                    [':filterItem' => '%' . utf8_strtolower($data['filterItem']) . '%']);
                 $filter .= ($filter ? " AND " : "") . "
                     LCASE(op.model) LIKE ?
                     OR LCASE(op.name) LIKE ?";
@@ -309,41 +318,44 @@ class OrderItemDAO extends DAO {
                 $params[] = 's:%' . utf8_strtolower($data['filterItem']) . '%';
             }
             if (!empty($data['filterModel'])) {
+                $filterObject->addChunk("LCASE(op.model) LIKE :filterModel", [':filterModel' => '%' . utf8_strtolower($data['filterModel']) . '%']);
                 $filter .= ($filter ? " AND " : "") . "LCASE(op.model) LIKE ?";
                 $params[] = 's:%' . utf8_strtolower($data['filterModel']) . '%';
             }
             if (isset($data['filterStatusId'])) {
-                $this->buildSimpleFieldFilterEntry('op.status_id', $data['filterStatusId'], $filter, $params, 'i');
+                $filterObject->addChunk($this->buildSimpleFieldFilterEntry('op.status_id', $data['filterStatusId'], $filter, $params, 'i'));
             }
             if (isset($data['filterSupplierId'])) {
-                $this->buildSimpleFieldFilterEntry('s.supplier_id', $data['filterSupplierId'], $filter, $params, 'i');
+                $filterObject->addChunk($this->buildSimpleFieldFilterEntry('s.supplier_id', $data['filterSupplierId'], $filter, $params, 'i'));
             }
             if (isset($data['filterOrderId'])) {
-                $this->buildSimpleFieldFilterEntry('op.order_id', $data['filterOrderId'], $filter, $params, 'i');
+                $filterObject->addChunk($this->buildSimpleFieldFilterEntry('op.order_id', $data['filterOrderId'], $filter, $params, 'i'));
             }
             if (isset($data['filterOrderItemId'])) {
-                $this->buildSimpleFieldFilterEntry('op.order_product_id', $data['filterOrderItemId'], $filter, $params, 'i');
+                $filterObject->addChunk($this->buildSimpleFieldFilterEntry('op.order_product_id', $data['filterOrderItemId'], $filter, $params, 'i'));
             }
             if (isset($data['filterProductId'])) {
-                $this->buildSimpleFieldFilterEntry('op.product_id', $data['filterProductId'], $filter, $params, 'i');
+                $filterObject->addChunk($this->buildSimpleFieldFilterEntry('op.product_id', $data['filterProductId'], $filter, $params, 'i'));
             }
             if (!empty($data['filterTimeModifiedFrom'])) {
+                $filterObject->addChunk("op.time_modified >= :filterTimeModifiedFrom", [':filterTimeModifiedFrom' => $data['filterTimeModifiedFrom']]);
                 $filter .= ($filter ? " AND " : '') . "op.time_modified >= ?";
                 $params[] = 's:' . $data['filterTimeModifiedFrom'];
             }
             if (!empty($data['filterTimeModifiedTo'])) {
+                $filterObject->addChunk("op.time_modified <= :filterTimeModifiedTo", [':filterTimeModifiedTo' => $data['filterTimeModifiedTo']]);
                 $filter .= ($filter ? " AND " : '') . "op.time_modified <= ?";
                 $params[] = 's:' . $data['filterTimeModifiedTo'];
             }
         }
 
-        if (!$filter) {
-            return null;
-        }
+//        if (!$filter) {
+//            return null;
+//        }
         $result = new \stdClass();
         $result->filterString = $filter;
         $result->params = $params;
-        return $result;
+        return $filterObject; // $result; //
     }
 
 //    /**

@@ -503,7 +503,7 @@ class ControllerSaleAffiliate extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
   
   	private function getForm() {
@@ -915,7 +915,7 @@ class ControllerSaleAffiliate extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 	
   	private function validateForm() {
@@ -1030,7 +1030,7 @@ class ControllerSaleAffiliate extends Controller {
 			$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
 		}
 
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
 	}
 		
 	public function transaction() {
@@ -1092,7 +1092,7 @@ class ControllerSaleAffiliate extends Controller {
 
 		$this->template = 'sale/affiliate_transaction.tpl';		
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 		
 	public function autocomplete() {
@@ -1117,7 +1117,7 @@ class ControllerSaleAffiliate extends Controller {
 			}
 		}
 		
-		$this->response->setOutput(json_encode($affiliate_data));
+		$this->getResponse()->setOutput(json_encode($affiliate_data));
 	}		
 }
 ?>

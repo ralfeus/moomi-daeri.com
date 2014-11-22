@@ -50,12 +50,12 @@ class ImportProductDAO extends DAO {
         $modelCatalogProduct = $this->registry->get('load')->model('catalog/product');
         foreach ($products as $productToDelete) {
             foreach ($modelCatalogProduct->getProductImages($productToDelete->getLocalProductId()) as $image) {
-                if (file_exists(DIR_IMAGE . $image['image'])) {
+                if (file_exists(DIR_IMAGE . $image['image']) && is_file(DIR_IMAGE . $image['image'])) {
                     unlink(DIR_IMAGE . $image['image']);
                 }
             }
             $localProduct = $modelCatalogProduct->getProduct($productToDelete->getLocalProductId());
-            if (file_exists(DIR_IMAGE . $localProduct['image'])) {
+            if (file_exists(DIR_IMAGE . $localProduct['image']) && is_file(DIR_IMAGE . $localProduct['image'])) {
                 unlink(DIR_IMAGE . $localProduct['image']);
             }
             $modelCatalogProduct->deleteProduct($productToDelete->getLocalProductId());
