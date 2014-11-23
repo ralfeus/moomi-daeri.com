@@ -193,7 +193,7 @@ class ControllerCommonHeader extends Controller {
             implode('&',
                 array_map(function($key, $value) {
                     return "$key=$value";
-                }, $tmpQuery, $tmpQuery)
+                }, array_keys($tmpQuery), $tmpQuery)
             );
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && !empty($this->request->post['currency_code'])) {

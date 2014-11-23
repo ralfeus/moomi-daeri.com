@@ -1,6 +1,4 @@
 <?php
-use SebastianBergmann\Exporter\Exception;
-
 class ControllerCommonHome extends Controller {
 
 	public function index() {
@@ -24,6 +22,6 @@ class ControllerCommonHome extends Controller {
 			'common/header'
 		);
 
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
 	}
 }

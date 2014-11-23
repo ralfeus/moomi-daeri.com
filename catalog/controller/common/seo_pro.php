@@ -276,7 +276,7 @@ class ControllerCommonSeoPro extends Controller {
 
 			header($this->request->server['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
 
-			$this->response->redirect($seo_url);
+			$this->getResponse()->redirect($seo_url);
 		}
 	}
 }
