@@ -8,6 +8,7 @@ class CustomerZoneController extends CustomerController {
             $this->session->data['redirect'] = $this->selfUrl;
 
             $this->redirect($this->url->link('account/login', '', 'SSL'));
+            throw new \Exception('Not logged in');
         }
     }
 } 

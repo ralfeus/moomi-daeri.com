@@ -143,7 +143,7 @@ class ControllerPaymentOnPay extends Controller {
 			'common/footer'
 		);
 
-		$this->response->setOutput($this->render(TRUE), $this->config->get('config_compression'));
+		$this->getResponse()->setOutput($this->render(TRUE), $this->config->get('config_compression'));
 	}
 
 	private function validate() {

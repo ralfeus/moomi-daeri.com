@@ -52,14 +52,14 @@ class ControllerCommonFileManager extends Controller {
 		
 		$this->template = 'common/filemanager.tpl';
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}	
 	
 	public function image() {
 		$this->load->model('tool/image');
 		
 		if (isset($this->request->get['image'])) {
-			$this->response->setOutput($this->model_tool_image->resize(html_entity_decode($this->request->get['image'], ENT_QUOTES, 'UTF-8'), 100, 100));
+			$this->getResponse()->setOutput($this->model_tool_image->resize(html_entity_decode($this->request->get['image'], ENT_QUOTES, 'UTF-8'), 100, 100));
 		}
 	}
 	
@@ -85,7 +85,7 @@ class ControllerCommonFileManager extends Controller {
 				}
 			}		
 		}
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 
     public function downloadImage()
@@ -110,7 +110,7 @@ class ControllerCommonFileManager extends Controller {
         else
             $json['error'] = $this->language->get('ERROR_INVALID_URL_FORMAT');
 
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     public function files() {
@@ -173,7 +173,7 @@ class ControllerCommonFileManager extends Controller {
 			}
 		}
 		
-		$this->response->setOutput(json_encode($json));	
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 
     private function getImageFileName($fileName)
@@ -225,7 +225,7 @@ class ControllerCommonFileManager extends Controller {
 			$json['success'] = $this->language->get('text_create');
 		}	
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 	
 	public function delete() {
@@ -261,7 +261,7 @@ class ControllerCommonFileManager extends Controller {
 			$json['success'] = $this->language->get('text_delete');
 		}				
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 
 	protected function recursiveDelete($directory) {
@@ -329,7 +329,7 @@ class ControllerCommonFileManager extends Controller {
 			$json['success'] = $this->language->get('text_move');
 		}
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}	
 	
 	public function copy() {
@@ -377,7 +377,7 @@ class ControllerCommonFileManager extends Controller {
 			$json['success'] = $this->language->get('text_copy');
 		}
 		
-		$this->response->setOutput(json_encode($json));	
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 
 	function recursiveCopy($source, $destination) { 
@@ -399,7 +399,7 @@ class ControllerCommonFileManager extends Controller {
 	} 
 
 	public function folders() {
-		$this->response->setOutput($this->recursiveFolders(DIR_IMAGE . 'data/'));	
+		$this->getResponse()->setOutput($this->recursiveFolders(DIR_IMAGE . 'data/'));
 	}
 	
 	protected function recursiveFolders($directory) {
@@ -455,7 +455,7 @@ class ControllerCommonFileManager extends Controller {
 			$json['success'] = $this->language->get('text_rename');
 		}
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 	
 	public function upload() {
@@ -528,7 +528,7 @@ class ControllerCommonFileManager extends Controller {
 			}
 		}
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 
 /*

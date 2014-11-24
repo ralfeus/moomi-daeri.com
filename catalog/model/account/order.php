@@ -119,7 +119,7 @@ class ModelAccountOrder extends Model {
 				`order` o
 				LEFT JOIN order_status os ON (o.order_status_id = os.order_status_id)
 			WHERE 
-				o.customer_id = '" . (int)$this->customer->getId() . "' 
+				o.customer_id = '" . (int)$this->getCurrentCustomer()->getId() . "'
 				AND o.order_status_id > '0' 
 				AND os.language_id = '" . (int)$this->config->get('config_language_id') . "' 
 			ORDER BY o.order_id DESC 

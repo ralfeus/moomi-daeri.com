@@ -9,7 +9,7 @@ use system\library\Filter;
 class OrderItemDAO extends DAO {
     private $orderItemsFromQuery = "
         order_product as op
-        JOIN `order` as o on o.order_id = op.order_id
+        JOIN `order` as o on o.order_id = op.order_id AND o.order_status_id <> 0
         LEFT JOIN product as p on op.product_id  = p.product_id
         LEFT JOIN supplier as s on p.supplier_id = s.supplier_id
         LEFT JOIN customer as c on o.customer_id = c.customer_id

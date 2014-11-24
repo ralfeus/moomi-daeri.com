@@ -121,7 +121,7 @@ if ($this->user->getUsergroupId() == 1) {
 
 		$this->getProducts();
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
     
     //// <---- Clear cache button handler:
 $this->data['clear_cache'] = $this->data['home'] = HTTPS_SERVER . 'index.php?route=common/home&clear_cache=true&token=' . $this->session->data['token'];
@@ -270,7 +270,7 @@ if(isset($this->request->get['clear_cache'])){
 				break;	
 		} 
 		
-		$this->response->setOutput(json_encode($data));
+		$this->getResponse()->setOutput(json_encode($data));
 	}
 	
 	public function login() {

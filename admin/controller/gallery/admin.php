@@ -68,7 +68,7 @@ class ControllerGalleryAdmin extends Controller {
 			'common/footer'
 		);
 
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	public function approvePhotos() {
@@ -84,7 +84,7 @@ class ControllerGalleryAdmin extends Controller {
 		$this->model_gallery_photo->approvePhotos($photo_ids, $credits, $desc);
 
 		$response['success'] = true;
-		$this->response->setOutput(print_r(json_encode($response), true));
+		$this->getResponse()->setOutput(print_r(json_encode($response), true));
 	}
 
 	public function removePhotos() {
@@ -100,7 +100,7 @@ class ControllerGalleryAdmin extends Controller {
 			$this->db->query($query);
 		}
 		$response['success'] = true;
-		$this->response->setOutput(print_r(json_encode($response), true));
+		$this->getResponse()->setOutput(print_r(json_encode($response), true));
 	}
 
 	public function adminVote() {
@@ -145,7 +145,7 @@ class ControllerGalleryAdmin extends Controller {
 			'common/footer'
 		);
 
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 
 	}
 
@@ -156,7 +156,7 @@ class ControllerGalleryAdmin extends Controller {
 		$query = "DELETE FROM gallery_photo_voting WHERE vote_id IN (" . implode(",", $vote_ids) . ")";
 		$result = $this->db->query($query);
 		$response['success'] = true;
-		$this->response->setOutput(print_r(json_encode($response), true));
+		$this->getResponse()->setOutput(print_r(json_encode($response), true));
 	}
 
 	public function approveVotes() {
@@ -166,7 +166,7 @@ class ControllerGalleryAdmin extends Controller {
 		$query = "UPDATE gallery_photo_voting SET approved_at ='" . $today . "' WHERE vote_id IN (" . implode(",", $vote_ids) . ")";
 		$this->db->query($query);
 		$response['success'] = true;
-		$this->response->setOutput(print_r(json_encode($response), true));
+		$this->getResponse()->setOutput(print_r(json_encode($response), true));
 	}
 
 }
