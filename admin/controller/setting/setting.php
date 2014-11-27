@@ -947,7 +947,7 @@ class ControllerSettingSetting extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
     protected function initParameters()
@@ -1053,7 +1053,7 @@ class ControllerSettingSetting extends Controller {
 			$image = HTTPS_IMAGE . 'no_image.jpg';
 		}
 		
-		$this->response->setOutput('<img src="' . $image . '" alt="" title="" style="border: 1px solid #EEEEEE;" />');
+		$this->getResponse()->setOutput('<img src="' . $image . '" alt="" title="" style="border: 1px solid #EEEEEE;" />');
 	}		
 		
 	public function zone() {
@@ -1077,7 +1077,7 @@ class ControllerSettingSetting extends Controller {
 			$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
 		}
 
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
 	}
 }
 ?>

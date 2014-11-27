@@ -173,7 +173,7 @@ class ControllerSettingStore extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 	 
 	public function getForm() { 
@@ -863,7 +863,7 @@ class ControllerSettingStore extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	private function validateForm() {
@@ -985,7 +985,7 @@ class ControllerSettingStore extends Controller {
 			$image = HTTPS_IMAGE . 'no_image.jpg';
 		}
 		
-		$this->response->setOutput('<img src="' . $image . '" alt="" title="" style="border: 1px solid #EEEEEE;" />');
+		$this->getResponse()->setOutput('<img src="' . $image . '" alt="" title="" style="border: 1px solid #EEEEEE;" />');
 	}		
 	
 	public function zone() {
@@ -1009,7 +1009,7 @@ class ControllerSettingStore extends Controller {
 			$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
 		}
 
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
 	}		
 }
 ?>

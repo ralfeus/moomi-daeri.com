@@ -16,6 +16,7 @@
           <a id="importButton" onclick="<?= $importAction ?>Import();" class="button"><?= $textToggleImport ?></a>
           <a onclick="showProgress();" class="button"><?= $textViewImportStatus ?></a>
           <a onclick="submitForm('<?= $urlSyncSelected ?>');" class="button"><?= $textUpdateSelected ?></a>
+          <a onclick="submitForm('<?= $urlSyncSelectedNoImages ?>');" class="button"><?= $textUpdateSelectedNoImages ?></a>
           <a onclick="submitForm('<?= $urlDeleteSelected ?>');" class="button"><?= $textDeleteSelected ?></a>
           <?php /*<a onclick="submitForm('<?= $urlSyncAll ?>');" class="button"><?= $textUpdateAll ?></a>*/ ?>
           <?php /*<a onclick="submitForm('<?= $urlDeleteAll ?>');" class="button"><?= $textDeleteAll ?></a>*/ ?>
