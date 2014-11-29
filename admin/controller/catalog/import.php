@@ -1,6 +1,7 @@
 <?php
 use model\catalog\ImportProduct;
 use model\catalog\ImportProductDAO;
+use model\catalog\Product;
 use model\extension\ImportSourceSiteDAO;
 
 class ControllerCatalogImport extends Controller {
@@ -17,30 +18,14 @@ class ControllerCatalogImport extends Controller {
 
     /**
      * @param ImportProduct $productToAdd
+     * @param bool $synchronizeImages
      * @throws Exception
      */
-    private function addFromSource($productToAdd) {
+    private function addFromSource($productToAdd, $synchronizeImages = true) {
 
-        /// Downloading images
-
-
-
-
-        /** @var ModelToolImage $modelToolImage */
-        $modelToolImage = $this->load->model('tool/image');
-        try {
-            $thumbnail = $modelToolImage->download($productToAdd->getThumbnailUrl());
-        } catch (Exception $exc) {
-            $this->getLogger()->write("Couldn't download a thumbnail '" . $productToAdd->getThumbnailUrl() .
-                "' for product " . $productToAdd->getId());
-        }
-        $images = array();
-        foreach ($productToAdd->getImages() as $imageUrl) {
-            try {
-                $images[] = array('image' => $modelToolImage->download($imageUrl));
-            } catch (Exception $exc) {
-                $this->getLogger()->write("Couldn't download an image '$imageUrl' for product " . $productToAdd->getId());
-            }
+        $thumbnail = null; $images = array();
+        if ($synchronizeImages) {
+            $this->getImages($productToAdd, $images, $thumbnail);
         }
         /// Preparing name, korean name, link and description
         $product_description = array();
@@ -50,7 +35,6 @@ class ControllerCatalogImport extends Controller {
                 'description' => null
             );
         }
-
 
 
 
@@ -189,6 +173,7 @@ class ControllerCatalogImport extends Controller {
         $this->data['urlEnableSelected'] = $this->url->link('catalog/import/enable', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
         $this->data['urlSyncAll'] = $this->url->link('catalog/import/synchronize', $this->buildUrlParameterString($this->parameters) . '&what=all', 'SSL');
         $this->data['urlSyncSelected'] = $this->url->link('catalog/import/synchronize', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
+        $this->data['urlSyncSelectedNoImages'] = $this->url->link('catalog/import/synchronizeWithoutImages', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
 
         $page = $this->parameters['page']; unset($filter['page']);
         $pagination = new Pagination(
@@ -254,59 +239,39 @@ class ControllerCatalogImport extends Controller {
         $this->data['textTimeModified'] = $this->language->get('TIME_MODIFIED');
         $this->data['textUpdateAll'] = $this->language->get('UPDATE_ALL');
         $this->data['textUpdateSelected'] = $this->language->get('UPDATE_SELECTED');
+        $this->data['textUpdateSelectedNoImages'] = $this->language->get('UPDATE_SELECTED_NO_IMAGES');
         $this->data['textViewImportStatus'] = $this->language->get('VIEW_IMPORT_STATUS');
     }
 
-    public function synchronize() {
-        $productsToSynchronize = array();
-        if ($this->parameters['what'] == 'selectedItems') {
-            $productsToSynchronize = ImportProductDAO::getInstance()->getImportedProducts(array('selectedItems' => $this->parameters['selectedItems']));
-        } elseif ($this->parameters['what'] == 'all') {
-            $filter = $this->parameters; unset($filter['selectedItems']);
-            $productsToSynchronize = ImportProductDAO::getInstance()->getImportedProducts($filter);
-        }
-        foreach ($productsToSynchronize as $productToSynchronize) {
+    /**
+     * @param bool $synchronizeImages
+     */
+    public function synchronize($synchronizeImages = true) {
+        foreach ($this->getProductsToSynchronize() as $productToSynchronize) {
             if ($productToSynchronize->getLocalProductId()) {
-                $this->updateFromSource($productToSynchronize);
+                $this->updateFromSource($productToSynchronize, $synchronizeImages);
             } else {
-                $this->addFromSource($productToSynchronize);
+                $this->addFromSource($productToSynchronize, $synchronizeImages);
             }
         }
         unset($this->parameters['selectedItems']);
         $this->redirect($this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters)));
     }
 
+    public function synchronizeWithoutImages() {
+        $this->synchronize(false);
+    }
+
     /**
      * @param ImportProduct $productToUpdate
+     * @param bool $synchronizeImages
      * @throws Exception
      */
-    private function updateFromSource($productToUpdate) {
+    private function updateFromSource($productToUpdate, $synchronizeImages = true) {
         $localProduct = $this->modelCatalogProduct->getProduct($productToUpdate->getLocalProductId());
-        /// Downloading images
-        foreach ($this->modelCatalogProduct->getProductImages($productToUpdate->getLocalProductId()) as $image) {
-            if (file_exists(DIR_IMAGE . $image['image']) && is_file(DIR_IMAGE . $image['image'])) {
-                unlink(DIR_IMAGE . $image['image']);
-            }
-        }
-        if (file_exists(DIR_IMAGE . $localProduct['image']) && is_file(DIR_IMAGE . $localProduct['image'])) {
-            unlink(DIR_IMAGE . $localProduct['image']);
-        }
-        /** @var ModelToolImage $modelToolImage */
-        $modelToolImage = $this->load->model('tool/image');
-        $thumbnail = null;
-        try {
-            $thumbnail = $modelToolImage->download($productToUpdate->getThumbnailUrl());
-        } catch (Exception $e) {
-            $this->getLogger()->write("Couldn't download a thumbnail '" . $productToUpdate->getThumbnailUrl() .
-                "' for product " . $productToUpdate->getId());
-        }
-        $images = array();
-        foreach ($productToUpdate->getImages() as $imageUrl) {
-            try {
-                $images[] = array('image' => $modelToolImage->download($imageUrl));
-            } catch (Exception $e) {
-                $this->getLogger()->write("Couldn't download a thumbnail '$imageUrl' for product " . $productToUpdate->getId());
-            }
+        $thumbnail = null; $images = array();
+        if ($synchronizeImages) {
+            $this->getImages($productToUpdate, $images, $thumbnail);
         }
         /// Preparing name, korean name and description
         $product_description = array();
@@ -478,6 +443,56 @@ class ControllerCatalogImport extends Controller {
             }
         }
         $this->getResponse()->setOutput(null);
+    }
+
+    /**
+     * @return array|\model\catalog\ImportProduct[]
+     */
+    private function getProductsToSynchronize() {
+        $productsToSynchronize = array();
+        if ($this->parameters['what'] == 'selectedItems') {
+            $productsToSynchronize = ImportProductDAO::getInstance()->getImportedProducts(array('selectedItems' => $this->parameters['selectedItems']));
+            return $productsToSynchronize;
+        } elseif ($this->parameters['what'] == 'all') {
+            $filter = $this->parameters;
+            unset($filter['selectedItems']);
+            $productsToSynchronize = ImportProductDAO::getInstance()->getImportedProducts($filter);
+            return $productsToSynchronize;
+        }
+        return $productsToSynchronize;
+    }
+
+    /**
+     * @param ImportProduct $product
+     * @param &$images
+     * @param &$thumbnail
+     * @throws Exception
+     */
+    private function getImages($product, &$images, &$thumbnail) {
+        $localProduct = $this->modelCatalogProduct->getProduct($product->getLocalProductId());
+        foreach ($this->modelCatalogProduct->getProductImages($product->getLocalProductId()) as $image) {
+            if (file_exists(DIR_IMAGE . $image['image']) && is_file(DIR_IMAGE . $image['image'])) {
+                unlink(DIR_IMAGE . $image['image']);
+            }
+        }
+        if (file_exists(DIR_IMAGE . $localProduct['image']) && is_file(DIR_IMAGE . $localProduct['image'])) {
+            unlink(DIR_IMAGE . $localProduct['image']);
+        }
+        /** @var ModelToolImage $modelToolImage */
+        $modelToolImage = $this->load->model('tool/image');
+        try {
+            $thumbnail = $modelToolImage->download($product->getThumbnailUrl());
+        } catch (Exception $e) {
+            $this->getLogger()->write("Couldn't download a thumbnail '" . $product->getThumbnailUrl() .
+                "' for product " . $product->getId());
+        }
+        foreach ($product->getImages() as $imageUrl) {
+            try {
+                $images[] = array('image' => $modelToolImage->download($imageUrl));
+            } catch (Exception $e) {
+                $this->getLogger()->write("Couldn't download a thumbnail '$imageUrl' for product " . $product->getId());
+            }
+        }
     }
 
 }

@@ -19,4 +19,5 @@ $_['START_IMPORT'] = "Start Import";
 $_['STOP_IMPORT'] = "Stop Import";
 $_['UPDATE_ALL'] = 'Update all';
 $_['UPDATE_SELECTED'] = 'Update selected';
+$_['UPDATE_SELECTED_NO_IMAGES'] = 'Update selected without images';
 $_['VIEW_IMPORT_STATUS'] = 'Import status';
