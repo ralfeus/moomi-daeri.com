@@ -1272,45 +1272,6 @@ a.button-disabled span {
 	display: block;
 	margin-bottom: 4px;
 }
-/* box category */
-.box-category {
-	margin-top: -5px;
-}
-.box-category ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-  font-size: 14px;
-}
-.box-category > ul > li {
-	padding: 8px 8px 8px 0px;
-}
-.box-category > ul > li + li {
-	border-top: 1px solid #EEEEEE;
-}
-.box-category > ul > li > a {
-	text-decoration: none;
-	color: #333;
-}
-.box-category > ul > li ul {
-	display: none;
-}
-.box-category > ul > li a.active {
-	font-weight: bold;
-}
-.box-category > ul > li a.active + ul {
-	display: block;
-}
-.box-category > ul > li ul > li {
-	padding: 5px 5px 0px 10px;
-}
-.box-category > ul > li ul > li > a {
-	text-decoration: none;
-	display: block;
-}
-.box-category > ul > li ul > li > a.active {
-	font-weight: bold;
-}
 /* content */
 #content .content {
 	padding: 0px;
@@ -2442,31 +2403,20 @@ display:block;
   position: relative;
   left: 0px;
 }
+
+/* box category */
 .box-category {
-margin-top: -5px;
-}
-.box-category ul {
-list-style: none;
-margin: 0;
-padding: 0;
-}
-.box-category > ul > li {
-padding:0px; line-height:30px;
-}
-.box-category > ul > li + li {
-border-top: 1px solid #f0f0f0;
+	margin-top: -5px;
 }
 .box-category > ul > li > a {
-text-decoration: none;
-color: #333;
+	text-decoration: none;
+	color: #333;
 display: block;
 -webkit-transition: all 0.5s ease-in-out;
 -moz-transition: all 0.5s ease-in-out;
 -o-transition: all 0.5s ease-in-out;
 -ms-transition: all 0.5s ease-in-out;
 transition: all 0.5s ease-in-out;
-background:url(../image/arrow-right.png) left 10px no-repeat;
-padding: 0px 0px 0px 18px
 }
 .box-category > ul > li > a:hover {
 margin: 0px 0px 0px 5px;
@@ -2480,21 +2430,21 @@ transition: all 0.5s ease-in-out;
 text-shadow:none;
 }
 .box-category > ul > li ul {
-display: none;
+	display: none;
 }
 .box-category > ul > li a.active {
-font-weight: bold;
+	font-weight: bold;
 }
 .box-category > ul > li a.active + ul {
-display: block;
+	display: block;
 }
-.box-category > ul > li ul > li {
-padding: 0px 0px 0px 10px;
-line-height:20px
+.box-category > ul > li ul > li > a.active {
+	font-weight: bold;
 }
 .box-category > ul > li ul > li > a {
 text-decoration: none;
 display: block;
+color:#333;
 -webkit-transition: all 0.5s ease-in-out;
 -moz-transition: all 0.5s ease-in-out;
 -o-transition: all 0.5s ease-in-out;
@@ -2509,7 +2459,4 @@ color:#333;
 -o-transition: all 0.5s ease-in-out;
 -ms-transition: all 0.5s ease-in-out; transition: all 0.5s ease-in-out;
 text-shadow:none;
-}
-.box-category > ul > li ul > li > a.active {
-font-weight: bold;
 }

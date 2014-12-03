@@ -13,7 +13,8 @@ class ControllerModuleCategoryAccordion extends Controller {
 
 		//ACCORDION
 		$this->data['categories'] = $this->getCategoriesAccordion(0);
-		$this->data['scripts'] = '$("#multi_display ul").accordion({header : "> li > a.kids", active : "none", collapsible : true, autoHeight: false, event : "dblclick"});';
+//		$this->data['scripts'] = '$("#").accordion({header : "> li > a.kids", active : "none", collapsible : true, autoHeight: false, event : "mouseup"});';
+		$this->data['scripts'] = '$("#navigation ul").treeview({persist: "location",	collapsed: true, unique: true	});';
 		
 		
 		

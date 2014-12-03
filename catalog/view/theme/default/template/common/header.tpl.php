@@ -45,6 +45,15 @@
 <script type="text/javascript" src="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4-iefix.js"></script>
 <![endif]-->
 <script type="text/javascript" src="catalog/view/javascript/jquery/tabs.js"></script>
+<link rel="stylesheet" href="catalog/view/javascript/jquery/treeview/jquery.treeview.css" />
+<script type="text/javascript" src="catalog/view/javascript/jquery/treeview/jquery.treeview.js"></script>
+    <script type="text/javascript">
+    	$("#navigation").treeview({
+		    persist: "location",
+		    collapsed: true,
+		    unique: true
+      });
+    </script>
 
 <script type="text/javascript">
   var warningMesssage = '<?= $text_no_select_images ?>';
