@@ -7,6 +7,16 @@ class ControllerCommonHome extends Controller {
 
 		$this->data['heading_title'] = $this->config->get('config_title');
 
+		$this->language->load('shop/general');
+		$this->data['text_button_download'] = $this->language->get('text_button_download');
+		$this->data['isSaler'] = $this->customer->getCustomerGroupId() == 6;
+		$this->data['showDownload'] = false;
+        if (empty($_REQUEST['route']))
+            $_REQUEST['route'] = 'common/home';
+		if($_REQUEST['route'] == "product/category" || $_REQUEST['route'] == "common/home") {
+			$this->data['showDownload'] = true;
+		}
+
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/home.tpl')) {
 			$this->template = $this->config->get('config_template') . '/template/common/home.tpl';
 		} else {
