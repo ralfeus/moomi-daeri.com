@@ -215,6 +215,9 @@ class ControllerCommonHeader extends Controller {
 		$results = $this->model_localisation_currency->getCurrencies();
 		foreach ($results as $result) {
 			if ($result['status']) {
+                if ($result['code'] == 'RUB') {
+                    continue;
+                }
    				$this->data['currencies'][] = array(
 					'title'        => $result['title'],
 					'code'         => $result['code'],
