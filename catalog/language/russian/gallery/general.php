@@ -18,4 +18,5 @@ $_['galery_text_photo_name'] = 'Название';
 $_['galery_text_photo_description'] = 'Описание';
 
 $_['galery_text_max_photo_size'] = 'Макс. размер фото не должен превышать 1 МБ';
+$_['galery_max_size'] = 'Размер файла превышает 1 мегабайт';
 ?>

@@ -19,5 +19,6 @@ $_['galery_text_photo_name'] = 'Name';
 $_['galery_text_photo_description'] = 'Description';
 
 $_['galery_text_max_photo_size'] = 'Max. size of photo should not exceed 1MB';
+$_['galery_max_size'] = 'File size exceeds 1 megabyte';
 
 ?>

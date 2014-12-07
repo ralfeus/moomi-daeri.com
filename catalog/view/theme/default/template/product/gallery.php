@@ -47,7 +47,7 @@
     		<td width="300">
     			<h1><?= $heading_title ?></h1>
     		</td>
-        <?php if ($this->customer->isLogged()) : ?>
+        <?php /*if ($this->customer->isLogged()) : */?>
         <td>
           <p class="marginBottom20">
             <?php echo $text_gifts_for_photos; ?>
@@ -62,7 +62,7 @@
             </a>
           </p>
     		</td>
-      <?php endif; ?>
+      <?php /*endif;*/ ?>
     	</tr>
     </table>
     <div class="content">
