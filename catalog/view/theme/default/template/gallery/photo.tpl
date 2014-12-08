@@ -38,7 +38,7 @@
 					&nbsp;					
 				</td>
 				<td>
-					<input id="photoFile" type="file" name="imageFile" multiple="true"/>
+					<input id="photoFile" type="file" name="imageFile"/>
      </td>
      </tr>
      <tr>
