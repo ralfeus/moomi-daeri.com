@@ -50,6 +50,9 @@ class ControllerCommonFooter extends Controller {
 		} else {
 			$this->template = 'default/template/common/footer.tpl';
 		}
+		$this->children = array(
+     'common/special_right'
+		);
 		
 		$this->render();
 	}

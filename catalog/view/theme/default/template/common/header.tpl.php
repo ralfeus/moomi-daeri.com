@@ -99,7 +99,6 @@ DD_belatedPNG.fix('#logo img');
         src="https://web.redhelper.ru/service/main.js?c=moomidae">
 </script>
 <!--/Redhelper -->
-
 <script language="javascript">//<!--
     var actionCheckboxChecked = '';
     var holidays = [[2013,01,01,'New Years Day'],[2013,03,14,'Pongal'],[2013,02,25,'Christmas Day']];
@@ -247,8 +246,8 @@ $(document).ready(function() {
 $(function(){
  $(window).scroll(function() {
   var top = $(document).scrollTop();
-  if (top > 132) {
-    $('.links').addClass('linksfixed'); //200 - ��� �������� ������ ��������� �������� ��� ���������� �����
+  if (top > 180) {
+    $('.links').addClass('linksfixed'); 
   }
   else {
     $('.links').removeClass('linksfixed');
@@ -338,7 +337,7 @@ body .one{overflow: hidden}
             <td style="width: 180px; padding-left: 100px;">
               <table height="40" cellpadding="0" cellspacing="1">
                 <tr>
-<?php foreach ($languages as $language): ?>
+                  <?php foreach ($languages as $language): ?>
                     <td style="width: 40px;text-align: center; vertical-align: middle;">
                       <input type="hidden" name="language_code" value="" />
                       <input type="hidden" name="currency_code" value="" />
@@ -353,7 +352,7 @@ body .one{overflow: hidden}
                         </a>
                       </div>
                     </td>
-<?php endforeach; ?>
+                  <?php endforeach; ?>
                 </tr>
               </table>
             </td>
@@ -391,17 +390,16 @@ body .one{overflow: hidden}
                 </div>
               </table>
             </td>
-            
           </tr>
         </table>
       </form>
     </div>	
 	</div>
-           			<div id="toggle">
-				          <a id="open" class="open"></a>
-				          <a id="close" style="display: none;" class="close"></a>	
-                </div>
-        <!-- The tab on top -->	
+	<div id="toggle">
+    <a id="open" class="open"></a>
+    <a id="close" style="display: none;" class="close"></a>	
+  </div>
+  <!-- The tab on top -->	
 	<div class="header-top-tab-wrapper"></div>
   <div class="header-top-tab">
 		<div class="login">
@@ -410,28 +408,27 @@ body .one{overflow: hidden}
 	    	<div class="right">&nbsp;</div>
 		</div> 
 	</div> <!-- / top -->
-    <div id="hello-top" class="bottom">
-        <?= (!$logged) ? $text_welcome_help :$text_logged_help ?></div>
-    </div>
-
+  <div id="hello-top" class="bottom">
+    <?= (!$logged) ? $text_welcome_help :$text_logged_help ?></div>
+  </div>
 <div id="container">
-<div id="cart-success"></div>
-<a id="toTop" title="<?= $text_totop ?>"></a>
-<a id="button-back" title="<?= $text_back ?>" onclick="javascript:history.back();"></a>
+  <div id="cart-success"></div>
+  <a id="toTop" title="<?= $text_totop ?>"></a>
+  <a id="button-back" title="<?= $text_back ?>" onclick="javascript:history.back();"></a>
   <div id="header"
     <?php if ($logo): ?>
       style="background: url('<?php echo $logo; ?>');"
     <?php endif; ?>
   >
-  <a href="<?= $home ?>" title="<?= $text_home ?>"></a>
-<!--  <div id="welcome"><?= (!$logged) ? $text_welcome :$text_logged ?></div>-->
-<a class="bookmark" href="javascript:void(0);" title="<?= $text_favorites ?>" onclick="var url=window.document.location; var title=window.document.title; function bookmark(a) {a.href = url; a.rel = 'sidebar'; a.title = title; return true;} bookmark(this); window.external.AddFavorite(location.href,document.title); return false;"></a>
-  <div class="links">
-		      <a class="specaction" href="index.php?route=information/specaction"></a>
-          <a class="agent" href="index.php?route=product/repurchase"><span><?= $text_repurchase_order ?></span></a>
-          <a class="info" href="index.php?route=shop/admin/showPage&page_id=15"><span><?= $textShoppingGuide ?></span></a>        
-<!--		  <a class="account" href="<?= $account ?>"><span><?= $text_account ?></span></a> -->
-          <a class="wishlist_total" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>
+    <a href="<?= $home ?>" title="<?= $text_home ?>"></a>
+    <!--  <div id="welcome"><?= (!$logged) ? $text_welcome :$text_logged ?></div>-->
+    <a class="bookmark" href="javascript:void(0);" title="<?= $text_favorites ?>" onclick="var url=window.document.location; var title=window.document.title; function bookmark(a) {a.href = url; a.rel = 'sidebar'; a.title = title; return true;} bookmark(this); window.external.AddFavorite(location.href,document.title); return false;"></a>
+    <div class="links">
+      <a class="specaction" href="index.php?route=information/specaction"></a>
+      <a class="agent" href="index.php?route=product/repurchase"><span><?= $text_repurchase_order ?></span></a>
+      <a class="info" href="index.php?route=shop/admin/showPage&page_id=15"><span><?= $textShoppingGuide ?></span></a>        
+      <!--		  <a class="account" href="<?= $account ?>"><span><?= $text_account ?></span></a> -->
+      <a class="wishlist_total" href="<?= $wishlist ?>" id="wishlist_total"><span><?= $text_wishlist ?></span></a>
 		  <a class="cart" href="<?= $cart ?>" id="cart_total_data"><span><?= $text_cart ?></span></a>
 				  
 <!--          <table style="display: none;">
@@ -445,26 +442,26 @@ body .one{overflow: hidden}
                   <a class="buttonPink" href="<?= $urlShoppingGuide ?>"><span><?= $textShoppingGuide ?></span></a>
               </td></tr>
           </table>-->
-      </div>
+    </div>
   </div>
-
-<div id="notification"></div>
-<script type="text/javascript">//<!--
-function changeCurrency(code)
-{
+  <div id="content_left" style="float: left; width: 1000px;">
+  <div id="notification"></div>
+  <script type="text/javascript">//<!--
+  function changeCurrency(code)
+  {
     $('input[name=currency_code]').attr('value', code);
     $('#selectors').submit();
-}
+  }
 
-function changeLanguage(code)
-{
+  function changeLanguage(code)
+  {
     $('input[name=language_code]').attr('value', code);
     $('#selectors').submit();
-}
-function showHelloTopOn() {
-        $('#hello-top').show();
-   }
-function showHelloTopOff() {
+  }
+  function showHelloTopOn() {
+    $('#hello-top').show();
+  }
+  function showHelloTopOff() {
     $('#hello-top').hide();
-}
+  }
 //--></script>

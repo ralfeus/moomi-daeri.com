@@ -4,9 +4,11 @@ html {
 	padding: 0;
 }
 body {
-      background: linear-gradient(to right, rgba(0, 173, 239, 0.1) 0%, rgba(255, 255, 255, 0.1) 15%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 85%, rgba(238, 199, 0, 0.1) 100%) repeat scroll 0% 0% transparent;
-    background-attachment: fixed;
-	color: #000000;
+/**
+	 *       background: linear-gradient(to right, rgba(0, 173, 239, 0.1) 0%, rgba(255, 255, 255, 0.1) 15%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 85%, rgba(238, 199, 0, 0.1) 100%) repeat scroll 0% 0% transparent;
+	 *     background-attachment: fixed;
+	 */
+   	color: #000000;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	margin: 0px;
 	padding: 0px;
@@ -191,7 +193,7 @@ label {
     z-index: 99;
     height: 40px;
     top: 60px;
-    left: -40px;
+    left: 5px;
     width: 40px;
   	background: url(../image/favorite.png) no-repeat;  
 }     
@@ -241,8 +243,8 @@ label {
 }
 
 #container {
-    padding: 0 10px;
-	width: 1000px;
+    padding: 50px 10px;
+	width: 1220px;
 	margin-left: auto;
 	margin-right: auto;
 	text-align: left;
@@ -329,6 +331,7 @@ label {
 	padding-bottom: 4px;
 	position: relative;
 	z-index: 98;
+  height: 300px;
 	
 }
 #header a {
@@ -2362,7 +2365,7 @@ a.buttonPink:hover span {
 #galeryWrap {
   width: 150px;
   display: block;
-  left: 200px;
+  margin: 0 auto;
 overflow: hidden;
 }
 #galeryWrap .downImg {
