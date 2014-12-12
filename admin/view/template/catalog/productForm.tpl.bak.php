@@ -317,16 +317,39 @@
             <tr>
               <td><?= $entry_category ?></td>
                 <td>
+                    <?php $num = count($categories); ?>
+                    <?php $half_num = $num / 2; ?>
+                    <?php $i = 0; ?>
+                    <?php $class = 'odd'; ?>
                     <table class="categories">
-                     <a href="javascript:void(0);" id="checkAll"><?= $textSelectAll ?></a>
-                    &nbsp;/&nbsp;
-                    <a href="javascript:void(0);" id="uncheckAll"><?= $textUnselectAll ?></a>
-                     &nbsp;/&nbsp;
-                     <a href="javascript:void(0);" id="collapseAll"><?= $textCollapseAll ?></a>
-                    &nbsp;/&nbsp;
-                    <a href="javascript:void(0);" id="expandAll"><?= $textExpandAll ?></a>
-                        <?php echo $categoriesParent; ?>
+                      <tr>
+                        <td>
+                          <?php foreach ($categories as $category) { ?>
+                            <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
+                            <?php if($i == $half_num) { ?>
+                              <td>
+                            <?php } ?>
+                            <div class="<?= $class ?>">
+
+                              <?php if (in_array($category['category_id'], $product_category)) { ?>
+                                <input type="checkbox" name="product_category[]" value="<?= $category['category_id'] ?>" checked="checked" />
+                                <?= $category['name'] ?>
+                              <?php } else { ?>
+                                <input type="checkbox" name="product_category[]" value="<?= $category['category_id'] ?>" />
+                                <?= $category['name'] ?>
+                              <?php } ?>
+
+                            </div>
+                            <?php $i++; ?>
+                            <?php if($i == $half_num || $i == $num) { ?>
+                              </td>
+                            <?php } ?>
+                          <?php } ?>
+                        </tr>
                     </table>
+                    <a onclick="$(this).parent().find(':checkbox').attr('checked', true);"><?= $textSelectAll ?></a>
+                    &nbsp;/&nbsp;
+                    <a onclick="$(this).parent().find(':checkbox').attr('checked', false);"><?= $textUnselectAll ?></a>
                 </td>
 
             </tr>

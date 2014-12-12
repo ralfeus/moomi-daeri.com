@@ -100,6 +100,34 @@ class ModelCatalogCategory extends Model {
 		return $query->row;
 	} 
 	
+	public function getCategoriesParent($id = 0, $type = 'by_parent') {
+		static $data = null;
+
+		if ($data === null) {
+			$data = array();
+
+            $query = $this->getDb()->query("
+			    SELECT *
+			    FROM
+			        category c
+			        LEFT JOIN category_description cd ON (c.category_id = cd.category_id)
+			        LEFT JOIN category_to_store c2s ON (c.category_id = c2s.category_id)
+                WHERE
+                    cd.language_id = ?
+                    AND c2s.store_id = ?
+                    AND c.status = '1' ORDER BY c.parent_id, c.sort_order, cd.name
+                ", array('i:' . $this->config->get('config_language_id'), 'i:' . $this->config->get('config_store_id'))
+            );
+
+			foreach ($query->rows as $row) {
+				$data['by_id'][$row['category_id']] = $row;
+				$data['by_parent'][$row['parent_id']][] = $row;
+			}
+		}
+
+		return ((isset($data[$type]) && isset($data[$type][$id])) ? $data[$type][$id] : array());
+	}
+
 	public function getCategories($parent_id = 0) {
 		$category_data = $this->cache->get('category.' . (int)$this->config->get('config_language_id') . '.' . (int)$parent_id);
 	

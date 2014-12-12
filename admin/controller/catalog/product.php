@@ -507,6 +507,8 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['text_select'] = $this->language->get('text_select');
         $this->data['textSelectAll'] = $this->language->get('SELECT_ALL');
         $this->data['textUnselectAll'] = $this->language->get('UNSELECT_ALL');
+        $this->data['textCollapseAll'] = $this->language->get('COLLAPSE_ALL');
+        $this->data['textExpandAll'] = $this->language->get('EXPAND_ALL');
 		$this->data['text_percent'] = $this->language->get('text_percent');
 		$this->data['text_amount'] = $this->language->get('text_amount');
         $this->data['textKoreanName'] = $this->language->get('KOREAN_NAME');
@@ -1134,11 +1136,12 @@ class ControllerCatalogProduct extends Controller {
 		}		
 		
 		$this->load->model('catalog/category');
-				
-		$categories = $this->model_catalog_category->getAllCategories();
 
-		$this->data['categories'] = $this->getAllCategories($categories);
+		$categories = $this->model_catalog_category->getAllCategories();
+		$array_categories = $this->getAllCategories($categories);
+				
 		
+
 		if (isset($this->request->post['main_category_id'])) {
 			$this->data['main_category_id'] = $this->request->post['main_category_id'];
 		} elseif (isset($product_info)) {
@@ -1154,6 +1157,9 @@ class ControllerCatalogProduct extends Controller {
 		} else {
 			$this->data['product_category'] = array();
 		}		
+
+		$this->data['categoriesParent'] = $this->getCategoriesParent(0, $this->data['product_category']);
+//		$this->data['scripts'] = '$("#navigation ul").treeview({persist: "location",	collapsed: true, unique: true	});';
 		
 		if (isset($this->request->post['product_related'])) {
 			$products = $this->request->post['product_related'];
@@ -1768,4 +1774,40 @@ class ControllerCatalogProduct extends Controller {
             return false;
         }
     }
+    
+    	private function getCategoriesParent($parent_id, $product_category) {
+
+		$results = $this->model_catalog_category->getCategoriesParent($parent_id);
+		$output = '<ul id="tree1">';
+		
+		foreach ($results as $result) {
+        $children = $this->model_catalog_category->getCategoriesParent($result['category_id']);
+        if (empty($children)) {
+				  $output .= '<li>';
+          if (in_array($result['category_id'], $product_category)) {
+          $output .= '<input type="checkbox" name="product_category[]" value="' . $result['category_id'] . '" checked="checked" />';
+          } else {
+          $output .= '<input type="checkbox" name="product_category[]" value="' . $result['category_id'] . '" />';
+          }
+          $output .= $result['name'];
+          $output .= '</li>';
+        } else {
+		      $output .= '<li>';
+          if (in_array($result['category_id'], $product_category)) {
+          $output .= '<input type="checkbox" name="product_category[]" value="' . $result['category_id'] . '" checked="checked" />';
+          } else {
+          $output .= '<input type="checkbox" name="product_category[]" value="' . $result['category_id'] . '" />';
+          }
+          $output .= $result['name'];
+				  
+          $output .= $this->getCategoriesParent($result['category_id'], $product_category);
+				  $output .= '</li>';
+        }
+		}
+		
+		$output .= '</ul>';
+    
+		return $output;
+	}
+
 }

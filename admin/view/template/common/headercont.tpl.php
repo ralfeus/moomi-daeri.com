@@ -17,6 +17,7 @@
 <link rel="stylesheet" type="text/css" href="view/stylesheet/jquery.multiselect.css" />
 <link rel="stylesheet" type="text/css" href="view/stylesheet/jquery.calculator.css" />
 <link rel="stylesheet" type="text/css" href="view/stylesheet/jquery.multiselect.filter.css" />
+<link rel="stylesheet" type="text/css" href="view/stylesheet/jquery.checkboxtree.css" />
 <?php foreach ($styles as $style) { ?>
 <link rel="<?php echo $style['rel']; ?>" type="text/css" href="<?php echo $style['href']; ?>" media="<?php echo $style['media']; ?>" />
 <?php } ?>
@@ -30,6 +31,7 @@
 <script type="text/javascript" src="view/javascript/jquery/jquery.multiselect.filter.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/jquery.plugin.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/jquery.calculator.js"></script>
+<script type="text/javascript" src="view/javascript/jquery/jquery.checkboxtree.js"></script>
 <script type="text/javascript">
     $(function  () {
         $('#Calculator').calculator({showOn: 'opbutton', buttonImageOnly: true, buttonImage: 'view/image/calculator.png'});
@@ -75,6 +77,22 @@ $(document).ready(function() {
 		$("#toggle a").toggle();
 	});		
 		
+  $('#tree1').checkboxTree();	
+        $('#checkAll').click(function(){
+            $('#tree1').checkboxTree('checkAll');
+        });
+
+        $('#uncheckAll').click(function(){
+            $('#tree1').checkboxTree('uncheckAll');
+        });
+
+        $('#collapseAll').click(function(){
+            $('#tree1').checkboxTree('collapseAll');
+        });
+
+        $('#expandAll').click(function(){
+            $('#tree1').checkboxTree('expandAll');
+        });
 });
 </script>
 <?php foreach ($scripts as $script) { ?>
