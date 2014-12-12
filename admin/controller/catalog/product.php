@@ -1138,7 +1138,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->load->model('catalog/category');
 
 		$categories = $this->model_catalog_category->getAllCategories();
-		$array_categories = $this->getAllCategories($categories);
+		$this->data['categories'] = $this->getAllCategories($categories);
 				
 		
 
