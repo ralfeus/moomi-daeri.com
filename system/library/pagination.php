@@ -32,7 +32,7 @@ final class Pagination {
 		}
 		
 		if (!$this->limit) {
-			$limit = 10;
+			$limit = 20;
 		} else {
 			$limit = $this->limit;
 		}

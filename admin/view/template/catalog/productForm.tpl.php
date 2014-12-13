@@ -1164,7 +1164,7 @@ function image_upload(field, thumb) {
 		},	
 		bgiframe: false,
 		width: 1000,
-		height: 400,
+		height: 550,
 		resizable: false,
 		modal: false
 	});
