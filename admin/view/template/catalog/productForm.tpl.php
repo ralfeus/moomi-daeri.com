@@ -328,7 +328,8 @@
                         <?php echo $categoriesParent; ?>
                     </table>
                 </td>
-
+              <td style="width: 250px;">&nbsp;</td>
+ 
             </tr>
             <tr>
               <td><?= $entry_download ?></td>
@@ -1271,4 +1272,28 @@ $("#create_option_button").live('click', function() {
     });
 });
 //--></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#tree1').checkboxTree({
+    initializeChecked: 'expanded', 
+    initializeUnchecked: 'collapsed'
+  });	
+
+  $('#checkAll').click(function(){
+    $('#tree1').checkboxTree('checkAll');
+  });
+
+  $('#uncheckAll').click(function(){
+    $('#tree1').checkboxTree('uncheckAll');
+  });
+
+  $('#expandAll').click(function(){
+    $('#tree1').checkboxTree('expandAll');
+  });
+  $('#collapseAll').click(function(){
+    $('#tree1').checkboxTree('collapseAll');
+  });
+});
+</script>
 <?= $footer ?>

@@ -1479,6 +1479,65 @@ class ControllerCatalogProduct extends Controller {
 
 		$this->getResponse()->setOutput(json_encode($json));
 	}
+	public function autocompleteEnabled() {
+		$json = array();
+		
+		if (isset($this->request->get['filter_name']) || isset($this->request->get['filterModel']) || isset($this->request->get['filter_category_id'])) {
+			$this->load->model('catalog/product');
+			
+			if (isset($this->request->get['filter_name'])) {
+				$filter_name = $this->request->get['filter_name'];
+			} else {
+				$filter_name = '';
+			}
+			
+			if (isset($this->request->get['filterModel'])) {
+				$filterModel = $this->request->get['filterModel'];
+			} else {
+				$filterModel = '';
+			}
+						
+			if (isset($this->request->get['filter_category_id'])) {
+				$filter_category_id = $this->request->get['filter_category_id'];
+			} else {
+				$filter_category_id = '';
+			}
+			
+			if (isset($this->request->get['filter_sub_category'])) {
+				$filter_sub_category = $this->request->get['filter_sub_category'];
+			} else {
+				$filter_sub_category = '';
+			}
+			
+			if (isset($this->request->get['limit'])) {
+				$limit = $this->request->get['limit'];	
+			} else {
+				$limit = 20;	
+			}			
+						
+			$data = array(
+				'filter_name'         => $filter_name,
+				'filterModel'        => $filterModel,
+				'filter_category_id'  => $filter_category_id,
+				'filter_sub_category' => $filter_sub_category,
+				'start'               => 0,
+				'limit'               => $limit
+			);
+			
+			$results = $this->model_catalog_product->getProductsEnabled($data);
+			
+			foreach ($results as $result) {
+				$product_options = $this->model_catalog_product->getProductOptions($result['product_id']);	
+				$json[] = array(
+					'product_id' => $result['product_id'],
+					'name'       => html_entity_decode($result['name'], ENT_QUOTES, 'UTF-8'),	
+					'model'      => $result['model']
+				);	
+			}
+		}
+
+		$this->getResponse()->setOutput(json_encode($json));
+	}
 
 	private function getAllCategories($categories, $parent_id = 0, $parent_name = '') {
 		$output = array();

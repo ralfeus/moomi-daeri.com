@@ -654,6 +654,61 @@ SQL
 		return $query->row;
 	}
 	
+	public function getProductsEnabled($data = array()) {
+        if (empty($data))
+            $productData = $this->cache->get('product.' . (int)$this->config->get('config_language_id'));
+        if (empty($productData))
+        {
+            $data['filterLanguageId'] = $this->config->get('config_language_id');
+			$sql = "
+			    SELECT p.*, pd.*
+			    FROM
+			        product AS p
+			        LEFT JOIN product_description AS pd ON (p.product_id = pd.product_id)
+			        ";
+			
+			if (!empty($data['filter_category_id']))
+				$sql .= " LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)";
+
+			$sql .= " WHERE " . $this->buildFilterString($data) . " AND p.status = 1";
+			$sql .= " GROUP BY p.product_id";
+			$sort_data = array(
+				'pd.name',
+				'p.model'
+			);	
+			
+			if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+				$sql .= " ORDER BY " . $data['sort'];	
+			} else {
+				$sql .= " ORDER BY pd.name";	
+			}
+			
+			if (isset($data['order']) && ($data['order'] == 'DESC')) {
+				$sql .= " DESC";
+			} else {
+				$sql .= " ASC";
+			}
+		
+			if (isset($data['start']) || isset($data['limit'])) {
+				if ($data['start'] < 0) {
+					$data['start'] = 0;
+				}				
+
+				if ($data['limit'] < 1) {
+					$data['limit'] = 20;
+				}	
+			
+				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+			}	
+//            $this->getLogger()->write($sql);
+			$query = $this->getDb()->query($sql);
+            $productData = $query->rows;
+            if (empty($data))
+                $this->cache->set('product.' . (int)$this->config->get('config_language_id'), $productData);
+        }
+        return $productData;
+	}
+
 	public function getProducts($data = array()) {
         if (empty($data))
             $productData = $this->cache->get('product.' . (int)$this->config->get('config_language_id'));
@@ -863,6 +918,7 @@ SQL
 		
 		return $query->rows;
 	}
+
 	
 	public function getProductDiscounts($product_id) {
 		$query = $this->db->query("SELECT * FROM product_discount WHERE product_id = '" . (int)$product_id . "' ORDER BY quantity, priority, price");

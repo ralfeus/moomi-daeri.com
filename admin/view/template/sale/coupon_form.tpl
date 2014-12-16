@@ -89,13 +89,31 @@
             </tr>
             <tr>
               <td><?php echo $entry_category; ?></td>
-              <td><div class="scrollbox">
+                <td style="min-height: 300px;">
+                    <table class="categories" >
+                     <a href="javascript:void(0);" id="checkAll"><?= $textSelectAll ?></a>
+                    &nbsp;/&nbsp;
+                    <a href="javascript:void(0);" id="uncheckAll"><?= $textUnselectAll ?></a>
+                     &nbsp;/&nbsp;
+                     <a href="javascript:void(0);" id="collapseAll"><?= $textCollapseAll ?></a>
+                    &nbsp;/&nbsp;
+                    <a href="javascript:void(0);" id="expandAll"><?= $textExpandAll ?></a>
+                        <?php echo $categoriesParent; ?>
+                    </table>
+                </td>
+              <td style="width: 250px;">&nbsp;</td>
+ 
+            </tr>
+            <tr>
+              <td><div id="waiting"></div></td>
+
+              <td><div class="scrollbox" style="resize: vertical; height: 200px; width: auto;" id="coupon-product">
                   <?php $class = 'odd'; ?>
-                  <?php foreach ($categories as $category) { ?>
+                  <?php foreach ($coupon_product as $coupon_product) { ?>
                   <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
-                  <div class="<?php echo $class; ?>">
-                    <input type="checkbox" name="category[]" value="<?php echo $category['category_id']; ?>" />
-                    <?php echo $category['name']; ?> </div>
+                  <div id="coupon-product<?php echo $coupon_product['product_id']; ?>" class="<?php echo $class; ?>"> <?php echo $coupon_product['name']; ?><img src="view/image/delete.png" />
+                    <input type="hidden" name="coupon_product[]" value="<?php echo $coupon_product['product_id']; ?>" />
+                  </div>
                   <?php } ?>
                 </div></td>
             </tr>
@@ -105,15 +123,6 @@
             </tr>
             <tr>
               <td>&nbsp;</td>
-              <td><div class="scrollbox" id="coupon-product">
-                  <?php $class = 'odd'; ?>
-                  <?php foreach ($coupon_product as $coupon_product) { ?>
-                  <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
-                  <div id="coupon-product<?php echo $coupon_product['product_id']; ?>" class="<?php echo $class; ?>"> <?php echo $coupon_product['name']; ?><img src="view/image/delete.png" />
-                    <input type="hidden" name="coupon_product[]" value="<?php echo $coupon_product['product_id']; ?>" />
-                  </div>
-                  <?php } ?>
-                </div></td>
             </tr>
             <tr>
               <td><?php echo $entry_date_start; ?></td>
@@ -159,8 +168,14 @@ $('input[name=\'category[]\']').bind('change', function() {
 	var filter_category_id = this;
 	
 	$.ajax({
-		url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_category_id=' +  filter_category_id.value + '&limit=10000',
+		url: 'index.php?route=catalog/product/autocompleteEnabled&token=<?php echo $token; ?>&filter_category_id=' +  filter_category_id.value + '&limit=200',
 		dataType: 'json',
+    beforeSend: function () {
+      $('#waiting').after('<span class="wait">&nbsp;<img src="view/image/loading.gif" alt="" /></span>');
+    },
+    complete: function () {
+      $('.wait').remove();
+    },
 		success: function(json) {
 			for (i = 0; i < json.length; i++) {
 				if ($(filter_category_id).attr('checked') == 'checked') {
@@ -182,8 +197,14 @@ $('input[name=\'product\']').autocomplete({
 	delay: 0,
 	source: function(request, response) {
 		$.ajax({
-			url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_name=' +  encodeURIComponent(request.term),
+			url: 'index.php?route=catalog/product/autocompleteEnabled&token=<?php echo $token; ?>&filter_name=' +  encodeURIComponent(request.term),
 			dataType: 'json',
+    beforeSend: function () {
+      $('#waiting').after('<span class="wait">&nbsp;<img src="view/image/loading.gif" alt="" /></span>');
+    },
+    complete: function () {
+      $('.wait').remove();
+    },
 			success: function(json) {		
 				response($.map(json, function(item) {
 					return {
@@ -233,4 +254,35 @@ $('#history').load('index.php?route=sale/coupon/history&token=<?php echo $token;
 <script type="text/javascript"><!--
 $('#tabs a').tabs(); 
 //--></script> 
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#tree1').checkboxTree({
+    initializeChecked: 'expanded', 
+    initializeUnchecked: 'collapsed',
+    onCheck: { 
+      ancestors: 'NULL', 
+      descendants: 'NULL', 
+      others: 'NULL' 
+    }, 
+    onUncheck: { 
+      descendants: 'NULL' 
+    }
+  });	
+
+  $('#checkAll').click(function(){
+    $('#tree1').checkboxTree('checkAll');
+  });
+
+  $('#uncheckAll').click(function(){
+    $('#tree1').checkboxTree('uncheckAll');
+  });
+
+  $('#expandAll').click(function(){
+    $('#tree1').checkboxTree('expandAll');
+  });
+  $('#collapseAll').click(function(){
+    $('#tree1').checkboxTree('collapseAll');
+  });
+});
+</script>
 <?php echo $footer; ?>

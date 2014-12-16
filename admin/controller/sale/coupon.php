@@ -282,6 +282,10 @@ class ControllerSaleCoupon extends Controller {
     	$this->data['text_no'] = $this->language->get('text_no');
     	$this->data['text_percent'] = $this->language->get('text_percent');
     	$this->data['text_amount'] = $this->language->get('text_amount');
+        $this->data['textSelectAll'] = $this->language->get('SELECT_ALL');
+        $this->data['textUnselectAll'] = $this->language->get('UNSELECT_ALL');
+        $this->data['textCollapseAll'] = $this->language->get('COLLAPSE_ALL');
+        $this->data['textExpandAll'] = $this->language->get('EXPAND_ALL');
 				
 		$this->data['entry_name'] = $this->language->get('entry_name');
     	$this->data['entry_description'] = $this->language->get('entry_description');
@@ -465,6 +469,10 @@ class ControllerSaleCoupon extends Controller {
 		$this->load->model('catalog/category');
 				
 		$this->data['categories'] = $this->model_catalog_category->getCategories(0);
+
+		$categories = $this->model_catalog_category->getAllCategories();
+		$this->data['categories'] = $this->getAllCategories($categories);
+		$this->data['categoriesParent'] = $this->getCategoriesParent(0, $this->data['product_category']);
 					
 		if (isset($this->request->post['date_start'])) {
        		$this->data['date_start'] = $this->request->post['date_start'];
@@ -591,6 +599,63 @@ class ControllerSaleCoupon extends Controller {
 		$this->template = 'sale/coupon_history.tpl';		
 		
 		$this->getResponse()->setOutput($this->render());
-  	}		
+  	}	
+    
+   	private function getCategoriesParent($parent_id, $product_category) {
+
+		$results = $this->model_catalog_category->getCategoriesParent($parent_id);
+		$output = '<ul id="tree1">';
+		
+		foreach ($results as $result) {
+        $children = $this->model_catalog_category->getCategoriesParent($result['category_id']);
+        if (empty($children)) {
+				  $output .= '<li>';
+          if (in_array($result['category_id'], $product_category)) {
+          $output .= '<input type="checkbox" name="category[]" value="' . $result['category_id'] . '" checked="checked" />';
+          } else {
+          $output .= '<input type="checkbox" name="category[]" value="' . $result['category_id'] . '" />';
+          }
+          $output .= $result['name'];
+          $output .= '</li>';
+        } else {
+		      $output .= '<li>';
+          if (in_array($result['category_id'], $product_category)) {
+          $output .= '<input type="checkbox" name="category[]" value="' . $result['category_id'] . '" checked="checked" />';
+          } else {
+          $output .= '<input type="checkbox" name="category[]" value="' . $result['category_id'] . '" />';
+          }
+          $output .= $result['name'];
+				  
+          $output .= $this->getCategoriesParent($result['category_id'], $product_category);
+				  $output .= '</li>';
+        }
+		}
+		
+		$output .= '</ul>';
+    
+		return $output;
+	}
+	
+	private function getAllCategories($categories, $parent_id = 0, $parent_name = '') {
+		$output = array();
+
+		if (array_key_exists($parent_id, $categories)) {
+			if ($parent_name != '') {
+				$parent_name .= $this->language->get('text_separator');
+			}
+
+			foreach ($categories[$parent_id] as $category) {
+				$output[$category['category_id']] = array(
+					'category_id' => $category['category_id'],
+					'name'        => $parent_name . $category['name']
+				);
+
+				$output += $this->getAllCategories($categories, $category['category_id'], $parent_name . $category['name']);
+			}
+		}
+
+		return $output;
+	}
+
 }
 ?>
