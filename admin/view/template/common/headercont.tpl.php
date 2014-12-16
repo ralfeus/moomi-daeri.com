@@ -77,22 +77,6 @@ $(document).ready(function() {
 		$("#toggle a").toggle();
 	});		
 		
-  $('#tree1').checkboxTree();	
-        $('#checkAll').click(function(){
-            $('#tree1').checkboxTree('checkAll');
-        });
-
-        $('#uncheckAll').click(function(){
-            $('#tree1').checkboxTree('uncheckAll');
-        });
-
-        $('#collapseAll').click(function(){
-            $('#tree1').checkboxTree('collapseAll');
-        });
-
-        $('#expandAll').click(function(){
-            $('#tree1').checkboxTree('expandAll');
-        });
 });
 </script>
 <?php foreach ($scripts as $script) { ?>
