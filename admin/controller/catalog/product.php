@@ -229,6 +229,18 @@ class ControllerCatalogProduct extends Controller {
   	}
 	
   private function getList() {				
+		if (isset($this->request->get['page'])) {
+			$page = $this->request->get['page'];
+		} else {
+			$page = 1;
+		}
+
+		if (isset($this->request->get['limit'])) {
+			$limit = $this->request->get['limit'];
+		} else {
+			$limit = $this->config->get('config_admin_limit');
+		}
+
 		if (isset($this->request->get['filter_id'])) {
 			$filter_id = $this->request->get['filter_id'];
 		} else {
@@ -318,8 +330,8 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['products'] = array();
         $data = $this->parameters;
 
-        $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
-        $data['limit']           = $this->config->get('config_admin_limit');
+        $data['start']           = ($page - 1) * $limit;
+        $data['limit']           = $limit;
 		$data['filter_id']	  = $filter_id;
 		$data['filter_price']	  = $filter_price;
 		$data['filter_korean_name'] = $filter_korean_name;
@@ -399,6 +411,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['text_disabled'] = $this->language->get('text_disabled');		
 		$this->data['text_no_results'] = $this->language->get('text_no_results');		
 		$this->data['text_image_manager'] = $this->language->get('text_image_manager');		
+		$this->data['text_limit'] = $this->language->get('text_limit');
 			
 		$this->data['column_image'] = $this->language->get('column_image');		
 		$this->data['column_id'] = $this->language->get('column_id');		
@@ -438,7 +451,43 @@ class ControllerCatalogProduct extends Controller {
 			$this->data['success'] = '';
 		}
 
+			$this->data['limits'] = array();
+
+			$this->data['limits'][] = array(
+				'text'  => $this->config->get('config_admin_limit'),
+				'value' => $this->config->get('config_admin_limit'),
+				'href'  => $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&limit=' . $this->config->get('config_admin_limit'). $url, 'SSL')
+			);
+
+			$this->data['limits'][] = array(
+				'text'  => 150,
+				'value' => 150,
+				'href'  => $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&limit=150' . $url, 'SSL')
+			);
+
+			$this->data['limits'][] = array(
+				'text'  => 100,
+				'value' => 100,
+				'href'  => $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&limit=100' . $url, 'SSL')
+			);
+
+			$this->data['limits'][] = array(
+				'text'  => 50,
+				'value' => 50,
+				'href'  => $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&limit=50' . $url, 'SSL')
+			);
+
+			$this->data['limits'][] = array(
+				'text'  => 25,
+				'value' => 25,
+				'href'  => $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&limit=25' . $url, 'SSL')
+			);
+
 		$url = '';
+
+			if (isset($this->request->get['limit'])) {
+				$url .= '&limit=' . $this->request->get['limit'];
+			}
 
 		if (isset($this->request->get['filter_id'])) {
 			$url .= '&filter_id=' . $this->request->get['filter_id'];
@@ -491,10 +540,10 @@ class ControllerCatalogProduct extends Controller {
 
 		$pagination = new Pagination();
 		$pagination->total = $product_total;
-		$pagination->page = isset($this->request->get['page']) ? $this->request->get['page'] : 1;
-		$pagination->limit = $this->config->get('config_admin_limit');
+		$pagination->page = $page;
+		$pagination->limit = $limit;
 		$pagination->text = $this->language->get('text_pagination');
-        unset($this->parameters['page']);
+//        unset($this->parameters['page']);
 		$pagination->url = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&page={page}', 'SSL');
 		$this->data['pagination'] = $pagination->render();
 	

@@ -298,6 +298,15 @@ body > #container {
 	margin-left: 3px;
 	margin-right: 8px;
 }
+.box > .heading > .limit {
+  padding-top: 10px;
+	float: right;
+	font-size: 12px;
+}
+.box > .heading > .limit select, option{
+
+	font-size: 12px;
+}
 .box .buttons {
     float: right;
     position: fixed;

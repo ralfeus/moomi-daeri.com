@@ -15,6 +15,17 @@
   <div class="box">
     <div class="heading">
       <h1><img src="view/image/product.png" alt="" /> <?php echo $heading_title; ?></h1>
+    <div class="limit"><b><?php echo $text_limit; ?></b>
+      <select onchange="location = this.value;">
+        <?php foreach ($limits as $limits) { ?>
+        <?php if ($limits['value'] == $limit) { ?>
+        <option value="<?php echo $limits['href']; ?>" selected="selected"><?php echo $limits['text']; ?></option>
+        <?php } else { ?>
+        <option value="<?php echo $limits['href']; ?>"><?php echo $limits['text']; ?></option>
+        <?php } ?>
+        <?php } ?>
+      </select>
+    </div>
       <div class="buttons">
           <a onclick="$('#form').attr('action', '<?php echo $enable; ?>'); $('#form').submit();" class="button"><?php echo $button_enable; ?></a>
           <a onclick="$('#form').attr('action', '<?php echo $disable; ?>'); $('#form').submit();" class="button"><?php echo $button_disable; ?></a>
