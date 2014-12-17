@@ -264,6 +264,8 @@ class ModelCatalogProduct extends Model {
                 $filterUserName['ids'] = "u.user_id IN (" . implode(', ', $iDSet) . ")";
             $filter .= ($filter ? " AND" : "") . ' (' . implode(' OR ', $filterUserName) . ')';
         }
+        if (!empty($data['filterId']) && is_numeric($data['filterId']))
+            $filter .= ($filter ? " AND" : "") . " p.product_id LIKE '" . $this->db->escape($data['filterId']) . "%'";
         if (!empty($data['filterModel']))
             $filter .= ($filter ? " AND" : "") . " LCASE(p.model) LIKE '" . $this->db->escape(utf8_strtolower($data['filterModel'])) . "%'";
         if (!empty($data['filterName']))
@@ -730,6 +732,7 @@ SQL
 			$sql .= " WHERE " . $this->buildFilterString($data);
 			$sql .= " GROUP BY p.product_id";
 			$sort_data = array(
+				'p.product_id',
 				'pd.name',
 				'p.model',
 				'p.price',

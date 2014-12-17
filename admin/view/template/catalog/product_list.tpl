@@ -47,6 +47,7 @@ window.onload = function() {
         <table class="list">
           <thead>
             <tr>
+              <td style="text-align: center;" class="right"><?php echo $column_action; ?></td>
               <td style="width: 1px; text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').attr('checked', this.checked);" /></td>
               <td style="text-align: center; width: 120px;" class="center"><?php echo $column_image; ?></td>
               <td style="text-align: center;" class="left"><?php if ($sort == 'pd.name') { ?>
@@ -90,9 +91,17 @@ window.onload = function() {
                 <a href="<?php echo $sort_supplier; ?>"><?php echo $columnSupplier; ?></a>
                 <?php } ?></td>
               <td style="width: 1px; text-align: center;"><?= $textDateAdded ?></td>
-              <td style="text-align: center;" class="right"><?php echo $column_action; ?></td>
+              <td style="text-align: center;" class="left"><?php if ($sort == 'p.product_id') { ?>
+                <a href="<?php echo $sort_id; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_id; ?></a>
+                <?php } else { ?>
+                <a href="<?php echo $sort_id; ?>"><?php echo $column_id; ?></a>
+                <?php } ?></td>
             </tr>
             <tr class="filter">
+                <td align="right">
+                    <a onclick="filter();" class="button"><?php echo $button_filter; ?></a>
+                    <a onclick="resetFilter();" class="button"><?= $textResetFilter ?></a>
+                </td>
                 <td></td>
                 <td></td>
                 <td><input name="filterName" value="<?= $filterName ?>" /></td>
@@ -134,16 +143,24 @@ window.onload = function() {
                     <input name="filterDateAddedFrom" class="date" value="<?= $filterDateAddedFrom ?>" />
                     <input name="filterDateAddedTo" class="date" value="<?= $filterDateAddedTo ?>" />
                 </td>
-                <td align="right">
-                    <a onclick="filter();" class="button"><?php echo $button_filter; ?></a>
-                    <a onclick="resetFilter();" class="button"><?= $textResetFilter ?></a>
-                </td>
+                <td><input name="filterId" value="<?= $filterId ?>" /></td>
             </tr>
           </thead>
           <tbody>
             <?php if ($products) { ?>
             <?php foreach ($products as $product) { ?>
             <tr>
+              <td class="center"><?php foreach ($product['action'] as $action) { ?>
+                [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]
+                <?php } ?>
+                <?php 
+                  foreach ($product['link'] as $link) {
+                    if(!empty($link['href'])){
+                      echo "<br /><strong><a href='" . $link["href"] . "' target='_blank' style='text-decoration: none; color: black'>" . $link["text"] . "</a><strong>"; 
+                    } 
+                  } 
+                ?>
+              </td>
               <td style="text-align: center;"><?php if ($product['selected']) { ?>
                 <input type="checkbox" name="selected[]" value="<?php echo $product['product_id']; ?>" checked="checked" />
                 <?php } else { ?>
@@ -174,17 +191,7 @@ window.onload = function() {
               </td>
 			  <td class="right"><?php echo $product['supplier']; ?></td>
               <td><?= $product['dateAdded'] ?></td>
-              <td class="right"><?php foreach ($product['action'] as $action) { ?>
-                [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]
-                <?php } ?>
-                <?php 
-                  foreach ($product['link'] as $link) {
-                    if(!empty($link['href'])){
-                      echo "<br /><strong><a href='" . $link["href"] . "' target='_blank' style='text-decoration: none; color: black'>" . $link["text"] . "</a><strong>"; 
-                    } 
-                  } 
-                ?>
-              </td>
+              <td class="left"><?php echo $product['product_id']; ?></td>
             </tr>
             <?php } ?>
             <?php } else { ?>

@@ -16,6 +16,7 @@ $_['text_percent']           = 'Percentage';
 $_['text_amount']            = 'Fixed Amount';
 
 // Column
+$_['column_id']            = 'Product ID';
 $_['column_name']            = 'Product Name';
 $_['column_model']           = 'Model';
 $_['column_image']           = 'Image';

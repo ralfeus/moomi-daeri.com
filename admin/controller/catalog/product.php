@@ -43,6 +43,8 @@ class ControllerCatalogProduct extends Controller {
             $this->session->data['parameters']['catalog/product']['filterManufacturerId'] =  array();
         if (empty($this->session->data['parameters']['catalog/product']['filterModel']))
             $this->session->data['parameters']['catalog/product']['filterModel'] = null;
+        if (empty($this->session->data['parameters']['catalog/product']['filterId']) || !is_numeric($this->session->data['parameters']['catalog/product']['filterId']))
+            $this->session->data['parameters']['catalog/product']['filterId'] = null;
         if (empty($this->session->data['parameters']['catalog/product']['filterName']))
             $this->session->data['parameters']['catalog/product']['filterName'] = null;
         if (!isset($this->session->data['parameters']['catalog/product']['filterPrice']) || !is_numeric($this->session->data['parameters']['catalog/product']['filterPrice']))
@@ -75,7 +77,7 @@ class ControllerCatalogProduct extends Controller {
 		  
 				$url = '';
 				
-				if (isset($this->request->get['filter_name'])) {
+  			if (isset($this->request->get['filter_name'])) {
 					$url .= '&filter_name=' . $this->request->get['filter_name'];
 				}
 			
@@ -124,7 +126,7 @@ class ControllerCatalogProduct extends Controller {
 			
 			$url = '';
 			
-			if (isset($this->request->get['filter_name'])) {
+  		if (isset($this->request->get['filter_name'])) {
 				$url .= '&filter_name=' . $this->request->get['filter_name'];
 			}
 		
@@ -227,6 +229,12 @@ class ControllerCatalogProduct extends Controller {
   	}
 	
   private function getList() {				
+		if (isset($this->request->get['filter_id'])) {
+			$filter_id = $this->request->get['filter_id'];
+		} else {
+			$filter_id = null;
+		}
+
 		if (isset($this->request->get['filter_price'])) {
 			$filter_price = $this->request->get['filter_price'];
 		} else {
@@ -253,6 +261,10 @@ class ControllerCatalogProduct extends Controller {
 		
 		$url = '';
 						
+		if (isset($this->request->get['filter_id'])) {
+			$url .= '&filter_id=' . $this->request->get['filter_id'];
+		}
+		
 		if (isset($this->request->get['filter_name'])) {
 			$url .= '&filter_name=' . $this->request->get['filter_name'];
 		}
@@ -308,6 +320,7 @@ class ControllerCatalogProduct extends Controller {
 
         $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
         $data['limit']           = $this->config->get('config_admin_limit');
+		$data['filter_id']	  = $filter_id;
 		$data['filter_price']	  = $filter_price;
 		$data['filter_korean_name'] = $filter_korean_name;
 		$data['sort']            = $sort;
@@ -385,6 +398,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['text_image_manager'] = $this->language->get('text_image_manager');		
 			
 		$this->data['column_image'] = $this->language->get('column_image');		
+		$this->data['column_id'] = $this->language->get('column_id');		
 		$this->data['column_name'] = $this->language->get('column_name');		
 		$this->data['column_model'] = $this->language->get('column_model');		
 		$this->data['column_price'] = $this->language->get('column_price');		
@@ -423,6 +437,10 @@ class ControllerCatalogProduct extends Controller {
 
 		$url = '';
 
+		if (isset($this->request->get['filter_id'])) {
+			$url .= '&filter_id=' . $this->request->get['filter_id'];
+		}
+		
 		if (isset($this->request->get['filter_name'])) {
 			$url .= '&filter_name=' . $this->request->get['filter_name'];
 		}
@@ -457,6 +475,7 @@ class ControllerCatalogProduct extends Controller {
 			$url .= '&page=' . $this->request->get['page'];
 		}
 					
+		$this->data['sort_id'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.product_id' . $url, 'SSL');
 		$this->data['sort_name'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=pd.name' . $url, 'SSL');
         $this->data['sort_manufacturer'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.manufacturer' . $url, 'SSL');
 		$this->data['sort_model'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&sort=p.model' . $url, 'SSL');
@@ -694,6 +713,10 @@ class ControllerCatalogProduct extends Controller {
 
 		$url = '';
 
+		if (isset($this->request->get['filter_id'])) {
+			$url .= '&filter_id=' . $this->request->get['filter_id'];
+		}
+		
 		if (isset($this->request->get['filter_name'])) {
 			$url .= '&filter_name=' . $this->request->get['filter_name'];
 		}
@@ -1589,6 +1612,10 @@ class ControllerCatalogProduct extends Controller {
             $this->session->data['success'] = $this->language->get('text_success');
 
             $url = '';
+
+            if (isset($this->request->get['filter_id'])) {
+                $url .= '&filter_id=' . $this->request->get['filter_id'];
+            }
 
             if (isset($this->request->get['filter_name'])) {
                 $url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
