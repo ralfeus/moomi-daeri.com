@@ -32,6 +32,8 @@
 <script type="text/javascript" src="view/javascript/jquery/jquery.plugin.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/jquery.calculator.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/jquery.checkboxtree.js"></script>
+<script type="text/javascript" src="view/javascript/jquery/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="view/javascript/jquery/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
 <script type="text/javascript">
     $(function  () {
         $('#Calculator').calculator({showOn: 'opbutton', buttonImageOnly: true, buttonImage: 'view/image/calculator.png'});

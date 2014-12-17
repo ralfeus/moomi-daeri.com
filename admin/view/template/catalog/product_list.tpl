@@ -166,7 +166,16 @@ window.onload = function() {
                 <?php } else { ?>
                 <input type="checkbox" name="selected[]" value="<?php echo $product['product_id']; ?>" />
                 <?php } ?></td>
-              <td class="center"><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" style="padding: 1px; border: 1px solid rgb(221, 221, 221); width: 90%;" /></td>
+              <td class="center">
+                          <a href="<?php echo $product['popImage']; ?>" 
+              title="<?php echo $product['name']; ?>" class="fancybox" 
+              rel="fancybox">
+              <img src="<?php echo $product['image']; ?>" 
+                title="<?php echo $product['name']; ?>" 
+                alt="<?php echo $product['name']; ?>" 
+                id="image" 
+              />
+              </td>
               <td class="left"><?php echo $product['name']; ?></td>
               <td class="left"><?php echo $product['model']; ?></td>
               <td class="left"><?php if ($product['special']) { ?>
@@ -279,4 +288,14 @@ $('#form input').keydown(function(e) {
 	}
 });
 //--></script> 
+<script type="text/javascript"><!--
+$('.fancybox').fancybox({
+  cyclic: false, 
+  titleShow: false, 
+  showNavArrows: false, 
+  showCloseButton: false,
+  centerOnScroll: true,
+  hideOnOverlayClick: true,
+  hideOnContentClick: true});
+//--></script>
 <?= $footer ?>

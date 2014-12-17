@@ -352,8 +352,10 @@ class ControllerCatalogProduct extends Controller {
 			
 			if ($result['image'] && file_exists(DIR_IMAGE . $result['image'])) {
 				$image = $this->model_tool_image->resize($result['image'], 100, 100);
+				$popImage = $this->model_tool_image->resize($result['image'], 300, 300);
 			} else {
 				$image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+				$popImage = $this->model_tool_image->resize('no_image.jpg', 100, 100);
 			}
 	
 			$special = false;
@@ -381,6 +383,7 @@ class ControllerCatalogProduct extends Controller {
 				'price'      => $result['price'],
 				'special'    => $special,
 				'image'      => $image,
+        'popImage'   => $popImage,
 				'user_name'  => $result['user_name'],
 				'status'     => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
 				'manufacturer'=> $manufacturer['name'],
