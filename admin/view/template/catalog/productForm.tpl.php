@@ -177,9 +177,20 @@
             </tr>
             <tr>
               <td><?= $entry_image ?></td>
-              <td><div class="image"><img src="<?= $thumb ?>" alt="" id="thumb" /><br />
-                  <input type="hidden" name="image" value="<?= $image ?>" id="image" />
-                  <a onclick="image_upload('image', 'thumb');"><?= $text_browse ?></a>&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="$('#thumb').attr('src', '<?= $no_image ?>'); $('#image').attr('value', '');"><?= $text_clear ?></a></div></td>
+              <td>
+                <div class="image">
+                  <img src="<?= $thumb ?>" alt="" id="thumb" />
+                </div><br />
+                  <a onclick="image_upload('image', 'thumb');"><?= $text_browse ?></a>
+                  &nbsp;&nbsp;|&nbsp;&nbsp;
+                  <a onclick="$('#thumb').attr('src', '<?= $no_image ?>'); $('#image').attr('value', '');"><?= $text_clear ?></a>
+              </td>
+            </tr>
+            <tr>
+              <td><?= $entry_image_path ?></td>
+              <td>
+                <output>/image/</output><input type="text" name="image" value="<?= $image ?>" id="image" />
+              </td>
             </tr>
             <tr>
                 <td><?= $entry_image_description ?></td>

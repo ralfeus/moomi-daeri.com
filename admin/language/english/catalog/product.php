@@ -57,6 +57,7 @@ $_['entry_weight']           = 'Weight:';
 $_['entry_length']           = 'Length Class:';
 $_['entry_dimension']        = 'Dimensions (L x W x H):';
 $_['entry_image']            = 'Image:';
+$_['entry_image_path']       = 'Local Image Path:';
 $_['entry_image_description'] = 'Image Description:';
 $_['entry_customer_group']   = 'Customer Group:';
 $_['entry_date_start']       = 'Date Start:';

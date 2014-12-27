@@ -612,6 +612,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['entry_dimension'] = $this->language->get('entry_dimension');
 		$this->data['entry_length'] = $this->language->get('entry_length');
     	$this->data['entry_image'] = $this->language->get('entry_image');
+    	$this->data['entry_image_path'] = $this->language->get('entry_image_path');
     	$this->data['entry_image_description'] = $this->language->get('entry_image_description');
     	$this->data['entry_download'] = $this->language->get('entry_download');
     	$this->data['entry_category'] = $this->language->get('entry_category');
@@ -873,12 +874,29 @@ class ControllerCatalogProduct extends Controller {
     	}
 
 		if (isset($this->request->post['image_description'])) {
-      		$this->data['image_description'] = $this->request->post['image_description'];
-    	} elseif (!empty($product_info)) {
+		  $this->data['image_description'] = $this->request->post['image_description'];
+ 	  } elseif (!empty($product_info)) {
 			$this->data['image_description'] = $product_info['image_description'];
 		} else {
-      		$this->data['image_description'] = '';
-    	}
+		  $this->data['image_description'] = '';
+   	}
+
+		if (isset($this->request->post['image'])) {
+			$this->data['image'] = $this->request->post['image'];
+		} elseif (!empty($product_info)) {
+			$this->data['image'] = $product_info['image'];
+		} else {
+			$this->data['image'] = '';
+		}
+		
+		$this->load->model('tool/image');
+		
+		if (!empty($product_info) && $product_info['image'] && file_exists(DIR_IMAGE . $product_info['image'])) {
+			$this->data['thumb'] = $this->model_tool_image->resize($product_info['image'], 100, 100);
+		} else {
+			$this->data['thumb'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+		}
+
 		$this->load->model('setting/store');
 		
 		$this->data['stores'] = $this->model_setting_store->getStores();
@@ -907,21 +925,6 @@ class ControllerCatalogProduct extends Controller {
 			$this->data['product_tag'] = array();
 		}
 		
-		if (isset($this->request->post['image'])) {
-			$this->data['image'] = $this->request->post['image'];
-		} elseif (!empty($product_info)) {
-			$this->data['image'] = $product_info['image'];
-		} else {
-			$this->data['image'] = '';
-		}
-		
-		$this->load->model('tool/image');
-		
-		if (!empty($product_info) && $product_info['image'] && file_exists(DIR_IMAGE . $product_info['image'])) {
-			$this->data['thumb'] = $this->model_tool_image->resize($product_info['image'], 100, 100);
-		} else {
-			$this->data['thumb'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
-		}
 	
     	$this->data['manufacturers'] = ManufacturerDAO::getInstance()->getManufacturers();
     	if (isset($this->request->post['manufacturer_id'])) {
