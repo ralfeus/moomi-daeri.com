@@ -192,6 +192,10 @@ class ControllerProductSearch extends Controller {
 				'children'    => $level_2_data
 			);
 		}
+
+    #kabantejay synonymizer start
+    $result['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $result['description']);
+    #kabantejay synonymizer end
 		
 		$this->data['products'] = array();
 		

@@ -58,6 +58,10 @@ class ControllerProductCategory extends Controller {
 
 				$category_info = $this->model_catalog_category->getCategory($path_id);
 
+        #kabantejay synonymizer start
+        $razdel = $category_info['name'];
+        #kabantejay synonymizer end
+      
 				if ($category_info) {
 	       			$this->data['breadcrumbs'][] = array(
    	    				'text'      => $category_info['name'],
@@ -151,6 +155,10 @@ class ControllerProductCategory extends Controller {
 
 			$this->data['products'] = array();
 
+      #kabantejay synonymizer start
+			$this->data['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $this->data['description']);
+			#kabantejay synonymizer end
+      
 			$data = array(
 				'filter_category_id' => $category_id,
 				'sort'               => $sort,
@@ -197,6 +205,46 @@ class ControllerProductCategory extends Controller {
 
 				$date_added = getdate(strtotime($result['date_added']));
 				$date_added = mktime(0, 0, 0, $date_added['mon'], $date_added['mday'], $date_added['year']);
+
+        #kabantejay synonymizer start
+        if (!isset($result['manufacturer'])) {
+          $brand = '';
+        } else {
+          $brand = $result['manufacturer'];
+        }
+        if (!isset($razdel)) {
+          $razdel = '';
+        }
+        if (!isset($result['name'])) {
+          $syncat = '';
+        } else {
+          $syncat = $category_info['name'];
+        }
+        if (!isset($result['model'])) {
+          $synmod = '';
+        } else {
+          $synmod = $result['model'];
+        }
+        if ($special == false) {
+          $synprice = $price;
+        } else {
+          $synprice = $special;
+        }
+
+        $syntext=array(
+          array("%H1%",$result['name']),
+          array("%BRAND%",$brand),
+          array("%RAZDEL%",$razdel),
+          array("%CATEGORY%",$syncat),
+          array("%MODEL%",$synmod),
+          array("%PRICE%",$synprice)
+        );
+
+        for ($it=0; $it<6; $it++)  {
+	       $result['description'] = str_replace($syntext[$it][0],$syntext[$it][1],$result['description']);
+        }
+        $result['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $result['description']);
+        #kabantejay synonymizer end
 
 				$this->data['products'][] = array(
 					'product_id'  => $result['product_id'],

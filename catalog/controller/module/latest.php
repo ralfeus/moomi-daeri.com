@@ -77,6 +77,10 @@ class ControllerModuleLatest extends Controller {
             $date_added = getdate(strtotime($result['date_added']));
             $date_added = mktime(0, 0, 0, $date_added['mon'], $date_added['mday'], $date_added['year']);
 
+      #kabantejay synonymizer start
+			$result['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $result['description']);
+			#kabantejay synonymizer end
+
 			$this->data['products'][] = array(
 				'product_id' => $result['product_id'],
 				'thumb'   	 => $image,

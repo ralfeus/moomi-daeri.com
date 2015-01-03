@@ -183,6 +183,10 @@ class ControllerProductManufacturer extends Controller {
 			$this->data['button_continue'] = $this->language->get('button_continue');
 			
 			$this->data['compare'] = $this->url->link('product/compare');
+
+      #kabantejay synonymizer start
+			$this->data['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $this->data['description']);
+			#kabantejay synonymizer end
 			
 			$this->data['products'] = array();
 			
@@ -228,6 +232,10 @@ class ControllerProductManufacturer extends Controller {
 				} else {
 					$rating = false;
 				}
+
+        #kabantejay synonymizer start
+	 	   	$result['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $result['description']);
+	   		#kabantejay synonymizer end
 			
 				$this->data['products'][] = array(
 					'product_id'  => $result['product_id'],

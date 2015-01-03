@@ -28,8 +28,12 @@ class ControllerProductProduct extends Controller {
 				}
 
 				$category_info = $this->model_catalog_category->getCategory($path_id);
-
-				if ($category_info) {
+        
+        #kabantejay synonymizer start
+        $razdel = $category_info['name'];
+        #kabantejay synonymizer end
+				
+        if ($category_info) {
 					$this->data['breadcrumbs'][] = array(
 						'text'      => $category_info['name'],
 						'href'      => $this->url->link('product/category', 'path=' . $path),
@@ -315,6 +319,45 @@ class ControllerProductProduct extends Controller {
 
 			$this->data['products'] = array();
 
+      #kabantejay synonymizer start
+      if (!isset($product_info['manufacturer'])) {
+        $brand = '';
+      } else {
+        $brand = $product_info['manufacturer'];
+      }
+      if (!isset($razdel)) {
+        $razdel = '';
+      }
+      if (!isset($category_info['name'])) {
+        $syncat = '';
+      } else {
+        $syncat = $category_info['name'];
+      }
+      if (!isset($product_info['model'])) {
+        $synmod = '';
+      } else {
+        $synmod = $product_info['model'];
+      }
+      if ($this->data['special'] == false) {
+        $synprice = $this->data['price'];
+      } else {
+        $synprice = $this->data['special'];
+      }
+      $syntext=array(
+        array("%H1%",$product_info['name']),
+        array("%BRAND%",$brand),
+        array("%RAZDEL%",$razdel),
+        array("%CATEGORY%",$syncat),
+        array("%MODEL%",$synmod),
+        array("%PRICE%",$synprice)
+      );
+
+      for ($it=0; $it<6; $it++)  {
+	     $this->data['description'] = str_replace($syntext[$it][0],$syntext[$it][1],$this->data['description']);
+      }
+			$this->data['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $this->data['description']);
+			#kabantejay synonymizer end
+      
 			$results = $this->model_catalog_product->getProductRelated($this->request->get['product_id']);
 
 			foreach ($results as $result) {
