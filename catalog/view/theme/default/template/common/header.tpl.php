@@ -265,7 +265,11 @@ $(function(){
 function addBookmark() {
 if (document.all) window.external.addFavorite('http://moomidae.com', 'MooMi-DaeRi - ALL from KOREA!');
 }
-</script><style type="text/css">
+</script>
+<script>
+document.write('<script src="//sharebutton.net/plugin/sharebutton.php?type=vertical&u=' + encodeURIComponent(document.location.href) + '"></scr' + 'ipt>');
+</script>
+<style type="text/css">
   .width180 {
     width: 180px;
   }
