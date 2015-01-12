@@ -311,6 +311,33 @@ body .one{overflow: hidden}
 </style>
 </head>
 <body>
+
+<!-- Rating@Mail.ru counter -->
+<script type="text/javascript">
+var tmr = tmr || [];
+_tmr.push({id: "2609178", type: "pageView", start: (new Date()).getTime()});
+(function (d, w) {
+   var ts = d.createElement("script"); ts.type = "text/javascript"; ts.async = true;
+   ts.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//top-fwz1.mail.ru/js/code.js";
+   var f = function () {var s = d.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ts, s);};
+   if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); }
+})(document, window);
+</script><noscript><div style="position:absolute;left:-10000px;">
+<img src="//top-fwz1.mail.ru/counter?id=2609178;js=na" style="border:0;" height="1" width="1" alt="Рейтинг@Mail.ru" />
+</div></noscript>
+<!-- //Rating@Mail.ru counter -->
+
+<!-- begin of Top100 code -->
+
+<script id="top100Counter" type="text/javascript" src="http://counter.rambler.ru/top100.jcn?3076729"></script>
+<noscript>
+<a href="http://top100.rambler.ru/navi/3076729/">
+<img src="http://counter.rambler.ru/top100.cnt?3076729" alt="Rambler's Top100" border="0" />
+</a>
+
+</noscript>
+<!-- end of Top100 code -->
+
 <div class="header-top-wrapper">
   <div class="header-top">
     <div id="span-selectors">
