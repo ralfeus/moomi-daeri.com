@@ -297,7 +297,7 @@ class ControllerAccountRegister extends Controller {
 		}
 
         $this->data['currencies'] = array();
-        foreach ($this->modelLocalisationCurrency->getCurrencies() as $currency)
+        foreach ($this->modelLocalisationCurrency->getCurrencies(true) as $currency)
         {
           $this->data['currencies'][] = array(
               'currencyCode' => $currency['code'],
@@ -319,7 +319,7 @@ class ControllerAccountRegister extends Controller {
 			'common/footer',
 			'common/header'
 		);
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 
     protected function initParameters()
@@ -434,7 +434,7 @@ class ControllerAccountRegister extends Controller {
 		  	$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
 		}
 
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
   }
 
 }

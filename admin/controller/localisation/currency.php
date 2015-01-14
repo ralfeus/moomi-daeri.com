@@ -102,7 +102,7 @@ class ControllerLocalisationCurrency extends Controller {
         $json['result']['system'] = $this->currency->format($this->parameters['value'], $this->config->get('config_currency'));
         $json['result']['customer'] = $this->currency->format($this->parameters['value']);
 
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
 	private function getList() {
@@ -259,7 +259,7 @@ class ControllerLocalisationCurrency extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	private function getForm() {
@@ -401,7 +401,7 @@ class ControllerLocalisationCurrency extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
     protected function initParameters()

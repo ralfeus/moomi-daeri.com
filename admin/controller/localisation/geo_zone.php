@@ -266,7 +266,7 @@ class ControllerLocalisationGeoZone extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	private function getForm() {
@@ -379,7 +379,7 @@ class ControllerLocalisationGeoZone extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	private function objectToArray($d) {
@@ -456,7 +456,7 @@ class ControllerLocalisationGeoZone extends Controller {
 			$output .= '>' . $result['name'] . '</option>';
 		}
 
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
 	} 		
 }
 ?>

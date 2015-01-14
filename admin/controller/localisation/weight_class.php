@@ -261,7 +261,7 @@ class ControllerLocalisationWeightClass extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	private function getForm() {
@@ -358,7 +358,7 @@ class ControllerLocalisationWeightClass extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	private function validateForm() {
