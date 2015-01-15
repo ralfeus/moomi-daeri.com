@@ -551,6 +551,8 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['filter_korean_name'] = $filter_korean_name;
 		$this->data['sort'] = $sort;
 		$this->data['order'] = $order;
+		$this->data['limit'] = $limit;
+    
     $this->data = array_merge($this->data, $this->parameters);
     $this->setBreadcrumbs();
 		$this->template = 'catalog/product_list.tpl';

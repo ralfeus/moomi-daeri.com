@@ -14,15 +14,56 @@
   <div class="box">
     <div class="heading">
       <h1><img src="view/image/customer.png" alt="" /> <?php echo $heading_title; ?></h1>
+    <div class="limit"><b><?php echo $text_limit; ?></b>
+      <select onchange="location = this.value;">
+        <?php foreach ($limits as $limits) { ?>
+        <?php if ($limits['value'] == $limit) { ?>
+        <option value="<?php echo $limits['href']; ?>" selected="selected"><?php echo $limits['text']; ?></option>
+        <?php } else { ?>
+        <option value="<?php echo $limits['href']; ?>"><?php echo $limits['text']; ?></option>
+        <?php } ?>
+        <?php } ?>
+      </select>
+    </div>
       <div class="buttons"><a onclick="$('form').attr('action', '<?php echo $approve; ?>'); $('form').submit();" class="button"><?php echo $button_approve; ?></a><a onclick="location = '<?php echo $insert; ?>'" class="button"><?php echo $button_insert; ?></a><a onclick="$('form').attr('action', '<?php echo $delete; ?>'); $('form').submit();" class="button"><?php echo $button_delete; ?></a></div>
     </div>
     <div class="content">
+      <div class="pagination"><?php echo $pagination; ?></div>
+<script type="text/javascript">//<!--
+function topsclr() {
+    document.getElementById("content_scroll").scrollLeft = document.getElementById("topscrl").scrollLeft;
+}
+
+function bottomsclr() {
+    document.getElementById("topscrl").scrollLeft = document.getElementById("content_scroll").scrollLeft;
+}
+window.onload = function() {
+    document.getElementById("topfake").style.width = document.getElementById("content_scroll").scrollWidth + "px";
+    document.getElementById("topscrl").style.display = "block";
+    document.getElementById("topscrl").onscroll = topsclr;
+    document.getElementById("content_scroll").onscroll = bottomsclr;
+};
+//--></script>      <div id="topscrl">
+        <div id="topfake"></div>
+      </div>
+        <div id="content_scroll">
       <form action="<?= $urlSelf ?>" method="post" enctype="multipart/form-data" id="form">
         <table class="list">
           <thead>
             <tr>
               <td width="1" style="text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').attr('checked', this.checked);" /></td>
-              <td class="left"><?= $textCustomerName ?></td>
+              <td class="left"><?php if ($sort == 'c.customer_id') { ?>
+                <a href="<?php echo $sort_name; ?>" class="<?php echo strtolower($order); ?>"><?php echo $textCustomerName; ?></a>
+                <?php } else { ?>
+                <a href="<?php echo $sort_name; ?>"><?php echo $textCustomerName; ?></a>
+                <?php } ?>
+              </td>
+              <td class="left"><?php if ($sort == 'c.nickname') { ?>
+                <a href="<?php echo $sort_nickname; ?>" class="<?php echo strtolower($order); ?>"><?php echo $text_nickname; ?></a>
+                <?php } else { ?>
+                <a href="<?php echo $sort_nickname; ?>"><?php echo $text_nickname; ?></a>
+                <?php } ?>
+              </td>
               <td class="left"><?php if ($sort == 'c.email') { ?>
                 <a href="<?php echo $sort_email; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_email; ?></a>
                 <?php } else { ?>
@@ -67,6 +108,7 @@
                       <?php endforeach; ?>
                   </select>
               </td>
+              <td></td>
               <td><input type="text" name="filterEmail" value="<?= $filterEmail ?>" /></td>
               <td><select name="filterCustomerGroupId">
                   <option />
@@ -108,6 +150,8 @@
               </td>
               <td class="left">
                   <?= $customer['name'] ?><br />
+              </td>
+              <td>
                   <?= $customer['nickname'] ?>
               </td>
               <td class="left"><?php echo $customer['email']; ?></td>
@@ -143,6 +187,7 @@ else: ?>
           </tbody>
         </table>
       </form>
+      </div>
       <div class="pagination"><?php echo $pagination; ?></div>
     </div>
   </div>
