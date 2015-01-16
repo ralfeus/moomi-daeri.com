@@ -73,7 +73,7 @@ function resetFilter()
   <?php } ?>
   <div class="box">
     <div class="heading">
-      <h1><img src="view/image/home.png" alt="" /> <?php echo $heading_title; ?> v.3.0</h1>
+      <h1><img src="view/image/home.png" alt="" /> <?php echo $heading_title; ?> v.3.1</h1>
       <div style="display: none;" class='buttons'><a href="<?php echo $clear_cache ?>" class="button"><span>Clear Cache</span></a></div>
     </div>
     <div class="content">

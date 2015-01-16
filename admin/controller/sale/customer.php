@@ -315,7 +315,7 @@ class ControllerSaleCustomer extends Controller {
 		$this->data['delete'] = $this->url->link('sale/customer/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
 		$this->data['customers'] = array();
-        $data = $this->parameters;
+//        $data = $this->parameters;
 
         $data['start']           = ($page - 1) * $limit;
         $data['limit']           = $limit;
@@ -329,8 +329,8 @@ class ControllerSaleCustomer extends Controller {
 		$data['sort']            = $sort;
 		$data['order']           = $order;
     
-//        $data = array_merge($data, $this->parameters);
-//        $this->data = array_merge($this->data, $this->parameters);
+        $data = array_merge($data, $this->parameters);
+        $this->data = array_merge($this->data, $this->parameters);
 
         $this->data['customersToFilterBy'] = $this->getCustomers();
 		$customer_total = CustomerDAO::getInstance()->getTotalCustomers($data);
@@ -524,7 +524,7 @@ class ControllerSaleCustomer extends Controller {
 		$this->data['order'] = $order;
 		$this->data['limit'] = $limit;
     
-    $this->data = array_merge($this->data, $this->parameters);
+//    $this->data = array_merge($this->data, $this->parameters);
 				
 		$this->template = 'sale/customer_list.tpl';
 		$this->children = array(
