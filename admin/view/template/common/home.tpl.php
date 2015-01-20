@@ -31,7 +31,7 @@ $(document).ready(function() {
 function filter()
 {
     $('#form')
-            .attr('action', 'index.php?route=catalog/product&token=5e058e3be9584b442097be93e2edb2e1')
+            .attr('action', 'index.php?route=catalog/product&token=<?php echo $token; ?>')
             .submit();
     return;
 }
@@ -39,7 +39,7 @@ function filter()
 function resetFilter()
 {
     $('#form')
-            .attr('action', 'index.php?route=catalog/product&token=5e058e3be9584b442097be93e2edb2e1&resetFilter=1')
+            .attr('action', 'index.php?route=catalog/product&token=<?php echo $token; ?>&resetFilter=1')
             .submit();
 }
 //--></script> 
@@ -73,7 +73,7 @@ function resetFilter()
   <?php } ?>
   <div class="box">
     <div class="heading">
-      <h1><img src="view/image/home.png" alt="" /> <?php echo $heading_title; ?> v.3.2</h1>
+      <h1><img src="view/image/home.png" alt="" /> <?php echo $heading_title; ?></h1>
       <div style="display: none;" class='buttons'><a href="<?php echo $clear_cache ?>" class="button"><span>Clear Cache</span></a></div>
     </div>
     <div class="content">

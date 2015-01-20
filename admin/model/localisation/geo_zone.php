@@ -72,6 +72,22 @@ class ModelLocalisationGeoZone extends Model {
 
 	}
 	
+	public function copyGeoZone($geo_zone_id) {
+		$query = $this->db->query("
+      SELECT DISTINCT *
+      FROM
+        geo_zone
+      WHERE geo_zone_id = '" . (int)$geo_zone_id . "'
+    ");
+    if ($query->num_rows) {
+			$data = $query->row;
+      $data['name'] = $data['name'];
+      $data['description'] = $data['description'];
+      $data['zone_to_geo_zone'] = $data['zone_to_geo_zone'];
+			$this->addGeoZone($data);
+		}
+	}
+	
 	public function deleteGeoZone($geo_zone_id) {
 		$this->db->query("DELETE FROM geo_zone WHERE geo_zone_id = '" . (int)$geo_zone_id . "'");
 		$this->db->query("DELETE FROM zone_to_geo_zone WHERE geo_zone_id = '" . (int)$geo_zone_id . "'");

@@ -31,7 +31,7 @@ $(document).ready(function() {
 function filter()
 {
     $('#form')
-            .attr('action', 'index.php?route=catalog/product&token=5e058e3be9584b442097be93e2edb2e1')
+            .attr('action', 'index.php?route=catalog/product&token=<?php echo $token; ?>')
             .submit();
     return;
 }
@@ -39,7 +39,7 @@ function filter()
 function resetFilter()
 {
     $('#form')
-            .attr('action', 'index.php?route=catalog/product&token=5e058e3be9584b442097be93e2edb2e1&resetFilter=1')
+            .attr('action', 'index.php?route=catalog/product&token=<?php echo $token; ?>&resetFilter=1')
             .submit();
 }
 //--></script> 

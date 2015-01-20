@@ -84,6 +84,40 @@ class ControllerLocalisationGeoZone extends Controller {
 		$this->getForm();
 	}
 
+	public function copy() {
+		$this->load->language('localisation/geo_zone');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+		
+		$this->load->model('localisation/geo_zone');
+		if (isset($this->request->post['selected']) && $this->validateDelete()) {
+			foreach ($this->request->post['selected'] as $geo_zone_id) {
+//			 print_r($geo_zone_id);
+				$this->model_localisation_geo_zone->copyGeoZone($geo_zone_id);
+			}
+						
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$url = '';
+			
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+			
+			$this->redirect($this->url->link('localisation/geo_zone', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+		}
+
+		$this->getList();
+	}
+
 	public function delete() {
 		$this->load->language('localisation/geo_zone');
 
@@ -166,6 +200,7 @@ class ControllerLocalisationGeoZone extends Controller {
    		);
 		
 		$this->data['insert'] = $this->url->link('localisation/geo_zone/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
+		$this->data['copy'] = $this->url->link('localisation/geo_zone/copy', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		$this->data['delete'] = $this->url->link('localisation/geo_zone/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		
 		$this->data['geo_zones'] = array();
@@ -206,6 +241,7 @@ class ControllerLocalisationGeoZone extends Controller {
 		$this->data['column_description'] = $this->language->get('column_description');
 		$this->data['column_action'] = $this->language->get('column_action');	
 
+		$this->data['button_copy'] = $this->language->get('button_copy');		
 		$this->data['button_insert'] = $this->language->get('button_insert');
 		$this->data['button_delete'] = $this->language->get('button_delete');
  
