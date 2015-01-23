@@ -46,7 +46,7 @@ class CustomerDAO extends DAO {
             if (!empty($data['filterName']))
                 $filter .= ($filter ? " AND " : "") . "LCASE(CONCAT(c.firstname, ' ', c.lastname)) LIKE '" . $this->getDb()->escape(utf8_strtolower($data['filterName'])) . "%'";
             if (!empty($data['filterNickname']))
-                $filter .= ($filter ? " AND " : "") . "LCASE(nickname) LIKE '" . $this->getDb()->escape(utf8_strtolower($data['filterNickname'])) . "%'";
+                $filter .= ($filter ? " AND " : "") . "LCASE(c.nickname) LIKE '" . $this->getDb()->escape(utf8_strtolower($data['filterNickname'])) . "%'";
             if (!empty($data['filterEmail']))
                 $filter .= ($filter ? " AND " : "") . "LCASE(c.email) LIKE '" . $this->getDb()->escape(utf8_strtolower($data['filterEmail'])) . "%'";
             if (isset($data['filterCustomerGroupId']) && is_numeric($data['filterCustomerGroupId']))

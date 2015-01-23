@@ -11,6 +11,7 @@ $_['text_default']          = 'Default';
 $_['text_approved']         = 'You have approved %s accounts!';
 $_['text_wait']             = 'Please Wait!';
 $_['text_balance']          = 'Balance:';
+$_['text_limit']              = 'Show:';
 
 // Column
 $_['column_name']           = 'Customer Name';

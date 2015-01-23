@@ -551,6 +551,8 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['filter_korean_name'] = $filter_korean_name;
 		$this->data['sort'] = $sort;
 		$this->data['order'] = $order;
+		$this->data['limit'] = $limit;
+    
     $this->data = array_merge($this->data, $this->parameters);
     $this->setBreadcrumbs();
 		$this->template = 'catalog/product_list.tpl';
@@ -576,6 +578,7 @@ class ControllerCatalogProduct extends Controller {
 		$this->data['text_option'] = $this->language->get('text_option');
 		$this->data['text_option_value'] = $this->language->get('text_option_value');
 		$this->data['text_select'] = $this->language->get('text_select');
+		$this->data['text_last'] = $this->language->get('text_last');
         $this->data['textSelectAll'] = $this->language->get('SELECT_ALL');
         $this->data['textUnselectAll'] = $this->language->get('UNSELECT_ALL');
         $this->data['textCollapseAll'] = $this->language->get('COLLAPSE_ALL');

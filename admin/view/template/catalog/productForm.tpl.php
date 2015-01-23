@@ -50,7 +50,10 @@
             <table class="form">
               <tr>
                 <td><span class="required">*</span> <?= $entry_name ?></td>
-                <td><input type="text" name="product_description[<?= $language['language_id'] ?>][name]" maxlength="255" size="100" value="<?= isset($product_description[$language['language_id']]) ? $product_description[$language['language_id']]['name'] : '' ?>" />
+                <td><input type="text" class="language<?= $language['language_id'] ?>" name="product_description[<?= $language['language_id'] ?>][name]" maxlength="255" size="100" value="<?= isset($product_description[$language['language_id']]) ? $product_description[$language['language_id']]['name'] : '' ?>" />
+                  <span style="font: 10px;"><?= $text_last ?></span><span id="summar<?= $language['language_id'] ?>"></span>
+
+
                   <?php if (isset($error_name[$language['language_id']])) { ?>
                   <span class="error"><?= $error_name[$language['language_id']] ?></span>
                   <?php } ?></td>
@@ -65,7 +68,7 @@
               </tr>
               <tr>
                 <td><?= $entry_meta_keyword ?></td>
-                <td><input type="text" name="product_description[<?= $language['language_id'] ?>][meta_keyword]" maxlength="255" size="100" value="<?= isset($product_description[$language['language_id']]) ? $product_description[$language['language_id']]['meta_keyword'] : '' ?>" /></td>
+                <td><textarea name="product_description[<?= $language['language_id'] ?>][meta_keyword]" cols="100" rows="2"><?= isset($product_description[$language['language_id']]) ? $product_description[$language['language_id']]['meta_keyword'] : '' ?></textarea></td>
               </tr>
               <tr>
                 <td><?= $entry_meta_description ?></td>
@@ -83,18 +86,19 @@
           </div>
           <?php } ?>
         </div>
-        <div id="tab-data">
+         <div id="tab-data">
           <table class="form">
             <tr>
               <td><span class="required">*</span> <?= $entry_model ?></td>
-              <td><input type="text" name="model" value="<?= $model ?>" />
+              <td><input type="text" style="width: 800px;" class="textmodel" name="model" value="<?= $model ?>" />
+                <span style="font: 10px;"><?= $text_last ?></span><span id="summarmodel"></span>
                 <?php if ($error_model) { ?>
                 <span class="error"><?= $error_model ?></span>
                 <?php } ?></td>
             </tr>
             <tr>
                 <td><?= $textKoreanName ?></td>
-                <td><input type="text" name="koreanName" value="<?= $koreanName ?>" /></td>
+                <td><input type="text" style="width: 800px;" name="koreanName" value="<?= $koreanName ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_sku ?></td>
@@ -283,7 +287,7 @@
             </tr>
             <tr>
                 <td><?= $textSupplierUrl ?></td>
-                <td><input type="text" name="supplierUrl" value="<?= $supplierUrl ?>" /></td>
+                <td><input type="text" style="width: 800px;" name="supplierUrl" value="<?= $supplierUrl ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_main_category ?></td>
@@ -1307,4 +1311,15 @@ $(document).ready(function() {
   });
 });
 </script>
+  <script> 
+$(document).ready(function(){				
+$('.language1').limit('255','#summar1');
+$('.language2').limit('255','#summar2');
+$('.language3').limit('255','#summar3');
+$('.language4').limit('255','#summar4');
+$('.language5').limit('255','#summar5');
+$('.textmodel').limit('64','#summarmodel');
+});	
+  </script> 
+
 <?= $footer ?>

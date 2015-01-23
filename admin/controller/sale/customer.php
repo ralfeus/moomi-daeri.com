@@ -17,6 +17,10 @@ class ControllerSaleCustomer extends Controller {
         $this->data['success'] = '';
     }
 
+    public function index() {
+    	$this->getList();
+  	}
+
     private function getCustomers()
     {
         foreach ($this->parameters as $key => $value)
@@ -143,10 +147,6 @@ class ControllerSaleCustomer extends Controller {
         $this->data['transactionsPagination'] = $pagination->render();
     }
 
-    public function index() {
-    	$this->getList();
-  	}
-
     protected function initParameters()
     {
         $this->parameters['filterApproved'] = isset($_REQUEST['filterApproved']) && is_numeric($_REQUEST['filterApproved'])? $_REQUEST['filterApproved'] : null;
@@ -225,29 +225,110 @@ class ControllerSaleCustomer extends Controller {
 	} 
     
   	private function getList() {
-        $urlParameters = $this->buildUrlParameterString($this->parameters);
-  		$this->data['breadcrumbs'] = array();
-  		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
-      		'separator' => false
-   		);
-  		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('heading_title'),
-			'href'      => $this->url->link('sale/customer', $urlParameters, 'SSL'),
-      		'separator' => ' :: '
-   		);
+		if (isset($this->request->get['page'])) {
+			$page = $this->request->get['page'];
+		} else {
+			$page = 1;
+		}
+
+		if (isset($this->request->get['limit'])) {
+			$limit = $this->request->get['limit'];
+		} else {
+			$limit = $this->config->get('config_admin_limit');
+		}
+
+		if (isset($this->request->get['filterCustomerId'])) {
+			$filterCustomerId = $this->request->get['filterCustomerId'];
+		} else {
+			$filterCustomerId = null;
+		}
+
+		if (isset($this->request->get['filterEmail'])) {
+			$filterEmail = $this->request->get['filterEmail'];
+		} else {
+			$filterEmail = null;
+		}
+
+		if (isset($this->request->get['filterCustomerGroupId'])) {
+			$filterCustomerGroupId = $this->request->get['filterCustomerGroupId'];
+		} else {
+			$filterCustomerGroupId = null;
+		}
+
+		if (isset($this->request->get['sort'])) {
+			$sort = $this->request->get['sort'];
+		} else {
+			$sort = 'c.customer_id';
+		}
 		
-		$this->data['approve'] = $this->url->link('sale/customer/approve', 'token=' . $this->session->data['token'] . $urlParameters, 'SSL');
-		$this->data['insert'] = $this->url->link('sale/customer/insert', 'token=' . $this->session->data['token'] . $urlParameters, 'SSL');
-		$this->data['delete'] = $this->url->link('sale/customer/delete', 'token=' . $this->session->data['token'] . $urlParameters, 'SSL');
+		if (isset($this->request->get['order'])) {
+			$order = $this->request->get['order'];
+		} else {
+			$order = 'ASC';
+		}
+
+		$url = '';
+						
+		if (isset($this->request->get['filterCustomerId'])) {
+			$url .= '&filterCustomerId=' . $this->request->get['filterCustomerId'];
+		}
+		
+		if (isset($this->request->get['filterEmail'])) {
+			$url .= '&filterEmail=' . $this->request->get['filterEmail'];
+		}
+		
+		if (isset($this->request->get['filterCustomerGroupId'])) {
+			$url .= '&filterCustomerGroupId=' . $this->request->get['filterCustomerGroupId'];
+		}
+		
+		if (isset($this->request->get['filterStatus'])) {
+			$url .= '&filterStatus=' . $this->request->get['filterStatus'];
+		}
+		
+		if (isset($this->request->get['filterApproved'])) {
+			$url .= '&filterApproved=' . $this->request->get['filterApproved'];
+		}
+
+		if (isset($this->request->get['filterIp'])) {
+			$url .= '&filterIp=' . $this->request->get['filterIp'];
+		}			
+
+		if (isset($this->request->get['filterDateAdded'])) {
+			$url .= '&filterDateAdded=' . $this->request->get['filterDateAdded'];
+		}
+		
+		if (isset($this->request->get['sort'])) {
+			$url .= '&sort=' . $this->request->get['sort'];
+		}
+
+		if (isset($this->request->get['order'])) {
+			$url .= '&order=' . $this->request->get['order'];
+		}
+		
+		if (isset($this->request->get['page'])) {
+			$url .= '&page=' . $this->request->get['page'];
+		}
+
+
+		$this->data['approve'] = $this->url->link('sale/customer/approve', 'token=' . $this->session->data['token'] . $url, 'SSL');
+		$this->data['insert'] = $this->url->link('sale/customer/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
+		$this->data['delete'] = $this->url->link('sale/customer/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
 		$this->data['customers'] = array();
+//        $data = $this->parameters;
 
-		$data = array(
-			'start'                    => ($this->parameters['page'] - 1) * $this->config->get('config_admin_limit'),
-			'limit'                    => $this->config->get('config_admin_limit')
-		);
+        $data['start']           = ($page - 1) * $limit;
+        $data['limit']           = $limit;
+		$data['filterCustomerId']	  = $filterCustomerId;
+		$data['filterEmail']	  = $filterEmail;
+		$data['filterCustomerGroupId'] = $filterCustomerGroupId;
+		$data['filterStatus']	  = $filterStatus;
+		$data['filterApproved']	  = $filterApproved;
+		$data['filterIp']	  = $filterIp;
+		$data['filterDateAdded']	  = $filterDateAdded;
+		$data['sort']            = $sort;
+		$data['order']           = $order;
+    
         $data = array_merge($data, $this->parameters);
         $this->data = array_merge($this->data, $this->parameters);
 
@@ -261,7 +342,7 @@ class ControllerSaleCustomer extends Controller {
 		
 			$action[] = array(
 				'text' => $this->language->get('text_edit'),
-				'href' => $this->url->link('sale/customer/update', $urlParameters . '&customer_id=' . $result['customer_id'], 'SSL')
+				'href' => $this->url->link('sale/customer/update', 'token=' . $this->parameters['token'] . '&customer_id=' . $result['customer_id'], 'SSL')
 			);
             $action[] = array(
                 'text' => $this->language->get('PURGE_CART'),
@@ -275,6 +356,7 @@ class ControllerSaleCustomer extends Controller {
                 'text' => $this->language->get('LOGON_AS_CUSTOMER'),
                 'onclick' => 'showStores(this, \'#stores' . $result['customer_id'] . "')"
             );
+            
 			$this->data['customers'][] = array(
 				'customer_id'    => $result['customer_id'],
                 'highlighted' => $modelSaleOrder->getTotalOrders(array(
@@ -303,6 +385,8 @@ class ControllerSaleCustomer extends Controller {
 		$this->data['text_select'] = $this->language->get('text_select');	
 		$this->data['text_default'] = $this->language->get('text_default');		
 		$this->data['text_no_results'] = $this->language->get('text_no_results');
+		$this->data['text_limit'] = $this->language->get('text_limit');
+		$this->data['text_nickname'] = $this->language->get('field_nickname');
 
 		$this->data['textCustomerName'] = $this->language->get('NAME');
 		$this->data['column_email'] = $this->language->get('column_email');
@@ -335,22 +419,98 @@ class ControllerSaleCustomer extends Controller {
 		} else {
 			$this->data['success'] = '';
 		}
+
+			$this->data['limits'] = array();
+
+			$this->data['limits'][] = array(
+				'text'  => $this->config->get('config_admin_limit'),
+				'value' => $this->config->get('config_admin_limit'),
+				'href'  => $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=' . $this->config->get('config_admin_limit'). $url, 'SSL')
+			);
+
+			$this->data['limits'][] = array(
+				'text'  => 150,
+				'value' => 150,
+				'href'  => $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=150' . $url, 'SSL')
+			);
+
+			$this->data['limits'][] = array(
+				'text'  => 100,
+				'value' => 100,
+				'href'  => $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=100' . $url, 'SSL')
+			);
+
+			$this->data['limits'][] = array(
+				'text'  => 50,
+				'value' => 50,
+				'href'  => $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=50' . $url, 'SSL')
+			);
+
+			$this->data['limits'][] = array(
+				'text'  => 25,
+				'value' => 25,
+				'href'  => $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=25' . $url, 'SSL')
+			);
+
+		$url = '';
+						
+			if (isset($this->request->get['limit'])) {
+				$url .= '&limit=' . $this->request->get['limit'];
+			}
+
+		if (isset($this->request->get['filterCustomerId'])) {
+			$url .= '&filterCustomerId=' . $this->request->get['filterCustomerId'];
+		}
 		
-		$this->data['sort_name'] = $this->url->link('sale/customer', $urlParameters, 'SSL');
-        $this->data['sort_nickname'] = $this->url->link('sale/customer', $urlParameters, 'SSL');
-		$this->data['sort_email'] = $this->url->link('sale/customer', $urlParameters, 'SSL');
-		$this->data['sort_customer_group'] = $this->url->link('sale/customer', $urlParameters, 'SSL');
-		$this->data['sort_status'] = $this->url->link('sale/customer', $urlParameters, 'SSL');
-		$this->data['sort_approved'] = $this->url->link('sale/customer', $urlParameters, 'SSL');
-		$this->data['sort_ip'] = $this->url->link('sale/customer', $urlParameters, 'SSL');
-		$this->data['sort_date_added'] = $this->url->link('sale/customer', $urlParameters, 'SSL');
+		if (isset($this->request->get['filterEmail'])) {
+			$url .= '&filterEmail=' . $this->request->get['filterEmail'];
+		}
+		
+		if (isset($this->request->get['filterCustomerGroupId'])) {
+			$url .= '&filterCustomerGroupId=' . $this->request->get['filterCustomerGroupId'];
+		}
+		
+		if (isset($this->request->get['filterStatus'])) {
+			$url .= '&filterStatus=' . $this->request->get['filterStatus'];
+		}
+		
+		if (isset($this->request->get['filterApproved'])) {
+			$url .= '&filterApproved=' . $this->request->get['filterApproved'];
+		}
+
+		if (isset($this->request->get['filterIp'])) {
+			$url .= '&filterIp=' . $this->request->get['filterIp'];
+		}			
+
+		if (isset($this->request->get['filterDateAdded'])) {
+			$url .= '&filterDateAdded=' . $this->request->get['filterDateAdded'];
+		}
+		
+		if ($order == 'ASC') {
+			$url .= '&order=DESC';
+		} else {
+			$url .= '&order=ASC';
+		}
+
+		if (isset($this->request->get['page'])) {
+			$url .= '&page=' . $this->request->get['page'];
+		}
+		
+		$this->data['sort_name'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.customer_id' . $url, 'SSL');
+        $this->data['sort_nickname'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.nickname' . $url, 'SSL');
+		$this->data['sort_email'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.email' . $url, 'SSL');
+		$this->data['sort_customer_group'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=customer_group' . $url, 'SSL');
+		$this->data['sort_status'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.status' . $url, 'SSL');
+		$this->data['sort_approved'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.approved' . $url, 'SSL');
+		$this->data['sort_ip'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.ip' . $url, 'SSL');
+		$this->data['sort_date_added'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.date_added' . $url, 'SSL');
 		
 		$pagination = new Pagination();
 		$pagination->total = $customer_total;
-		$pagination->page = $this->parameters['page'];
-		$pagination->limit = $this->config->get('config_admin_limit');
+		$pagination->page = $page;
+		$pagination->limit = $limit;
 		$pagination->text = $this->language->get('text_pagination');
-		$pagination->url = $this->url->link('sale/customer', $this->buildUrlParameterString($this->parameters, array('page' => '{page}')), 'SSL');
+		$pagination->url = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&page={page}', 'SSL');
 		$this->data['pagination'] = $pagination->render();
 
 		$this->load->model('sale/customer_group');
@@ -358,6 +518,13 @@ class ControllerSaleCustomer extends Controller {
 
     	$this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
 		$this->data['stores'] = $this->model_setting_store->getStores();
+
+		$this->data['filterEmail'] = $filterEmail;
+		$this->data['sort'] = $sort;
+		$this->data['order'] = $order;
+		$this->data['limit'] = $limit;
+    
+//    $this->data = array_merge($this->data, $this->parameters);
 				
 		$this->template = 'sale/customer_list.tpl';
 		$this->children = array(
