@@ -69,6 +69,7 @@ class TonyMoly extends ProductSource {
 
     protected function getAllCategories() {
         $categories = array();
+        echo "Getting categories from " . self::getUrl() . "\n";
         $html = $this->getHtmlDocument(self::getUrl());
         $items = $html->find('div[class=posR TopCategory] .SubCate a');
         foreach ($items as $categoryAElement) {
@@ -81,22 +82,6 @@ class TonyMoly extends ProductSource {
         return $this->getUrl() . "/goods/submain.asp?cate=$sourceSiteCategoryId";
     }
 
-//    public function getProducts()
-//    {
-//        echo date('Y-m-d H:i:s') . "\n";
-//        $products = array();
-//        $urls = $this->getCategories(); $currCategory = 1;
-//        foreach ($urls as $url) {
-//            echo "Crawling " . $currCategory++ . " of " . sizeof($urls) . "\n";
-//            $products = array_merge($products, $this->getCategoryProducts($url));
-//            break;
-//        }
-//        echo "Totally found " . sizeof($products) . " products\n";
-//        echo date('Y-m-d H:i:s') . " --- Finished\n";
-//        return $products;
-//    }
-
-    //public function getSite() { return (object) array('id' => 3, 'name' => 'etonymoly.com'); }
     public function getUrl() { return 'http://etonymoly.com'; }
 
     /**
