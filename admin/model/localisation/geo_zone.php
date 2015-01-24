@@ -38,6 +38,28 @@ class ModelLocalisationGeoZone extends Model {
 		$this->cache->delete('geo_zone');
 	}
 
+	public function copyGeoZone($geo_zone_id, $description) {
+		$query = $this->db->query("
+      SELECT DISTINCT *
+      FROM
+        geo_zone gz
+ 		        LEFT JOIN zone_to_geo_zone zgz ON (gz.geo_zone_id = zgz.geo_zone_id)
+     WHERE gz.geo_zone_id = '" . (int)$geo_zone_id . "'
+    ");
+    if ($query->num_rows) {
+			$data = $query->row;
+      $data['name'] = $data['name'];
+      $data['descriptions'] = $data['descriptions'];
+//      $data['description'] = $data['description'];
+//      $data['zone_to_geo_zone'] = $data['zone_to_geo_zone'];
+			$data = array_merge($data, array('description' => $description));
+			$data = array_merge($data, array('zone_to_geo_zone' => $this->getZoneToGeoZones($geo_zone_id)));
+//    print_r($data);
+//    exit;
+			$this->addGeoZone($data);
+		}
+	}
+	
 	private function json_encode_cyr($str) {
 
 		$arr_replace_utf = array('\u0410', '\u0430','\u0411','\u0431','\u0412','\u0432',
@@ -70,22 +92,6 @@ class ModelLocalisationGeoZone extends Model {
 
 		return $str2;
 
-	}
-	
-	public function copyGeoZone($geo_zone_id) {
-		$query = $this->db->query("
-      SELECT DISTINCT *
-      FROM
-        geo_zone
-      WHERE geo_zone_id = '" . (int)$geo_zone_id . "'
-    ");
-    if ($query->num_rows) {
-			$data = $query->row;
-      $data['name'] = $data['name'];
-      $data['description'] = $data['description'];
-      $data['zone_to_geo_zone'] = $data['zone_to_geo_zone'];
-			$this->addGeoZone($data);
-		}
 	}
 	
 	public function deleteGeoZone($geo_zone_id) {

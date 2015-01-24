@@ -49,7 +49,7 @@
                 <input type="checkbox" name="selected[]" value="<?php echo $geo_zone['geo_zone_id']; ?>" />
                 <?php } ?></td>
               <td class="left"><?php echo $geo_zone['name']; ?></td>
-              <td class="left"><?php echo $geo_zone['description']; ?></td>
+              <td class="left"><?php echo $geo_zone['descriptions']; ?></td>
               <td class="right"><?php foreach ($geo_zone['action'] as $action) { ?>
                 [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]
                 <?php } ?></td>

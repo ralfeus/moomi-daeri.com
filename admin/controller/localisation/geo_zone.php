@@ -88,12 +88,15 @@ class ControllerLocalisationGeoZone extends Controller {
 		$this->load->language('localisation/geo_zone');
 
 		$this->document->setTitle($this->language->get('heading_title'));
+
 		
 		$this->load->model('localisation/geo_zone');
 		if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $geo_zone_id) {
 //			 print_r($geo_zone_id);
-				$this->model_localisation_geo_zone->copyGeoZone($geo_zone_id);
+			$geo_zone_info = $this->model_localisation_geo_zone->getGeoZone($geo_zone_id);
+			$description = $this->objectToArray(json_decode($geo_zone_info['description']));
+				$this->model_localisation_geo_zone->copyGeoZone($geo_zone_id, $description);
 			}
 						
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -227,12 +230,15 @@ class ControllerLocalisationGeoZone extends Controller {
 			$this->data['geo_zones'][] = array(
 				'geo_zone_id' => $result['geo_zone_id'],
 				'name'        => $result['name'],
-				'description' => $result['description'],
+				'descriptions' => $result['description'],
 				'selected'    => isset($this->request->post['selected']) && in_array($result['geo_zone_id'], $this->request->post['selected']),
 				'action'      => $action
 			);
 		}
 		
+
+
+
 		$this->data['heading_title'] = $this->language->get('heading_title');
 		
 		$this->data['text_no_results'] = $this->language->get('text_no_results');

@@ -122,6 +122,7 @@ class ControllerCommonHeader extends Controller {
         $this->data['textOrderConfirmation'] = $this->language->get('ORDER_CONFIRMATION');
         $this->data['textRepurchaseOrders'] = $this->language->get('REPURCHASE_ORDERS');
         $this->data['textUnselectAll'] = $this->language->get('UNSELECT_ALL');
+        $this->data['textVersion'] = $this->language->get('text_version');
 
 		if (!$this->user->isLogged() || !isset($_REQUEST['token']) || !isset($this->session->data['token']) || ($_REQUEST['token'] != $this->session->data['token'])) {
 			$this->data['logged'] = '';
