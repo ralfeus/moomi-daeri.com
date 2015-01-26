@@ -98,5 +98,6 @@ $_['text_length_class']                = 'Length Classes';
 $_['text_zone']                        = 'Zones';
 $_['text_admin_page']                  = 'Pages';
 $_['text_admin_actions']               = 'Actions';
+$_['text_version']               = 'v.3.4';
 
 ?>

@@ -145,7 +145,7 @@ $(document).ready(function(){
   
   <?php if ($logged) { ?>
   <div id="menu">
-    <ul style="padding: 9px 15px 9px 5px; font-family: Arial,Helvetica,sans-serif; font-size: 14px; font-weight: bold; color: #FFF; float:left;">v.3.3</ul>
+    <ul style="padding: 9px 15px 9px 5px; font-family: Arial,Helvetica,sans-serif; font-size: 14px; font-weight: bold; color: #FFF; float:left;"><?php echo $textVersion; ?></ul>
     <ul class="left" style="display: none;">
       <li id="dashboard"><a href="<?php echo $home; ?>" class="top"><?php echo $text_dashboard; ?></a></li>
 <?php if($this->config->get('wk_auction_timezone_set')){ ?>
