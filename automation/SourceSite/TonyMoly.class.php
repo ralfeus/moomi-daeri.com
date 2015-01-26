@@ -71,7 +71,7 @@ class TonyMoly extends ProductSource {
         $categories = array(); $matches = [];
         echo "Getting categories from " . self::getUrl() . "\n";
         $html = $this->getHtmlDocument(self::getUrl());
-        $items = $html->find('a[href^="http://etonymoly.com/html/cpp_image.asp?cate="');
+        $items = $html->find('a[href^="http://etonymoly.com/html/cpp_image.asp?cate="]');
         foreach ($items as $categoryAElement) {
             $categoryId = preg_match('/(?<=cate=)\d+/', $categoryAElement->attr['href'], $matches) ? $matches[0] : null;
             $categories[] = new ImportCategory($this, $categoryId, null, null, $categoryAElement->attr['href']);
