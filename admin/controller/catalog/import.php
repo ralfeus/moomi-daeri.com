@@ -308,7 +308,7 @@ class ControllerCatalogImport extends Controller {
             'product_store' => $productToUpdate->getSourceSite()->getStores(),
             'product_tag' => null,
             'seo_title' => null, 'seo_h1' => null,
-            'shipping' => null,
+            'shipping' => 1,
             'sku' => null,
             'sort_order' => null,
 //            'status' => 1,
