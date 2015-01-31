@@ -285,6 +285,7 @@ class ControllerCatalogOption extends Controller {
 		$this->data['entry_value'] = $this->language->get('entry_value');
 		$this->data['entry_image'] = $this->language->get('entry_image');
 		$this->data['entry_sort_order'] = $this->language->get('entry_sort_order');
+		$this->data['entry_total'] = $this->language->get('entry_total');	
 
 		$this->data['button_save'] = $this->language->get('button_save');
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
@@ -392,7 +393,9 @@ class ControllerCatalogOption extends Controller {
 		$this->load->model('tool/image');
 		
 		$this->data['option_values'] = array();
-		 
+
+		$total = 0;
+
 		foreach ($option_values as $option_value) {
 			if ($option_value['image'] && file_exists(DIR_IMAGE . $option_value['image'])) {
 				$image = $option_value['image'];
@@ -407,7 +410,10 @@ class ControllerCatalogOption extends Controller {
 				'thumb'                    => $this->model_tool_image->resize($image, 100, 100),
 				'sort_order'               => $option_value['sort_order']
 			);
+
+			$total += 1;
 		}
+		$this->data['total_values'] = $total;
 
 		$this->data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
 

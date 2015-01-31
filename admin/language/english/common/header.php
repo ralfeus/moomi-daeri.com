@@ -1,4 +1,6 @@
 <?php
+$_['text_version']               = 'v.3.6';
+
 $_['CONTENT_MANAGEMENT'] = 'Content management';
 $_['CREDIT_MANAGEMENT'] = "Deposit management";
 $_['FINISH_SUPPLIER_ORDERS_FOR_TODAY'] = 'Close orders to suppliers';
@@ -98,6 +100,5 @@ $_['text_length_class']                = 'Length Classes';
 $_['text_zone']                        = 'Zones';
 $_['text_admin_page']                  = 'Pages';
 $_['text_admin_actions']               = 'Actions';
-$_['text_version']               = 'v.3.5';
 
 ?>

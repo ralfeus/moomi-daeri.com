@@ -100,7 +100,7 @@
               <td class="left"><span class="required">*</span> <?php echo $entry_value; ?></td>
               <td class="left"><?php echo $entry_image; ?></td>
               <td class="right"><?php echo $entry_sort_order; ?></td>
-              <td></td>
+              <td class="right"><?php echo $entry_total; ?><?php echo $total_values; ?></td>
             </tr>
           </thead>
           <?php $option_value_row = 0; ?>

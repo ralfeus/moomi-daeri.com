@@ -33,6 +33,7 @@ $_['entry_type']         = 'Type:';
 $_['entry_value']        = 'Option Value Name:';
 $_['entry_image']        = 'Image:';
 $_['entry_sort_order']   = 'Sort Order:';
+$_['entry_total']       = 'Total Values: ';
 
 // Error
 $_['error_permission']   = 'Warning: You do not have permission to modify options!';
