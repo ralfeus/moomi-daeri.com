@@ -97,7 +97,11 @@ class ControllerAccountOrder extends CustomerZoneController {
 	}
 
 	public function info() {
-        $this->modelToolImage = $this->load->model('tool/image');
+    if (isset($this->session->data['note'])) {
+					$this->data['note'] = $this->session->data['note'];
+					unset( $this->session->data['note'] );
+				} else $this->data['note'] = '';
+    $this->modelToolImage = $this->load->model('tool/image');
 		if (isset($this->request->get['order_id'])) {
 			$order_id = $this->request->get['order_id'];
 		} else {
@@ -267,7 +271,12 @@ class ControllerAccountOrder extends CustomerZoneController {
 			);
 
 			$this->data['payment_address'] = str_replace(array("\r\n", "\r", "\n"), '<br />', preg_replace(array("/\s\s+/", "/\r\r+/", "/\n\n+/"), '<br />', trim(str_replace($find, $replace, $format))));
-      		$this->data['payment_method'] = $order_info['payment_method'];
+      $this->data['payment_method'] = $order_info['payment_method'];
+// ----- deposit modules START -----    
+      $this->data['text_payment_method'] = '';
+      $this->load->model('account/multi_pay');
+      $this->data['payment_method'] = $this->model_account_multi_pay->order_info($order_info);
+// ----- deposit modules END -----    
 
 			$this->data['products'] = array();
 

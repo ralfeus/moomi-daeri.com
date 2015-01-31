@@ -7,6 +7,18 @@
   </div>
   <h1><?php echo $heading_title; ?></h1>
   <p><?php echo $text_total; ?><b> <?php echo $total; ?></b>.</p>
+  
+<?php // ----- deposit modules START ----- ?>    
+  <div class="buttons">
+				<div class="right">
+					<a href="?route=account/multi_pay/deposit" class="button">
+					<?php echo ($text_deposit!='text_deposit'?$text_deposit:'Deposit'); ?></a>
+					<a href="?route=account/multi_pay/transfer" class="button">
+					<?php echo ($text_transfer!='text_transfer'?$text_transfer:'Transfer'); ?></a>
+				</div>
+			</div>
+<?php // ----- deposit modules END ----- ?>    
+      
     <div class="buttons">
         <div class="right"><a href="<?= $addCreditUrl ?>" class="button"><span><?= $textAddCredit ?></span></a></div>
     </div>

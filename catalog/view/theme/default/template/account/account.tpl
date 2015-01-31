@@ -29,7 +29,20 @@
       </div>
   </div>
   <div class="box">
-      <div class="box-heading"><h2><?php echo $text_my_orders; ?></h2></div>
+      <div class="box-heading">
+<?php // ----- deposit modules START ----- ?>    
+      <h2><?php echo ($text_my_finances!='text_my_finances'?$text_my_finances:'My Finances'); ?></h2>
+			<div class="content">
+			<ul>
+				<li><a href="<?php echo $deposit; ?>"><b><?php echo ($text_deposit!='text_deposit'?$text_deposit:'Deposit'); ?></b></a></li>
+				<li><a href="<?php echo $transfer; ?>"><b><?php echo ($text_transfer!='text_transfer'?$text_transfer:'Transfer'); ?></b></a></li>
+				<li><a href="<?php echo $transaction; ?>"><?php echo $text_transaction; ?></a></li>
+				<li><a href="<?php echo $recurring; ?>"><?php echo $text_recurring; ?></a></li>
+			</ul>
+			</div>
+<?php // ----- deposit modules END ----- ?>    
+        <h2><?php echo $text_my_orders; ?></h2>
+      </div>
       <div class="box-content">
         <ul>
           <li><a href="<?php echo $order; ?>"><?php echo $text_order; ?></a></li>
@@ -38,7 +51,7 @@
           <li><a href="<?= $invoice ?>"><?= $text_invoices ?></a></li>
           <!--li><a href="<?php echo $download; ?>"><?php echo $text_download; ?></a></li-->
           <?php /*<li><a href="<?php echo $reward; ?>"><?php echo $text_reward; ?></a></li>*/ ?>
-          <li><a href="<?php echo $transaction; ?>"><?php echo $text_transaction; ?></a></li>
+          <!--<li><a href="<?php echo $transaction; ?>"><?php echo $text_transaction; ?></a></li>-->
           <li><a href="<?= $addCreditUrl ?>"><?= $textAddCredit ?></a></li>
           <!--li><a href="<?= $creditHistoryUrl ?>"><?= $textCreditHistory ?></a></li-->
         </ul>

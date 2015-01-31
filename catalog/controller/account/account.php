@@ -9,7 +9,10 @@ class ControllerAccountAccount extends CustomerZoneController {
 
 	public function index() {
 		$this->language->load('account/account');
-
+// ----- deposit modules START -----    
+    @$this->language->load('account/multi_pay');
+// ----- deposit modules END -----    
+    
 		$this->document->setTitle($this->language->get('heading_title'));
 
       	$this->data['breadcrumbs'] = array();
@@ -48,6 +51,11 @@ class ControllerAccountAccount extends CustomerZoneController {
     	$this->data['text_download'] = $this->language->get('text_download');
 		$this->data['text_reward'] = $this->language->get('text_reward');
 		$this->data['text_transaction'] = $this->language->get('text_transaction');
+// ----- deposit modules START -----    
+    $this->data['text_my_finances'] = $this->language->get('text_my_finances');
+			$this->data['text_deposit'] = $this->language->get('text_deposit');
+			$this->data['text_transfer'] = $this->language->get('text_transfer');
+// ----- deposit modules END -----    
 		$this->data['text_newsletter'] = $this->language->get('text_newsletter');
         $this->data['textAddCredit'] = $this->language->get('ADD_CREDIT');
         $this->data['textCreditHistory'] = $this->language->get('CREDIT_HISTORY');
@@ -66,6 +74,11 @@ class ControllerAccountAccount extends CustomerZoneController {
 		$this->data['reward'] = $this->url->link('account/reward', '', 'SSL');
         $this->data['repurchaseOrders'] = $this->url->link('account/repurchaseOrders', '', 'SSL');
 		$this->data['transaction'] = $this->url->link('account/transaction', '', 'SSL');
+// ----- deposit modules START -----    
+      $this->data['deposit'] = $this->url->link('account/multi_pay/deposit', '', 'SSL');
+			$this->data['transfer'] = $this->url->link('account/multi_pay/transfer', '', 'SSL');
+// ----- deposit modules END -----    
+    
 		$this->data['newsletter'] = $this->url->link('account/newsletter', '', 'SSL');
         $this->data['orderItems'] = $this->url->link('account/orderItems', '', 'SSL');
 

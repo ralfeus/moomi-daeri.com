@@ -6,6 +6,9 @@ class ControllerAccountTransaction extends CustomerZoneController {
     {
         parent::__construct($registry);
         $this->language->load('account/transaction');
+// ----- deposit modules START -----    
+        @$this->language->load('account/multi_pay');
+// ----- deposit modules END -----    
         $this->load->model('account/transaction');
         $this->document->setTitle($this->language->get('headingTitle'));
         $this->data['heading_title'] = $this->language->get('headingTitle');
@@ -70,6 +73,11 @@ class ControllerAccountTransaction extends CustomerZoneController {
         $this->data['textAddCredit'] = $this->language->get('ADD_CREDIT');
         $this->data['textInvoiceId'] = $this->language->get('INVOICE_ID');
         $this->data['textTransactionId'] = $this->language->get('TRANSACTION_ID');
+// ----- deposit modules START -----    
+      $this->data['text_my_finances'] = $this->language->get('text_my_finances');
+			$this->data['text_deposit'] = $this->language->get('text_deposit');
+			$this->data['text_transfer'] = $this->language->get('text_transfer');
+// ----- deposit modules END -----    
         $this->data['total'] = $this->currency->format($this->customer->getBalance(), $this->customer->getBaseCurrency()->getCode(), 1);
 
         $data = array(
@@ -119,6 +127,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
         $this->getCreditRequests();
         $this->getTransactions();
         $this->setBreadcrumbs();
+
 
 		$this->children = array(
 			'common/column_left',
