@@ -27,6 +27,9 @@
                 <?php } else { ?>
                 <a href="<?php echo $sort_name; ?>"><?php echo $column_name; ?></a>
                 <?php } ?></td>
+              <td class="right">
+                <?php echo $column_total; ?>
+              </td>
               <td class="right"><?php if ($sort == 'o.sort_order') { ?>
                 <a href="<?php echo $sort_sort_order; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_sort_order; ?></a>
                 <?php } else { ?>
@@ -45,6 +48,7 @@
                 <input type="checkbox" name="selected[]" value="<?php echo $option['option_id']; ?>" />
                 <?php } ?></td>
               <td class="left"><?php echo $option['name']; ?></td>
+              <td class="right"><?php echo $option['total_values']; ?></td>
               <td class="right"><?php echo $option['sort_order']; ?></td>
               <td class="right"><?php foreach ($option['action'] as $action) { ?>
                 [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]

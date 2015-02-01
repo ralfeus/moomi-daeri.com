@@ -186,6 +186,7 @@ class ControllerCatalogOption extends Controller {
 				'name'       => $result['name'],
 				'sort_order' => $result['sort_order'],
 				'selected'   => isset($this->request->post['selected']) && in_array($result['option_id'], $this->request->post['selected']),
+				'total_values'=> count($this->model_catalog_option->getOptionValues($result['option_id'])),
 				'action'     => $action
 			);
 		}
@@ -197,6 +198,7 @@ class ControllerCatalogOption extends Controller {
 		$this->data['column_name'] = $this->language->get('column_name');
 		$this->data['column_sort_order'] = $this->language->get('column_sort_order');
 		$this->data['column_action'] = $this->language->get('column_action');	
+		$this->data['column_total'] = $this->language->get('column_total');	
 
 		$this->data['button_insert'] = $this->language->get('button_insert');
 		$this->data['button_delete'] = $this->language->get('button_delete');

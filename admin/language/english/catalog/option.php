@@ -25,6 +25,7 @@ $_['text_clear']          = 'Clear Image';
 $_['column_name']         = 'Option Name';
 $_['column_sort_order']   = 'Sort Order';
 $_['column_action']       = 'Action';
+$_['column_total']       = 'Total Values';
 
 // Entry
 $_['entry_name']         = 'Option Name:';
