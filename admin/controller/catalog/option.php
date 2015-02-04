@@ -704,7 +704,7 @@ class ControllerCatalogOption extends Controller {
 		$this->data['option_type'] = $option['type'];
 	
 		$total_values = count($this->model_catalog_option->getOptionValuesTotal($this->request->get['option_id']));
-		$option_values = $this->model_catalog_option->getOptionValues($data);
+		$option_values = $this->model_catalog_option->getOptionValuesWithoutValues($data);
 
 		foreach ($option_values as $option_value) {
 			$action = array();
