@@ -52,7 +52,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
 
         $this->data['order_items'] = array();
         $data = $this->parameters;
-        $data['filterCustomerId'] = $this->getCustomer()->getId();
+        $data['filterCustomerId'] = $this->getCurrentCustomer()->getId();
         $data['sort'] = 'order_item_id';
         $data['start']           = ($data['page'] - 1) * $this->config->get('config_admin_limit');
         $data['limit']           = $this->config->get('config_admin_limit');
@@ -82,7 +82,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
                     'image_path'	            => $image,
                     'name'			 => $orderItem->getName(),
                     'model'                     => $orderItem->getModel(),
-                    'name_korean'	            => $orderItem->getKoreanName(),
+//                    'name_korean'	            => $orderItem->getKoreanName(),
                     'order_id'					=> $orderItem->getOrderId(),
 					'order_url'					=> $this->url->link('account/order/info', 'order_id=' . $orderItem->getOrderId(), 'SSL'),
                     'options'       => nl2br(OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId())),
@@ -158,7 +158,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
             'common/header'
         );
 //        $this->log->write(print_r($this->data, true));
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 
     protected function initParameters() {
@@ -262,7 +262,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
     public function saveComment() {
 //        $this->log->write(print_r($this->parameters, true));
         if (!$this->isValidOrderItemId($this->parameters['orderItemId']))
-            $this->response->addHeader("HTTP/1.0 400 Bad request");
+            $this->getResponse()->addHeader("HTTP/1.0 400 Bad request");
         else
             OrderItemDAO::getInstance()->setOrderItemComment(
                 $this->parameters['orderItemId'],
@@ -270,6 +270,6 @@ class ControllerAccountOrderItems extends CustomerZoneController {
                 $this->parameters['private']
             );
 
-        $this->response->setOutput('');
+        $this->getResponse()->setOutput('');
     }
 }

@@ -127,7 +127,6 @@ window.onload = function() {
                   <div style="max-width: 200px; float: right; word-wrap: break-word;">
                     <?php echo $order_item['model'] . "&nbsp;/&nbsp;" . $order_item['name']; ?>
                     <span style="color: red; "><?php echo $order_item['options']; ?></span>
-                    <?php echo $order_item['name_korean']; ?>
                   </div>
                 </td>
                 <td><?= $order_item['price'] ?> / <?= $order_item['quantity'] ?></td>
