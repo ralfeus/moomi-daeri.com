@@ -22,6 +22,7 @@ $_['text_pagination']         = 'Showing {start} to {end} of {total} ({pages} Pa
 $_['text_no_results']         = 'No results!';
 $_['text_separator']          = ' &gt; ';
 $_['text_edit']               = 'Edit';
+$_['text_edit_value']               = 'Edit Values';
 $_['text_view']               = 'View';
 $_['text_home']               = 'Home';
 $_['textAction'] = 'Action';

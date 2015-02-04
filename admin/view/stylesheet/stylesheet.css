@@ -383,7 +383,7 @@ a.button, .list a.button {
 }
 .list tbody td input {
 	padding: 1px 5px;   
-    width: 95%; 
+    width: 90%; 
 }
 .list tbody tr:nth-child(2n) {
     background: #EAFAFA; /* ���� ���� */
