@@ -9,17 +9,17 @@ class ModelCatalogOption extends Model {
 			$this->db->query("INSERT INTO option_description SET option_id = '" . (int)$option_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
 		}
 
-		if (isset($data['option_value'])) {
-			foreach ($data['option_value'] as $option_value) {
-				$this->db->query("INSERT INTO option_value SET option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
-				
-				$option_value_id = $this->db->getLastId();
-				
-				foreach ($option_value['option_value_description'] as $language_id => $option_value_description) {
-					$this->db->query("INSERT INTO option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "'");
-				}
-			}
-		}
+//		if (isset($data['option_value'])) {
+//			foreach ($data['option_value'] as $option_value) {
+//				$this->db->query("INSERT INTO option_value SET option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
+//				
+//				$option_value_id = $this->db->getLastId();
+//				
+//				foreach ($option_value['option_value_description'] as $language_id => $option_value_description) {
+//					$this->db->query("INSERT INTO option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "'");
+//				}
+//			}
+//		}
 	}
 
 	public function editOption($option_id, $data) {
@@ -31,24 +31,24 @@ class ModelCatalogOption extends Model {
 			$this->db->query("INSERT INTO option_description SET option_id = '" . (int)$option_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
 		}
 				
-		$this->db->query("DELETE FROM option_value WHERE option_id = '" . (int)$option_id . "'");
-		$this->db->query("DELETE FROM option_value_description WHERE option_id = '" . (int)$option_id . "'");
+//		$this->db->query("DELETE FROM option_value WHERE option_id = '" . (int)$option_id . "'");
+//		$this->db->query("DELETE FROM option_value_description WHERE option_id = '" . (int)$option_id . "'");
 		
-		if (isset($data['option_value'])) {
-			foreach ($data['option_value'] as $option_value) {
-				if ($option_value['option_value_id']) {
-					$this->db->query("INSERT INTO option_value SET option_value_id = '" . (int)$option_value['option_value_id'] . "', option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
-				} else {
-					$this->db->query("INSERT INTO option_value SET option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
-				}
-				
-				$option_value_id = $this->db->getLastId();
-				
-				foreach ($option_value['option_value_description'] as $language_id => $option_value_description) {
-					$this->db->query("INSERT INTO option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "'");
-				}
-			}
-		}
+//		if (isset($data['option_value'])) {
+//			foreach ($data['option_value'] as $option_value) {
+//				if ($option_value['option_value_id']) {
+//					$this->db->query("INSERT INTO option_value SET option_value_id = '" . (int)$option_value['option_value_id'] . "', option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
+//				} else {
+//					$this->db->query("INSERT INTO option_value SET option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
+//				}
+//				
+//				$option_value_id = $this->db->getLastId();
+//				
+//				foreach ($option_value['option_value_description'] as $language_id => $option_value_description) {
+//					$this->db->query("INSERT INTO option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "'");
+//				}
+//			}
+//		}
 	}
 
 	public function editOptionValue($option_id, $option_value) {
