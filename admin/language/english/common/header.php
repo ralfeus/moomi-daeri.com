@@ -1,5 +1,5 @@
 <?php
-$_['text_version']               = 'v.4.2';
+$_['text_version']               = 'v.4.3';
 
 $_['CONTENT_MANAGEMENT'] = 'Content management';
 $_['CREDIT_MANAGEMENT'] = "Deposit management";
