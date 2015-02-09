@@ -18,13 +18,13 @@ class TonyMoly extends ProductSource {
 
         $html = $this->getHtmlDocument($product->url);
         /// Get description
-        $item = $html->find('div#ProdInfo>div.detail', 0);
+        $item = $html->find('div.product_info', 0);
         $product->description = trim($item->innertext);
         $product->description = preg_replace('/(?<=src=\")\//', $this->getRootUrl() . '/', $product->description);
 
         /// Get price and promo price
-        $product->price = preg_replace('/\D+/', '', $html->find('div.FixHeight li td.major2', 0)->plaintext);
-        $item = $html->find('div.FixHeight li.desc>strike', 0);
+        $product->price = preg_replace('/\D+/', '', $html->find('tr.prd-price td', 0)->plaintext);
+        $item = $html->find('td del', 0);
         if (!is_null($item)) {
             $product->promoPrice = $product->price;
             $product->price = preg_replace('/\D+/', '', $item->plaintext);
@@ -47,13 +47,13 @@ class TonyMoly extends ProductSource {
             foreach ($items as $item) {
                 if (!sizeof($item->find('img')))
                     continue;
-//                preg_match('/(?<=guid=)\d+/', $item->attr['href'], $matches);
+                $sourceProductId = preg_match('/(?<=guid=)\d+/', $item->attr['href'], $matches) ? $matches[0] : null;
                 $products[] = new Product(
                     $this,
                     array(preg_match('/(?<=cate=)\d+/', $item->attr['href'], $matches) ? $matches[0] : $categoryId),
-                    preg_match('/(?<=guid=)\d+/', $item->attr['href'], $matches) ? $matches[0] : null,
+                    $sourceProductId,
                     mb_convert_encoding($item->first_child()->attr['title'],  'utf-8', 'euc-kr'),
-                    $item->attr['href'],
+                    $this->getRootUrl() . "/html/ItemDetail.asp?guid=$sourceProductId&cate=$categoryId",
                     $this->getRootUrl() . $item->first_child()->attr['src'],
                     null,
                     null,
