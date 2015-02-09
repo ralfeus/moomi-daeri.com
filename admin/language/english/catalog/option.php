@@ -1,6 +1,7 @@
 <?php
 // Heading
 $_['heading_title']       = 'Options';
+$_['heading_value_title']       = 'Option Values';
 
 // Text
 $_['text_success']        = 'Success: You have modified options!';
@@ -20,12 +21,16 @@ $_['text_time']           = 'Time';
 $_['text_image_manager']  = 'Image Manager';
 $_['text_browse']         = 'Browse Files';
 $_['text_clear']          = 'Clear Image';
+$_['text_limit']          = 'Limit:';
 
 // Column
 $_['column_name']         = 'Option Name';
 $_['column_sort_order']   = 'Sort Order';
 $_['column_action']       = 'Action';
 $_['column_total']       = 'Total Values';
+$_['column_option_value']          = 'Value';
+$_['column_image_value']          = 'Image';
+$_['column_sort_value']          = 'Sort Order';
 
 // Entry
 $_['entry_name']         = 'Option Name:';

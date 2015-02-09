@@ -89,7 +89,7 @@ $_['entry_error_display']      = 'Display Errors:';
 $_['entry_error_log']          = 'Log Errors:';
 $_['entry_error_filename']     = 'Error Log Filename:';
 $_['entry_google_analytics']   = 'Google Analytics Code:<br /><span class="help">Login to your <a onclick="window.open(\'http://www.google.com/analytics/\');"><u>Google Analytics</u></a> account and after creating your web site profile copy and paste the analytics code into this field.</span>';
-$_['entry_sms_gatename']       = 'SMS гейт:<br/><span class="help">Сервис для отправки SMS<br/> Например <a target="_blank" href="http://avisosms.ru?refer=3502">avisosms</a></span>';
+$_['entry_sms_gatename']       = 'SMS гейт:<br/><span class="help">Сервис для отправки SMS<br/></span>';
 $_['entry_sms_to']             = 'Телефон администратора:<br/><span class="help">Формат: 7926xxxxxxx</span>';
 $_['entry_sms_from']           = 'Псевдоним отправителя:<br/><span class="help">Например: Domenam.ru</span>';
 $_['entry_sms_message']        = 'Текст сообщения:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE},{TIME} - дата и время формирования заказа<br/>{SUM} - сумма заказа</span>';

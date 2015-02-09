@@ -33,7 +33,7 @@ class ControllerCommonSeoPro extends Controller {
 						} else {
 							$this->request->get['path'] .= '_' . $url[1];
 						}
-					} else {
+					} elseif (count($url) > 1) {
 						$this->request->get[$url[0]] = $url[1];
 					}
 				}
@@ -53,6 +53,10 @@ class ControllerCommonSeoPro extends Controller {
 				$this->request->get['route'] = 'product/manufacturer/product';
 			} elseif (isset($this->request->get['information_id'])) {
 				$this->request->get['route'] = 'information/information';
+			} else {
+				if (isset($queries[$keyword_in[0]])) {
+					$this->request->get['route'] = $queries[$keyword_in[0]];
+				}
 			}
 
 			if (isset($this->request->get['route']) && $this->request->get['route'] != 'error/not_found') {
@@ -103,6 +107,14 @@ class ControllerCommonSeoPro extends Controller {
 				}
 				break;
 
+			case 'information/information/info':
+				return $link;
+				break;
+
+			case 'common/home':
+				return trim($seo_url, '//');
+				break;
+
 			default:
 				break;
 		}
@@ -144,18 +156,19 @@ class ControllerCommonSeoPro extends Controller {
 			}
 		}
 
-		if (!empty($queries)) {
-			$query_in = array_map(array($this->db, 'escape'), $queries);
-			$query = $this->db->query("SELECT * FROM url_alias WHERE `query` IN ('" . implode("', '", $query_in) . "')");
+		if (empty($queries)) {
+			$queries[] = $route;
+		}
+		$query_in = array_map(array($this->db, 'escape'), $queries);
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "url_alias WHERE `query` IN ('" . implode("', '", $query_in) . "')");
 
-			if ($query->num_rows == count($queries)) {
-				$aliases = array();
-				foreach ($query->rows as $row) {
-					$aliases[$row['query']] = $row['keyword'];
-				}
-				foreach ($queries as $query) {
-					$seo_url .= '/' . rawurlencode($aliases[$query]);
-				}
+		if ($query->num_rows == count($queries)) {
+			$aliases = array();
+			foreach ($query->rows as $row) {
+				$aliases[$row['query']] = $row['keyword'];
+			}
+			foreach ($queries as $query) {
+				$seo_url .= '/' . rawurlencode($aliases[$query]);
 			}
 		}
 
@@ -169,8 +182,16 @@ class ControllerCommonSeoPro extends Controller {
 			$seo_url = $this->config->get('config_url') . $seo_url;
 		}
 
-		if (isset($postfix)) {
-			$seo_url .= trim($this->config->get('config_seo_url_postfix'));
+		if (isset($postfix))
+		{
+			if ($this->config->get('config_seo_url_postfix') != '')
+			{
+				$seo_url .= trim($this->config->get('config_seo_url_postfix'));
+			}
+			else
+			{
+				$seo_url .= '/';
+			}
 		} else {
 			$seo_url .= '/';
 		}
@@ -276,7 +297,7 @@ class ControllerCommonSeoPro extends Controller {
 
 			header($this->request->server['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
 
-			$this->getResponse()->redirect($seo_url);
+			$this->response->redirect($seo_url);
 		}
 	}
 }

@@ -40,6 +40,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_design'] = $this->language->get('text_design');
 		$this->data['text_documentation'] = $this->language->get('text_documentation');
 		$this->data['text_download'] = $this->language->get('text_download');
+		$this->data['text_sql_exec'] = $this->language->get('text_sql_exec');
 		$this->data['text_error_log'] = $this->language->get('text_error_log');
 		$this->data['text_extension'] = $this->language->get('text_extension');
 		$this->data['text_feed'] = $this->language->get('text_feed');
@@ -146,6 +147,7 @@ class ControllerCommonHeader extends Controller {
 			$this->data['customer_group'] = $this->url->link('sale/customer_group', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['customer_blacklist'] = $this->url->link('sale/customer_blacklist', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['download'] = $this->url->link('catalog/download', 'token=' . $this->session->data['token'], 'SSL');
+			$this->data['sql_exec'] = $this->url->link('module/sqlexecutor', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['error_log'] = $this->url->link('tool/error_log', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['feed'] = $this->url->link('extension/feed', 'token=' . $this->session->data['token'], 'SSL');
 			$this->data['geo_zone'] = $this->url->link('localisation/geo_zone', 'token=' . $this->session->data['token'], 'SSL');

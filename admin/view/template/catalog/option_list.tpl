@@ -48,10 +48,11 @@
                 <input type="checkbox" name="selected[]" value="<?php echo $option['option_id']; ?>" />
                 <?php } ?></td>
               <td class="left"><?php echo $option['name']; ?></td>
-              <td class="right"><?php echo $option['total_values']; ?></td>
+              <td class="right"><?php echo $option['total_values']; ?> </td>
               <td class="right"><?php echo $option['sort_order']; ?></td>
               <td class="right"><?php foreach ($option['action'] as $action) { ?>
                 [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]
+                [ <a href="<?php echo $action['href_value']; ?>"><?php echo $action['text_value']; ?></a> ]
                 <?php } ?></td>
             </tr>
             <?php } ?>

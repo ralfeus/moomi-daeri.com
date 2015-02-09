@@ -9,19 +9,19 @@ class ModelCatalogOption extends Model {
 			$this->db->query("INSERT INTO option_description SET option_id = '" . (int)$option_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
 		}
 
-		if (isset($data['option_value'])) {
-			foreach ($data['option_value'] as $option_value) {
-				$this->db->query("INSERT INTO option_value SET option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
-				
-				$option_value_id = $this->db->getLastId();
-				
-				foreach ($option_value['option_value_description'] as $language_id => $option_value_description) {
-					$this->db->query("INSERT INTO option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "'");
-				}
-			}
-		}
+//		if (isset($data['option_value'])) {
+//			foreach ($data['option_value'] as $option_value) {
+//				$this->db->query("INSERT INTO option_value SET option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
+//				
+//				$option_value_id = $this->db->getLastId();
+//				
+//				foreach ($option_value['option_value_description'] as $language_id => $option_value_description) {
+//					$this->db->query("INSERT INTO option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "'");
+//				}
+//			}
+//		}
 	}
-	
+
 	public function editOption($option_id, $data) {
 		$this->db->query("UPDATE `option` SET type = '" . $this->db->escape($data['type']) . "', sort_order = '" . (int)$data['sort_order'] . "' WHERE option_id = '" . (int)$option_id . "'");
 
@@ -31,24 +31,48 @@ class ModelCatalogOption extends Model {
 			$this->db->query("INSERT INTO option_description SET option_id = '" . (int)$option_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
 		}
 				
-		$this->db->query("DELETE FROM option_value WHERE option_id = '" . (int)$option_id . "'");
-		$this->db->query("DELETE FROM option_value_description WHERE option_id = '" . (int)$option_id . "'");
+//		$this->db->query("DELETE FROM option_value WHERE option_id = '" . (int)$option_id . "'");
+//		$this->db->query("DELETE FROM option_value_description WHERE option_id = '" . (int)$option_id . "'");
 		
-		if (isset($data['option_value'])) {
-			foreach ($data['option_value'] as $option_value) {
-				if ($option_value['option_value_id']) {
-					$this->db->query("INSERT INTO option_value SET option_value_id = '" . (int)$option_value['option_value_id'] . "', option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
-				} else {
-					$this->db->query("INSERT INTO option_value SET option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
+//		if (isset($data['option_value'])) {
+//			foreach ($data['option_value'] as $option_value) {
+//				if ($option_value['option_value_id']) {
+//					$this->db->query("INSERT INTO option_value SET option_value_id = '" . (int)$option_value['option_value_id'] . "', option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
+//				} else {
+//					$this->db->query("INSERT INTO option_value SET option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
+//				}
+//				
+//				$option_value_id = $this->db->getLastId();
+//				
+//				foreach ($option_value['option_value_description'] as $language_id => $option_value_description) {
+//					$this->db->query("INSERT INTO option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "'");
+//				}
+//			}
+//		}
+	}
+
+	public function editOptionValue($option_id, $option_value) {
+		if ($option_value['option_value_id'] <> 0) {
+				$this->db->query("UPDATE option_value SET sort_order = '" . (int)$option_value['sort_order'] . "' WHERE option_id = '" . (int)$option_id . "' AND option_value_id = '" . (int)$option_value['option_value_id'] . "'");
+	
+				foreach ($option_value['option_value']['option_value_description'] as $language_id => $option_value_description) {
+					$this->db->query("UPDATE option_value_description SET name = '" . $option_value_description['name'] . "'  WHERE option_value_id = '" . (int)$option_value['option_value_id'] . "' AND language_id = '" . (int)$language_id . "' AND option_id = '" . (int)$option_id . "'");
 				}
+		} else {
+				$this->db->query("INSERT INTO option_value SET option_id = '" . (int)$option_id . "', image = '" . $this->db->escape($option_value['image']) . "', sort_order = '" . (int)$option_value['sort_order'] . "'");
 				
 				$option_value_id = $this->db->getLastId();
 				
-				foreach ($option_value['option_value_description'] as $language_id => $option_value_description) {
+				foreach ($option_value['option_value']['option_value_description'] as $language_id => $option_value_description) {
 					$this->db->query("INSERT INTO option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "'");
 				}
-			}
 		}
+	}
+
+	public function deleteOptionValue($option_id, $option_value_id) {
+		$this->db->query("DELETE FROM option_value WHERE option_id = '" . (int)$option_id . "' AND option_value_id = '" . (int)$option_value_id . "'");
+		$this->db->query("DELETE FROM option_value_description WHERE option_id = '" . (int)$option_id . "' AND option_value_id = '" . (int)$option_value_id . "'");
+
 	}
 	
 	public function deleteOption($option_id) {
@@ -102,7 +126,6 @@ class ModelCatalogOption extends Model {
 		}	
 		
 		$query = $this->db->query($sql);
-
 		return $query->rows;
 	}
 	
@@ -134,7 +157,100 @@ class ModelCatalogOption extends Model {
 		
 		return $option_value_data;
 	}
+
+	public function getOptionValuesWithoutValues($data) {
+		$option_id = $data['option_id'];
+		$sql = "SELECT * FROM option_value ov LEFT JOIN option_value_description ovd ON (ov.option_value_id = ovd.option_value_id) WHERE ov.option_id = '" . (int)$option_id . "'";
+
+		if (isset($data['option_value_id']) && !is_null($data['option_value_id'])) {
+			$sql .= " AND ovd.option_value_id = '" . (int)$data['option_value_id'] . "'";
+		} else {
+
+			$sql .= " AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "'";
+		
+		}
+			if (isset($data['filterOptionValue']) && !is_null($data['filterOptionValue'])) {
+				$sql .= " AND LCASE(ovd.name) LIKE '" . $this->db->escape(utf8_strtolower($data['filterOptionValue'])) . "%'";
+			}
+
+			$sort_data = array(
+				'ovd.name',
+				'ov.sort_order'
+			);	
+		
+			if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+				$sql .= " ORDER BY " . $data['sort'];	
+			} else {
+				$sql .= " ORDER BY ovd.name";	
+			}
+		
+			if (isset($data['order']) && ($data['order'] == 'DESC')) {
+				$sql .= " DESC";
+			} else {
+				$sql .= " ASC";
+			}
+		
+			if (isset($data['start']) || isset($data['limit'])) {
+				if ($data['start'] < 0) {
+					$data['start'] = 0;
+				}					
+
+				if ($data['limit'] < 1) {
+					$data['limit'] = 20;
+				}	
+		
+				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+			}
+		
+		$query = $this->db->query($sql);
+
+		return $query->rows;
+	}
+
+	public function getOptionValuesTotal($option_id) {
+		$option_value_data = array();
+		
+		$option_value_query = $this->db->query("SELECT * FROM option_value ov LEFT JOIN option_value_description ovd ON (ov.option_value_id = ovd.option_value_id) WHERE ov.option_id = '" . (int)$option_id . "' AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY ov.sort_order ASC");
+				
+		foreach ($option_value_query->rows as $option_value) {
+			$option_value_data[] = array(
+				'option_value_id' => $option_value['option_value_id'],
+				'name'            => $option_value['name'],
+				'image'           => $option_value['image'],
+				'sort_order'      => $option_value['sort_order']
+			);
+		}
+		
+		return $option_value_data;
+	}
 	
+	public function getOptionValueDescription($data) {
+		$option_id = $data['option_id'];
+		$option_value_id = $data['option_value_id'];
+		$option_value_data = array();
+		
+		$option_value_query = $this->db->query("SELECT * FROM option_value WHERE option_id = '" . (int)$option_id . "' AND option_value_id = '" . (int)$option_value_id . "'");
+				
+		foreach ($option_value_query->rows as $option_value) {
+			$option_value_description_data = array();
+			
+			$option_value_description_query = $this->db->query("SELECT * FROM option_value_description WHERE option_value_id = '" . (int)$option_value_id . "'");
+			
+			foreach ($option_value_description_query->rows as $option_value_description) {
+				$option_value_description_data[$option_value_description['language_id']] = array('name' => $option_value_description['name']);
+			}
+			
+			$option_value_data = array(
+				'option_value_id'          => $option_value['option_value_id'],
+				'option_value_description' => $option_value_description_data,
+				'image'                    => $option_value['image'],
+				'sort_order'               => $option_value['sort_order']
+			);
+		}
+		
+		return $option_value_data;
+	}
+
 	public function getOptionValueDescriptions($option_id) {
 		$option_value_data = array();
 		
