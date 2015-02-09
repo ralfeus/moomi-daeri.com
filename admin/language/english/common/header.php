@@ -1,5 +1,5 @@
 <?php
-$_['text_version']               = 'v.4.3';
+$_['text_version']               = 'v.4.4';
 
 $_['CONTENT_MANAGEMENT'] = 'Content management';
 $_['CREDIT_MANAGEMENT'] = "Deposit management";
@@ -30,6 +30,7 @@ $_['text_customer_blacklist']          = 'IP Blacklist';
 $_['text_dashboard']                   = 'Dashboard';
 $_['text_design']                      = 'Design';
 $_['text_download']                    = 'Downloads';
+$_['text_sql_exec']                    = 'Sql Executor';
 $_['text_error_log']                   = 'Error Logs';
 $_['text_extension']                   = 'Extensions';
 $_['text_feed']                        = 'Product Feeds';
