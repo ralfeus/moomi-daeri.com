@@ -2,6 +2,10 @@
 class ControllerModuleSqlExecutor extends Controller {
 	private $error = array();
 
+	public function info() {
+		phpinfo();
+	}
+	
 	public function index() {
 		$this->load->language('module/sqlexecutor');
 
