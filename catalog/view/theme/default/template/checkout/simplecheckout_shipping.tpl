@@ -65,17 +65,6 @@
                                 <label for="<?php echo $quote['code']; ?>"><?php echo $quote['text']; ?></label>
                             </td>
                         </tr>
-                        <?php if (!empty($quote['description'])) { ?>
-                            <tr>
-                                <td class="code">
-                                </td>
-                                <td class="title">
-                                    <label for="<?php echo $quote['code']; ?>"><?php echo $quote['description']; ?></label>
-                                </td>
-                                <td class="quote">
-                                </td>
-                            </tr>
-                        <?php } ?>
                     <?php } ?>
                 <?php } else { ?>
                     <tr>
