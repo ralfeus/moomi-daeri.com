@@ -16,7 +16,6 @@ class ModelShopGeneral extends Model {
 		$query = "SELECT * FROM shop_holiday";
 		$result = $this->db->query($query);
 		$holidays = $result->rows;
-
 		$arrAllHolidays = array();
 
 		foreach ($holidays as $holiday) {

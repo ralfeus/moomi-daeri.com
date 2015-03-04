@@ -89,6 +89,12 @@
           </table>
         </div>
         <div id="tab-payment" class="vtabs-content">
+            <script type="text/javascript">
+                $(function(){
+                    $('#tab-payment table').after('<div id="simple_custom_payment_address" class="simple-container"></div>');
+                    $('#simple_custom_payment_address').load('index.php?route=module/simple/custom&set=payment_address&token=<?php echo $token; ?>&type=order&id=<?php echo $order_id; ?>');
+                });
+            </script>
           <table class="form">
             <tr>
               <td><?php echo $entry_address; ?></td>
@@ -169,6 +175,12 @@
           </table>
         </div>
         <div id="tab-shipping" class="vtabs-content">
+            <script type="text/javascript">
+                $(function(){
+                    $('#tab-shipping table').after('<div id="simple_custom_shipping_address" class="simple-container"></div>');
+                    $('#simple_custom_shipping_address').load('index.php?route=module/simple/custom&set=shipping_address&token=<?php echo $token; ?>&type=order&id=<?php echo $order_id; ?>');
+                });
+            </script>
           <table class="form">
             <tr>
               <td><?php echo $entry_address; ?></td>

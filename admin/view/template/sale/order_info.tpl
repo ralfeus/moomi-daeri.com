@@ -17,6 +17,12 @@
         <?php } ?>
         <a href="#tab-product"><?php echo $tab_product; ?></a><a href="#tab-history"><?php echo $tab_order_history; ?></a></div>
       <div id="tab-order" class="vtabs-content">
+            <script type="text/javascript">
+                $(function(){
+                    $('#tab-order table').after('<div id="simple_custom_order" class="simple-container"></div>');
+                    $('#simple_custom_order').load('index.php?route=module/simple/custom&set=order&token=<?php echo $token; ?>&type=order&id=<?php echo $order_id; ?>');
+                });
+            </script>
         <table class="form">
           <tr>
             <td><?php echo $text_order_id; ?></td>
@@ -133,6 +139,12 @@
         </table>
       </div>
       <div id="tab-payment" class="vtabs-content">
+            <script type="text/javascript">
+                $(function(){
+                    $('#tab-payment table').after('<div id="simple_custom_payment_address" class="simple-container"></div>');
+                    $('#simple_custom_payment_address').load('index.php?route=module/simple/custom&set=payment_address&token=<?php echo $token; ?>&type=order&id=<?php echo $order_id; ?>');
+                });
+            </script>
         <table class="form">
           <tr>
             <td><?php echo $text_firstname; ?></td>
@@ -190,6 +202,12 @@
       </div>
       <?php if ($shipping_method) { ?>
       <div id="tab-shipping" class="vtabs-content">
+            <script type="text/javascript">
+                $(function(){
+                    $('#tab-shipping table').after('<div id="simple_custom_shipping_address" class="simple-container"></div>');
+                    $('#simple_custom_shipping_address').load('index.php?route=module/simple/custom&set=shipping_address&token=<?php echo $token; ?>&type=order&id=<?php echo $order_id; ?>');
+                });
+            </script>
         <table class="form">
           <tr>
             <td><?php echo $text_firstname; ?></td>

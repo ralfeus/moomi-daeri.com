@@ -34,6 +34,12 @@
             <?php } ?>
             <span id="address-add"><?php echo $button_add_address; ?>&nbsp;<img src="view/image/add.png" alt="" onclick="addAddress();" /></span></div>
           <div id="tab-customer" class="vtabs-content">
+            <script type="text/javascript">
+                $(function(){
+                    $('#tab-customer table').after('<div id="simple_custom_customer" class="simple-container"></div>');
+                    $('#simple_custom_customer').load('index.php?route=module/simple/custom&token=<?php echo $token; ?>&set=customer&type=customer&id=<?php echo $customer_id; ?>');
+                });
+            </script>
             <table class="form">
               <tr>
                 <td><span class="required">*</span> <?php echo $entry_firstname; ?></td>
@@ -134,6 +140,12 @@
           <?php foreach ($addresses as $address) { ?>
           <div id="tab-address-<?php echo $address_row; ?>" class="vtabs-content">
             <input type="hidden" name="address[<?php echo $address_row; ?>][address_id]" value="<?php echo $address['address_id']; ?>" />
+            <script type="text/javascript">
+                $(function(){
+                    $('#tab-address-<?php echo $address_row; ?> table').after('<div id="simple_custom_address_<?php echo $address_row; ?>" class="simple-container"></div>');
+                    $('#simple_custom_address_<?php echo $address_row; ?>').load('index.php?route=module/simple/custom&set=address&token=<?php echo $token; ?>&type=address&id=<?php echo $address['address_id']; ?>');
+                });
+            </script>
             <table class="form">
               <tr>
                 <td><span class="required">*</span> <?php echo $entry_firstname; ?></td>
