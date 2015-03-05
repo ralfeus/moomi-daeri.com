@@ -11,7 +11,7 @@ class Url {
 	
 	public function link($route, $args = '', $connection = 'NONSSL') {
         
-        // SIMPLE START
+ /*       // SIMPLE START
         $get_route = isset($_GET['route']) ? $_GET['route'] : (isset($_GET['_route_']) ? $_GET['_route_'] : '');
             
         if ($route == 'checkout/cart' && $get_route != 'checkout/cart') {
@@ -39,7 +39,7 @@ class Url {
             $route = 'account/simpleaddress/insert';
         }       
         // SIMPLE END
-        
+ */       
 		if ($connection ==  'NONSSL') {
 			$url = $this->url;	
 		} else {
