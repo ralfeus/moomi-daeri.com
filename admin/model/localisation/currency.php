@@ -137,7 +137,7 @@ class ModelLocalisationCurrency extends Model {
 		}
 	}	
 
-	public function updateCurrencies() {
+/*	public function updateCurrencies() {
 		if (extension_loaded('curl')) {
 			$data = array();
 			
@@ -172,6 +172,120 @@ class ModelLocalisationCurrency extends Model {
 
 			$this->cache->delete('currency');
 		}
+	}
+*/
+	public function updateCurrencies($force = false) {
+		if (extension_loaded('curl')) {
+			$currencies = array();
+			
+			if ($force) {
+				$query = $this->db->query("SELECT * FROM currency WHERE code != '" . $this->db->escape($this->config->get('config_currency')) . "'");
+			} else {
+				$query = $this->db->query("SELECT * FROM currency WHERE code != '" . $this->db->escape($this->config->get('config_currency')) . "' AND date_modified < '" .  $this->db->escape(date('Y-m-d H:i:s', strtotime('-1 day'))) . "'");
+			}
+			
+			foreach ($query->rows as $result) {
+				$currencies[$result['code']] = $result['value'];
+			}	
+
+			if ($currencies) {
+
+				$xml_data = $this->cache->get('currencies');
+
+				if (empty($xml_data)) {
+				
+					$curl = curl_init();
+					
+					curl_setopt($curl, CURLOPT_URL, 'http://www.cbr.ru/scripts/XML_daily.asp');
+					curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+					
+					$content = curl_exec($curl);
+
+					curl_close($curl);
+
+					if ($content) {
+
+						$xml_data = json_decode(
+							json_encode(	
+								(array)simplexml_load_string($content)
+							),	true
+						);
+
+						file_put_contents(
+							DIR_CACHE . 'cache.currencies.' . strtotime('tomorrow'), 
+							serialize($xml_data)
+						);
+
+					} else {
+						$this->log->write('Automatic currency update failed: Link is broken or empty data feed!');
+						return false;
+					}
+
+				}
+				
+				$date_modified = date('Y-m-d H:i:s');
+					
+				if ( isset($xml_data['@attributes']) && isset($xml_data['@attributes']['Date']) ) {
+					$date_modified = date('Y-m-d H:i:s', strtotime($xml_data['@attributes']['Date']) );
+				} 
+					
+				if ( isset($xml_data['Valute']) ) {
+					$base_currency = RUB;
+//					$default_currency = $this->db->escape($this->config->get('config_currency'));
+					$default_currency = KRW;  // default currency in store KRW
+
+					foreach ($xml_data['Valute'] as $Valute) {
+						if ($Valute['CharCode'] == $default_currency) { 
+
+							$def_val = floatval(
+								str_replace(',', '.', $Valute['Value'])
+							);
+							$def_nom = floatval(
+								str_replace(',', '.', $Valute['Nominal'])
+							);
+						}
+					}
+
+					foreach ($xml_data['Valute'] as $Valute) {
+
+						if ($currencies[$Valute['CharCode']] <> $base_currency) { 
+							if ($Valute['CharCode'] <> $default_currency) { 
+								if ( isset($currencies[$Valute['CharCode']]) && isset($Valute['Value'])) {
+									$valt = floatval(
+										str_replace(',', '.', $Valute['Value'])
+									);
+									$nomt = floatval(
+										str_replace(',', '.', $Valute['Nominal'])
+									);
+									$value = ($def_val*$nomt*1.05)/($def_nom*$valt);
+									if ($value) {
+										$this->db->query("UPDATE currency SET value = '" . $value . "', date_modified = '" .  $this->db->escape($date_modified) . "' WHERE code = '" . $this->db->escape($Valute['CharCode']) . "'");
+									}
+									unset($currencies[$Valute['CharCode']]);
+								} 
+							}
+						}							
+						if (empty($currencies)) {
+							break;
+						}
+					}
+					
+					$value_rur = $def_val*1.05/$def_nom;
+
+					$this->db->query("UPDATE currency SET value = '" . $value_rur . "', date_modified = '" .  $this->db->escape($date_modified) . "' WHERE code = 'RUB'");
+
+					$this->db->query("UPDATE currency SET value = '1.00000', date_modified = '" .  $this->db->escape($date_modified) . "' WHERE code = '" . $this->db->escape($this->config->get('config_currency')) . "'");
+
+					$this->cache->delete('currency');											
+
+				} else {
+					$this->log->write('Automatic currency update failed: Unable to parse data feed!');
+					$this->cache->delete('currencies');	
+				}				
+				
+			}		
+		}
+
 	}
 	
 	public function getTotalCurrencies() {

@@ -101,11 +101,11 @@ class ControllerCommonHome extends Controller {
 			);
 		}
 
-		if ($this->config->get('config_currency_auto')) {
-			$this->load->model('localisation/currency');
-		
-			$this->model_localisation_currency->updateCurrencies();
-		}
+//		if ($this->config->get('config_currency_auto')) {
+//			$this->load->model('localisation/currency');
+//		
+//			$this->model_localisation_currency->updateCurrencies();
+//		}
 
 if ($this->user->getUsergroupId() == 1) {
 		$this->template = 'common/home.tpl.php';

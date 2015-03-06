@@ -12,6 +12,17 @@ class ControllerLocalisationCurrency extends Controller {
     }
 
 	public function index() {
+
+		$this->getList();
+	}
+
+	public function update_currency(){
+		if ($this->config->get('config_currency_auto')) {
+			$this->load->model('localisation/currency');
+
+			$this->modelLocalisationCurrency->updateCurrencies();
+			
+		}
 		$this->getList();
 	}
 
@@ -152,6 +163,7 @@ class ControllerLocalisationCurrency extends Controller {
       		'separator' => ' :: '
    		);
 		
+		$this->data['update'] = $this->url->link('localisation/currency/update_currency', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		$this->data['insert'] = $this->url->link('localisation/currency/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		$this->data['delete'] = $this->url->link('localisation/currency/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		
@@ -197,6 +209,7 @@ class ControllerLocalisationCurrency extends Controller {
 		$this->data['column_date_modified'] = $this->language->get('column_date_modified');
 		$this->data['column_action'] = $this->language->get('column_action');
 
+		$this->data['button_update'] = $this->language->get('button_update');
 		$this->data['button_insert'] = $this->language->get('button_insert');
 		$this->data['button_delete'] = $this->language->get('button_delete');
 

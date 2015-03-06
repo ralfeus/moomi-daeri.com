@@ -12,6 +12,10 @@ $_['column_value']         = 'Value';
 $_['column_date_modified'] = 'Last Updated';
 $_['column_action']        = 'Action';
 
+//Button
+$_['button_update']        = 'Update Currency';
+
+
 // Entry
 $_['entry_title']          = 'Currency Title:';
 $_['entry_code']           = 'Code:<br /><span class="help">Do not change if this is your default currency.</span>';
