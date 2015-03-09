@@ -14,11 +14,11 @@ class Url {
         // SIMPLE START
         $get_route = isset($_GET['route']) ? $_GET['route'] : (isset($_GET['_route_']) ? $_GET['_route_'] : '');
             
-        if ($route == 'checkout/cart' && $get_route != 'checkout/cart') {
+ /*       if ($route == 'checkout/cart' && $get_route != 'checkout/cart') {
             $connection = 'SSL';
             $route = 'checkout/simplecheckout';
         }
-        
+ */       
         if ($route == 'checkout/checkout' && $get_route != 'checkout/checkout') {
             $route = 'checkout/simplecheckout';
         }
