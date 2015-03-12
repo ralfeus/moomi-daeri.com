@@ -43,7 +43,7 @@ class ModelShippingWeight extends ShippingMethodModel
                 ztgz.country_id = " . (int)$address['country_id'] . "
                 AND ztgz.zone_id IN (" . (int)$address['zone_id'] . ", 0)
         ";
-        $query = $this->db->query($sql);
+        $query = $this->getDb()->query($sql);
         if ($query->row)
         {
             $result = array();

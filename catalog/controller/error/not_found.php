@@ -27,7 +27,7 @@ class ControllerErrorNotFound extends Controller {
 		
 		$this->data['button_continue'] = $this->language->get('button_continue');
 		
-		$this->response->addHeader($this->request->server['SERVER_PROTOCOL'] . '/1.1 404 Not Found');
+		$this->getResponse()->addHeader($this->request->server['SERVER_PROTOCOL'] . '/1.1 404 Not Found');
 		
 		$this->data['continue'] = $this->url->link('common/home');
 
@@ -46,7 +46,7 @@ class ControllerErrorNotFound extends Controller {
 			'common/header'
 		);
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 }
 ?>

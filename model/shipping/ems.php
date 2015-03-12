@@ -45,7 +45,7 @@ class ModelShippingEMS extends ShippingMethodModel {
                 AND ztgz.zone_id IN (" . (int)$address['zone_id'] . ", 0)
         ";
         $this->log->write($sql);
-        $query = $this->db->query($sql);
+        $query = $this->getDb()->query($sql);
         if ($query->row)
         {
             $result = array();
@@ -71,11 +71,11 @@ class ModelShippingEMS extends ShippingMethodModel {
 
 		$quote_data = array();
 
-		$query = $this->db->query("SELECT * FROM geo_zone ORDER BY name");
+		$query = $this->getDb()->query("SELECT * FROM geo_zone ORDER BY name");
 
 		foreach ($query->rows as $result) {
 			if ($this->config->get('ems_' . $result['geo_zone_id'] . '_status')) {
-				$query = $this->db->query("SELECT * FROM zone_to_geo_zone WHERE geo_zone_id = '" . (int)$result['geo_zone_id'] . "' AND country_id = '" . (int)$address['country_id'] . "' AND (zone_id = '" . (int)$address['zone_id'] . "' OR zone_id = '0')");
+				$query = $this->getDb()->query("SELECT * FROM zone_to_geo_zone WHERE geo_zone_id = '" . (int)$result['geo_zone_id'] . "' AND country_id = '" . (int)$address['country_id'] . "' AND (zone_id = '" . (int)$address['zone_id'] . "' OR zone_id = '0')");
 
 				if ($query->num_rows) {
 					$status = true;

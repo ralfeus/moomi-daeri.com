@@ -116,8 +116,8 @@ class ControllerFeedYandexMarket extends Controller {
 
 			$this->categories = array_filter($this->categories, array($this, "filterCategory"));
 
-			$this->response->addHeader('Content-Type: application/xml');
-			$this->response->setOutput($this->getYml());
+			$this->getResponse()->addHeader('Content-Type: application/xml');
+			$this->getResponse()->setOutput($this->getYml());
 		}
 	}
 

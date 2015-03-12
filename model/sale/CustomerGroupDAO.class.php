@@ -5,20 +5,20 @@ use model\DAO;
 
 class CustomerGroupDAO extends DAO{
     public function addCustomerGroup($data) {
-        $this->db->query("
+        $this->getDb()->query("
 		    INSERT INTO customer_group
 		    SET
-		        name = '" . $this->db->escape($data['name']) . "',
+		        name = '" . $this->getDb()->escape($data['name']) . "',
 		        allow_overdraft = " . (int)(isset($data['allowOverdraft']) && $data['allowOverdraft']) . ",
 		        await_invoice_confirmation = " . (int)(isset($data['awaitInvoiceConfirmation']) && $data['awaitInvoiceConfirmation'])
         );
     }
 
     public function editCustomerGroup($customer_group_id, $data) {
-        $this->db->query("
+        $this->getDb()->query("
 		    UPDATE customer_group
 		    SET
-		        name = '" . $this->db->escape($data['name']) . "',
+		        name = '" . $this->getDb()->escape($data['name']) . "',
 		        allow_overdraft = " . (int)(isset($data['allowOverdraft']) && $data['allowOverdraft']) . ",
 		        await_invoice_confirmation = " . (int)(isset($data['awaitInvoiceConfirmation']) && $data['awaitInvoiceConfirmation']) . "
             WHERE customer_group_id = '" . (int)$customer_group_id . "'
@@ -26,8 +26,8 @@ class CustomerGroupDAO extends DAO{
     }
 
     public function deleteCustomerGroup($customer_group_id) {
-        $this->db->query("DELETE FROM customer_group WHERE customer_group_id = '" . (int)$customer_group_id . "'");
-        $this->db->query("DELETE FROM product_discount WHERE customer_group_id = '" . (int)$customer_group_id . "'");
+        $this->getDb()->query("DELETE FROM customer_group WHERE customer_group_id = '" . (int)$customer_group_id . "'");
+        $this->getDb()->query("DELETE FROM product_discount WHERE customer_group_id = '" . (int)$customer_group_id . "'");
     }
 
     public function getCustomerGroup($customerGroupId) {
@@ -64,13 +64,13 @@ class CustomerGroupDAO extends DAO{
             $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
         }
 
-        $query = $this->db->query($sql);
+        $query = $this->getDb()->query($sql);
 
         return $query->rows;
     }
 
     public function getTotalCustomerGroups() {
-        $query = $this->db->query("SELECT COUNT(*) AS total FROM customer_group");
+        $query = $this->getDb()->query("SELECT COUNT(*) AS total FROM customer_group");
 
         return $query->row['total'];
     }

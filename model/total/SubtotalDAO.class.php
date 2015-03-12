@@ -22,7 +22,7 @@ class SubtotalDAO extends TotalBaseDAO {
         else
             $sub_total = 0;
 
-        $query = $this->db->query("
+        $query = $this->getDb()->query("
             SELECT sum(amount) AS total
             FROM voucher_history
             WHERE order_id = " . (int)$orderId

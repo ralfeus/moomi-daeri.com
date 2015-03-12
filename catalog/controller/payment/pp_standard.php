@@ -103,12 +103,11 @@ class ControllerPaymentPPStandard extends Controller {
 			$this->data['city'] = html_entity_decode($order_info['payment_city'], ENT_QUOTES, 'UTF-8');	
 			$this->data['zip'] = html_entity_decode($order_info['payment_postcode'], ENT_QUOTES, 'UTF-8');	
 			$this->data['country'] = $order_info['payment_iso_code_2'];
-			$this->data['notify_url'] = $this->url->link('payment/pp_standard/callback');
+			$this->data['notify_url'] = $this->url->link('payment/pp_standard/callback', '', 'SSL');
 			$this->data['email'] = $order_info['email'];
 			$this->data['invoice'] = $this->session->data['order_id'] . ' - ' . html_entity_decode($order_info['payment_firstname'], ENT_QUOTES, 'UTF-8') . ' ' . html_entity_decode($order_info['payment_lastname'], ENT_QUOTES, 'UTF-8');
 			$this->data['lc'] = $this->session->data['language'];
 			$this->data['return'] = $this->url->link('checkout/success');
-			$this->data['notify_url'] = $this->url->link('payment/pp_standard/callback');
 			$this->data['cancel_return'] = $this->url->link('checkout/checkout', '', 'SSL');
 			
 			if (!$this->config->get('pp_standard_transaction')) {
@@ -123,10 +122,10 @@ class ControllerPaymentPPStandard extends Controller {
 	
 			$this->data['custom'] = $encryption->encrypt($this->session->data['order_id']);
 		
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/pp_standard.tpl')) {
-				$this->template = $this->config->get('config_template') . '/template/payment/pp_standard.tpl';
+			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/pp_standard.tpl.php')) {
+				$this->template = $this->config->get('config_template') . '/template/payment/pp_standard.tpl.php';
 			} else {
-				$this->template = 'default/template/payment/pp_standard.tpl';
+				$this->template = 'default/template/payment/pp_standard.tpl.php';
 			}
 	
 			$this->render();

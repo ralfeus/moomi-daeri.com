@@ -3,7 +3,7 @@ class ModelShippingFlat extends Model {
 	function getQuote($address) {
 		$this->load->language('shipping/flat');
 		
-		$query = $this->db->query("
+		$query = $this->getDb()->query("
 		    SELECT *
 		    FROM zone_to_geo_zone
 		    WHERE

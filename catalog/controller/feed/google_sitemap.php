@@ -48,8 +48,8 @@ class ControllerFeedGoogleSitemap extends Controller {
 
 			$output .= '</urlset>';
 
-			$this->response->addHeader('Content-Type: application/xml');
-			$this->response->setOutput($output);
+			$this->getResponse()->addHeader('Content-Type: application/xml');
+			$this->getResponse()->setOutput($output);
 		}
 	}
 

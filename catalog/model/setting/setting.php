@@ -3,7 +3,7 @@ class ModelSettingSetting extends Model {
 	public function getSetting($group, $store_id = 0) {
 		$data = array(); 
 		
-		$query = $this->db->query("SELECT * FROM setting WHERE store_id = '" . (int)$store_id . "' AND `group` = '" . $this->db->escape($group) . "'");
+		$query = $this->getDb()->query("SELECT * FROM setting WHERE store_id = '" . (int)$store_id . "' AND `group` = '" . $this->getDb()->escape($group) . "'");
 		
 		foreach ($query->rows as $result) {
 			if (!$result['serialized']) {

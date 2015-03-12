@@ -147,7 +147,7 @@ class ControllerPaymentWebPaymentSoftware extends Controller {
 			$json['error'] = (string)$xml->response_text;
 		}
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 }
 ?>

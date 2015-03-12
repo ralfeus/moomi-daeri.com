@@ -15,26 +15,26 @@ class ModelReferenceAddress extends Model
             $countryId, $zoneId,
             $customerId = 0)
     {
-        $this->db->query("
+        $this->getDb()->query("
             INSERT INTO " . DB_PREFIX  . "address
             SET
                 customer_id = " . (int)$customerId . ",
-                firstname = '" . $this->db->escape($firstname) . "',
-                lastname = '" . $this->db->escape($lastname) . "',
-                company = '" . $this->db->escape($company) . "',
-                address_1 = '" . $this->db->escape($address1) . "',
-                address_2 = '" . $this->db->escape($address2) . "',
-                city = '" . $this->db->escape($city) . "',
-                postcode = '" . $this->db->escape($postcode) . "',
+                firstname = '" . $this->getDb()->escape($firstname) . "',
+                lastname = '" . $this->getDb()->escape($lastname) . "',
+                company = '" . $this->getDb()->escape($company) . "',
+                address_1 = '" . $this->getDb()->escape($address1) . "',
+                address_2 = '" . $this->getDb()->escape($address2) . "',
+                city = '" . $this->getDb()->escape($city) . "',
+                postcode = '" . $this->getDb()->escape($postcode) . "',
                 country_id = " . (int)$countryId . ",
                 zone_id = " . (int)$zoneId
         );
-        return $this->db->getLastId();
+        return $this->getDb()->getLastId();
     }
 
     public function getAddress($addressId)
     {
-        $query = $this->db->query("SELECT * FROM address WHERE address_id = " . (int)$addressId);
+        $query = $this->getDb()->query("SELECT * FROM address WHERE address_id = " . (int)$addressId);
         if ($query->num_rows)
             return $query->row;
         else

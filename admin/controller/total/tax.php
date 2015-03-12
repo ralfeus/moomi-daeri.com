@@ -76,7 +76,7 @@ class ControllerTotalTax extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	private function validate() {

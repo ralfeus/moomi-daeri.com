@@ -8,7 +8,7 @@ class ModelShippingDescription extends Model {
 		else {
 			$query = "SELECT * FROM geo_zone WHERE name = '" . $schipping_name . "'";
 		}
-		$result = $this->db->query($query);
+		$result = $this->getDb()->query($query);
 		return $result->rows;
 	}
 }

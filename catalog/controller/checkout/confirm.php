@@ -331,12 +331,12 @@ class ControllerCheckoutConfirm extends Controller {
 						
 			$this->data['totals'] = $total_data;
 	
-//			$this->data['payment'] = $this->getChild('payment/deposit');
+			$this->data['payment'] = $this->getChild('payment/' . $this->getSession()->data['payment_method']['code']);
             $this->data['button_confirm'] = $this->language->get('button_confirm');
             $this->data['urlConfirm'] = $this->url->link('checkout/confirm/confirm', '', 'SSL');
             $this->data['continue'] = $this->url->link('checkout/success');
 
-            $templateName = '/template/checkout/confirm.tpl';
+            $templateName = '/template/checkout/confirm.tpl.php';
 			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateName)) {
 				$this->template = $this->config->get('config_template') . $templateName;
 			} else {
@@ -346,7 +346,7 @@ class ControllerCheckoutConfirm extends Controller {
 			$json['output'] = $this->render();
 		}
 //		$this->log->write(print_r($json, true));
-		$this->response->setOutput(json_encode($json));		
+		$this->getResponse()->setOutput(json_encode($json));
   	}
 
     protected function initParameters()

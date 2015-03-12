@@ -43,17 +43,17 @@ class CreditDAO extends TotalBaseDAO {
 		$this->load->language('total/credit');
 		
 		if ($order_info['customer_id']) {
-			$this->db->query("
+			$this->getDb()->query("
 			    INSERT INTO customer_transaction
 			    SET
 			        customer_id = '" . (int)$order_info['customer_id'] . "',
 			        order_id = '" . (int)$order_info['order_id'] . "',
-			        description = '" . $this->db->escape(sprintf($this->language->get('text_order_id'), (int)$order_info['order_id'])) . "',
+			        description = '" . $this->getDb()->escape(sprintf($this->language->get('text_order_id'), (int)$order_info['order_id'])) . "',
 			        amount = '" . (float)$order_total['value'] . "',
 			        date_added = NOW()
             ");
             /// Update customer's balance
-            $this->db->query("
+            $this->getDb()->query("
                 UPDATE customer
                 SET
                     balance = balance - " . (float)$order_total['value'] . "

@@ -4,7 +4,7 @@ class ModelSettingStore extends Model {
 		$store_data = $this->cache->get('store');
 	
 		if (!$store_data) {
-			$query = $this->db->query("SELECT * FROM store ORDER BY url");
+			$query = $this->getDb()->query("SELECT * FROM store ORDER BY url");
 
 			$store_data = $query->rows;
 		

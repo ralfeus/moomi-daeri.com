@@ -39,8 +39,7 @@ abstract class TotalBaseDAO extends DAO {
         $total += $tempTotal;
     }
 
-    protected final function updateOrderExtensionTotal($orderId, $totalData, $extension)
-    {
+    protected final function updateOrderExtensionTotal($orderId, $totalData, $extension) {
         $this->getDb()->query("
             UPDATE order_total
             SET

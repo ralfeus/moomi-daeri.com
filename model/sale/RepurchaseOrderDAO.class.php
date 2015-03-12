@@ -83,7 +83,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                     FROM order_item_history
                     WHERE
                         order_item_id = op.order_product_id
-                        AND (order_item_status_id = :statusIdDateSet" . implode(' OR order_item_status_id = :statusIdDateSet', array_keys($data['filterStatusIdDateSet'])) . ")
+                        AND order_item_status_id IN (:statusIdDateSet" . implode(', :statusIdDateSet', array_keys($data['filterStatusIdDateSet'])) . ")
                         AND date_added = :dateStatusSet
                 )";
                 $filter .= " AND EXISTS (
@@ -91,7 +91,7 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                     FROM order_item_history
                     WHERE
                         order_item_id = op.order_product_id
-                        AND (order_item_status_id = :statusIdDateSet" . implode(' OR order_item_status_id = :statusIdDateSet', array_keys($data['filterStatusIdDateSet'])) . ")
+                        AND order_item_status_id IN (:statusIdDateSet" . implode(', :statusIdDateSet', array_keys($data['filterStatusIdDateSet'])) . ")
                         AND date_added = :dateStatusSet
                 )";
                 foreach ($data['filterStatusIdDateSet'] as $key => $filterValue) {

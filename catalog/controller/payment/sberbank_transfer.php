@@ -78,7 +78,7 @@ class ControllerPaymentSberBankTransfer extends Controller {
 			$this->template = 'default/template/payment/sberbank_transfer_printpay.tpl';
 		}
 
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	public function confirm() {

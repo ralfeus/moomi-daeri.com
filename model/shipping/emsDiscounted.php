@@ -25,7 +25,7 @@ class ModelShippingEMSDiscounted extends ModelShippingEMS
                 ztgz.country_id = " . (int)$address['country_id'] . "
                 AND ztgz.zone_id IN (" . (int)$address['zone_id'] . ", 0)
         ";
-        $query = $this->db->query($sql);
+        $query = $this->getDb()->query($sql);
 //        $this->log->write(print_r($query->row, true));
         if ($query->row)
         {

@@ -45,7 +45,7 @@ class ControllerCheckoutCheckout extends Controller {
 		$this->data['shipping_required'] = $this->cart->hasShipping();	
 		//$this->log->write(print_r($this->data, true));
 		
-		$templateFileName = '/template/checkout/checkout.tpl';
+		$templateFileName = '/template/checkout/checkout.tpl.php';
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateFileName))
 			$this->template = $this->config->get('config_template') . $templateFileName;
 		else
@@ -60,7 +60,7 @@ class ControllerCheckoutCheckout extends Controller {
 			'common/header'	
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 
     protected function initParameters()

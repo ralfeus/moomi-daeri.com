@@ -1,6 +1,7 @@
 <?php
 namespace model\sale;
 use model\DAO;
+use system\library\Filter;
 
 class OrderDAO extends DAO {
 	public function addOrder($data) {
@@ -180,6 +181,43 @@ class OrderDAO extends DAO {
                 $filter .= ($filter ? " AND " : "") . "o.order_status_id IN (" . implode(', ', $data['filterStatusId']) . ")";
             if (!empty($data['filterOrderId']))
                 $filter .= ($filter ? " AND " : "") . "o.order_id = " . (int)$data['filterOrderId'];
+        }
+        return $filter;
+    }
+
+    /**
+     * @param array $data
+     * @return Filter
+     */
+    private function buildFilter($data = array()) {
+        $filter = new Filter(); $tmp0 = $tmp1 = "";
+        if (isset($data['selected']) && count($data['selected'])) {
+            $filter->addChunk($this->buildSimpleFieldFilterEntry("o.order_id", $data['selected'], $tmp0, $tmp1));
+        } else {
+            if (isset($data['filter_date_added'])) {
+                $filter->addChunk("DATE(o.date_added) = DATE(:dateAdded)", [':dateAdded' => $data['filter_date_added']]);
+            }
+            if (isset($data['filter_customer'])) {
+                $filter->addChunk("LCASE(CONCAT(o.firstname, ' ', o.lastname)) LIKE :customerName",
+                    [':customerName' => $data['filter_customer'] . '%']);
+            }
+            if (isset($data['filter_order_id'])) {
+                $filter->addChunk($this->buildSimpleFieldFilterEntry("o.order_id", $data['filter_order_id'], $tmp0, $tmp1));
+            }
+            if (isset($data['filter_order_status_id'])) {
+                $filter->addChunk($this->buildSimpleFieldFilterEntry("o.order_status_id", $data['filter_order_status_id'], $tmp0, $tmp1));
+            }
+            if (isset($data['filter_total'])) {
+                $filter->addChunk($this->buildSimpleFieldFilterEntry("o.total", $data['filter_total'], $tmp0, $tmp1));
+            }
+            if (isset($data['filterCustomerId'])) {
+                $filter->addChunk($this->buildSimpleFieldFilterEntry("o.customer_id", $data['filterCustomerId'], $tmp0, $tmp1));
+            }
+            if (isset($data['filterStatusId'])) {
+                $filter->addChunk($this->buildSimpleFieldFilterEntry("o.order_status_id", $data['filterStatusId'], $tmp0, $tmp1));
+            }
+            if (isset($data['filterOrderId']))
+                $filter->addChunk($this->buildSimpleFieldFilterEntry("o.order_id", $data['filterOrderId'], $tmp0, $tmp1));
         }
         return $filter;
     }

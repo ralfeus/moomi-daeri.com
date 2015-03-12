@@ -54,7 +54,7 @@ class ControllerExtensionImport extends Controller {
             $this->editPOST($importSite);
         }
 
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     /**
@@ -144,7 +144,7 @@ class ControllerExtensionImport extends Controller {
             'common/footer'
         );
 
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     protected function initParameters() {

@@ -83,7 +83,10 @@
                 <?php } ?>
               </select>
 			   &nbsp;
-			  <input name="paymentmethoddiscounts_discount[<?php echo $discount_row; ?>][number]" value="<?php echo $discount['number']; ?>" />
+			  <input
+                      name="paymentmethoddiscounts_discount[<?= $discount_row ?>][number]"
+                      value="<?= $discount['number'] ?>"
+                      style="width: 50px" />
 			   &nbsp;
 			   <select name="paymentmethoddiscounts_discount[<?php echo $discount_row; ?>][mode]">
                 <?php if ($discount['mode']) { ?>

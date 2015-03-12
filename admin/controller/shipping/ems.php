@@ -14,7 +14,7 @@ class ControllerShippingEMS extends Controller {
         $json = array(
             'cost' => $cost
         );
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
 	public function index() {  
@@ -126,7 +126,7 @@ class ControllerShippingEMS extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 		
 	private function validate() {

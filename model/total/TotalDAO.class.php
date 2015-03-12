@@ -24,7 +24,7 @@ class TotalDAO extends TotalBaseDAO
     public function updateOrderTotal($orderId, $totalData)
     {
         $this->updateOrderExtensionTotal($orderId, $totalData, 'total');
-        $this->db->query("
+        $this->getDb()->query("
             UPDATE `order`
             SET total = " . $totalData['value'] . "
             WHERE order_id = " . (int)$orderId

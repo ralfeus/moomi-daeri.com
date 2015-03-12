@@ -5,7 +5,7 @@ class ControllerPaymentDeposit extends Controller {
 
 		$this->data['continue'] = $this->url->link('checkout/success');
 
-        $templateName = '/template/payment/deposit.tpl';
+        $templateName = '/template/payment/deposit.tpl.php';
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateName)) {
 			$this->template = $this->config->get('config_template') . $templateName;
 		} else {

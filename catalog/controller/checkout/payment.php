@@ -7,8 +7,16 @@ class ControllerCheckoutPayment extends Controller {
 		$json = array();
 		
 		$this->load->model('account/address');
-		
-		if ((!$this->cart->hasProducts() && (!isset($this->session->data['vouchers']) || !$this->session->data['vouchers'])) || (!$this->cart->hasStock() && !$this->config->get('config_stock_checkout'))) {
+        if ($this->customer->isLogged()) {
+            $address = $this->model_account_address->getAddress($this->session->data['shipping_address_id']);
+        } elseif (isset($this->session->data['guest'])) {
+            $address = $this->session->data['guest']['shipping'];
+        }
+        if (empty($address)) {
+            $json['redirect'] = $this->url->link('checkout/checkout', '', 'SSL');
+        }
+
+        if ((!$this->cart->hasProducts() && (!isset($this->session->data['vouchers']) || !$this->session->data['vouchers'])) || (!$this->cart->hasStock() && !$this->config->get('config_stock_checkout'))) {
 			$json['redirect'] = $this->url->link('checkout/cart');				
 		}	
 						
@@ -78,7 +86,7 @@ class ControllerCheckoutPayment extends Controller {
 					if ($this->config->get($result['code'] . '_status')) {
 						$this->load->model('payment/' . $result['code']);
 						
-						$method = $this->{'model_payment_' . $result['code']}->getMethod($payment_address, $total); 
+						$method = $this->{'model_payment_' . $result['code']}->getMethod($address, $total);
 						
 						if ($method) {
 							$method_data[$result['code']] = $method;
@@ -146,15 +154,14 @@ class ControllerCheckoutPayment extends Controller {
 				$this->data['agree'] = '';
 			}
 			
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/payment.tpl')) {
-				$this->template = $this->config->get('config_template') . '/template/checkout/payment.tpl';
+			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/payment.tpl.php')) {
+				$this->template = $this->config->get('config_template') . '/template/checkout/payment.tpl.php';
 			} else {
-				$this->template = 'default/template/checkout/payment.tpl';
+				$this->template = 'default/template/checkout/payment.tpl.php';
 			}
 					
 			$json['output'] = $this->render();	
 		}
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
   	}
 }
-?>

@@ -86,7 +86,7 @@ class ControllerCheckoutSuccess extends Controller {
 			'common/header'			
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 }
 ?>

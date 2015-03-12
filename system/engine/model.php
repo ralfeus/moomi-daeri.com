@@ -31,15 +31,13 @@ abstract class Model extends OpenCartBase {
                 if (sizeof($filterValues)) {
                     $tmp = 0; $tmpFilterString = ''; $tmpParams = array();
                     foreach ($filterValues as $filterValue) {
-                        $tmpFilterString .= " OR $fieldName = $paramName$tmp";
+                        $tmpFilterString .= ", $paramName$tmp";
                         $tmpParams["$paramName$tmp"] = $filterValue; // TODO: Remove as all is moved to Filter usage
                         $params["$paramName$tmp"] = $filterValue;
                         $tmp++;
                     }
                     $filterString .= ($filterString ? " AND " : "");
-                    $tmpFinalFilterString = sizeof($filterValues) > 1 //TODO: Remove as all is moved to Filter usage
-                        ? '(' . substr($tmpFilterString, 4) . ')'
-                        : substr($tmpFilterString, 4);
+                    $tmpFinalFilterString = "$fieldName IN (" . substr($tmpFilterString, 2) . ')';
                     $filterString .= $tmpFinalFilterString;
                     return new Filter($tmpFinalFilterString, $tmpParams);
                 }

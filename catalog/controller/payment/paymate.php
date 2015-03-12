@@ -113,7 +113,7 @@ class ControllerPaymentPaymate extends Controller {
 				'common/header'
 			);
 			
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
 		} else {
 			$this->redirect($this->url->link('checkout/success'));
 		}

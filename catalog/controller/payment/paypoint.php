@@ -152,7 +152,7 @@ class ControllerPaymentPaypoint extends Controller {
 				'common/header'
 			);
 					
-	  		$this->response->setOutput($this->render());			
+	  		$this->getResponse()->setOutput($this->render());
 		} else {
 			$this->data['continue'] = $this->url->link('checkout/cart');
 		
@@ -171,7 +171,7 @@ class ControllerPaymentPaypoint extends Controller {
 				'common/header'
 			);
 						
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
 		}
 	}
 }

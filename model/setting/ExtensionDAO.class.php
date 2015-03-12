@@ -29,11 +29,11 @@ class ExtensionDAO extends DAO {
     }
 
 	public function install($type, $code) {
-		$this->db->query("INSERT INTO extension SET `type` = '" . $this->db->escape($type) . "', `code` = '" . $this->db->escape($code) . "'");
+		$this->getDb()->query("INSERT INTO extension SET `type` = '" . $this->getDb()->escape($type) . "', `code` = '" . $this->getDb()->escape($code) . "'");
 	}
 	
 	public function uninstall($type, $code) {
-		$this->db->query("DELETE FROM extension WHERE `type` = '" . $this->db->escape($type) . "' AND `code` = '" . $this->db->escape($code) . "'");
+		$this->getDb()->query("DELETE FROM extension WHERE `type` = '" . $this->getDb()->escape($type) . "' AND `code` = '" . $this->getDb()->escape($code) . "'");
 	}
 }
 ?>

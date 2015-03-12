@@ -7,11 +7,11 @@ class StockStatusDAO extends DAO {
     public function addStockStatus($data) {
         foreach ($data['stock_status'] as $language_id => $value) {
             if (isset($stock_status_id)) {
-                $this->db->query("INSERT INTO stock_status SET stock_status_id = '" . (int)$stock_status_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
+                $this->getDb()->query("INSERT INTO stock_status SET stock_status_id = '" . (int)$stock_status_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->getDb()->escape($value['name']) . "'");
             } else {
-                $this->db->query("INSERT INTO stock_status SET language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
+                $this->getDb()->query("INSERT INTO stock_status SET language_id = '" . (int)$language_id . "', name = '" . $this->getDb()->escape($value['name']) . "'");
 
-                $stock_status_id = $this->db->getLastId();
+                $stock_status_id = $this->getDb()->getLastId();
             }
         }
 
@@ -19,23 +19,23 @@ class StockStatusDAO extends DAO {
     }
 
     public function editStockStatus($stock_status_id, $data) {
-        $this->db->query("DELETE FROM stock_status WHERE stock_status_id = '" . (int)$stock_status_id . "'");
+        $this->getDb()->query("DELETE FROM stock_status WHERE stock_status_id = '" . (int)$stock_status_id . "'");
 
         foreach ($data['stock_status'] as $language_id => $value) {
-            $this->db->query("INSERT INTO stock_status SET stock_status_id = '" . (int)$stock_status_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
+            $this->getDb()->query("INSERT INTO stock_status SET stock_status_id = '" . (int)$stock_status_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->getDb()->escape($value['name']) . "'");
         }
 
         $this->cache->delete('stock_status');
     }
 
     public function deleteStockStatus($stock_status_id) {
-        $this->db->query("DELETE FROM stock_status WHERE stock_status_id = '" . (int)$stock_status_id . "'");
+        $this->getDb()->query("DELETE FROM stock_status WHERE stock_status_id = '" . (int)$stock_status_id . "'");
 
         $this->cache->delete('stock_status');
     }
 
     public function getStockStatus($stock_status_id) {
-        $query = $this->db->query("SELECT * FROM stock_status WHERE stock_status_id = '" . (int)$stock_status_id . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
+        $query = $this->getDb()->query("SELECT * FROM stock_status WHERE stock_status_id = '" . (int)$stock_status_id . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
 
         return $query->row;
     }
@@ -64,14 +64,14 @@ class StockStatusDAO extends DAO {
                 $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
             }
 
-            $query = $this->db->query($sql);
+            $query = $this->getDb()->query($sql);
 
             return $query->rows;
         } else {
             $stock_status_data = $this->cache->get('stock_status.' . (int)$this->config->get('config_language_id'));
 
             if (!$stock_status_data) {
-                $query = $this->db->query("SELECT stock_status_id, name FROM stock_status WHERE language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY name");
+                $query = $this->getDb()->query("SELECT stock_status_id, name FROM stock_status WHERE language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY name");
 
                 $stock_status_data = $query->rows;
 
@@ -85,7 +85,7 @@ class StockStatusDAO extends DAO {
     public function getStockStatusDescriptions($stock_status_id) {
         $stock_status_data = array();
 
-        $query = $this->db->query("SELECT * FROM stock_status WHERE stock_status_id = '" . (int)$stock_status_id . "'");
+        $query = $this->getDb()->query("SELECT * FROM stock_status WHERE stock_status_id = '" . (int)$stock_status_id . "'");
 
         foreach ($query->rows as $result) {
             $stock_status_data[$result['language_id']] = array('name' => $result['name']);
@@ -95,7 +95,7 @@ class StockStatusDAO extends DAO {
     }
 
     public function getTotalStockStatuses() {
-        $query = $this->db->query("SELECT COUNT(*) AS total FROM stock_status WHERE language_id = '" . (int)$this->config->get('config_language_id') . "'");
+        $query = $this->getDb()->query("SELECT COUNT(*) AS total FROM stock_status WHERE language_id = '" . (int)$this->config->get('config_language_id') . "'");
 
         return $query->row['total'];
     }

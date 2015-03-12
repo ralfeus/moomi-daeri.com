@@ -178,7 +178,7 @@ class ControllerTotalShipping extends Controller {
 			}	
 		}
 		
-		$this->response->setOutput(json_encode($json));						
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 	
 	public function calculate() {
@@ -204,7 +204,7 @@ class ControllerTotalShipping extends Controller {
 			$json['redirect'] = $this->url->link('checkout/cart', '', 'SSL');			
 		}
 		
-		$this->response->setOutput(json_encode($json));			
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 	
   	public function zone() {
@@ -228,7 +228,7 @@ class ControllerTotalShipping extends Controller {
 		  	$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
 		}
 	
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
   	}	
 }
 ?>

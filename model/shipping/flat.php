@@ -21,7 +21,7 @@ class ModelShippingFlat extends ShippingMethodModel
                     ztgz.country_id = " . (int)$address['country_id'] . "
                     AND (ztgz.zone_id = " . (int)$address['zone_id'] . " OR ztgz.zone_id = 0)
             ";
-            $query = $this->db->query($sql);
+            $query = $this->getDb()->query($sql);
             if ($query->row)
             {
                 $query->row['code'] = 'flat.flat';

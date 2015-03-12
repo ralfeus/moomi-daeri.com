@@ -13,7 +13,7 @@ class ControllerShippingFlat extends Controller {
             'cost' => $cost
         );
         $this->log->write(print_r($json, true));
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
 	public function index() {   
@@ -123,7 +123,7 @@ class ControllerShippingFlat extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 	
 	private function validate() {

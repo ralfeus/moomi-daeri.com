@@ -85,4 +85,11 @@ class OpenCartBase {
     protected function getLogger() {
         return $this->log;
     }
+
+    /**
+     * @return Session
+     */
+    protected function getSession() {
+        return $this->registry->get('session');
+    }
 }

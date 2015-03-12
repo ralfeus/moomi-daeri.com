@@ -5,7 +5,7 @@ use model\DAO;
 
 class SupplierGroupDAO extends DAO {
     public function addSupplierGroup($data) {
-        $this->db->query("
+        $this->getDb()->query("
             INSERT INTO supplier_group
             SET
                 name = ?
@@ -16,7 +16,7 @@ class SupplierGroupDAO extends DAO {
     }
 
     public function editSupplierGroup($supplierGroupId, $data) {
-        $this->db->query("
+        $this->getDb()->query("
 		    UPDATE supplier_group
 		    SET
 		        name = ?
@@ -28,19 +28,19 @@ class SupplierGroupDAO extends DAO {
     }
 
     public function deleteSupplierGroup($supplierGroupId) {
-        $this->db->query("DELETE FROM supplier_group WHERE supplier_group_id = ?", array("i:$supplierGroupId"));
+        $this->getDb()->query("DELETE FROM supplier_group WHERE supplier_group_id = ?", array("i:$supplierGroupId"));
 
         $this->cache->delete('supplier_group');
     }
 
     public function getSupplierGroup($supplierGroupId) {
-        $query = $this->db->query("SELECT DISTINCT * FROM supplier_group WHERE supplier_group_id = ?", array("i:$supplierGroupId"));
+        $query = $this->getDb()->query("SELECT DISTINCT * FROM supplier_group WHERE supplier_group_id = ?", array("i:$supplierGroupId"));
 
         return $query->row;
     }
 
     public function getSupplierGroupByName($supplierGroupName) {
-        $query = $this->db->query("SELECT DISTINCT * FROM supplier_group WHERE name = ?", array("s:$supplierGroupName"));
+        $query = $this->getDb()->query("SELECT DISTINCT * FROM supplier_group WHERE name = ?", array("s:$supplierGroupName"));
 
         return $query->row;
     }
@@ -77,14 +77,14 @@ class SupplierGroupDAO extends DAO {
                 $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
             }
 
-            $query = $this->db->query($sql);
+            $query = $this->getDb()->query($sql);
 
             return $query->rows;
         } else {
             $supplier_group_data = $this->cache->get('supplier_group');
 
             if (!$supplier_group_data) {
-                $query = $this->db->query("SELECT * FROM supplier_group ORDER BY name");
+                $query = $this->getDb()->query("SELECT * FROM supplier_group ORDER BY name");
 
                 $supplier_group_data = $query->rows;
 
@@ -96,6 +96,6 @@ class SupplierGroupDAO extends DAO {
     }
 
     public function getTotalSupplierGroups() {
-        return $this->db->queryScalar("SELECT COUNT(*) AS total FROM supplier_group");
+        return $this->getDb()->queryScalar("SELECT COUNT(*) AS total FROM supplier_group");
     }
 }

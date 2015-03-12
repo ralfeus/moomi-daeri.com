@@ -2,7 +2,6 @@
 class ModelPaymentDeposit extends Model {
   	public function getMethod($address, $total) {
 		$this->load->language('payment/deposit');
-		
 		$status = true;
 		
 		$method_data = array();
