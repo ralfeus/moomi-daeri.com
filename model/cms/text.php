@@ -29,7 +29,7 @@ class ModelCmsText extends Model
             FROM content
             " . ($filter ? "WHERE $filter" : '')
         ;
-        $query = $this->db->query($sql);
+        $query = $this->getDb()->query($sql);
         if ($contentId && $languageId)
             return $query->row;
         else
@@ -43,7 +43,7 @@ class ModelCmsText extends Model
             FROM content
             WHERE content_id = " . (int)$contentId
         ;
-        $query = $this->db->query($sql);
+        $query = $this->getDb()->query($sql);
         return $query->row['amount'];
     }
 
@@ -54,14 +54,14 @@ class ModelCmsText extends Model
             VALUES (
                 " . (int)$data['contentId'] . ",
                 " . (int)$data['languageId'] . ",
-                '" . $this->db->escape($data['title']) . "',
-                '" . $this->db->escape($data['text']) . "'
+                '" . $this->getDb()->escape($data['title']) . "',
+                '" . $this->getDb()->escape($data['text']) . "'
             )
             ON DUPLICATE KEY UPDATE
                 title = VALUES(title),
                 text = VALUES(text)
 
         ";
-        $this->db->query($sql);
+        $this->getDb()->query($sql);
     }
 }

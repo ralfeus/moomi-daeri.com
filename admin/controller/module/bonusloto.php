@@ -474,7 +474,7 @@ class ControllerModulebonusloto extends Controller {
 			'common/footer'	
 		);
 		
-		$this->response->setOutput($this->render(TRUE), $this->config->get('config_compression'));
+		$this->getResponse()->setOutput($this->render(TRUE), $this->config->get('config_compression'));
 	}
 	
 	private function validate() {
@@ -648,7 +648,7 @@ class ControllerModulebonusloto extends Controller {
 	        }
 	        $this->data['cron_folder'] = $cronFolder;
 	        $this->template            = 'module/bonusloto_test_cron.tpl';
-	        $this->response->setOutput($this->render());
+	        $this->getResponse()->setOutput($this->render());
 	}
 
 	public function cronlogview() {		
@@ -675,7 +675,7 @@ class ControllerModulebonusloto extends Controller {
 		$this->template = 'tool/error_log.tpl';
 		$this->data['header'] = '';
 		$this->data['footer'] = '';
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	public function clearcronlog() {
@@ -737,7 +737,7 @@ class ControllerModulebonusloto extends Controller {
 				);
 			}
 		}
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 }
 ?>

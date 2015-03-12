@@ -282,7 +282,7 @@ class ControllerModuleMpchanges extends Controller {
 			'common/footer'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
     public function loadFilteredProducts() {
@@ -292,7 +292,7 @@ class ControllerModuleMpchanges extends Controller {
         $json['products'] = $this->mpfilter['products'];
         $json['total'] = $this->mpfilter['total'];
 
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     private function getDiffValue($value, $diff, $diffValue, $type = "number"){
@@ -409,7 +409,7 @@ class ControllerModuleMpchanges extends Controller {
 
         $this->loadFilter();
         $json['products'] = $this->mpfilter["products"];
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     public function changespecial() {
@@ -447,7 +447,7 @@ class ControllerModuleMpchanges extends Controller {
         $json['message'] = $this->mp_message;
         $json['products'] = $this->mpfilter["products"];
 
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     public function addspecial() {
@@ -492,7 +492,7 @@ class ControllerModuleMpchanges extends Controller {
         $json['message'] = $this->mp_message;
         $json['products'] = $this->mpfilter["products"];
 
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     public function changediscounts() {
@@ -535,7 +535,7 @@ class ControllerModuleMpchanges extends Controller {
         $json['message'] = $this->mp_message;
         $json['products'] = $this->mpfilter["products"];
 
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     public function adddiscounts() {
@@ -581,7 +581,7 @@ class ControllerModuleMpchanges extends Controller {
         $json['message'] = $this->mp_message;
         $json['products'] = $this->mpfilter["products"];
 
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     public function delelements() {
@@ -632,7 +632,7 @@ class ControllerModuleMpchanges extends Controller {
         $json['message'] = $this->mp_message;
         $json['products'] = $this->mpfilter["products"];
 
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     private function validateDates($obj){
