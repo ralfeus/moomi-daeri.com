@@ -7,13 +7,13 @@ class ModelModuleWkproductauction extends Model {
 	
 	public function getAuction($product_id) {
 			
-		$data = $this->db->query("SELECT * FROM " . DB_PREFIX . "wkauction WHERE product_id = '" . (int)$product_id . "' AND isauction=1");
+		$data = $this->getDb()->query("SELECT * FROM " . DB_PREFIX . "wkauction WHERE product_id = '" . (int)$product_id . "' AND isauction=1");
 		
 		return $data->rows;
 	}
 	public function getAuctionbids($auction_id) {
 			
-		$data = $this->db->query("SELECT * FROM " . DB_PREFIX . "wkauctionbids WHERE sold=0 AND auction_id = '" . (int)$auction_id . "' ORDER BY id");
+		$data = $this->getDb()->query("SELECT * FROM " . DB_PREFIX . "wkauctionbids WHERE sold=0 AND auction_id = '" . (int)$auction_id . "' ORDER BY id");
 
 		return $data->rows;
 	}
@@ -21,37 +21,37 @@ class ModelModuleWkproductauction extends Model {
 		//LOAD LANGUAGE
 		$this->language->load('module/wkproduct_auction');
 
-		$bids=$this->db->query("SELECT MAX(user_bid) id FROM " . DB_PREFIX . "wkauctionbids WHERE auction_id = '" . (int)$auction_id . "'");
+		$bids=$this->getDb()->query("SELECT MAX(user_bid) id FROM " . DB_PREFIX . "wkauctionbids WHERE auction_id = '" . (int)$auction_id . "'");
 		$bid_id=$bids->row;
 		
-        $ids=$this->db->query("SELECT * FROM " . DB_PREFIX . "wkauctionbids WHERE user_bid='" . (int)$bid_id['id'] . "'");
+        $ids=$this->getDb()->query("SELECT * FROM " . DB_PREFIX . "wkauctionbids WHERE user_bid='" . (int)$bid_id['id'] . "'");
         $record=$ids->row;
 
         if(!isset($record['product_id'])){
-        	$this->db->query("UPDATE " . DB_PREFIX . "wkauction SET isauction=0 WHERE id = '" .(int)$auction_id . "'");
+        	$this->getDb()->query("UPDATE " . DB_PREFIX . "wkauction SET isauction=0 WHERE id = '" .(int)$auction_id . "'");
         	return true;
         }
         
-        $price=$this->db->query("SELECT price FROM " . DB_PREFIX . "product WHERE product_id='" . (int)$record['product_id'] . "'");
+        $price=$this->getDb()->query("SELECT price FROM " . DB_PREFIX . "product WHERE product_id='" . (int)$record['product_id'] . "'");
 		$price=$price->row;
 		$code=rand();
 		$discount=$price['price']-$bid_id['id'];
-		$this->db->query("INSERT INTO " . DB_PREFIX . "coupon SET name ='Bid Coupen',uses_total=1,uses_customer='1',type='F',status=1,code = '" .$code. "',discount = '" .$discount. "'");
+		$this->getDb()->query("INSERT INTO " . DB_PREFIX . "coupon SET name ='Bid Coupen',uses_total=1,uses_customer='1',type='F',status=1,code = '" .$code. "',discount = '" .$discount. "'");
 		
-		$coupen=$this->db->query("SELECT MAX(coupon_id) id FROM " . DB_PREFIX . "coupon");
+		$coupen=$this->getDb()->query("SELECT MAX(coupon_id) id FROM " . DB_PREFIX . "coupon");
 		$coupen=$coupen->row;
 
-		$this->db->query("INSERT INTO " . DB_PREFIX . "coupon_product SET coupon_id = '" .(int)$coupen['id']. "',product_id = '" .(int)$record['product_id']. "'");
-		$this->db->query("UPDATE " . DB_PREFIX . "wkauctionbids SET winner=1 WHERE user_bid='" . (int)$bid_id['id'] . "'");
-        $this->db->query("UPDATE " . DB_PREFIX . "wkauction SET isauction=0 WHERE id = '" .(int)$auction_id . "'");
+		$this->getDb()->query("INSERT INTO " . DB_PREFIX . "coupon_product SET coupon_id = '" .(int)$coupen['id']. "',product_id = '" .(int)$record['product_id']. "'");
+		$this->getDb()->query("UPDATE " . DB_PREFIX . "wkauctionbids SET winner=1 WHERE user_bid='" . (int)$bid_id['id'] . "'");
+        $this->getDb()->query("UPDATE " . DB_PREFIX . "wkauction SET isauction=0 WHERE id = '" .(int)$auction_id . "'");
 
-        $prod=$this->db->query("SELECT name FROM " . DB_PREFIX . "product_description WHERE product_id='" . (int)$record['product_id'] . "'");
+        $prod=$this->getDb()->query("SELECT name FROM " . DB_PREFIX . "product_description WHERE product_id='" . (int)$record['product_id'] . "'");
         $prod=$prod->row;
         
         $detail= $this->language->get('bid_message_customer_message1').$prod['name'].$this->language->get('bid_message_customer_message2').$code. $this->language->get('bid_message_customer_message3');
 
         $sql="SELECT * FROM ".DB_PREFIX ."customer WHERE customer_id='" . (int)$record['user_id'] . "'";
-		$customer=$this->db->query($sql)->row;
+		$customer=$this->getDb()->query($sql)->row;
 		
 		$message  = '<html dir="ltr" lang="en">' . "\n";
 		$message .= '  <head>' . "\n";
@@ -124,22 +124,22 @@ fclose($handle);
 	}
 
 	public function wkauctionbids_viewbids($auction){
-	    $query =$this->db->query("SELECT c.nickname, wa.user_bid FROM " . DB_PREFIX . "wkauctionbids wa LEFT JOIN ". DB_PREFIX ."customer c ON (c.customer_id=wa.user_id) WHERE wa.auction_id = '" . (int)$auction . "' ORDER BY wa.id DESC");
+	    $query =$this->getDb()->query("SELECT c.nickname, wa.user_bid FROM " . DB_PREFIX . "wkauctionbids wa LEFT JOIN ". DB_PREFIX ."customer c ON (c.customer_id=wa.user_id) WHERE wa.auction_id = '" . (int)$auction . "' ORDER BY wa.id DESC");
 	    return $query->rows;
 	}
 
 	public function wkauctionbids_insertbids($data,$user){
 	    $date = date('Y-m-d H:i:s');
-	    $sql=$this->db->query("SELECT MAX(wab.user_bid) id,wa.min,wa.max FROM " . DB_PREFIX . "wkauctionbids wab RIGHT JOIN ". DB_PREFIX . "wkauction wa ON(wab.auction_id=wa.id) WHERE wa.id = '" . (int)$data['auction'] . "'");
+	    $sql=$this->getDb()->query("SELECT MAX(wab.user_bid) id,wa.min,wa.max FROM " . DB_PREFIX . "wkauctionbids wab RIGHT JOIN ". DB_PREFIX . "wkauction wa ON(wab.auction_id=wa.id) WHERE wa.id = '" . (int)$data['auction'] . "'");
 	    $bid_id= $sql->row;
 
 	    if ($data['amount']<=$bid_id['id'] && !empty($bid_id['id'])) {
 		return 'not'; //only for checking not mesaages
 	    } elseif ($data['amount']>=$bid_id['min'] && $data['amount']<=$bid_id['max'] && empty($bid_id['id'])) {
-		$query=$this->db->query("INSERT INTO " . DB_PREFIX . "wkauctionbids SET winner='0',sold='0',auction_id = '" . (int)$data['auction']. "', user_id = '" .(int)$user."', product_id = '" .(int)$data['product_id']."', start_date = '" .$this->db->escape($data['start_date']). "', end_date = '" .$this->db->escape($data['end_date'])."', date = '" .$date."', user_bid = '" .(int)$data['amount']."'");
+		$query=$this->getDb()->query("INSERT INTO " . DB_PREFIX . "wkauctionbids SET winner='0',sold='0',auction_id = '" . (int)$data['auction']. "', user_id = '" .(int)$user."', product_id = '" .(int)$data['product_id']."', start_date = '" .$this->getDb()->escape($data['start_date']). "', end_date = '" .$this->getDb()->escape($data['end_date'])."', date = '" .$date."', user_bid = '" .(int)$data['amount']."'");
 		return 'done';
 	    } elseif ($data['amount']>=$bid_id['min'] && $data['amount']<=$bid_id['max'] && !empty($bid_id['id']) && $data['amount']>$bid_id['id']) {
-		$query=$this->db->query("INSERT INTO " . DB_PREFIX . "wkauctionbids SET winner='0',sold='0',auction_id = '" . (int)$data['auction']. "', user_id = '" .(int)$user."', product_id = '" .(int)$data['product_id']."', start_date = '" .$this->db->escape($data['start_date']). "', end_date = '" .$this->db->escape($data['end_date'])."', date = '" .$date."', user_bid = '" .(int)$data['amount']."'");
+		$query=$this->getDb()->query("INSERT INTO " . DB_PREFIX . "wkauctionbids SET winner='0',sold='0',auction_id = '" . (int)$data['auction']. "', user_id = '" .(int)$user."', product_id = '" .(int)$data['product_id']."', start_date = '" .$this->getDb()->escape($data['start_date']). "', end_date = '" .$this->getDb()->escape($data['end_date'])."', date = '" .$date."', user_bid = '" .(int)$data['amount']."'");
 		return 'done';  //only for checking not mesaages
 	    } else {
 		return 'not_done';  //only for checking not mesaages

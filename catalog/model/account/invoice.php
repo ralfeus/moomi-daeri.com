@@ -33,7 +33,7 @@ class ModelAccountInvoice extends Model
         $total = $subtotal + $shippingCost;
 
         /// Add invoice record to the database
-        $this->db->query("
+        $this->getDb()->query("
             INSERT INTO " . DB_PREFIX . "invoices
             SET
                 customer_id = " . (int)$order['customer_id'] . ",
@@ -46,7 +46,7 @@ class ModelAccountInvoice extends Model
                 weight = " . (float)$weight
         );
         /// Add invoice items
-        $this->addInvoiceItems($this->db->getLastId(), $order_items);
+        $this->addInvoiceItems($this->getDb()->getLastId(), $order_items);
     }
 
     private function addInvoiceItems($invoiceId, $order_items)
@@ -60,12 +60,12 @@ class ModelAccountInvoice extends Model
             $query .= "($invoiceId, " . (int)$order_item['order_product_id'] . "),\n";
 
         //$this->log->write(substr($query, 0, strlen($query) - 2));
-        $this->db->query(substr($query, 0, strlen($query) - 2));
+        $this->getDb()->query(substr($query, 0, strlen($query) - 2));
     }
 
     public function getInvoice($invoiceId)
     {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "invoices WHERE invoice_id = " . (int)$invoiceId);
+        $query = $this->getDb()->query("SELECT * FROM " . DB_PREFIX . "invoices WHERE invoice_id = " . (int)$invoiceId);
         if ($query->num_rows)
             return $query->row;
         else
@@ -74,7 +74,7 @@ class ModelAccountInvoice extends Model
 
     public function getInvoiceItems($invoiceId)
     {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "invoice_items WHERE invoice_id = " . (int)$invoiceId);
+        $query = $this->getDb()->query("SELECT * FROM " . DB_PREFIX . "invoice_items WHERE invoice_id = " . (int)$invoiceId);
         if ($query->num_rows)
             return $query->rows;
         else
@@ -83,7 +83,7 @@ class ModelAccountInvoice extends Model
 
     public function getInvoiceItemsCount($invoiceId)
     {
-        $query = $this->db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "invoice_items WHERE invoice_id = " . (int)$invoiceId);
+        $query = $this->getDb()->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "invoice_items WHERE invoice_id = " . (int)$invoiceId);
         return $query->row['total'];
     }
 
@@ -96,7 +96,7 @@ class ModelAccountInvoice extends Model
         $sql .= " ORDER BY invoice_id " . $orderBy;
       }
 
-      $query = $this->db->query($sql);
+      $query = $this->getDb()->query($sql);
 
       if ($query->num_rows)
         return $query->rows;

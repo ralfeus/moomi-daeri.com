@@ -1,13 +1,13 @@
 <?php
 class ModelCatalogInformation extends Model {
 	public function getInformation($information_id) {
-		$query = $this->db->query("SELECT DISTINCT * FROM information i LEFT JOIN information_description id ON (i.information_id = id.information_id) LEFT JOIN information_to_store i2s ON (i.information_id = i2s.information_id) WHERE i.information_id = '" . (int)$information_id . "' AND id.language_id = '" . (int)$this->config->get('config_language_id') . "' AND i2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND i.status = '1'");
+		$query = $this->getDb()->query("SELECT DISTINCT * FROM information i LEFT JOIN information_description id ON (i.information_id = id.information_id) LEFT JOIN information_to_store i2s ON (i.information_id = i2s.information_id) WHERE i.information_id = '" . (int)$information_id . "' AND id.language_id = '" . (int)$this->config->get('config_language_id') . "' AND i2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND i.status = '1'");
 	
 		return $query->row;
 	}
 	
 	public function getInformations() {
-		$query = $this->db->query("
+		$query = $this->getDb()->query("
 			SELECT *
 			FROM
 				information AS i
@@ -24,7 +24,7 @@ class ModelCatalogInformation extends Model {
 	}
 
 	public function getFooterInformations() {
-		$query = $this->db->query("
+		$query = $this->getDb()->query("
 			SELECT i.information_id, id.title
 			FROM
 				information AS i
@@ -51,7 +51,7 @@ class ModelCatalogInformation extends Model {
 	}
 
 	public function getInformationLayoutId($information_id) {
-		$query = $this->db->query("SELECT * FROM information_to_layout WHERE information_id = '" . (int)$information_id . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "'");
+		$query = $this->getDb()->query("SELECT * FROM information_to_layout WHERE information_id = '" . (int)$information_id . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "'");
 		 
 		if ($query->num_rows) {
 			return $query->row['layout_id'];

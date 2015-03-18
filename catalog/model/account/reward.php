@@ -33,19 +33,19 @@ class ModelAccountReward extends Model {
 			$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 		}
 
-		$query = $this->db->query($sql);
+		$query = $this->getDb()->query($sql);
 	
 		return $query->rows;
 	}	
 		
 	public function getTotalRewards() {
-      	$query = $this->db->query("SELECT COUNT(*) AS total FROM `customer_reward` WHERE customer_id = '" . (int)$this->customer->getId() . "'");
+      	$query = $this->getDb()->query("SELECT COUNT(*) AS total FROM `customer_reward` WHERE customer_id = '" . (int)$this->customer->getId() . "'");
 			
 		return $query->row['total'];
 	}	
 			
 	public function getTotalPoints() {
-		$query = $this->db->query("SELECT SUM(points) AS total FROM `customer_reward` WHERE customer_id = '" . (int)$this->customer->getId() . "' GROUP BY customer_id");
+		$query = $this->getDb()->query("SELECT SUM(points) AS total FROM `customer_reward` WHERE customer_id = '" . (int)$this->customer->getId() . "' GROUP BY customer_id");
 		
 		if ($query->num_rows) {
 			return $query->row['total'];

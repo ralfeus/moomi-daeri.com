@@ -278,7 +278,7 @@ class OrderDAO extends DAO {
 				foreach($product_query->rows as $product) {
                     /// Remove ordered items status change history
                     $this->getDb()->query("
-                        DELETE FROM ". DB_PREFIX ."order_item_history
+                        DELETE FROM order_item_history
                         WHERE order_item_id = " . (int)$product['product_id']
                     );
 
@@ -356,9 +356,13 @@ class OrderDAO extends DAO {
 				$affiliate_id = 0;
 			}
 
-			$this->load->model('sale/affiliate');
+			try {
+                $this->load->model('sale/affiliate');
+                $affiliate_info = $this->model_sale_affiliate->getAffiliate($affiliate_id);
+            } catch (\Exception $exc) {
+                $affiliate_info = null;
+            }
 
-			$affiliate_info = $this->model_sale_affiliate->getAffiliate($affiliate_id);
 
 			if ($affiliate_info) {
 				$affiliate_firstname = $affiliate_info['firstname'];

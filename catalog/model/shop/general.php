@@ -1,20 +1,11 @@
 <?php
 class ModelShopGeneral extends Model {
-	public function getHolidays($data) {
-
-		$this->db->query("SELECT * FROM shop_holiday");
-
-    $holiday = array();
-    foreach ($query->rows as $row) {
-
-    }
-
-	}
+	public function getHolidays($data) {}
 
 	public function getAllHolidaysForCalendar() {
 
 		$query = "SELECT * FROM shop_holiday";
-		$result = $this->db->query($query);
+		$result = $this->getDb()->query($query);
 		$holidays = $result->rows;
 		$arrAllHolidays = array();
 
@@ -47,7 +38,7 @@ class ModelShopGeneral extends Model {
 
 	public function isVip($customer_id) {
         $query = "SELECT * FROM `customer` WHERE customer_id='" . $customer_id . "' AND customer_group_id=6";
-		$result = $this->db->query($query);
+		$result = $this->getDb()->query($query);
 		if(count($result->rows) >= 1){
 			return true;
 		}
@@ -87,7 +78,7 @@ class ModelShopGeneral extends Model {
             ;
 		}
 
-		$pages = $this->db->query($query)->rows;
+		$pages = $this->getDb()->query($query)->rows;
 
 		if($page_id != null) {
 			$query = "
@@ -97,7 +88,7 @@ class ModelShopGeneral extends Model {
 			        JOIN information_description AS id ON i.information_id = id.information_id
                 WHERE parent_node_id = " . (int)$page_id . " AND language_id = " . (int)$lang
             ;
-			$children = $this->db->query($query)->rows;
+			$children = $this->getDb()->query($query)->rows;
 		}
 
 		return $result = array('pages' => $pages, "children" => $children);
@@ -105,13 +96,13 @@ class ModelShopGeneral extends Model {
 
 	public function getAction($data) {
 		$query = "SELECT * FROM action WHERE customer_group_id=".(int)$data['customer_group_id']." AND '".$data['current_date']."' BETWEEN start_date AND finish_date LIMIT 1";
-		$result = $this->db->query($query);
+		$result = $this->getDb()->query($query);
 		return $result->rows;
 	}
 
 	public function getOrderProduct($product_id) {
 		$query = "SELECT * FROM order_product WHERE product_id=".(int)$product_id;
-		$result = $this->db->query($query);
+		$result = $this->getDb()->query($query);
 		return $result->rows[0];
 	}
 }
