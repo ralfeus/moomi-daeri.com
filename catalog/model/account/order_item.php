@@ -34,7 +34,7 @@ class ModelAccountOrderItem extends Model
 			" . ($sort ? "ORDER BY $sort" : "") . "
 			" . ($limit ? "LIMIT $limit" : "");
 		//$this->log->write(print_r($query, true));
-		$order_item_query = $this->db->query($query);
+		$order_item_query = $this->getDb()->query($query);
 
 		if ($order_item_query->num_rows)
 			return $order_item_query->rows;
@@ -59,7 +59,7 @@ class ModelAccountOrderItem extends Model
                         ORDER BY order_item_id, workflow_order DESC) as statuses
                     GROUP BY order_item_id) as oih1 on op.order_product_id = oih1.order_item_id
 			" . ($filter ? "WHERE $filter" : "");
-		$order_item_query = $this->db->query($query);
+		$order_item_query = $this->getDb()->query($query);
 
 		return $order_item_query->row['total'];
 	}
@@ -134,13 +134,13 @@ class ModelAccountOrderItem extends Model
         else
         {
             if (!empty($data['filter_supplier']))
-                $filter .= ($filter ? " AND" : "") . " LCASE(s.name) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_supplier'])) . "%'";
+                $filter .= ($filter ? " AND" : "") . " LCASE(s.name) LIKE '" . $this->getDb()->escape(utf8_strtolower($data['filter_supplier'])) . "%'";
             if (!empty($data['filter_supplier_group']))
                 $filter .= ($filter ? " AND" : "") . " s.supplier_group_id = " . (int)$data['filter_supplier_group'];
             if (!empty($data['filterItem']))
                 $filter .= " AND (
-                    op.model LIKE '%" . $this->db->escape($data['filterItem']) . "%'
-                    OR op.name LIKE '%" . $this->db->escape($data['filterItem']) . "%')";
+                    op.model LIKE '%" . $this->getDb()->escape($data['filterItem']) . "%'
+                    OR op.name LIKE '%" . $this->getDb()->escape($data['filterItem']) . "%')";
             if (!empty($data['filterOrderId']))
                 $filter .= " AND op.order_id = " . (int)$data['filterOrderId'];
             if (!empty($data['filterOrderItemId']))
@@ -175,7 +175,7 @@ class ModelAccountOrderItem extends Model
                 and (od.language_id = $languageId or od.language_id is null)
                 and (ovd.language_id = $languageId or ovd.language_id is null)"
         ;
-        $result = $this->db->query($query);
+        $result = $this->getDb()->query($query);
 //        $this->log->write($query);
 //        $this->log->write(print_r($result->rows, true));
         $order_item_options = array();
@@ -201,11 +201,11 @@ class ModelAccountOrderItem extends Model
         $query = "
                 UPDATE " . DB_PREFIX . "order_product
                 SET
-                    comment = '" . $this->db->escape($comment) . "'
+                    comment = '" . $this->getDb()->escape($comment) . "'
                 WHERE order_product_id = " . (int)$order_item_id
         ;
         //$this->log->write($query);
-        $this->db->query($query);
+        $this->getDb()->query($query);
     }
 
     public function setOrderItemStatus($order_item_id, $order_item_status_id)
@@ -223,8 +223,8 @@ class ModelAccountOrderItem extends Model
                     date_added = NOW()
             ";
             //print_r($query);exit();
-            $this->db->query($query);
-            $this->db->query("
+            $this->getDb()->query($query);
+            $this->getDb()->query("
                 UPDATE " . DB_PREFIX . "order_product
                 SET status_id = " . (int)$order_item_status_id . "
                 WHERE order_product_id = " . (int)$order_item_id

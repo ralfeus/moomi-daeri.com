@@ -1,7 +1,7 @@
 <?php 
 class ModelCheckoutVoucherTheme extends Model {
 	public function getVoucherTheme($voucher_theme_id) {
-		$query = $this->db->query("SELECT * FROM voucher_theme vt LEFT JOIN voucher_theme_description vtd ON (vt.voucher_theme_id = vtd.voucher_theme_id) WHERE vt.voucher_theme_id = '" . (int)$voucher_theme_id . "' AND vtd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+		$query = $this->getDb()->query("SELECT * FROM voucher_theme vt LEFT JOIN voucher_theme_description vtd ON (vt.voucher_theme_id = vtd.voucher_theme_id) WHERE vt.voucher_theme_id = '" . (int)$voucher_theme_id . "' AND vtd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
 		
 		return $query->row;
 	}
@@ -28,14 +28,14 @@ class ModelCheckoutVoucherTheme extends Model {
 				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 			}	
 			
-			$query = $this->db->query($sql);
+			$query = $this->getDb()->query($sql);
 			
 			return $query->rows;
 		} else {
 			$voucher_theme_data = $this->cache->get('voucher_theme.' . (int)$this->config->get('config_language_id'));
 		
 			if (!$voucher_theme_data) {
-				$query = $this->db->query("SELECT * FROM voucher_theme vt LEFT JOIN voucher_theme_description vtd ON (vt.voucher_theme_id = vtd.voucher_theme_id) WHERE vtd.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY vtd.name");
+				$query = $this->getDb()->query("SELECT * FROM voucher_theme vt LEFT JOIN voucher_theme_description vtd ON (vt.voucher_theme_id = vtd.voucher_theme_id) WHERE vtd.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY vtd.name");
 	
 				$voucher_theme_data = $query->rows;
 			

@@ -33,19 +33,19 @@ class ModelAffiliateTransaction extends Model {
 			$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 		}
 
-		$query = $this->db->query($sql);
+		$query = $this->getDb()->query($sql);
 	
 		return $query->rows;
 	}	
 		
 	public function getTotalTransactions() {
-      	$query = $this->db->query("SELECT COUNT(*) AS total FROM `affiliate_transaction` WHERE affiliate_id = '" . (int)$this->affiliate->getId() . "'");
+      	$query = $this->getDb()->query("SELECT COUNT(*) AS total FROM `affiliate_transaction` WHERE affiliate_id = '" . (int)$this->affiliate->getId() . "'");
 			
 		return $query->row['total'];
 	}	
 			
 	public function getBalance() {
-		$query = $this->db->query("SELECT SUM(amount) AS total FROM `affiliate_transaction` WHERE affiliate_id = '" . (int)$this->affiliate->getId() . "' GROUP BY affiliate_id");
+		$query = $this->getDb()->query("SELECT SUM(amount) AS total FROM `affiliate_transaction` WHERE affiliate_id = '" . (int)$this->affiliate->getId() . "' GROUP BY affiliate_id");
 		
 		if ($query->num_rows) {
 			return $query->row['total'];

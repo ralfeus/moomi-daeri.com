@@ -5,7 +5,7 @@ class ModelFidobonuslotoMail extends Model {
 			
 			$this->load->model('localisation/currency');
 
-			$query_winner = $this->db->query("SELECT * FROM `" . DB_PREFIX . "bonusloto_winner` WHERE `bonusloto_id`='".$bonusloto_id."'");
+			$query_winner = $this->getDb()->query("SELECT * FROM `" . DB_PREFIX . "bonusloto_winner` WHERE `bonusloto_id`='".$bonusloto_id."'");
 			$subject = sprintf($this->language->get('text_subject'), $this->config->get('config_name'), $query_winner->row['winner_date']);
 			$pieces = explode("|", $query_winner->row['winner_bonus']);			
 
@@ -15,11 +15,11 @@ class ModelFidobonuslotoMail extends Model {
 			$template->data['title'] = sprintf($this->language->get('text_subject'), html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8'), $query_winner->row['winner_date']);
 			if ($this->config->get('bonusloto_greeting_text') != '') {
 //				$template->data['text_greeting'] = sprintf($this->config->get('bonusloto_greeting_text'), html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8'), $pieces[0], $pieces[1]);
-//{winner}- победитель
-//{date} - дата розыгрыша
-//{winner_bonus} - выигрыш
-//{winner_code} - код купона
-//{magazin_name} - название магазина
+//{winner}- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//{date} - пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//{winner_bonus} - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//{winner_code} - пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+//{magazin_name} - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 				$bonusloto_greeting = $this->config->get('bonusloto_greeting_text');
 				$bonusloto_greeting = str_replace('{winner}', $query_winner->row['winner_email'], $bonusloto_greeting); 
@@ -65,7 +65,7 @@ class ModelFidobonuslotoMail extends Model {
 			
 			$this->load->model('localisation/currency');
 
-			$query_winner = $this->db->query("SELECT * FROM `" . DB_PREFIX . "bonusloto_winner` WHERE `bonusloto_id`='".$bonusloto_id."'");
+			$query_winner = $this->getDb()->query("SELECT * FROM `" . DB_PREFIX . "bonusloto_winner` WHERE `bonusloto_id`='".$bonusloto_id."'");
 			$subject = sprintf($this->language->get('text_subject_admin'), $this->config->get('config_name'), $query_winner->row['winner_date']);
 			$pieces = explode("|", $query_winner->row['winner_bonus']);			
 

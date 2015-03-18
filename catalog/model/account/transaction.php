@@ -34,19 +34,19 @@ class ModelAccountTransaction extends Model {
 			$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 		}
 
-		$query = $this->db->query($sql);
+		$query = $this->getDb()->query($sql);
 	
 		return $query->rows;
 	}	
 		
 	public function getTotalTransactions() {
-      	$query = $this->db->query("SELECT COUNT(*) AS total FROM `customer_transaction` WHERE customer_id = '" . (int)$this->customer->getId() . "'");
+      	$query = $this->getDb()->query("SELECT COUNT(*) AS total FROM `customer_transaction` WHERE customer_id = '" . (int)$this->customer->getId() . "'");
 			
 		return $query->row['total'];
 	}	
 			
 	public function getTotalAmount() {
-		$query = $this->db->query("SELECT SUM(amount) AS total FROM `customer_transaction` WHERE customer_id = '" . (int)$this->customer->getId() . "' GROUP BY customer_id");
+		$query = $this->getDb()->query("SELECT SUM(amount) AS total FROM `customer_transaction` WHERE customer_id = '" . (int)$this->customer->getId() . "' GROUP BY customer_id");
 		
 		if ($query->num_rows) {
 			return $query->row['total'];
