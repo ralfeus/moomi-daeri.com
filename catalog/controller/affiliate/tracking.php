@@ -61,7 +61,7 @@ class ControllerAffiliateTracking extends Controller {
 			'common/header'	
 		);
 				
-		$this->response->setOutput($this->render());		
+		$this->getResponse()->setOutput($this->render());
   	}
 	
 	public function autocomplete() {
@@ -86,7 +86,7 @@ class ControllerAffiliateTracking extends Controller {
 			}
 		}
 
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 }
 ?>
