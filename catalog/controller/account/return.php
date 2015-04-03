@@ -110,7 +110,7 @@ class ControllerAccountReturn extends CustomerZoneController {
 			'common/header'
 		);
 						
-		$this->response->setOutput($this->render());				
+		$this->getResponse()->setOutput($this->render());
 	}
 	
 	public function info() {
@@ -248,7 +248,7 @@ class ControllerAccountReturn extends CustomerZoneController {
 				'common/header'	
 			);
 									
-			$this->response->setOutput($this->render());		
+			$this->getResponse()->setOutput($this->render());
 		} else {
 			$this->document->setTitle($this->language->get('text_return'));
 						
@@ -307,7 +307,7 @@ class ControllerAccountReturn extends CustomerZoneController {
 				'common/header'	
 			);
 						
-			$this->response->setOutput($this->render());			
+			$this->getResponse()->setOutput($this->render());
 		}
 	}
 		
@@ -529,7 +529,7 @@ class ControllerAccountReturn extends CustomerZoneController {
 			'common/header'	
 		);
 				
-		$this->response->setOutput($this->render());		
+		$this->getResponse()->setOutput($this->render());
   	}
 	
   	public function success() {
@@ -574,7 +574,7 @@ class ControllerAccountReturn extends CustomerZoneController {
 			'common/header'	
 		);
 				
- 		$this->response->setOutput($this->render()); 
+ 		$this->getResponse()->setOutput($this->render());
 	}
 		
   	private function validate() {

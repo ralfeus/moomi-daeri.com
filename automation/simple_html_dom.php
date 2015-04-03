@@ -119,6 +119,7 @@ class simple_html_dom_node
 	public $attr = array();
 	public $children = array();
 	public $nodes = array();
+    /** @var simple_html_dom_node */
 	public $parent = null;
 	// The "info" array - see HDOM_INFO_... for what each element contains.
 	public $_ = array();

@@ -83,7 +83,7 @@ class ControllerAccountAddCredit extends CustomerZoneController
             'common/header'
         );
 
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     protected function setBreadcrumbs()

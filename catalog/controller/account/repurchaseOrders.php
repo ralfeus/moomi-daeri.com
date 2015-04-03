@@ -71,7 +71,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
         $this->data['orders'] = array();
         $this->data['statuses'] = Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id'), true);
         $data = $this->parameters;
-        $data['filterCustomerId'] = $this->getCustomer()->getId();
+        $data['filterCustomerId'] = $this->getCurrentCustomer()->getId();
         $data['order'] = 'DESC';
         foreach (RepurchaseOrderDAO::getInstance()->getOrders($data) as $repurchase_order)
         {
@@ -156,7 +156,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
         $this->data['pagination'] = $pagination->render();
         $this->data = array_merge($this->data, $this->parameters);
 
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     protected function initParameters()
@@ -203,7 +203,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
             $statusId, $this->config->get('config_language_id'));
 //        $this->log->write(print_r($json, true));
 
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     public function showForm()
@@ -305,6 +305,6 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
             'common/header'
         );
 
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 }

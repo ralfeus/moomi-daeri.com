@@ -137,7 +137,7 @@ class ControllerAccountWishList extends CustomerZoneController {
 			'common/header'	
 		);
 							
-		$this->response->setOutput($this->render());		
+		$this->getResponse()->setOutput($this->render());
 	}
 	
 	public function update() {
@@ -173,7 +173,7 @@ class ControllerAccountWishList extends CustomerZoneController {
 			$json['total'] = sprintf($this->language->get('text_wishlist'), (isset($this->session->data['wishlist']) ? count($this->session->data['wishlist']) : 0));
 		}	
 		
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}		
 }
 ?>

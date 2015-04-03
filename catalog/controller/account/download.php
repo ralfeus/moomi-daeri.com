@@ -113,7 +113,7 @@ class ControllerAccountDownload extends CustomerZoneController {
 				'common/header'		
 			);
 							
-			$this->response->setOutput($this->render());				
+			$this->getResponse()->setOutput($this->render());
 		} else {
 			$this->data['heading_title'] = $this->language->get('heading_title');
 
@@ -138,7 +138,7 @@ class ControllerAccountDownload extends CustomerZoneController {
 				'common/header'		
 			);
 										
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
 		}
 	}
 

@@ -217,7 +217,7 @@ class ControllerAccountAddress extends CustomerZoneController {
 			'common/header'		
 		);
 						
-		$this->response->setOutput($this->render());		
+		$this->getResponse()->setOutput($this->render());
   	}
 
   	private function getForm() {
@@ -429,7 +429,7 @@ class ControllerAccountAddress extends CustomerZoneController {
 			'common/header'		
 		);
 						
-		$this->response->setOutput($this->render());	
+		$this->getResponse()->setOutput($this->render());
   	}
 	
   	private function validateForm() {
@@ -509,7 +509,7 @@ class ControllerAccountAddress extends CustomerZoneController {
 		  	$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
     	}
 	
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
   	}  
 }
 ?>

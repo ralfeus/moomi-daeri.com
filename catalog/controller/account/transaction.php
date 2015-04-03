@@ -142,7 +142,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
             $this->template = $this->config->get('config_template') . '/template/account/transaction.tpl';
         else
             $this->template = 'default/template/account/transaction.tpl';
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
     protected function initParameters()

@@ -61,7 +61,7 @@ class ControllerAccountCreditRequest extends CustomerZoneController {
             'common/content_top',
 			'common/content_bottom'
         );
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     protected function setBreadcrumps()

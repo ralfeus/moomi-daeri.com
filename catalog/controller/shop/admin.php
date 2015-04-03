@@ -87,7 +87,7 @@ class ControllerShopAdmin extends Controller {
 
     $this->template = 'default/template/shop/page.tpl';
 
-    $this->response->setOutput($this->render());
+    $this->getResponse()->setOutput($this->render());
 
     //print_r($result);
   }
@@ -116,7 +116,7 @@ class ControllerShopAdmin extends Controller {
 
     $this->template = 'default/template/shop/action.tpl';
 
-    $this->response->setOutput($this->render());
+    $this->getResponse()->setOutput($this->render());
   }
 
   private function getAction() {

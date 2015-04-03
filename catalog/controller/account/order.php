@@ -93,7 +93,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 			'common/header'
 		);
 
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	public function info() {
@@ -372,7 +372,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 				'common/header'
 			);
 
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
     	} else {
 			$this->document->setTitle($this->language->get('text_order'));
 
@@ -401,7 +401,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 				'common/header'
 			);
 
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
     	}
   	}
 
@@ -613,7 +613,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 		else
 			$this->template = 'default' . $templateFileName;
 
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
     protected function setBreadcrumbs()
