@@ -83,7 +83,28 @@ $(document).ready(function() {
 });
 </script>
 <script>
-  (function($){$.fn.extend({limit:function(limit,element){var interval,f;var self=$(this);$(this).focus(function(){interval=window.setInterval(substring,255)});$(this).blur(function(){clearInterval(interval);substring()});substringFunction="function substring(){ var val = $(self).val();var length = val.length;if(length > limit){$(self).val($(self).val().substring(0,limit));}";if(typeof element!='undefined')substringFunction+="if($(element).html() != limit-length){$(element).html((limit-length<=0)?'0':limit-length);}";substringFunction+="}";eval(substringFunction);substring()}})})(jQuery);
+  (function($) {
+      $.fn.extend({
+          limit: function(limit,element) {
+              var interval,f;
+              var self=$(this);
+              $(this).focus(function() {
+                  interval = window.setInterval(substring, 255)
+              });
+              $(this).blur(function() {
+                  clearInterval(interval);
+                  substring();
+              });
+              var substringFunction = "function substring(){ var val = $(self).val();var length = val.length;if(length > limit){$(self).val($(self).val().substring(0,limit));}";
+              if (typeof element != 'undefined') {
+                  substringFunction += "if ($(element).html() != limit - length) { $(element).html((limit-length <= 0) ? '0' : limit-length); }";
+              }
+              substringFunction += "}";
+              eval(substringFunction);
+              substring()
+          }
+      })
+  })(jQuery);
 </script>
 
 <?php foreach ($scripts as $script) { ?>
@@ -194,12 +215,12 @@ $(document).ready(function(){
       </li>
       <li id="extension"><a class="top"><?php echo $text_extension; ?></a>
         <ul>
-          <li><a href="<?php echo $module; ?>"><?php echo $text_module; ?></a></li>
-          <li><a href="<?php echo $shipping; ?>"><?php echo $text_shipping; ?></a></li>
-          <li><a href="<?php echo $payment; ?>"><?php echo $text_payment; ?></a></li>
-          <li><a href="<?php echo $total; ?>"><?php echo $text_total; ?></a></li>
-          <li><a href="<?php echo $feed; ?>"><?php echo $text_feed; ?></a></li>
-            <!--<li><a href="<?= $urlImportModules ?>"><?= $textImportModules ?></a></li>-->
+            <li><a href="<?php echo $module; ?>"><?php echo $text_module; ?></a></li>
+            <li><a href="<?php echo $shipping; ?>"><?php echo $text_shipping; ?></a></li>
+            <li><a href="<?php echo $payment; ?>"><?php echo $text_payment; ?></a></li>
+            <li><a href="<?php echo $total; ?>"><?php echo $text_total; ?></a></li>
+            <li><a href="<?php echo $feed; ?>"><?php echo $text_feed; ?></a></li>
+            <li><a href="<?= $urlImportModules ?>"><?= $textImportModules ?></a></li>
         </ul>
       </li>
       <li id="sale"><a class="top"><?php echo $text_sale; ?></a>

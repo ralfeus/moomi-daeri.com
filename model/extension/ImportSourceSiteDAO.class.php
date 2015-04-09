@@ -1,6 +1,7 @@
 <?php
 namespace model\extension;
 
+use automation\ProductSource;
 use model\catalog\ImportCategory;
 use model\catalog\Manufacturer;
 use model\catalog\ManufacturerDAO;
@@ -62,6 +63,7 @@ SQL
             , array("i:$siteId")
         );
         $sourceSiteClassName = 'automation\\SourceSite\\' . $sourceSiteClassName;
+        /** @var ProductSource $sourceSiteClassName */
         $sourceSite = $sourceSiteClassName::getInstance();
         $query = $this->getDb()->query("
             SELECT source_site_category_id, local_category_id, price_upper_limit

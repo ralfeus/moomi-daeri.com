@@ -4,6 +4,7 @@ $_['text_version']               = 'v.5.6';
 $_['CONTENT_MANAGEMENT'] = 'Content management';
 $_['CREDIT_MANAGEMENT'] = "Deposit management";
 $_['FINISH_SUPPLIER_ORDERS_FOR_TODAY'] = 'Close orders to suppliers';
+$_['IMPORT_MODULES'] = 'Import modules';
 $_['IMPORT_PRODUCTS'] = 'Import products';
 $_['ORDER_CONFIRMATION'] = 'Checkout confirmation';
 $_['REPURCHASE_ORDERS'] = "Agent orders";
@@ -101,5 +102,3 @@ $_['text_length_class']                = 'Length Classes';
 $_['text_zone']                        = 'Zones';
 $_['text_admin_page']                  = 'Pages';
 $_['text_admin_actions']               = 'Actions';
-
-?>
