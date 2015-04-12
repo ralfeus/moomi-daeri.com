@@ -206,6 +206,7 @@ class ControllerCatalogImport extends Controller {
     protected function initParameters() {
         $this->parameters['filterIsActive'] = is_numeric($this->getRequest()->getParam('filterIsActive')) ? $this->getRequest()->getParam('filterIsActive') : null;
         $this->parameters['filterItem'] = $this->getRequest()->getParam('filterItem');
+        $this->parameters['filterLocalProductId'] = $this->getRequest()->getParam('filterLocalProductId');
         $this->parameters['filterSourceSiteId'] = $this->getRequest()->getParam('filterSourceSiteId', array());
         $this->parameters['page'] = $this->getRequest()->getParam('page', 1);
         $this->parameters['selectedItems'] = $this->getRequest()->getParam('selectedItems', array());
@@ -274,13 +275,13 @@ class ControllerCatalogImport extends Controller {
             $this->getImages($productToUpdate, $images, $thumbnail);
         }
         /// Preparing name, korean name and description
-        $product_description = array();
-        foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
-            $product_description[$language['language_id']] = array(
-                'name' => $productToUpdate->getName(),
-                'description' => null
-            );
-        }
+//        $product_description = array();
+//        foreach ($this->load->model('localisation/language')->getLanguages() as $language) {
+//            $product_description[$language['language_id']] = array(
+//                'name' => $productToUpdate->getName(),
+//                'description' => null
+//            );
+//        }
 
         /// Copying product options in order to preserve ones
         $localProductOptions = $this->modelCatalogProduct->getProductOptions($productToUpdate->getLocalProductId());

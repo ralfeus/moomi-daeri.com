@@ -44,7 +44,7 @@
             <tr class="filter">
                 <td />
                 <td />
-                <td />
+                <td><input type="text" name="filterLocalProductId" value="<?= $filterLocalProductId ?>" /></td>
                 <td />
                 <td><input type="text" name="filterItem" value="<?= $filterItem ?>" /></td>
                 <td>

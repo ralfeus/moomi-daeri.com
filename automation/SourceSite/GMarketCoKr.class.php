@@ -13,7 +13,7 @@ abstract class GMarketCoKr extends ProductSource {
         $matches = array();
         $this->parseProductCategories($product, $html);
         /// Get images
-        $product->images[] = $product->thumbnail;
+        $product->images[] = $html->findOne('img#GoodsImageElem')->attr['src'];
 
         /// Get description
         $product->description = '';
