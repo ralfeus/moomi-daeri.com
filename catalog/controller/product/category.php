@@ -180,28 +180,28 @@ class ControllerProductCategory extends Controller {
 				}
 
 				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-					$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+					$price = $this->getCurrency()->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
 				} else {
 					$price = false;
 				}
 
 				if ((float)$result['special']) {
-					$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+					$special = $this->getCurrency()->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
 				} else {
 					$special = false;
 				}
 
 				if ($this->config->get('config_tax')) {
-					$tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price']);
+					$tax = $this->getCurrency()->format((float)$result['special'] ? $result['special'] : $result['price']);
 				} else {
 					$tax = false;
 				}
 
-				if ($this->config->get('config_review_status')) {
-					$rating = (int)$result['rating'];
-				} else {
-					$rating = false;
-				}
+//				if ($this->config->get('config_review_status')) {
+//					$rating = (int)$result['rating'];
+//				} else {
+//					$rating = false;
+//				}
 
 				$date_added = getdate(strtotime($result['date_added']));
 				$date_added = mktime(0, 0, 0, $date_added['mon'], $date_added['mday'], $date_added['year']);
@@ -419,7 +419,7 @@ class ControllerProductCategory extends Controller {
 				$this->data['showDownload'] = true;
 			}
 
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
     	} else {
 			$url = '';
 
@@ -482,7 +482,7 @@ class ControllerProductCategory extends Controller {
 				$this->data['showDownload'] = true;
 			}
 
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
 		}
   	}
 }

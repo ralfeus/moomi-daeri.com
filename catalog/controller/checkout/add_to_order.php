@@ -36,7 +36,7 @@ class ControllerCheckoutAddToOrder extends Controller {
 		$this->cart->clear(true);
 //        $json = array();
 //        $json['output'] = $this->render();
-//        $this->response->setOutput(json_encode($json));
+//        $this->getResponse()->setOutput(json_encode($json));
 	}
 	
 	public function index()
@@ -69,7 +69,7 @@ class ControllerCheckoutAddToOrder extends Controller {
 //		$this->log->write(print_r($this->data, true));
 		$json['output'] = $this->render();
 //		$this->log->write(print_r($json, true));
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 
     protected function initParameters()

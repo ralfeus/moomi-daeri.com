@@ -101,7 +101,7 @@ class ControllerCheckoutLogin extends Controller {
 			$json['output'] = $this->render();
 		}
 		
-		$this->response->setOutput(json_encode($json));		
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 }
 ?>

@@ -155,7 +155,7 @@ class ControllerProductCompare extends Controller {
 			'common/header'
 		);
 		
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 	
 	public function update() {
@@ -191,7 +191,7 @@ class ControllerProductCompare extends Controller {
 			$json['total'] = sprintf($this->language->get('text_compare'), (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0));
 		}	
 
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}		
 }
 ?>

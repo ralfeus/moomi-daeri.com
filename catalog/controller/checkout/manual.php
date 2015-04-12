@@ -222,7 +222,7 @@ class ControllerCheckoutManual extends Controller {
 			array_multisort($sort_order, SORT_ASC, $json['payment_methods']);			
 		}
 	
-		$this->response->setOutput(json_encode($json));	
+		$this->getResponse()->setOutput(json_encode($json));
 		*/	
 	}
 }

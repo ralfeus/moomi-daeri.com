@@ -462,10 +462,10 @@ class ControllerCheckoutConfirm extends Controller {
 			$this->data['redirect'] = $redirect;
 		}
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/confirm.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/checkout/confirm.tpl';
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/confirm.tpl.php')) {
+			$this->template = $this->config->get('config_template') . '/template/checkout/confirm.tpl.php';
 		} else {
-			$this->template = 'default/template/checkout/confirm.tpl';
+			$this->template = 'default/template/checkout/confirm.tpl.php';
 		}
                                     $json['output'] = $this->render();
 
@@ -851,10 +851,10 @@ class ControllerCheckoutConfirm extends Controller {
 			$this->data['redirect'] = $redirect;
 		}
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/confirm.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/checkout/confirm.tpl';
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/confirm.tpl.php')) {
+			$this->template = $this->config->get('config_template') . '/template/checkout/confirm.tpl.php';
 		} else {
-			$this->template = 'default/template/checkout/confirm.tpl';
+			$this->template = 'default/template/checkout/confirm.tpl.php';
 		}
 
 		$this->response->setOutput($this->render());

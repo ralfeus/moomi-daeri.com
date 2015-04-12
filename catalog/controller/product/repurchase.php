@@ -38,7 +38,7 @@ class ControllerProductRepurchase extends Controller
         else
             $json['error'] = "Doesn't seem to be URL";
 
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 
     private function getImageFileName($fileName)
@@ -129,7 +129,7 @@ class ControllerProductRepurchase extends Controller
             'common/header'
         );
 
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 
     public function uploadImage()
@@ -143,6 +143,6 @@ class ControllerProductRepurchase extends Controller
                 move_uploaded_file($file['tmp_name'], DIR_IMAGE . 'upload/' . session_id() . '/' . $file['name']);
                 $json['filePath'] = 'upload/' . session_id() . '/' . $file['name'];
             }
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 }

@@ -61,7 +61,7 @@ class ControllerInformationInformation extends Controller {
 				'common/header'
 			);
 						
-	  		$this->response->setOutput($this->render());
+	  		$this->getResponse()->setOutput($this->render());
     	} else {
       		$this->data['breadcrumbs'][] = array(
         		'text'      => $this->language->get('text_error'),
@@ -94,7 +94,7 @@ class ControllerInformationInformation extends Controller {
 				'common/header'
 			);
 					
-	  		$this->response->setOutput($this->render());
+	  		$this->getResponse()->setOutput($this->render());
     	}
   	}
 	
@@ -121,7 +121,7 @@ class ControllerInformationInformation extends Controller {
 			$output .= '  </body>' . "\n";
 			$output .= '</html>' . "\n";			
 
-			$this->response->setOutput($output);
+			$this->getResponse()->setOutput($output);
 		}
 	}
 }

@@ -70,6 +70,6 @@ class ControllerCheckoutOptions extends Controller
 			
 		$json['output'] = $this->render();
 		//$this->log->write(print_r($json, true));
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 }

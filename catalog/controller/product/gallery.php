@@ -116,7 +116,7 @@ SQL
 
       $this->data['pagination'] = $pagination->render();
 
-      $this->response->setOutput($this->render());
+      $this->getResponse()->setOutput($this->render());
     }
 
     protected function setBreadcrumbs()

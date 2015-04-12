@@ -224,7 +224,7 @@ class ControllerInformationBonusloto extends Controller {
 				'common/footer',
 				'common/header'
 			);
-			$this->response->setOutput($this->render(TRUE), $this->config->get('config_compression'));		
+			$this->getResponse()->setOutput($this->render(TRUE), $this->config->get('config_compression'));
 	  	} else {
 	  		$bonusloto_data = $this->model_fido_bonusloto->getbonusloto();
 	  		if ($bonusloto_data) {
@@ -281,7 +281,7 @@ class ControllerInformationBonusloto extends Controller {
 				'common/footer',
 				'common/header'
 			);
-				$this->response->setOutput($this->render(TRUE), $this->config->get('config_compression'));		
+				$this->getResponse()->setOutput($this->render(TRUE), $this->config->get('config_compression'));
 	    	} else {
 		  		$this->document->setTitle($this->language->get('text_error'));
 	     		$this->data['breadcrumbs'][] = array(
@@ -318,7 +318,7 @@ class ControllerInformationBonusloto extends Controller {
 				'common/footer',
 				'common/header'
 			);
-				$this->response->setOutput($this->render(TRUE), $this->config->get('config_compression'));		
+				$this->getResponse()->setOutput($this->render(TRUE), $this->config->get('config_compression'));
 		  	}
 		}
 	}

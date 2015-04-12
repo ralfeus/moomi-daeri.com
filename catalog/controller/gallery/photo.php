@@ -51,6 +51,7 @@ class ControllerGalleryPhoto extends Controller {
 			'common/header'
 		);
 
+    $this->data['galery_text_max_photo_size'] = $this->language->get('galery_text_max_photo_size');
 
 		$this->response->setOutput($this->render());
   }
@@ -107,15 +108,15 @@ class ControllerGalleryPhoto extends Controller {
       $h = $size[1];
 
       if($h <= $w) {
-        $k = $w/$h;
+
       	$toWidth = 640;
-        $toHeight = $toWidth/$k;
+        $toHeight = 480;
 
       }
       else {
-        $k =$h/$w;
+
+      	$toWidth = 480;
         $toHeight = 640;
-      	$toWidth = $toHeight/$k;
 
       }
 
@@ -173,13 +174,11 @@ class ControllerGalleryPhoto extends Controller {
       $this->language->load('gallery/general');
 
       $this->data = $this->getGalleryGeneralData();
-      $this->data['success'] = $this->language->get('galery_photo_upload_success');
 
-
-      if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/gallery/photo.tpl')) {
-        $this->template = $this->config->get('config_template') . '/template/gallery/photo.tpl';
+      if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/gallery/success.tpl')) {
+        $this->template = $this->config->get('config_template') . '/template/gallery/success.tpl';
       } else {
-        $this->template = 'default/template/gallery/photo.tpl';
+        $this->template = 'default/template/gallery/success.tpl';
       }
 
       $this->children = array(
@@ -191,9 +190,9 @@ class ControllerGalleryPhoto extends Controller {
         'common/header'
       );
 
-//      $templateUrl = DIR_TEMPLATE . "default/gallery/success.tpl";
+      $templateUrl = DIR_TEMPLATE . "default/gallery/success.tpl";
 
-      $this->response->setOutput($this->render());
+      $this->response->setOutput($this->render($templateUrl));
 
     }
 
@@ -230,8 +229,6 @@ class ControllerGalleryPhoto extends Controller {
 		$data['galery_photo_description_to_long'] = $this->language->get('galery_photo_description_to_long');
 		$data['galery_photo_file_empty'] = $this->language->get('galery_photo_file_empty');
     $data['galery_photo_upload_success'] = $this->language->get('galery_photo_upload_success');
-    $data['galery_max_size'] = $this->language->get('galery_max_size');
-    $data['galery_text_max_photo_size'] = $this->language->get('galery_text_max_photo_size');
 
 		return $data;
   }

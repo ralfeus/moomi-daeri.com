@@ -157,7 +157,7 @@ class ControllerModuleWkproductauction extends Controller {
 			   	}
 			  }
 
-	     	$this->response->setOutput(json_encode($json));
+	     	$this->getResponse()->setOutput(json_encode($json));
 	    
 	}
 }

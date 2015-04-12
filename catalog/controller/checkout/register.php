@@ -151,7 +151,7 @@ class ControllerCheckoutRegister extends Controller {
 			$json['output'] = $this->render();		
 		}
 		
-		$this->response->setOutput(json_encode($json));			
+		$this->getResponse()->setOutput(json_encode($json));
   	}
 	
   	public function zone() {
@@ -175,7 +175,7 @@ class ControllerCheckoutRegister extends Controller {
 		  	$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
 		}
 	
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
   	}	
 }
 ?>

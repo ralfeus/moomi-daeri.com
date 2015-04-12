@@ -59,6 +59,13 @@ SQL;
      * @param Product $product
      */
     private function addImages($product) {
+        $deleteStatement = $this->connection->prepare(<<<SQL
+            DELETE FROM imported_product_images
+            WHERE imported_product_id = :productId;
+SQL
+        );
+        $deleteStatement->execute([':productId' => $product->id]);
+
         $sql = <<<SQL
             INSERT INTO imported_product_images
             SET

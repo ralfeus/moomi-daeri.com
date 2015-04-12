@@ -212,15 +212,17 @@ class ControllerProductProduct extends Controller {
 				$this->data['popup'] = '';
 			}
 
-			if ($product_info['image']) {
+            $results = $this->model_catalog_product->getProductImages($this->request->get['product_id']);
+
+            if ($results) {
+                $this->data['thumb'] = $this->model_tool_image->resize($results[0], $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'));
+            } else if ($product_info['image']) {
 				$this->data['thumb'] = $this->model_tool_image->resize($product_info['image'], $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'));
 			} else {
 				$this->data['thumb'] = '';
 			}
 
 			$this->data['images'] = array();
-
-			$results = $this->model_catalog_product->getProductImages($this->request->get['product_id']);
 
 			foreach ($results as $result) {
 				$this->data['images'][] = array(
@@ -429,7 +431,7 @@ class ControllerProductProduct extends Controller {
 				
 			);
 
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
 		} else {
 			$url = '';
 
@@ -488,7 +490,7 @@ class ControllerProductProduct extends Controller {
 				'common/footer'				
 			);
 
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
     	}
   	}
 
@@ -545,7 +547,7 @@ class ControllerProductProduct extends Controller {
 			$this->template = 'default/template/product/review.tpl';
 		}
 
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
 	}
 
 	public function write() {
@@ -579,7 +581,7 @@ class ControllerProductProduct extends Controller {
 			$json['success'] = $this->language->get('text_success');
 		}
 
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 
 	public function captcha() {
@@ -640,7 +642,7 @@ class ControllerProductProduct extends Controller {
 			$json['success'] = $this->language->get('text_upload');
 		}
 
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 
     public function uploadImage()
@@ -656,7 +658,7 @@ class ControllerProductProduct extends Controller {
                 move_uploaded_file($file['tmp_name'], DIR_IMAGE . 'upload/' . session_id() . '/' . $fileName);
                 $json['filePath'] = 'upload/' . session_id() . '/' . $fileName;
             }
-        $this->response->setOutput(json_encode($json));
+        $this->getResponse()->setOutput(json_encode($json));
     }
 }
 ?>

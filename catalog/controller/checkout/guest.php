@@ -262,7 +262,7 @@ class ControllerCheckoutGuest extends Controller {
 			$json['output'] = $this->render();	
 		}
 		
-		$this->response->setOutput(json_encode($json));			
+		$this->getResponse()->setOutput(json_encode($json));
   	}
   	
 	public function shipping() {
@@ -427,7 +427,7 @@ class ControllerCheckoutGuest extends Controller {
 			$json['output'] = $this->render();	
 		}
 		
-		$this->response->setOutput(json_encode($json));		
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 	
   	public function zone() {
@@ -451,7 +451,7 @@ class ControllerCheckoutGuest extends Controller {
 		  	$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
 		}
 	
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
   	}	
 }
 ?>

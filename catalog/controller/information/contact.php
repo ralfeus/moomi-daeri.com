@@ -124,7 +124,7 @@ class ControllerInformationContact extends Controller {
 			'common/header'
 		);
 				
- 		$this->response->setOutput($this->render());		
+ 		$this->getResponse()->setOutput($this->render());
   	}
 
   	public function success() {
@@ -169,7 +169,7 @@ class ControllerInformationContact extends Controller {
 			'common/header'
 		);
 				
- 		$this->response->setOutput($this->render()); 
+ 		$this->getResponse()->setOutput($this->render());
 	}
 
 	public function captcha() {

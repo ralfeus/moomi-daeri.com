@@ -117,7 +117,7 @@ class ControllerCheckoutAddress extends Controller {
 			$json['output'] = $this->render();
 		}
 		
-		$this->response->setOutput(json_encode($json));		
+		$this->getResponse()->setOutput(json_encode($json));
   	}
 	
 	public function shipping() {
@@ -245,7 +245,7 @@ class ControllerCheckoutAddress extends Controller {
 //            $this->log->write(print_r($json, true));
 		}
 				
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
   	}	
 	
   	public function zone() {
@@ -269,6 +269,6 @@ class ControllerCheckoutAddress extends Controller {
 		  	$output .= '<option value="0">' . $this->language->get('text_none') . '</option>';
 		}
 	
-		$this->response->setOutput($output);
+		$this->getResponse()->setOutput($output);
   	}	
 }

@@ -82,7 +82,7 @@ class ControllerModulelototron extends Controller {
 			$lottery['vip_id'] = $var_games['vip_id'];
 			$lottery['vip'] = html_entity_decode('<a class="lott-vip-buy2" href="' . $this->url->link('product/product&product_id=' . $lottery['vip_id']) . '">' . $this->language->get('text_bonusloto_games_vip_buy').'</a>', ENT_QUOTES, 'UTF-8');
 			$lottery['vip_count'] = $var_games['vip_count'];
-			$vip_query = $this->db->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added FROM `" . DB_PREFIX . "customer` AS c INNER JOIN `" . DB_PREFIX . "order` AS v ON c.customer_id = v.customer_id INNER JOIN `" . DB_PREFIX . "order_product` AS vp ON v.order_id = vp.order_id WHERE c.status = '1' AND c.approved = '1' AND v.order_status_id = '".$this->config->get('config_complete_status_id')."' AND vp.product_id = '" . $lottery['vip_id'] . "' GROUP BY c.customer_id");
+			$vip_query = $this->getDb()->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added FROM `" . DB_PREFIX . "customer` AS c INNER JOIN `" . DB_PREFIX . "order` AS v ON c.customer_id = v.customer_id INNER JOIN `" . DB_PREFIX . "order_product` AS vp ON v.order_id = vp.order_id WHERE c.status = '1' AND c.approved = '1' AND v.order_status_id = '".$this->config->get('config_complete_status_id')."' AND vp.product_id = '" . $lottery['vip_id'] . "' GROUP BY c.customer_id");
 		} else {
 			$lottery['status_vip'] = 'off';
 			$lottery['vip'] = $this->language->get('text_bonusloto_games_vip_not');
@@ -100,15 +100,15 @@ class ControllerModulelototron extends Controller {
 		$lottery['status'] = $this->config->get('bonusloto_status');
 
 		if ($lottery['requir'] == '1' ) {
-			$query = $this->db->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added, SUM(o.total) FROM `" . DB_PREFIX . "customer` AS c INNER JOIN `" . DB_PREFIX . "order` AS o ON c.customer_id = o.customer_id WHERE c.status = '1' AND c.approved = '1' AND o.order_status_id = '".$this->config->get('config_complete_status_id')."' GROUP BY c.customer_id HAVING SUM(o.total) >= '" . $lottery['requir_val'] . "'");
+			$query = $this->getDb()->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added, SUM(o.total) FROM `" . DB_PREFIX . "customer` AS c INNER JOIN `" . DB_PREFIX . "order` AS o ON c.customer_id = o.customer_id WHERE c.status = '1' AND c.approved = '1' AND o.order_status_id = '".$this->config->get('config_complete_status_id')."' GROUP BY c.customer_id HAVING SUM(o.total) >= '" . $lottery['requir_val'] . "'");
 		} elseif (($lottery['requir'] == '2') or ($lottery['requir'] == '5' )) {
-			$query = $this->db->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added, SUM(o.points) FROM `" . DB_PREFIX . "customer` AS c INNER JOIN `" . DB_PREFIX . "customer_reward` AS o ON c.customer_id = o.customer_id WHERE c.status = '1' AND c.approved = '1' GROUP BY c.customer_id HAVING SUM(o.points) >= '" . $lottery['requir_val'] . "'");
+			$query = $this->getDb()->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added, SUM(o.points) FROM `" . DB_PREFIX . "customer` AS c INNER JOIN `" . DB_PREFIX . "customer_reward` AS o ON c.customer_id = o.customer_id WHERE c.status = '1' AND c.approved = '1' GROUP BY c.customer_id HAVING SUM(o.points) >= '" . $lottery['requir_val'] . "'");
 		} elseif ($lottery['requir'] == '3' ) {
-			$query = $this->db->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added, SUM(p.quantity) FROM `" . DB_PREFIX . "customer` AS c INNER JOIN `" . DB_PREFIX . "order` AS o ON c.customer_id = o.customer_id INNER JOIN `" . DB_PREFIX . "order_product` AS p ON o.order_id = p.order_id WHERE c.status = '1' AND c.approved = '1' AND o.order_status_id = '".$this->config->get('config_complete_status_id')."' GROUP BY c.customer_id HAVING SUM(p.quantity) >= '" . $lottery['requir_val'] . "'");
+			$query = $this->getDb()->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added, SUM(p.quantity) FROM `" . DB_PREFIX . "customer` AS c INNER JOIN `" . DB_PREFIX . "order` AS o ON c.customer_id = o.customer_id INNER JOIN `" . DB_PREFIX . "order_product` AS p ON o.order_id = p.order_id WHERE c.status = '1' AND c.approved = '1' AND o.order_status_id = '".$this->config->get('config_complete_status_id')."' GROUP BY c.customer_id HAVING SUM(p.quantity) >= '" . $lottery['requir_val'] . "'");
 		} elseif ($lottery['requir'] == '4' ) {
-			$query = $this->db->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added, COUNT(o.status) FROM `" . DB_PREFIX . "customer` AS c INNER JOIN `" . DB_PREFIX . "review` AS o ON c.customer_id = o.customer_id WHERE c.status = '1' AND c.approved = '1' AND o.status = '1' GROUP BY c.customer_id HAVING COUNT(o.status) >= '" . $lottery['requir_val'] . "'");
+			$query = $this->getDb()->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added, COUNT(o.status) FROM `" . DB_PREFIX . "customer` AS c INNER JOIN `" . DB_PREFIX . "review` AS o ON c.customer_id = o.customer_id WHERE c.status = '1' AND c.approved = '1' AND o.status = '1' GROUP BY c.customer_id HAVING COUNT(o.status) >= '" . $lottery['requir_val'] . "'");
 		} else {
-			$query = $this->db->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added FROM `" . DB_PREFIX . "customer` AS c WHERE c.status = '1' and c.approved = '1'");
+			$query = $this->getDb()->query("SELECT c.customer_id, c.firstname, c.lastname, c.email, c.status, c.approved, c.date_added FROM `" . DB_PREFIX . "customer` AS c WHERE c.status = '1' and c.approved = '1'");
 		}
 
 		if ($lottery['requir'] != '0' ) {
@@ -252,7 +252,7 @@ class ControllerModulelototron extends Controller {
 	    	case 'start-'. $lottery['pass']:
                 	header("Content-Type: text/html; charset=utf-8");
 			if (strtotime($lottery['datetime']) < time() && strtotime($lottery['datetime']) + 300 > time()) {
-				$this->db->query("UPDATE `" . DB_PREFIX . "setting` SET  `value` = '1' WHERE `group` = 'bonusloto' AND `key` = 'bonusloto_start_lototron'");
+				$this->getDb()->query("UPDATE `" . DB_PREFIX . "setting` SET  `value` = '1' WHERE `group` = 'bonusloto' AND `key` = 'bonusloto_start_lototron'");
                 	}
 			if (strtotime($lottery['datetime']) > time()) {
                      		die(date('Y-m-d H:i:s') . ' - ' . $this->language->get('error_bonuslot_json_3').' '.$lottery['datetime']);
@@ -289,13 +289,13 @@ class ControllerModulelototron extends Controller {
 					'description'          	=> $this->language->get('entry_bonuslot_description_no'),
 					'title'         	=> $this->language->get('entry_bonuslot_title').' '.date('d.m.Y', strtotime($lottery['datetime']))
 				);
-				$this->db->query("INSERT INTO " . DB_PREFIX . "bonusloto SET status = '1', date_added = now()");
-				$bonusloto_id = $this->db->getLastId();
+				$this->getDb()->query("INSERT INTO " . DB_PREFIX . "bonusloto SET status = '1', date_added = now()");
+				$bonusloto_id = $this->getDb()->getLastId();
 				foreach ($this->data['bonusloto_description'] as  $value) {
-					$this->db->query("UPDATE `" . DB_PREFIX . "bonusloto_winner` SET `winner_last`='0' WHERE `winner_last`='1'");
-					$this->db->query("INSERT INTO `" . DB_PREFIX . "bonusloto_winner` SET bonusloto_id = '" . (int)$bonusloto_id . "',`winner_id`='', `winner_name`='".$this->language->get('text_bonusloto_games_users_not')."',`winner_email`='', `winner_date`='".$lottery['datetime']."', `winner_bonus`='".$lottery['description']."|".$lottery['cupone']."',`winner_last`='1'");
-					$this->db->query("INSERT INTO `" . DB_PREFIX . "bonusloto_description` SET bonusloto_id = '" . (int)$bonusloto_id . "', language_id = '".(int)$this->config->get('config_language_id')."', title = '" . $this->db->escape($value['title']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', description = '" . $this->db->escape($value['description']) . "'");
-					$this->db->query("INSERT INTO `" . DB_PREFIX . "bonusloto_to_store` SET bonusloto_id = '" . (int)$bonusloto_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "'");
+					$this->getDb()->query("UPDATE `" . DB_PREFIX . "bonusloto_winner` SET `winner_last`='0' WHERE `winner_last`='1'");
+					$this->getDb()->query("INSERT INTO `" . DB_PREFIX . "bonusloto_winner` SET bonusloto_id = '" . (int)$bonusloto_id . "',`winner_id`='', `winner_name`='".$this->language->get('text_bonusloto_games_users_not')."',`winner_email`='', `winner_date`='".$lottery['datetime']."', `winner_bonus`='".$lottery['description']."|".$lottery['cupone']."',`winner_last`='1'");
+					$this->getDb()->query("INSERT INTO `" . DB_PREFIX . "bonusloto_description` SET bonusloto_id = '" . (int)$bonusloto_id . "', language_id = '".(int)$this->config->get('config_language_id')."', title = '" . $this->getDb()->escape($value['title']) . "', meta_description = '" . $this->getDb()->escape($value['meta_description']) . "', description = '" . $this->getDb()->escape($value['description']) . "'");
+					$this->getDb()->query("INSERT INTO `" . DB_PREFIX . "bonusloto_to_store` SET bonusloto_id = '" . (int)$bonusloto_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "'");
 					if ($lottery['status_vip'] == 'on'){
 						$this->load->model('fido/bonusloto');
 						$this->model_fido_bonusloto->deleteVipProduct($lottery['vip_id']);
@@ -316,13 +316,13 @@ class ControllerModulelototron extends Controller {
 					'description'          	=> sprintf($this->language->get('entry_bonuslot_description'), $list[$rand_number]['name'], $lottery['description']),
 					'title'         	=> $this->language->get('entry_bonuslot_title').' '.date('d.m.Y', strtotime($lottery['datetime']))
 				);
-				$this->db->query("INSERT INTO " . DB_PREFIX . "bonusloto SET status = '1', date_added = now()");
-				$bonusloto_id = $this->db->getLastId();
+				$this->getDb()->query("INSERT INTO " . DB_PREFIX . "bonusloto SET status = '1', date_added = now()");
+				$bonusloto_id = $this->getDb()->getLastId();
 				foreach ($this->data['bonusloto_description'] as  $value) {
-					$this->db->query("UPDATE `" . DB_PREFIX . "bonusloto_winner` SET `winner_last`='0' WHERE `winner_last`='1'");
-					$this->db->query("INSERT INTO `" . DB_PREFIX . "bonusloto_winner` SET bonusloto_id = '" . (int)$bonusloto_id . "',`winner_id`='".$list[$rand_number]['customer_id']."', `winner_name`='".$list[$rand_number]['name']."',`winner_email`='".$list[$rand_number]['uid']."', `winner_date`='".$lottery['datetime']."', `winner_bonus`='".$lottery['description']."|".$lottery['cupone']."',`winner_last`='1'");
-					$this->db->query("INSERT INTO `" . DB_PREFIX . "bonusloto_description` SET bonusloto_id = '" . (int)$bonusloto_id . "', language_id = '".(int)$this->config->get('config_language_id')."', title = '" . $this->db->escape($value['title']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', description = '" . $this->db->escape($value['description']) . "'");
-					$this->db->query("INSERT INTO `" . DB_PREFIX . "bonusloto_to_store` SET bonusloto_id = '" . (int)$bonusloto_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "'");
+					$this->getDb()->query("UPDATE `" . DB_PREFIX . "bonusloto_winner` SET `winner_last`='0' WHERE `winner_last`='1'");
+					$this->getDb()->query("INSERT INTO `" . DB_PREFIX . "bonusloto_winner` SET bonusloto_id = '" . (int)$bonusloto_id . "',`winner_id`='".$list[$rand_number]['customer_id']."', `winner_name`='".$list[$rand_number]['name']."',`winner_email`='".$list[$rand_number]['uid']."', `winner_date`='".$lottery['datetime']."', `winner_bonus`='".$lottery['description']."|".$lottery['cupone']."',`winner_last`='1'");
+					$this->getDb()->query("INSERT INTO `" . DB_PREFIX . "bonusloto_description` SET bonusloto_id = '" . (int)$bonusloto_id . "', language_id = '".(int)$this->config->get('config_language_id')."', title = '" . $this->getDb()->escape($value['title']) . "', meta_description = '" . $this->getDb()->escape($value['meta_description']) . "', description = '" . $this->getDb()->escape($value['description']) . "'");
+					$this->getDb()->query("INSERT INTO `" . DB_PREFIX . "bonusloto_to_store` SET bonusloto_id = '" . (int)$bonusloto_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "'");
 					if ($lottery['type'] == '2'){
 						$this->load->model('fido/bonusloto');
 						$this->model_fido_bonusloto->addReward($list[$rand_number]['customer_id'], $this->language->get('text_bonusloto_point_description') . ':' . $lottery['datetime'], $lottery['description_id']);
@@ -349,7 +349,7 @@ class ControllerModulelototron extends Controller {
 			if (isset($var_start_time_data[0]) && $this->config->get('bonusloto_start_lototron') == '0') {
 				$last_game = array_pop($var_start_time_data[0]);
 				$lottery['datetime'] = $last_game['datetime'];
-				$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "bonusloto_winner` WHERE `winner_date`='".$lottery['datetime']."' AND `winner_last`='1'");
+				$query = $this->getDb()->query("SELECT * FROM `" . DB_PREFIX . "bonusloto_winner` WHERE `winner_date`='".$lottery['datetime']."' AND `winner_last`='1'");
 				foreach ($query->rows as $winner) {
 					$this->data['winner'][] = array(
 						'winner_id'    	 => $winner['winner_id'],
@@ -428,8 +428,8 @@ class ControllerModulelototron extends Controller {
 		$game = array_merge_recursive($game_off,$game_on);
 		$this->load->model('fido/bonusloto');
 		$game = $this->model_fido_bonusloto->BonuslotoSortDateTime($game);
-		$this->db->query("UPDATE `" . DB_PREFIX . "setting` SET  `value` = '" . $this->db->escape(serialize($game)) . "', `serialized` = '1' WHERE `group` = 'bonusloto' AND `key` = 'bonusloto_game'");
-		$this->db->query("UPDATE `" . DB_PREFIX . "setting` SET  `value` = '0' WHERE `group` = 'bonusloto' AND `key` = 'bonusloto_start_lototron'");
+		$this->getDb()->query("UPDATE `" . DB_PREFIX . "setting` SET  `value` = '" . $this->getDb()->escape(serialize($game)) . "', `serialized` = '1' WHERE `group` = 'bonusloto' AND `key` = 'bonusloto_game'");
+		$this->getDb()->query("UPDATE `" . DB_PREFIX . "setting` SET  `value` = '0' WHERE `group` = 'bonusloto' AND `key` = 'bonusloto_start_lototron'");
 	}
 }
 ?>

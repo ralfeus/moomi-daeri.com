@@ -334,7 +334,7 @@ class ControllerCheckoutCart extends CustomerController {
 				'common/header'
 			);
 
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
     	} else {
       		$this->data['heading_title'] = $this->language->get('heading_title');
       		$this->data['text_error'] = $this->language->get('text_empty');
@@ -356,7 +356,7 @@ class ControllerCheckoutCart extends CustomerController {
 				'common/header'
 			);
 
-			$this->response->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render());
     	}
   	}
 
@@ -582,7 +582,7 @@ class ControllerCheckoutCart extends CustomerController {
 
 		$json['output'] = $this->render();
 
-		$this->response->setOutput(json_encode($json));
+		$this->getResponse()->setOutput(json_encode($json));
 	}
 }
 ?>

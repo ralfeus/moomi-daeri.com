@@ -416,7 +416,7 @@ class ControllerProductSearch extends Controller {
 			'common/header'
 		);
 				
-		$this->response->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render());
   	}
 
     private function sortByRelevance($results, $filter_name) {

@@ -17,6 +17,6 @@ class ControllerModuleCommunication extends Controller
     public function index()
     {
         $this->template = "module/communication.tpl";
-        $this->response->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render());
     }
 }
