@@ -289,7 +289,7 @@ class ControllerCatalogImport extends Controller {
         $localProductCategories = $this->modelCatalogProduct->getProductCategories($productToUpdate->getLocalProductId());
         $this->modelCatalogProduct->editProduct($productToUpdate->getLocalProductId(), array(
             'date_available' => $localProduct['date_available'],
-            'image_description' => $localProduct['image_description'],
+            'image_description' => $localProduct['image_description'] ? $localProduct['image_description'] : $productToUpdate->getDescription(),
             'height' => null,
             'image' => $thumbnail,
             'length' => null, 'length_class_id' => 1,
