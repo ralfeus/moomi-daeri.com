@@ -1,5 +1,5 @@
 <?php
-$_['HEADING_TITLE'] = 'EMS shipping Discounted';
+$_['HEADING_TITLE'] = 'envio con descuento con EMS';
 $_['text_title']  = $_['HEADING_TITLE'];
-$_['text_weight'] = 'Weight:'; 
+$_['text_weight'] = 'Peso:'; 
 ?>

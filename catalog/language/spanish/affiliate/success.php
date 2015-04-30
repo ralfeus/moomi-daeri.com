@@ -1,9 +1,9 @@
 <?php
 // Heading
-$_['heading_title'] = 'Your Affiliate Account Has Been Created!';
+$_['heading_title'] = 'Su cuenta de afiliado ha sido creada!';
 
 // Text 
-$_['text_approval'] = '<p>Thank you for registering for an affiliate account with %s!</p><p>You will be notified by email once your account has been activated by the store owner.</p><p>If you have ANY questions about the operation of this affiliate system, please <a href="%s">contact the store owner</a>.</p>';
-$_['text_account']  = 'Account';
-$_['text_success']  = 'Success';
+$_['text_approval'] = '<p>Gracias por registrarse para la cuenta de afiliado con  %s!</p><p>Usted estara notificado por el correo electronico una vez su cuenta ha sido activada por el dueno de la tienda .</p><p>Si Usted tiene CUALQUIER pregunta sobre el funcionamiento de esta sistema de afiliacion, por favor <a href="%s">contacte el dueno de la tienda.</a>.</p>';
+$_['text_account']  = 'Cuenta';
+$_['text_success']  = 'Exito';
 ?>

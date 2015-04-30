@@ -1,15 +1,15 @@
 <?php
 // Heading 
-$_['heading_title']      = 'Your Deposit';
+$_['heading_title']      = 'su deposito';
 
 // Column
-$_['column_date_added']  = 'Date Added';
-$_['column_description'] = 'Description';
-$_['column_points']      = 'Points';
+$_['column_date_added']  = 'la fecha anadida';
+$_['column_description'] = 'descripcion';
+$_['column_points']      = 'puntos';
 
 // Text
-$_['text_account']       = 'Account';
-$_['text_reward']        = 'Deposit';
-$_['text_total']         = 'Your total amount of the deposit is:';
-$_['text_empty']         = 'You do not have any deposit!';
+$_['text_account']       = ' cuenta';
+$_['text_reward']        = 'deposito';
+$_['text_total']         = 'su monto total del deposito es:';
+$_['text_empty']         = 'Usted no tiene ninguno deposito!';
 ?>

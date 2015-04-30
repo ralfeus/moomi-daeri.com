@@ -7,7 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-$_['HEADING_TITLE'] = 'Agent order';
-$_['FILTER_BY'] = 'Filter by';
-$_['ADDTOCART'] = 'Add to Cart';
-$_['UNCONDITIONALLY_ACCEPT'] = 'Unconditionally accept';
+$_['HEADING_TITLE'] = 'Pedido del agente';
+$_['FILTER_BY'] = 'filtrar por';
+$_['ADDTOCART'] = 'Anadir a la cesta';
+$_['UNCONDITIONALLY_ACCEPT'] = 'aceptar incondicionalmente';

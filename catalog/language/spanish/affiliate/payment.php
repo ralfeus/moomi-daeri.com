@@ -1,25 +1,25 @@
 <?php
 // Heading 
-$_['heading_title']             = 'Payment Method';
+$_['heading_title']             = 'El metodo del pago';
 
 // Text
-$_['text_account']              = 'Account';
-$_['text_payment']              = 'Payment';
-$_['text_your_payment']         = 'Payment Information';
-$_['text_your_password']        = 'Your Password';
-$_['text_cheque']               = 'Cheque';
+$_['text_account']              = 'Cuenta';
+$_['text_payment']              = 'Pago';
+$_['text_your_payment']         = 'Informacion del pago';
+$_['text_your_password']        = 'Su contrasena';
+$_['text_cheque']               = 'cheque';
 $_['text_paypal']               = 'PayPal';
-$_['text_bank']                 = 'Bank Transfer';
-$_['text_success']              = 'Success: Your account has been successfully updated.';
+$_['text_bank']                 = 'Transferencia bancaria';
+$_['text_success']              = 'Exito: su cuenta ha sido actualizada exitosamente.';
 
 // Entry
-$_['entry_tax']                 = 'Tax ID:';
-$_['entry_payment']             = 'Payment Method:';
-$_['entry_cheque']              = 'Cheque Payee Name:';
-$_['entry_paypal']              = 'PayPal Email Account:';
-$_['entry_bank_name']           = 'Bank Name:';
-$_['entry_bank_branch_number']  = 'ABA/BSB number (Branch Number):';
-$_['entry_bank_swift_code']     = 'SWIFT Code:';
-$_['entry_bank_account_name']   = 'Account Name:';
-$_['entry_bank_account_number'] = 'Account Number:';
+$_['entry_tax']                 = 'ID del impuesto:';
+$_['entry_payment']             = 'El metodo del pago:';
+$_['entry_cheque']              = 'El nombre del beneficiario del cheque:';
+$_['entry_paypal']              = 'La cuenta del correo electronico de PayPal:';
+$_['entry_bank_name']           = 'Nombre del Banco:';
+$_['entry_bank_branch_number']  = 'numero ABA/BSB (numero de filial):';
+$_['entry_bank_swift_code']     = 'el codigo SWIFT:';
+$_['entry_bank_account_name']   = 'Nombre de la cuenta:';
+$_['entry_bank_account_number'] = 'Numero de la cuenta:';
 ?>

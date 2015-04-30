@@ -1,7 +1,7 @@
 <?php
 
-$_['text_our_holidays'] = 'Our Holidays:';
-$_['text_workday']      = 'workday';
-$_['text_holiday']      = 'holiday';
+$_['text_our_holidays'] = 'nuestras vacaciones:';
+$_['text_workday']      = 'el dia laboral';
+$_['text_holiday']      = 'vacaciones';
 
 ?>

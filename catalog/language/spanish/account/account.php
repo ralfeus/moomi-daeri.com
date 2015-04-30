@@ -1,22 +1,22 @@
 <?php
 // Heading 
-$_['heading_title']      = 'My Account';
+$_['heading_title']      = 'El Cabinete Personal';
 
 // Text
-$_['text_account']       = 'Account';
-$_['text_my_account']    = 'My Account';
-$_['text_my_orders']     = 'My Orders';
-$_['text_my_newsletter'] = 'Newsletter';
-$_['text_edit']          = 'Edit your account information';
-$_['text_password']      = 'Change your password';
-$_['text_address']       = 'Modify your address book entries';
-$_['text_wishlist']      = 'Modify your wish list';
-$_['text_order']         = 'View your order history';
-$_['text_download']      = 'Downloads';
-$_['text_reward']        = 'Your Deposit';
-$_['text_return']        = 'View your return requests'; 
-$_['text_transaction']   = 'Your Transactions'; 
+$_['text_account']       = 'Mi cuenta';
+$_['text_my_account']    = 'El Cabinete Personal';
+$_['text_my_orders']     = 'Mis pedidos';
+$_['text_my_newsletter'] = 'hoja informativa';
+$_['text_edit']          = 'Actualizar la informacion del contacto';
+$_['text_password']      = 'Cambiar contrasena';
+$_['text_address']       = 'Cambiar mis direcciones';
+$_['text_wishlist']      = 'Cambiar mis comentarios';
+$_['text_order']         = 'Historia de los pedidos';
+$_['text_download']      = 'Los archivos para descarga';
+$_['text_reward']        = 'Anadir credito';
+
+$_['text_transaction']   = 'Historia de los pagos'; 
 $_['text_newsletter']    = 'Subscribe / unsubscribe to newsletter';
 $_['CREDIT_HISTORY'] = 'See credit history';
-$_['REPURCHASE_ORDERS'] = "Agent orders";
+$_['REPURCHASE_ORDERS'] = "PEDIDOS DEL AGENTE";
 ?>

@@ -1,24 +1,24 @@
 <?php
 
-$_['heading_title']  = 'Contacts';
-$_['galery_photo_name'] = 'the title of photo';
-$_['galery_photo_description'] = 'the description of photo (max 100 characters)';
-$_['breadcrumbs_gallery'] = 'Gallery';
-$_['galery_photo_name_empty'] =  '"The title  of photo" is required';
-$_['galery_photo_description_to_long'] = 'the description of photo have more  100 characters';
-$_['galery_photo_file_empty'] = ' select a photo to download, please';
-$_['galery_photo_error_not_alloed'] = 'Allowed to upload photos only format.jpg, .png, .gif';
-$_['galery_photo_upload_success'] = 'Thank you! Your photo was sent for moderation. After validation, it will appear in the gallery';
+$_['heading_title']  = 'Contactos';
+$_['galery_photo_name'] = 'el titulo de la foto';
+$_['galery_photo_description'] = 'la descripcion de la foto (max 100 simbolos)';
+$_['breadcrumbs_gallery'] = 'Galeria';
+$_['galery_photo_name_empty'] =  '"Se require el titulo de la foto';
+$_['galery_photo_description_to_long'] = 'la descripcion de la foto tiene que tener mas de 100 simbolos';
+$_['galery_photo_file_empty'] = ' seleccione, por favor, la foto para bajarlo';
+$_['galery_photo_error_not_alloed'] = 'se permite subir las fotos solo de los formatos .jpg, .png, .gif';
+$_['galery_photo_upload_success'] = 'Gracias! Su foto ha sido enviado al moderador. Despues de su validacion ese aparecera en la galeria';
 
-$_['galery_comment'] = 'Comment';
-$_['galery_button_sent_comment'] = 'Vote';
-$_['galery_message_vote_success'] = 'Thank you for voting!';
+$_['galery_comment'] = 'Comentario';
+$_['galery_button_sent_comment'] = 'Voto';
+$_['galery_message_vote_success'] = 'Gracias para votar!';
 
 
-$_['galery_text_photo_name'] = 'Name';
-$_['galery_text_photo_description'] = 'Description';
+$_['galery_text_photo_name'] = 'Nombre';
+$_['galery_text_photo_description'] = 'Descripcion';
 
-$_['galery_text_max_photo_size'] = 'Max. size of photo should not exceed 1MB';
-$_['galery_max_size'] = 'File size exceeds 1 megabyte';
+$_['galery_text_max_photo_size'] = 'El tamano maximal de la foto no tiene que ser mas de 1 MB';
+$_['galery_max_size'] = 'El tamano del archivo excede 1 megabyte';
 
 ?>

@@ -1,19 +1,19 @@
 <?php
 // Heading
-$_['heading_title'] = 'Your Order Has Been Processed!';
+$_['heading_title'] = 'Su pedido ha sido procesado!';
 
 // Text
-$_['text_customer'] = '<p>Dear customer</p>
-<p>Thank you for ordering from our shop.<br />
-You will be required to pay 50&#37; advance for the product.<br />
+$_['text_customer'] = '<p>Estimado cliente</p>
+<p>Gracias para hacer el pedido de nuestra tienda.<br />
+You Se requerira que Usted pague  50&#37; por adelantado por este producto.<br />
 Please take note of this! <br />
-If the payment is not made within 5 days, your order will automatically be cancelled.<br />
-The remaining payment should be done before we send it to your country.</p>
+If Si el pago no este hecho durante los 5 dias, su pedido estara automaticamente cancelado-.<br />
+The El pago restante tiene que estar hecho antes que nosotros lo enviaremos a su pais.</p>
 <p>Payment process</p>
-<p>If you are paying through Western Union, Money Gramm or Unistream, you will have to pay according to the currency rate of the date of order in dollars.<br />
-If you would like to cancel your order, please let us know. Your order can be cancelled within a few days automatically.</p>';
-$_['text_guest']    = '<p>Your order has been successfully processed!</p><p>Please direct any questions you have to the <a href="%s">store owner</a>.</p><p>Thanks for shopping with us online!</p>';
-$_['text_basket']   = 'Basket';
-$_['text_checkout'] = 'Checkout';
-$_['text_success']  = 'Success';
+<p>si Usted esta pagando a traves de Western Union, Money Gramm o Unistream, Usted tendria que pagar en dolares de acuerdo con el tipo de cambio en la fecha de formacion del pedido..<br />
+Si a Usted le gustaria cancelar su pedido, por favor, dejenos saber. Su pedido puede estar cancelado durante varios dias automaticamente.</p>';
+$_['text_guest']    = '<p>Su pedido ha sido procesado exitosamente!!</p><p>Por favor, dirija cualquier pregunta que Usted tiene hacia <a href="%s">el dueno de la tiendar</a>.</p><p>Gracias por hacer compras con nosotros online !!</p>';
+$_['text_basket']   = 'La cesta';
+$_['text_checkout'] = 'Revision';
+$_['text_success']  = 'Exito';
 ?>

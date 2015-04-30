@@ -1,35 +1,35 @@
 <?php
 // Heading 
-$_['headingTitle']     = 'My Account Information';
+$_['headingTitle']     = 'Informacion de mi cuenta';
 
 // Text
-$_['text_account']      = 'Account';
-$_['text_edit']         = 'Edit Information';
-$_['text_your_details'] = 'Your Personal Details';
-$_['text_success']      = 'Success: Your account has been successfully updated.';
+$_['text_account']      = 'Cuenta';
+$_['text_edit']         = 'Editar la informacion';
+$_['text_your_details'] = 'Sus detalles personales';
+$_['text_success']      = 'Exito: su cuenta ha sido actualizada exitosamente.';
 // KBA
-$_['text_edit_your_acc_plz'] = 'Fill required fields please!';
+$_['text_edit_your_acc_plz'] = 'Exito: su cuenta ha sido actualizada exitosamente';
 // /KBA
 
 // Entry
-$_['entry_firstname']  = 'First Name:';
-$_['entry_lastname']   = 'Last Name:';
-$_['entry_nickname']    = 'Nickname:';
-$_['entry_email']      = 'E-Mail:';
-$_['entry_telephone']  = 'Telephone:';
+$_['entry_firstname']  = ' Nombre:';
+$_['entry_lastname']   = 'Apellido:';
+$_['entry_nickname']    = 'Apodo:';
+$_['entry_email']      = 'E-mail:';
+$_['entry_telephone']  = 'telefono:';
 $_['entry_fax']        = 'Fax:';
 
 // Error
-$_['error_exists']     = 'Warning: E-Mail address is already registered!';
-$_['error_firstname']  = 'First Name must be between 1 and 32 characters!';
-$_['error_lastname']   = 'Last Name must be between 1 and 32 characters!';
-$_['error_nickname']    = "This nickname already exists in the system. Please choose another one";
-$_['error_email']      = 'E-Mail Address does not appear to be valid!';
-$_['error_telephone']  = 'Telephone must be between 3 and 32 characters!';
+$_['error_exists']     = 'Advertencia: la direccion de correo electronico ya esta registrada';
+$_['error_firstname']  = 'El nombre debe contener de 1 a 32 simbolos!';
+$_['error_lastname']   = 'El apellido debe contener de 1 a 32 simbolos!';
+$_['error_nickname']    = "Este apodo ya existe en el sistema, Por favor, escoje el otro.";
+$_['error_email']      = 'Este apodo ya existe en el sistema, Por favor, escoje el otro!';
+$_['error_telephone']  = 'El telefono tiene que contener de 3 a 32 simbolos!';
 
 $_['CONFIRM_CURRENCY_CONVERT'] =
-    "You change your base currency from '%s' to '%s'.
+    ". Su monto de deposito va a ser convertido  utilizando el tipo de cambio cruzado de '%s' a '%s' por medio de Won coreano.
     Your deposit amount will be converted by crossrate of %s to %s via Korean Won.
-    Currently your deposit amount is %s.
-    After change your deposit amount will become %s.
-    Are you sure you want perform this change?";
+    Actualmente su monto del deposito es  %s.
+    Despues del cambio su monto del deposito sera  %s.
+   Usted esta seguro que quiere realizar este cambio?";

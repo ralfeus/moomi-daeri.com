@@ -1,50 +1,88 @@
-<?php
+﻿<?php
 // Heading 
-$_['heading_title']   		= 'Бонусная лотерея нашего магазина';
+$_['heading_title']   		= 'Lotería de bonos de nuestra tienda';
 
-// Text
-$_['text_error']	    	= 'Розыгрышей пока не проводилось';
-$_['text_read_more']	 	= 'подробнее';
-$_['text_date_added'] 		= 'Дата розыгрыша:';
-$_['text_lott_timer_title']	= 'До розыгрыша осталось';
-$_['text_lott_priz_title']	= 'Сегодня в розыгрыше';
-$_['text_user_list_title']	= 'Участники';
-$_['text_info_title']		= 'Информация';
-$_['text_info_menu_1']		= 'Подать заявку';
-$_['text_info_menu_2']		= 'Правила';
-$_['text_info_menu_3']		= 'Почему меня нет в списке?';
-$_['text_info_menu_4']		= 'Не пропусти!';
+//Text
+$_['text_error']	    	= 'El sorteo aún no se ha llevado a cabo';
+$_
+['text_read_more']	 	= 'más detalladamente';
+$_
+['text_date_added'] 		= 'la fecha del sorteo:';
+$_
+['text_lott_timer_title']	= 'Hasta el sortéo se quedó';
+$_
+['text_lott_priz_title']	= 'Hoy en el sortéo';
+$_
+['text_user_list_title']	= 'Los participantes';
+$_
+['text_info_title']		= 'Información';
+$_
+['text_info_menu_1']		= 'Aplicar';
+$_
+['text_info_menu_2']		= 'Reglas';
+$_
+['text_info_menu_3']		= 'Por qué no me encuentro en la lista?';
+$_
+['text_info_menu_4']		= 'No te pierdas!!';
 
-$_['text_game_requir']		= 'Регистрация + %s %s %s %s';
-$_['text_game_requir_not']		= 'Только регистрация';
-$_['text_game_requir_cash']		= 'общая сумма покупок';
-$_['text_game_requir_point']		= 'общее кол-во баллов';
-$_['text_game_requir_product']		= 'общее кол-во купленных товаров';
-$_['text_game_requir_post']		= 'общее кол-во отзывов';
-$_['text_game_requir_point_buy']	= 'стоимость участия';
+$_
+['text_game_requir']		= 'Registración + %s %s %s %s';
+$_
+['text_game_requir_not']		= 'Sólo registración';
+$_
+['text_game_requir_cash']		= 'la suma total de las compras';
+$_
+['text_game_requir_point']		= 'la cantidad total de los puntos';
+$_
+['text_game_requir_product']		= 'la cantidad total de los artículos comprados';
+$_
+['text_game_requir_post']		= 'la cantidad total  de las referencias';
+$_
+['text_game_requir_point_buy']	= 'el costo de participación';
 
-$_['text_game_cash']		= 'рублей';
-$_['text_game_point']		= 'баллов';
-$_['text_game_product']		= 'шт.';
-$_['text_game_post']		= 'отзывов';
-$_['text_game_requir_min']	= 'не менее';
+$_
+['text_game_cash']		= 'won';
+$_['text_game_point']		= 'puntos';
+$_
+['text_game_product']		= 'piezas.';
+$_
+['text_game_post']		= 'referencias';
+$_
+['text_game_requir_min']	= 'no ménos que';
 
-$_['text_lott_timer_day']	= 'Дни';
-$_['text_lott_timer_houre']	= 'Часы';
-$_['text_lott_timer_minutes']	= 'Минуты';
-$_['text_lott_timer_seconds']	= 'Секунды';
-$_['text_info_posting']		= 'Расскажи друзьям';
-$_['text_info_posting_points']	= 'Расскажи друзьям и получи %s баллов';
-$_['text_thanks_point']		= 'Спасибо, что Вы рассказали о нас своим друзьям. За это мы Вам дарим %s бонусов';
-$_['text_thanks_point_not_login'] = 'Спасибо, что Вы рассказали о нас своим друзьям. Вы можете получить подарок от нас если зарегистрируетесь';
-$_['text_thanks_point_time'] 	= 'Спасибо, что Вы рассказали о нас своим друзьям. Но бонусы Вы не получите. Что бы получить бонусы, расскажите о нас через %s день(дней) снова';
-$_['text_bonusloto_point_text'] = 'баллов';
-$_['text_bonusloto_point_text_1'] = '<center>Наши предстоящие розыгрыши:<br/><table border=1><tr><td>Дата розыгрыша</td><td>Время розыгрыша</td><td>Часовой пояс</td><td>Приз розыгрыша</td><td>Требования к участникам</td><td>Особое предложение</td></tr>';
-$_['text_bonusloto_point_text_2'] ='<tr><td> %s </td><td> %s </td><td> %s </td><td> %s </td><td> %s </td><td> %s </td></tr>';
-$_['text_bonusloto_point_text_3'] = '</table><br/> Не упусти свой шанс - прими участие</center>';
-$_['text_bonusloto_games_vip_buy'] = 'Купить VIP';
-$_['text_bonusloto_games_vip_not'] = 'Нет предложений';
+$_
+['text_lott_timer_day']	= 'días';
+$_
+['text_lott_timer_houre']	= 'horas';
+$_
+['text_lott_timer_minutes']	= 'minutos';
+$_
+['text_lott_timer_seconds']	= 'segundos';
+$_
+['text_info_posting']		= 'cuénte con los amigos';
+$_
+['text_info_posting_points']	= 'cuénte a los amigos y reciba %s puntos';
+$_
+['text_thanks_point']		= 'Gracias por contar a sus amigos sobre nosotros. Por eso le regalamos %s bonos.';
+$_
+['text_thanks_point_not_login'] = 'Gracias que Usted contó sobre nosotros a sus amigos. Usted podría recibir el regalo de parte de nosotros si se regístre';
+$_
+['text_thanks_point_time'] 	= 'Gracias por contar sobre nosotros a sus amigos. Pero Usted no recibirá los bonos. Para recibir los bonos cuénte sobre nosotros en  %s día (días)';
+$_
+['text_bonusloto_point_text'] = 'puntos';
+$_
+['text_bonusloto_point_text_1'] = '<center>nuestros próximos sorteos:<br/><table border=1><tr><td>la fecha del sorteo</td><td>la hora del sorteo</td><td>
+zona horaria</td><td>el premio del sorteo</td><td>
+los requerimientos hacia el participante</td><td>oferta especial</td></tr>';
+$_
+['text_bonusloto_point_text_2'] ='<tr><td> %s </td><td> %s </td><td> %s </td><td> %s </td><td> %s </td><td> %s </td></tr>';
+$_
+['text_bonusloto_point_text_3'] = '</table><br/> No te piérdas tu oportunidad - Particípe en</center>';
+$_
+['text_bonusloto_games_vip_buy'] = 'Comprar VIP';
+$_
+['text_bonusloto_games_vip_not'] = 'No hay ofertas';
 
 // Buttons
-$_['button_bonusloto']     	= 'Все розыгрыши';
+$_['button_bonusloto']     	= 'Todos sorteos';
 ?>

@@ -6,5 +6,5 @@
  * Time: 20:40
  * To change this template use File | Settings | File Templates.
  */
-$_['HEADING_TITLE'] = 'Order items';
-$_['ITEM'] = 'Item';
+$_['HEADING_TITLE'] = 'Articulos del pedido';
+$_['ITEM'] = 'Articulo';

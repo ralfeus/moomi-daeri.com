@@ -1,6 +1,6 @@
 <?php
 // Text
-$_['headingTitle'] = 'Pickup';
+$_['headingTitle'] = 'recogida';
 $_['text_title']       = $_['headingTitle'];
-$_['text_description'] = 'Pickup From Store';
+$_['text_description'] = 'recogida desde la tienda en Corea';
 ?>

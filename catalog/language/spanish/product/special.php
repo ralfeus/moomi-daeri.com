@@ -1,29 +1,29 @@
 <?php
 // Heading
-$_['heading_title']     = 'Special Offers';
+$_['heading_title']     = 'Ofertas especiales';
 
 // Text
-$_['text_empty']        = 'There are no special offer products to list.';
-$_['text_quantity']     = 'Qty:';
-$_['text_manufacturer'] = 'Brand:';
-$_['text_model']        = 'Product Code:'; 
-$_['text_points']       = 'Reward Points:'; 
-$_['text_price']        = 'Price:'; 
-$_['text_tax']          = 'Ex Tax:'; 
-$_['text_reviews']      = 'Based on %s reviews.'; 
-$_['text_compare']      = 'Product Compare (%s)'; 
-$_['text_display']      = 'Display:';
-$_['text_list']         = 'List';
-$_['text_grid']         = 'Grid';
-$_['text_sort']         = 'Sort By:';
-$_['text_default']      = 'Default';
-$_['text_name_asc']     = 'Name (A - Z)';
-$_['text_name_desc']    = 'Name (Z - A)';
-$_['text_price_asc']    = 'Price (Low &gt; High)';
-$_['text_price_desc']   = 'Price (High &gt; Low)';
-$_['text_rating_asc']   = 'Rating (Lowest)';
-$_['text_rating_desc']  = 'Rating (Highest)';
-$_['text_model_asc']    = 'Model (A - Z)';
-$_['text_model_desc']   = 'Model (Z - A)';
-$_['text_limit']        = 'Show:';
+$_['text_empty']        = 'No hay ofertas especiales de los productos para listar.';
+$_['text_quantity']     = 'cantidad:';
+$_['text_manufacturer'] = 'Marca:';
+$_['text_model']        = 'El codigo del producto:'; 
+$_['text_points']       = 'Los puntos del premio:'; 
+$_['text_price']        = 'El precio:'; 
+$_['text_tax']          = 'Ex Impuesto:'; 
+$_['text_reviews']      = 'Basado en %s  de opiniones.'; 
+$_['text_compare']      = 'Comparacion de los productos (%s)'; 
+$_['text_display']      = 'Mostrar:';
+$_['text_list']         = 'Lista';
+$_['text_grid']         = 'modulador';
+$_['text_sort']         = 'ordenar por:';
+$_['text_default']      = 'defecto';
+$_['text_name_asc']     = 'Nombre (A - Z)';
+$_['text_name_desc']    = 'Nombre(Z - A)';
+$_['text_price_asc']    = 'Precio (Bajo&gt; Alto)';
+$_['text_price_desc']   = 'Precio (Alto&gt; Bajo)';
+$_['text_rating_asc']   = 'Clasificacion (Menor)';
+$_['text_rating_desc']  = 'Clasificacion (Mayor)';
+$_['text_model_asc']    = 'Modelo  (A - Z)';
+$_['text_model_desc']   = 'Modelo (Z - A)';
+$_['text_limit']        = 'Mostrar:';
 ?>

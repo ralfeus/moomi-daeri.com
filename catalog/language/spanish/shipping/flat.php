@@ -1,6 +1,6 @@
 <?php
 // Text
-$_['headingTitle'] = 'Flat Rate';
+$_['headingTitle'] = 'tarifa plana';
 $_['text_title']       = $_['headingTitle'];
-$_['text_description'] = 'Flat Shipping Rate';
+$_['text_description'] = 'tarifa plana del envio';
 ?>

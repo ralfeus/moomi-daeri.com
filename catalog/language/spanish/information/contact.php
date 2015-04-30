@@ -1,28 +1,28 @@
 <?php
 // Heading
-$_['heading_title']  = 'Contact Us';
+$_['heading_title']  = 'Contactenos';
 
 // Text 
-$_['text_location']  = 'Our Location';
-$_['text_contact']   = 'Contact Form';
-$_['text_address']   = 'Address:';
-$_['text_email']     = 'E-Mail:';
-$_['text_telephone'] = 'Telephone:';
+$_['text_location']  = 'Nuestra ubicacion';
+$_['text_contact']   = 'formulario del contacto';
+$_['text_address']   = 'Direccion:';
+$_['text_email']     = 'el correo electronico:';
+$_['text_telephone'] = 'el telefono:';
 $_['text_fax']       = 'Fax:';
-$_['text_message']   = '<p>Your enquiry has been successfully sent to the store owner!</p>';
+$_['text_message']   = '<p>su solicitud ha sido enviada exitosamente al dueno de la tienda!</p>';
 
 // Entry Fields
-$_['entry_name']     = 'First Name:';
-$_['entry_email']    = 'E-Mail Address:';
-$_['entry_enquiry']  = 'Enquiry:';
-$_['entry_captcha']  = 'Enter the code in the box below:';
+$_['entry_name']     = 'Nombre:';
+$_['entry_email']    = 'La direccion del correo electronico:';
+$_['entry_enquiry']  = 'Solicitud:';
+$_['entry_captcha']  = 'Ingrese el codigo en la casilla de abajo:';
 
 // Email
-$_['email_subject']  = 'Enquiry %s';
+$_['email_subject']  = 'Solicitud %s';
 
 // Errors
-$_['error_name']     = 'Name must be between 3 and 32 characters!';
-$_['error_email']    = 'E-Mail Address does not appear to be valid!';
-$_['error_enquiry']  = 'Enquiry must be between 10 and 3000 characters!';
-$_['error_captcha']  = 'Verification code does not match the image!';
+$_['error_name']     = 'El nombre tiene que contener entre 3 y 32 simbolos!';
+$_['error_email']    = 'La direccion del correo electronico no aparece ser valida';
+$_['error_enquiry']  = 'La solicitud tiene que contener entre 10 y 3000 simbolos!';
+$_['error_captcha']  = 'El codigo de verificacion no coincide con la imagen';
 ?>

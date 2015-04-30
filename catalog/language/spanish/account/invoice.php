@@ -1,8 +1,8 @@
 <?php
-$_['DISCOUNT'] = 'Discount';
-$_['INVOICE'] = 'Invoice #%s';
-$_['PACKAGE_NUMBER'] = 'Package number';
-$_['errorAccessDenied'] = 'You do not have permissions to access this invoice';
-$_['headingTitle'] = 'Invoice';
+$_['DISCOUNT'] = 'Descuento';
+$_['INVOICE'] = 'factura #%s';
+$_['PACKAGE_NUMBER'] = 'Numero de paquete';
+$_['errorAccessDenied'] = 'Usted no tiene permisos para acceder a esta factura';
+$_['headingTitle'] = 'factura';
 
-$_['textPackage'] = 'Package Number:';
+$_['textPackage'] = 'Numero del paquete:';
