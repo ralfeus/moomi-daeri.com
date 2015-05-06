@@ -38,7 +38,7 @@
       'end' : end,
       'name' : name
     };
-    var url = "<?= $this->url->link('shop/admin/addHoliday', 'token='. $token, 'SSL') ?>";
+    var url = "<?= $this->url->link('shop/admin/addHoliday&token='. $token, '', 'SSL') ?>";
     $.post(url, postdata, function(response) {
         response = $.parseJSON(response);
         if(response['success']) {
@@ -68,7 +68,7 @@
       'holiday_id' : holiday_id
     };
 
-    var url = "<?php echo $this->url->link('shop/admin/deleteHoliday&token='. $token); ?>";
+    var url = "<?= $this->url->link('shop/admin/deleteHoliday&token='. $token, '', 'SSL') ?>";
 
     $.post(url, postdata, function(response) {
         response = $.parseJSON(response);
