@@ -1,7 +1,7 @@
 <?php echo $header; ?>
 <script type="text/javascript">
   
-  var token = '<?php echo $token; ?>';
+  var token = '<?= $token ?>';
   /*function approveVotes() {
     var length = $("input[class^='checkboxVote']:checked").length;
     if(length > 0) {
@@ -38,7 +38,7 @@
       'end' : end,
       'name' : name
     };
-    var url = "<?php echo $this->url->link('shop/admin/addHoliday&token='. $token); ?>";
+    var url = "<?= $this->url->link('shop/admin/addHoliday&token='. $token, 'SSL') ?>";
     $.post(url, postdata, function(response) {
         response = $.parseJSON(response);
         if(response['success']) {
