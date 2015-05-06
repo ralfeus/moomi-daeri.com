@@ -24,7 +24,7 @@ class ControllerShopAdmin extends Controller {
  		//print_r($this->data['holidays']); die();
 
  		$this->data['token'] = $this->session->data['token'];
- 		$this->template = 'shop/holiday_list.tpl';
+ 		$this->template = 'shop/holidayList.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'
