@@ -7,6 +7,9 @@ use model\extension\ImportSourceSiteDAO;
 use model\setting\ExtensionDAO;
 
 class ControllerExtensionImport extends Controller {
+    /** @var ImportSourceSite $model */
+    private $model;
+
     public function __construct($registry) {
         parent::__construct($registry);
         $this->load->language('extension/import');
@@ -16,7 +19,7 @@ class ControllerExtensionImport extends Controller {
 
     public function edit() {
         global $_SERVER;
-
+        $this->initModel();
         /// Initialize general elements
         $this->data = array_merge($this->data, $this->parameters);
         $this->data['manufacturers'] = ManufacturerDAO::getInstance()->getManufacturers();
@@ -43,15 +46,11 @@ class ControllerExtensionImport extends Controller {
         );
 
         /// Process site data
-        if (!is_null($this->parameters['importClass'])) {
-            $importSite = ImportSourceSiteDAO::getInstance()->getSourceSite($this->parameters['importClass']);
-        } else {
-            $importSite = new ImportSourceSite(0);
-        }
+        $this->data['importSite'] = $this->model;
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            $this->editGET($importSite);
+            $this->editGET($this->model);
         } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $this->editPOST($importSite);
+            $this->editPOST($this->model);
         }
 
         $this->getResponse()->setOutput($this->render());
@@ -62,15 +61,16 @@ class ControllerExtensionImport extends Controller {
      * @throws Exception
      */
     private function editGET($importSite) {
-        $this->data['importSite'] = $importSite;
-
     }
 
     /**
      * @param ImportSourceSite $importSite
      */
     private function editPOST($importSite) {
-
+        ImportSourceSiteDAO::getInstance()->saveSourceSite($importSite);
+        if (!$this->parameters['continue']) {
+            $this->redirect($this->data['urlList']);
+        }
     }
 
     public function index() {
@@ -147,10 +147,40 @@ class ControllerExtensionImport extends Controller {
         $this->getResponse()->setOutput($this->render());
     }
 
+    protected function initModel() {
+        if ($this->getRequest()->getMethod() == 'POST') {
+            $this->model = new ImportSourceSite(
+                $this->parameters['siteId'], [],
+                $this->parameters['importClass'],
+                $this->parameters['defaultCategories'],
+                $this->parameters['defaultManufacturerId'],
+                $this->parameters['defaultSupplierId'],
+                false,
+                $this->parameters['siteName'],
+                $this->parameters['regularCustomerPriceRate'],
+                $this->parameters['stores'],
+                $this->parameters['wholesaleCustomerPriceRate']
+            );
+        } elseif (!is_null($this->parameters['importClass'])) {
+            $this->model = ImportSourceSiteDAO::getInstance()->getSourceSite($this->parameters['importClass']);
+        } else {
+            $this->model = new ImportSourceSite(0);
+        }
+    }
+
     protected function initParameters() {
+        $this->parameters['defaultCategories'] = !empty($_REQUEST['defaultCategories']) ? explode(',', $_REQUEST['defaultCategories']) : array();
+        $this->parameters['stores'] = !empty($_REQUEST['stores']) ? explode(',', $_REQUEST['stores']) : array();
         $this->initParametersWithDefaults(array(
+            'continue' => 0,
+            'defaultManufacturerId' => 0,
+            'defaultSupplierId' => 0,
             'importClass' => null,
-            'token' => $this->session->data['token']
+            'regularCustomerPriceRate' => 1,
+            'siteId' => null,
+            'siteName' => null,
+            'token' => $this->session->data['token'],
+            'wholesaleCustomerPriceRate' => 1
         ));
     }
 

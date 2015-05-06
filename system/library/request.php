@@ -39,6 +39,14 @@ final class Request {
 	}
 
     /**
+     * @return string
+     * Returns HTTP request method
+     */
+    public function getMethod() {
+        return $this->getServerVariable('REQUEST_METHOD');
+    }
+
+    /**
      * @param string $param
      * @param mixed $defaultValue
      * @return mixed

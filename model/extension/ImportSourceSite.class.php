@@ -19,6 +19,19 @@ class ImportSourceSite {
     private $stores;
     private $wholesaleCustomerPriceRate;
 
+    /**
+     * @param int $id
+     * @param ImportCategory[] $categoriesMap
+     * @param string $className
+     * @param int[] $defaultCategories
+     * @param int|Manufacturer $defaultManufacturer
+     * @param int $defaultSupplier
+     * @param bool $importMappedCategoriesOnly
+     * @param string $name
+     * @param float $regularCustomerPriceRate
+     * @param int[] $stores
+     * @param float $wholesaleCustomerPriceRate
+     */
     function __construct($id, $categoriesMap = null, $className = null, $defaultCategories = null, $defaultManufacturer = null,
                          $defaultSupplier = null, $importMappedCategoriesOnly = null, $name = null, $regularCustomerPriceRate = null,
                          $stores = null, $wholesaleCustomerPriceRate = null) {
@@ -26,8 +39,20 @@ class ImportSourceSite {
         if (!is_null($categoriesMap)) { $this->categoriesMap = new Mutable($categoriesMap); }
         if (!is_null($className)) { $this->className = $className; }
         if (!is_null($defaultCategories)) { $this->defaultCategories = new Mutable($defaultCategories); }
-        if (!is_null($defaultManufacturer)) { $this->defaultManufacturer = new Mutable($defaultManufacturer); }
-        if (!is_null($defaultSupplier)) { $this->defaultSupplier = new Mutable($defaultSupplier); }
+        if (!is_null($defaultManufacturer)) {
+            if ($defaultManufacturer instanceof Manufacturer) {
+                $this->defaultManufacturer = new Mutable($defaultManufacturer);
+            } else {
+                $this->defaultManufacturer = new Mutable(new Manufacturer($defaultManufacturer));
+            }
+        }
+        if (!is_null($defaultSupplier)) {
+            if ($defaultSupplier instanceof Supplier) {
+                $this->defaultSupplier = new Mutable($defaultSupplier);
+            } else {
+                $this->defaultSupplier = new Mutable(new Supplier($defaultSupplier));
+            }
+        }
         if (!is_null($importMappedCategoriesOnly)) { $this->importMappedCategoriesOnly = new Mutable($importMappedCategoriesOnly); }
         if (!is_null($name)) { $this->name = new Mutable($name); }
         $this->regularCustomerPriceRate = floatval($regularCustomerPriceRate)
@@ -169,7 +194,7 @@ class ImportSourceSite {
     }
 
     /**
-     * @param array $value
+     * @param float $value
      */
     public function setRegularCustomerPriceRate($value) {
         $this->regularCustomerPriceRate->set($value);
@@ -193,7 +218,7 @@ class ImportSourceSite {
     }
 
     /**
-     * @return string
+     * @return float
      */
     public function getWholesaleCustomerPriceRate() {
         if (!isset($this->wholesaleCustomerPriceRate)) {
@@ -203,7 +228,7 @@ class ImportSourceSite {
     }
 
     /**
-     * @param array $value
+     * @param float $value
      */
     public function setWholesaleCustomerPriceRate($value) {
         $this->wholesaleCustomerPriceRate->set($value);

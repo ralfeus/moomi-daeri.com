@@ -285,4 +285,54 @@ SQL
             , array('i:' . $sourceSite)
         );
     }
+
+    /**
+     * @param ImportSourceSite $sourceSite
+     * @return void
+     */
+    public function saveSourceSite($sourceSite) {
+        $this->getDb()->query(<<<SQL
+            UPDATE imported_source_sites
+            SET
+              default_category_id = ?,
+              default_manufacturer_id = ?,
+              default_store_id = ?,
+              default_supplier_id = ?,
+              name = ?,
+              regular_customer_price_rate = ?,
+              wholesale_customer_price_rate = ?
+            WHERE imported_source_site_id = ?
+SQL
+            , array(
+                's:' . implode(',', $sourceSite->getDefaultCategories()),
+                'i:' . $sourceSite->getDefaultManufacturer()->getId(),
+                's:' . implode(',', $sourceSite->getStores()),
+                'i:' . $sourceSite->getDefaultSupplier()->getId(),
+                's:' . $sourceSite->getName(),
+                'd:' . $sourceSite->getRegularCustomerPriceRate(),
+                'd:' . $sourceSite->getWholesaleCustomerPriceRate(),
+                'i:' . $sourceSite->getId()
+            )
+        );
+        $this->getDb()->query("
+            DELETE FROM imported_product_categories WHERE source_site_id = ?",
+            ['i:' . $sourceSite->getId()]
+        );
+        if (sizeof($sourceSite->getCategoriesMap())) {
+            foreach ($sourceSite->getCategoriesMap() as $category) {
+                $this->getDb()->query(<<<SQL
+                    INSERT INTO imported_product_categories
+                    (source_site_id, source_site_category_id, local_category_id, price_upper_limit)
+                    VALUES (?, ?, ?, ?)
+SQL
+                    , array(
+                        "i:" . $sourceSite->getId(),
+                        "s:" . $category->getSourceSiteCategoryId(),
+                        "s:" . implode(',', $category->getLocalCategoryIds()),
+                        "d:" . $category->getPriceUpperLimit()
+                    )
+                );
+            }
+        }
+    }
 }
