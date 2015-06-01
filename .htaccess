@@ -18,6 +18,12 @@ Options -Indexes
 # SEO URL Settings
 RewriteEngine On
 # If your opencart installation does not run on the main web folder make sure you folder it does run in ie. / becomes /shop/ 
+RewriteCond %{HTTP_HOST} ^www\.moomi-daeri\.com$ [NC]
+RewriteRule ^(.*)$  http://moomi-daeri.com/$1 [R=301,L]
+RewriteCond %{HTTP_HOST} ^www\.moomidae\.com$ [NC]
+RewriteRule ^(.*)$  http://moomi-daeri.com/$1 [R=301,L]
+RewriteCond %{HTTP_HOST} ^moomidae\.com$ [NC]
+RewriteRule ^(.*)$  http://moomi-daeri.com/$1 [R=301,L]
 
 RewriteBase /
 RewriteRule sitemap.xml /index.php?route=feed/google_sitemap
