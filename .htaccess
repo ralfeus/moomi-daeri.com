@@ -25,6 +25,15 @@ RewriteRule ^(.*)$  http://moomi-daeri.com/$1 [R=301,L]
 RewriteCond %{HTTP_HOST} ^moomidae\.com$ [NC]
 RewriteRule ^(.*)$  http://moomi-daeri.com/$1 [R=301,L]
 
+RewriteCond %{HTTP_HOST} ^www\.all-for-car\.net$ [NC]
+RewriteRule ^(.*)$  http://all-for-car.net/$1 [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^www\.koreafashion\.kr$ [NC]
+RewriteRule ^(.*)$  http://koreafashion.kr/$1 [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^www\.moomicos\.com$ [NC]
+RewriteRule ^(.*)$  http://moomicos.com/$1 [R=301,L]
+
 RewriteBase /
 RewriteRule sitemap.xml /index.php?route=feed/google_sitemap
 RewriteCond %{REQUEST_FILENAME} !-f
