@@ -93,6 +93,7 @@ class ControllerSaleRepurchaseOrders extends Controller {
                     ? HTTP_IMAGE . $order_item['imagePath']
                     : $order_item['imagePath'],
                 'comment' => $order_item['comment'],
+                'publicComment' => $order_item['comment'],
                 'status'       	=> $order_item['status']
                     ? Status::getStatus(
                         $order_item['status'],

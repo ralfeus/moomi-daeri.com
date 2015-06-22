@@ -152,7 +152,25 @@ class ModelCheckoutOrder extends Model {
             $order_product_id = $this->getDb()->getLastId();
 
 			foreach ($product['option'] as $option) {
-				$this->getDb()->query("INSERT INTO order_option SET order_id = '" . (int)$order_id . "', order_product_id = '" . (int)$order_product_id . "', product_option_id = '" . (int)$option['product_option_id'] . "', product_option_value_id = '" . (int)$option['product_option_value_id'] . "', name = '" . $this->getDb()->escape($option['name']) . "', `value` = '" . $this->getDb()->escape($option['value']) . "', `type` = '" . $this->getDb()->escape($option['type']) . "'");
+				$this->getDb()->query("
+				    INSERT INTO order_option
+				    SET
+				        order_id = :orderId,
+				        order_product_id = :orderProductId,
+				        product_option_id = :productOptionId,
+				        product_option_value_id = :productOptionValueId,
+				        name = :name,
+				        `value` = :value,
+				        `type` = :type
+                ", array(
+                    ':orderId' => $order_id,
+                    ':orderProductId' => $order_product_id,
+                    ':productOptionId' => $option['product_option_id'],
+                    ':productOptionValueId' => $option['product_option_value_id'],
+                    ':name' => $option['name'],
+                    ':value' => $option['value'],
+                    ':type' => $option['type']
+                ));
 			}
 				
 			foreach ($product['download'] as $download) {

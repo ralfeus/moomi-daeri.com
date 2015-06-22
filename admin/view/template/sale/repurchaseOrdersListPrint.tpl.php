@@ -42,7 +42,7 @@
                                 <td>
                                     <p>
                                         Private<br />
-                                        <?= $order['comment'] ?>
+                                        <?= $order['privateComment'] ?>
                                     </p>
                                     <p>
                                         Public<br />
