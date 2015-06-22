@@ -57,17 +57,22 @@
                             <td class="right"><?php echo $order_item['customer_nick']; ?></td>
                             <td class="right"><?php echo $order_item['order_id']; ?></td>
                             <td class="right"><?php echo $order_item['id']; ?></td>
-						  <td class="right"><img src="<?php echo $order_item['image_path']; ?>" /></td>
-						  <td class="right">
-							<table height="100%" width="100%">
-								<tr valign="center"><td><?php echo $order_item['name']; ?></td></tr>
-								<tr valign="center"><td><?php echo $order_item['name_korean']; ?></td></tr>
-                                <tr><td><?php echo $order_item['options']; ?></td></tr>
-							</table>
-						  </td>
-						  <td class="left"><?php echo $order_item['supplier_name']; ?></td>
-						  <td class="right"><?php echo $order_item['quantity']; ?></td>
-                            <td class="right"><?php echo $order_item['comment']; ?></td>
+						    <td class="right"><img src="<?php echo $order_item['image_path']; ?>" /></td>
+						    <td class="right">
+                                <table height="100%" width="100%">
+                                    <tr valign="center"><td><?php echo $order_item['name']; ?></td></tr>
+                                    <tr valign="center"><td><?php echo $order_item['name_korean']; ?></td></tr>
+                                    <tr><td><?php echo $order_item['options']; ?></td></tr>
+                                </table>
+						    </td>
+						    <td class="left"><?php echo $order_item['supplier_name']; ?></td>
+						    <td class="right"><?php echo $order_item['quantity']; ?></td>
+                            <td class="right">
+                                Private<br />
+                                <?= $order_item['privateComment'] ?><br />
+                                Public<br />
+                                <?= $order_item['publicComment'] ?><br />
+                            </td>
 						</tr>
 					<?php endforeach; ?>
 				<?php else: ?>

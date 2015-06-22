@@ -143,79 +143,79 @@ window.onload = function() {
           <tbody>
 <?php if ($order_items): ?>
     <?php foreach ($order_items as $order_item): ?>
-					<tr <?php if ($order_item['cuoponed']) { ?> class="couponed" <?php } ?> >
-                        <td style="text-align: center;">
-                            <input type="checkbox" id="selectedItems[]" name="selectedItems[]" value="<?= $order_item['id'] ?>" />
+            <tr <?php if ($order_item['cuoponed']) { ?> class="couponed" <?php } ?> >
+                <td style="text-align: center;">
+                    <input type="checkbox" id="selectedItems[]" name="selectedItems[]" value="<?= $order_item['id'] ?>" />
+                </td>
+                <td class="right" ><?= $order_item['id'] ?></td>
+                <td><a target="_blank" href="<?= $order_item['order_url'] ?>" <?php if($order_item['isOrderReady']) { echo 'class="boldRed"'; } ?>><?= $order_item['order_id'] ?></a></td>
+                <td class="left"><?= $order_item['customer_nick'] . "/<br />" . $order_item['customer_name'] ?></td>
+                <td class="right"><img src="<?= $order_item['image_path'] ?>" /></td>
+                <td class="left">
+                    <table height="100%" width="100%" class="list">
+                        <tr valign="center"><td><?= $order_item['model'] . "&nbsp;/&nbsp;" . $order_item['name'] ?></td></tr>
+                        <tr><td><span style="color: red; "><?= $order_item['options'] ?></span></td></tr>
+                        <tr valign="center"><td><?= $order_item['name_korean'] ?></td></tr>
+                    </table>
+                </td>
+                <td class="left"><?= $order_item['supplier_name'] ?></td>
+                <td class="right">
+                    <?= $order_item['price'] ?>
+                    <input
+                        alt="<?= $order_item['quantity'] ?>"
+                        onblur="saveQuantity(<?= $order_item['id'] ?>, this)"
+                        onkeydown="if (event.keyCode == 13) saveQuantity(<?= $order_item['id'] ?>, this)"
+                        size="2"
+                        value="<?= $order_item['quantity'] ?>" />
+                    <?= $order_item['weight'] ?>
+                </td>
+                <td class="left"><?= $order_item['status'] ?></td>
+                <td class="right">
+                    <?php foreach ($order_item['action'] as $action):
+                        if ($action['href']): ?>
+                            [<a href="<?= $action['href'] ?>" target="_blank"><?= $action['text'] ?></a>]
+                        <?php else: ?>
+                            [<?= $action['text'] ?>]
+                        <?php endif;
+                    endforeach; ?>
+                </td>
+            </tr>
+            <tr><td colspan="10">
+                <table border="0" width="100%">
+                    <tr>
+                        <td style="width: 130px; padding: 0; border: 0;">
+                            <label for="inputPrivateComment<?= $order_item['id'] ?>">Private&nbsp;comment</label>
                         </td>
-                        <td class="right" ><?= $order_item['id'] ?></td>
-						<td><a target="_blank" href="<?= $order_item['order_url'] ?>" <?php if($order_item['isOrderReady']) { echo 'class="boldRed"'; } ?>><?= $order_item['order_id'] ?></a></td>
-                        <td class="left"><?= $order_item['customer_nick'] . "/<br />" . $order_item['customer_name'] ?></td>
-                        <td class="right"><img src="<?= $order_item['image_path'] ?>" /></td>
-                        <td class="left">
-                            <table height="100%" width="100%" class="list">
-                                <tr valign="center"><td><?= $order_item['model'] . "&nbsp;/&nbsp;" . $order_item['name'] ?></td></tr>
-                                <tr><td><span style="color: red; "><?= $order_item['options'] ?></span></td></tr>
-                                <tr valign="center"><td><?= $order_item['name_korean'] ?></td></tr>
-                            </table>
+                        <td style="width: 100%; padding: 0 0 0 5px; border: 0;" align="left">
+                            <div>
+                                <input
+                                    alt="<?= $order_item['privateComment'] ?>"
+                                    id="inputPrivateComment<?= $order_item['id'] ?>"
+                                    onblur="saveComment(<?= $order_item['id'] ?>, this, true);"
+                                    onkeydown="if (event.keyCode == 13) saveComment(<?= $order_item['id'] ?>, this, true);"
+                                    style="width: 100%;"
+                                    value="<?= $order_item['privateComment'] ?>"/>
+                            </div>
                         </td>
-					    <td class="left"><?= $order_item['supplier_name'] ?></td>
-                        <td class="right">
-                            <?= $order_item['price'] ?>
-                            <input
-                                alt="<?= $order_item['quantity'] ?>"
-                                onblur="saveQuantity(<?= $order_item['id'] ?>, this)"
-                                onkeydown="if (event.keyCode == 13) saveQuantity(<?= $order_item['id'] ?>, this)"
-                                size="2"
-                                value="<?= $order_item['quantity'] ?>" />
-                            <?= $order_item['weight'] ?>
+                    </tr>
+                    <tr>
+                        <td style="width: 130px; padding: 0; border: 0;">
+                            <label for="inputPublicComment<?= $order_item['id'] ?>">Public&nbsp;comment</label>
                         </td>
-                        <td class="left"><?= $order_item['status'] ?></td>
-                        <td class="right">
-                            <?php foreach ($order_item['action'] as $action):
-                                if ($action['href']): ?>
-                                    [<a href="<?= $action['href'] ?>" target="_blank"><?= $action['text'] ?></a>]
-                                <?php else: ?>
-                                    [<?= $action['text'] ?>]
-                                <?php endif;
-                            endforeach; ?>
+                        <td style="width: 100%; padding: 0 0 0 5px; border: 0;" align="left">
+                            <div>
+                                <input
+                                    alt="<?= $order_item['publicComment'] ?>"
+                                    id="inputPublicComment<?= $order_item['id'] ?>"
+                                    onblur="saveComment(<?= $order_item['id'] ?>, this, false);"
+                                    onkeydown="if (event.keyCode == 13) saveComment(<?= $order_item['id'] ?>, this, false);"
+                                    style="width: 100%;"
+                                    value="<?= $order_item['publicComment'] ?>"/>
+                            </div>
                         </td>
-					</tr>
-                    <tr><td colspan="10">
-                        <table border="0" width="100%">
-                            <tr>
-                                <td style="width: 130px; padding: 0; border: 0;">
-                                    <label for="inputPrivateComment<?= $order_item['id'] ?>">Private&nbsp;comment</label>
-                                </td>
-                                <td style="width: 100%; padding: 0 0 0 5px; border: 0;" align="left">
-                                    <div>
-                                        <input
-                                            alt="<?= $order_item['comment'] ?>"
-                                            id="inputPrivateComment<?= $order_item['id'] ?>"
-                                            onblur="saveComment(<?= $order_item['id'] ?>, this, true);"
-                                            onkeydown="if (event.keyCode == 13) saveComment(<?= $order_item['id'] ?>, this, true);"
-                                            style="width: 100%;"
-                                            value="<?= $order_item['comment'] ?>"/>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="width: 130px; padding: 0; border: 0;">
-                                    <label for="inputPublicComment<?= $order_item['id'] ?>">Public&nbsp;comment</label>
-                                </td>
-                                <td style="width: 100%; padding: 0 0 0 5px; border: 0;" align="left">
-                                    <div>
-                                        <input
-                                            alt="<?= $order_item['publicComment'] ?>"
-                                            id="inputPublicComment<?= $order_item['id'] ?>"
-                                            onblur="saveComment(<?= $order_item['id'] ?>, this, false);"
-                                            onkeydown="if (event.keyCode == 13) saveComment(<?= $order_item['id'] ?>, this, false);"
-                                            style="width: 100%;"
-                                            value="<?= $order_item['publicComment'] ?>"/>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </td></tr>
+                    </tr>
+                </table>
+            </td></tr>
     <?php endforeach; ?>
 <?php else: ?>
 				<tr>
