@@ -135,8 +135,7 @@ DD_belatedPNG.fix('#logo img');
                 'transitionIn'      : 'none',
                 'transitionOut'     : 'none',
                 'type'              : 'iframe',
-                'href'              : fancy_url,
-                'onClosed'          : onCloseAction
+                'href'              : fancy_url
               });
             }
           }
@@ -144,15 +143,12 @@ DD_belatedPNG.fix('#logo img');
       }
     });
 
-    function checkboxOnClick() {
-      actionCheckboxChecked = $('#action_checkbox', frames[0].document).attr('checked');
-      //alert(actionCheckboxChecked);
-    }
-
-    function onCloseAction() {
-      if(actionCheckboxChecked == 'checked') {
-        setCookie('MooMiDae_action_show', false, 1);
-      }
+    function checkboxOnClick(sender) {
+        if (sender.checked) {
+            setCookie('MooMiDae_action_show', false, 1);
+        } else {
+            setCookie('MooMiDae_action_show', true, 0);
+        }
       //alert(actionCheckboxChecked);
     }
 
@@ -181,7 +177,7 @@ DD_belatedPNG.fix('#logo img');
     }
 
     function setCookie(c_name, value, exdays) {
-      var exdate=new Date();
+      var exdate = new Date();
       exdate.setDate(exdate.getDate() + exdays);
       var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
       document.cookie=c_name + "=" + c_value;

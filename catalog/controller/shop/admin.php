@@ -114,7 +114,7 @@ class ControllerShopAdmin extends Controller {
     $this->data['action_image'] = HTTP_SERVER. "admin/view/image/actions/" . $images[$cur_lang];
     $this->data['action_message'] = $this->language->get('text_action_no_show_more');
 
-    $this->template = 'default/template/shop/action.tpl';
+    $this->template = 'default/template/shop/action.tpl.php';
 
     $this->getResponse()->setOutput($this->render());
   }
