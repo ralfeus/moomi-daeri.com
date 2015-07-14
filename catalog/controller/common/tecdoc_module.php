@@ -3,7 +3,7 @@ class Controllercommontecdocmodule extends Controller {
     public function index() {
 
         //Save customer group ID for TDMod
-        $_SESSION['TDM_CMS_USER_GROUP'] = intval($this->customer->getGroupId());
+        $_SESSION['TDM_CMS_USER_GROUP'] = intval($this->customer->getCustomerGroupId());
         $_SESSION['TDM_CMS_DEFAULT_CUR'] = $this->config->get('config_currency');
 
         //TecDoc
