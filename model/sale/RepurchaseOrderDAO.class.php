@@ -317,29 +317,37 @@ class RepurchaseOrderDAO extends OrderItemDAO {
         return $result->row;
     }
 
-    public function setImage($orderId, $imagePath) {
+    /**
+     * @param int $repurchaseOrderId
+     * @param string $imagePath
+     */
+    public function setImage($repurchaseOrderId, $imagePath) {
         $this->getDb()->query("
             UPDATE order_option
             SET value = ?
             WHERE
                 order_product_id = ?
                 AND product_option_id = " . REPURCHASE_ORDER_IMAGE_URL_OPTION_ID
-            , array("s:$imagePath", "i:$orderId")
+            , array("s:$imagePath", "i:$repurchaseOrderId")
         );
         if (!$this->getDb()->countAffected())
         {
-            $repurchaseOrder = OrderItemDAO::getInstance()->getOrderItem($orderId);
+            $orderItem = OrderItemDAO::getInstance()->getOrderItem($repurchaseOrderId);
             $this->getDb()->query("
                 INSERT INTO order_option
                 SET
-                    order_id = ?,
-                    order_product_id = ?,
+                    order_id = :orderId,
+                    order_product_id = :orderProductId,
                     product_option_id = " . REPURCHASE_ORDER_IMAGE_URL_OPTION_ID . ",
                     product_option_value_id = 0,
                     name = 'Image URL',
-                    value = ?,
+                    value = :imagePath,
                     type = 'text'
-                ", array("i:" . $repurchaseOrder['order_id'], "i:$orderId", "s:$imagePath")
+                ", array(
+                    ":orderProductId" => $repurchaseOrderId,
+                    ":orderId" => $orderItem->getOrderId(),
+                    ":imagePath" => $imagePath
+                )
             );
         }
     }
