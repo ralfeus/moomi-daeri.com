@@ -324,11 +324,11 @@ class RepurchaseOrderDAO extends OrderItemDAO {
     public function setImage($repurchaseOrderId, $imagePath) {
         $this->getDb()->query("
             UPDATE order_option
-            SET value = ?
+            SET value = :imagePath
             WHERE
-                order_product_id = ?
+                order_product_id = :orderProductId
                 AND product_option_id = " . REPURCHASE_ORDER_IMAGE_URL_OPTION_ID
-            , array("s:$imagePath", "i:$repurchaseOrderId")
+            , array(":imagePath" => $imagePath, ":orderProductId" => $repurchaseOrderId)
         );
         if (!$this->getDb()->countAffected())
         {
