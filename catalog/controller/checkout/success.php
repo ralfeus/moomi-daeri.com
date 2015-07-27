@@ -89,4 +89,3 @@ class ControllerCheckoutSuccess extends Controller {
 		$this->getResponse()->setOutput($this->render());
   	}
 }
-?>

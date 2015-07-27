@@ -125,6 +125,13 @@ abstract class Controller extends OpenCartBase
         return $result;
     }
 
+    /**
+     * @return Url
+     */
+    protected function getUrl() {
+        return $this->registry->get('url');
+    }
+
     protected function initParameters() {
 //        $this->log->write("Stub function");
     }

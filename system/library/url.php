@@ -8,7 +8,7 @@ class Url {
 		$this->url = $url;
 		$this->ssl = $ssl;
 	}
-	
+
 	public function link($route, $args = '', $connection = 'NONSSL') {
         
 //        // SIMPLE START
@@ -67,4 +67,3 @@ class Url {
 		return $url;		
 	}
 }
-?>

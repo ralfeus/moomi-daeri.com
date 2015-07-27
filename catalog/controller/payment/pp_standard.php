@@ -107,8 +107,8 @@ class ControllerPaymentPPStandard extends Controller {
 			$this->data['email'] = $order_info['email'];
 			$this->data['invoice'] = $this->session->data['order_id'] . ' - ' . html_entity_decode($order_info['payment_firstname'], ENT_QUOTES, 'UTF-8') . ' ' . html_entity_decode($order_info['payment_lastname'], ENT_QUOTES, 'UTF-8');
 			$this->data['lc'] = $this->session->data['language'];
-			$this->data['return'] = $this->url->link('checkout/success');
-			$this->data['cancel_return'] = $this->url->link('checkout/checkout', '', 'SSL');
+			$this->data['return'] = $this->getUrl()->link('checkout/success');
+			$this->data['cancel_return'] = $this->getUrl()->link('checkout/checkout', '', 'SSL');
 			
 			if (!$this->config->get('pp_standard_transaction')) {
 				$this->data['paymentaction'] = 'authorization';
