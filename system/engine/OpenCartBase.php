@@ -61,9 +61,9 @@ class OpenCartBase {
         return $this->registry->get('customer');
     }
 
-    protected function getCustomer() {
-        return $this->getCurrentCustomer();
-    }
+//    private function getCustomer() {
+//        return $this->getCurrentCustomer();
+//    }
 
     /**
      * @return DBDriver
