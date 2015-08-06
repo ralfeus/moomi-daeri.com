@@ -276,7 +276,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->data['manufacturers'] = ManufacturerDAO::getInstance()->getManufacturers();
         $this->data['categories'] = $this->model_catalog_category->getCategories();
 
-        $this->template = 'module/mpchanges.tpl';
+        $this->template = 'module/mpchanges.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'
