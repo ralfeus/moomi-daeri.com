@@ -94,7 +94,7 @@ final class MySQL implements DBDriver{
                 if ($statement->execute($args) === true) {
                     if (strtoupper(substr($sql, 0, 6)) == 'SELECT') {
                         $rowSet = new stdClass();
-                        $rowSet->rows = $statement->fetchAll();
+                        $rowSet->rows = $statement->fetchAll(PDO::FETCH_ASSOC);
                         $rowSet->row = isset($rowSet->rows[0]) ? $rowSet->rows[0] : array();
                         $rowSet->num_rows = sizeof($rowSet->rows);
                         $result = $rowSet;
