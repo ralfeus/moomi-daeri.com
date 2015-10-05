@@ -74,7 +74,10 @@ class OrderItemDAO extends DAO {
             /*ORDER BY supplier_name, op.model, op.order_product_id*/
 			" . ($limit ? "LIMIT $limit" : "");
 
-//        $this->getLogger()->write($query);
+        $this->getLogger()->write($query);
+        if ($filter->isFilterSet()) {
+            $this->getLogger()->write(print_r($filter->getParams(), true));
+        }
         $order_item_query = $this->getDb()->query($query, $filter->isFilterSet() ? $filter->getParams() : null);
 
         if ($order_item_query->num_rows) {
