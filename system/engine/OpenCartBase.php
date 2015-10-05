@@ -47,11 +47,14 @@ class OpenCartBase {
         return $this->registry->get('cache');
     }
 
+    protected function getCurrentCurrency() {
+        return $this->registry->get('currency');
+    }
     /**
      * @return Currency
      */
     protected function getCurrency() {
-        return $this->registry->get('currency');
+        return $this->getCurrentCurrency();
     }
 
     /**

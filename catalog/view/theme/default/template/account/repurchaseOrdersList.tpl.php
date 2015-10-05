@@ -122,7 +122,7 @@
           </div>
           <br />
         <?php endforeach; ?>
-        <!--div class="pagination"><?= $pagination ?></div-->
+        <div class="pagination"><?= $pagination ?></div>
       <?php else: ?>
         <div class="content"><?= $textNoItems ?></div>
       <?php endif; ?>

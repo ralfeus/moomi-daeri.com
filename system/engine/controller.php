@@ -175,8 +175,25 @@ abstract class Controller extends OpenCartBase
     	}
 	}
 
-    protected function setBreadcrumbs() {
+    protected function setBreadcrumbs($breadcrumbs = array()) {
         $this->data['breadcrumbs'] = array();
+        $this->data['breadcrumbs'][] = array(
+            'text'      => $this->language->get('text_home'),
+            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+            'separator' => false
+        );
+        foreach ($breadcrumbs as $breadcrumb) {
+            $this->data['breadcrumbs'][] = [
+                'text' => $breadcrumb['text'],
+                'href' => $this->getUrl()->link($breadcrumb['route'], 'token=' . $this->session->data['token'], 'SSL'),
+                'separator' => '::'
+            ];
+        }
+        $this->data['breadcrumbs'][] = array(
+            'text'      => $this->language->get('heading_title'),
+            'href'      => $this->selfUrl,
+            'separator' => ' :: '
+        );
     }
 
     private function setSelfRoutes() {

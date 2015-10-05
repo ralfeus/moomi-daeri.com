@@ -61,17 +61,14 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
 //   }
 
     private function getList() {
-        if (isset($this->request->request['page']))
-            $page = $this->request->request['page'];
-        else
-            $page = 1;
-
-        $this->data['start'] = ($page - 1) * $this->config->get("config_catalog_limit");
-        $this->data['limit'] = $this->config->get("config_catalog_limit");
+        $ordersPerPage = 10;
         $this->data['orders'] = array();
         $this->data['statuses'] = Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id'), true);
         $data = $this->parameters;
         $data['filterCustomerId'] = $this->getCurrentCustomer()->getId();
+        unset($data['page']);
+        $data['start'] = ($this->parameters['page'] - 1) * $ordersPerPage; // $this->config->get("config_catalog_limit");
+        $data['limit'] = $ordersPerPage; // $this->config->get("config_catalog_limit");
         $data['order'] = 'DESC';
         foreach (RepurchaseOrderDAO::getInstance()->getOrders($data) as $repurchase_order)
         {
@@ -147,12 +144,21 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
             'common/header'
         );
 
+        $filterParams = array();
+        foreach ($this->parameters as $key => $value)
+            if (!(strpos($key, 'filter') === false))
+                $filterParams[$key] = $value;
+        $urlFilterParameters = $this->buildUrlParameterString($filterParams);
+        $urlParameters = $urlFilterParameters .
+            '&page=' . $this->parameters['page'];
+
         $pagination = new Pagination();
         $pagination->total = RepurchaseOrderDAO::getInstance()->getOrdersCount($data);
-        $pagination->page = $page;
-        $pagination->limit = $this->config->get("config_catalog_limit");
+        $pagination->page = $this->parameters['page'];
+        $pagination->limit = $ordersPerPage; //$this->config->get("config_catalog_limit");
         $pagination->text = $this->language->get('text_pagination');
-        //$pagination->url = $this->modifyUrl("latest_page", "{page}");
+        $pagination->url = $this->url->link(
+            'account/repurchaseOrders', str_replace('page=' . $this->parameters['page'], 'page={page}', $urlParameters), 'SSL');
         $this->data['pagination'] = $pagination->render();
         $this->data = array_merge($this->data, $this->parameters);
 
@@ -163,6 +169,8 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
     {
         $this->parameters['filterOrderId'] = empty($_REQUEST['filterOrderId']) ? null : $_REQUEST['filterOrderId'];
         $this->parameters['filterStatusId'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
+
+        $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
     }
 
     public function reject()
