@@ -193,9 +193,18 @@ class ControllerProductSearch extends Controller {
 			);
 		}
 
-    #kabantejay synonymizer start
-    $result['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $result['description']);
-    #kabantejay synonymizer end
+        #kabantejay synonymizer start
+        $result['description'] = null;
+        /// Expression below makes no sense as it refers to non-initialized variable
+//        $result['description'] = preg_replace_callback(
+//            '/\{  (.*?)  \}/xs',
+//            function ($m) {
+//                $ar = explode("|", $m[1]);
+//                return $ar[array_rand($ar, 1)];
+//            }, 
+//            $result['description']
+//        );
+        #kabantejay synonymizer end
 		
 		$this->data['products'] = array();
 		
