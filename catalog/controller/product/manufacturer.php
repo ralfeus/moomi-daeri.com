@@ -124,15 +124,18 @@ class ControllerProductManufacturer extends Controller {
 		$manufacturer = ManufacturerDAO::getInstance()->getManufacturer($manufacturer_id);
 	
 		if ($manufacturer) {
-			if ($manufacturer['seo_title']) {
+			if (isset($manufacturer['seo_title'])) {
 				$this->document->setTitle($manufacturer['seo_title']);
 			} else {
 				$this->document->setTitle($manufacturer['name']);
 			}
 
-			$this->document->setDescription($manufacturer['meta_description']);
-			$this->document->setKeywords($manufacturer['meta_keyword']);
-			
+			if (isset($manufacturer['meta_description'])) {
+                $this->document->setDescription($manufacturer['meta_description']);
+            }
+            if (isset($manufacturer['meta_keyword'])) {
+                $this->document->setKeywords($manufacturer['meta_keyword']);
+            }
 			$url = '';
 			
 			if (isset($this->request->get['sort'])) {
@@ -157,10 +160,12 @@ class ControllerProductManufacturer extends Controller {
       			'separator' => $this->language->get('text_separator')
    			);
 
-			$this->data['seo_h1'] = $manufacturer['seo_h1'];
-
-			$this->data['description'] = html_entity_decode($manufacturer['description'], ENT_QUOTES, 'UTF-8');
-		
+            if (isset($manufacturer['seo_h1'])) {
+                $this->data['seo_h1'] = $manufacturer['seo_h1'];
+            }
+            if (isset($manufacturer['description'])) {
+                $this->data['description'] = html_entity_decode($manufacturer['description'], ENT_QUOTES, 'UTF-8');
+            }
 			$this->data['heading_title'] = $manufacturer['name'];
 			
 			$this->data['text_empty'] = $this->language->get('text_empty');
