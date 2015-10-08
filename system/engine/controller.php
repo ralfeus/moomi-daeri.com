@@ -63,7 +63,20 @@ abstract class Controller extends OpenCartBase
 		return new Action($route, $args);
 	}
 
-	protected function redirect($url, $status = 302) {
+
+    /**
+     * @return array
+     */
+    protected function getFilterParameters() {
+        $filterParams = array();
+        foreach ($this->parameters as $key => $value)
+            if (!(strpos($key, 'filter') === false))
+                $filterParams[$key] = $value;
+        return $filterParams;
+    }
+
+
+    protected function redirect($url, $status = 302) {
 		header('Status: ' . $status);
 		header('Location: ' . str_replace('&amp;', '&', $url));
 		exit();

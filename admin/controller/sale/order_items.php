@@ -152,10 +152,7 @@ class ControllerSaleOrderItems extends Controller {
 
 		$this->document->setTitle($this->language->get('heading_title'));
 
-		$filterParams = array();
-		foreach ($this->parameters as $key => $value)
-			if (!(strpos($key, 'filter') === false))
-				$filterParams[$key] = $value;
+		$filterParams = $this->getFilterParameters();
 		$filterParams['token'] = $this->parameters['token'];
 		$urlFilterParameters = $this->buildUrlParameterString($filterParams);
 		$urlParameters = $urlFilterParameters .
@@ -796,6 +793,4 @@ class ControllerSaleOrderItems extends Controller {
 
 		$this->getResponse()->setOutput(json_encode($json));
 	}
-
-
 }

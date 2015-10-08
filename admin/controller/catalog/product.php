@@ -2,8 +2,9 @@
 use model\catalog\ManufacturerDAO;
 use model\catalog\SupplierDAO;
 use model\sale\OrderItemDAO;
+use system\engine\AdminController;
 
-class ControllerCatalogProduct extends Controller {
+class ControllerCatalogProduct extends AdminController {
 	private $error = array();
     /** @var ModelCatalogProduct */
     private $modelCatalogProduct;
@@ -165,6 +166,8 @@ class ControllerCatalogProduct extends Controller {
   	}
 
   	public function delete() {
+        $urlParams = $this->getFilterParameters();
+        $urlParams['selectedItems'] = $this->parameters['selectedItems'];
 		if (isset($this->parameters['selectedItems']) && $this->validateDelete()) {
 			foreach ($this->parameters['selectedItems'] as $product_id) {
 				$this->modelCatalogProduct->deleteProduct($product_id);
@@ -175,10 +178,10 @@ class ControllerCatalogProduct extends Controller {
 	  		}
 
 			$this->session->data['success'] = $this->language->get('text_success');
-			$this->redirect($this->url->link('catalog/product', $this->buildUrlParameterString($this->parameters, array('route' => null)), 'SSL'));
+			$this->redirect($this->url->link('catalog/product', $this->buildUrlParameterString($urlParams), 'SSL'));
 		}
 
-    	$this->redirect($this->url->link('catalog/product', $this->buildUrlParameterString($this->parameters, array('route' => null)), 'SSL'));
+    	$this->redirect($this->url->link('catalog/product', $this->buildUrlParameterString($urlParams), 'SSL'));
   	}
 
   	public function copy() {
