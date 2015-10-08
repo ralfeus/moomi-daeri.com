@@ -430,7 +430,7 @@ class ControllerProductSearch extends Controller {
             if (is_numeric(stripos($results[$i]['name'], $filter_name))) {
                 $resultsWeights[$i] += SEARCH_WEIGHT_FULL_PHRASE_NAME;
             }
-            if (is_numeric(stripos($results[$i]['tag'], $filter_name))) {
+            if (isset($results[$i]['tag']) && is_numeric(stripos($results[$i]['tag'], $filter_name))) {
                 $resultsWeights[$i] += SEARCH_WEIGHT_FULL_PHRASE_TAG;
             }
             if (is_numeric(stripos($results[$i]['description'], $filter_name))) {
@@ -443,7 +443,7 @@ class ControllerProductSearch extends Controller {
                 if (is_numeric(stripos($results[$i]['name'], $searchWord))) {
                     $resultsWeights[$i] += SEARCH_WEIGHT_WORD_NAME;
                 }
-                if (is_numeric(stripos($results[$i]['tag'], $searchWord))) {
+                if (isset($results[$i]['tag']) && is_numeric(stripos($results[$i]['tag'], $searchWord))) {
                     $resultsWeights[$i] += SEARCH_WEIGHT_WORD_TAG;
                 }
                 if (is_numeric(stripos($results[$i]['description'], $searchWord))) {

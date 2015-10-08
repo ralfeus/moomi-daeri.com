@@ -29,11 +29,11 @@ class ControllerProductProduct extends Controller {
 
 				$category_info = $this->model_catalog_category->getCategory($path_id);
         
-        #kabantejay synonymizer start
-        $razdel = $category_info['name'];
-        #kabantejay synonymizer end
+				#kabantejay synonymizer start
+				$razdel = isset($category_info['name']) ? $category_info['name'] : '';
+				#kabantejay synonymizer end
 				
-        if ($category_info) {
+        		if ($category_info) {
 					$this->data['breadcrumbs'][] = array(
 						'text'      => $category_info['name'],
 						'href'      => $this->url->link('product/category', 'path=' . $path),

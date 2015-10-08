@@ -87,19 +87,7 @@ class ControllerSettingStore extends Controller {
 			$url .= '&page=' . $this->request->get['page'];
 		}
 
-  		$this->data['breadcrumbs'] = array();
-
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
-      		'separator' => false
-   		);
-
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('heading_title'),
-			'href'      => $this->url->link('setting/store', 'token=' . $this->session->data['token'], 'SSL'),
-      		'separator' => ' :: '
-   		);
+  		$this->setBreadcrumbs();
 							
 		$this->data['insert'] = $this->url->link('setting/store/insert', 'token=' . $this->session->data['token'], 'SSL');
 		$this->data['delete'] = $this->url->link('setting/store/delete', 'token=' . $this->session->data['token'], 'SSL');	
@@ -167,7 +155,7 @@ class ControllerSettingStore extends Controller {
 			$this->data['success'] = '';
 		}
 
-		$this->template = 'setting/store_list.tpl';
+		$this->template = 'setting/store_list.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'

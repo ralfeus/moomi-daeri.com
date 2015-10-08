@@ -324,7 +324,7 @@ class ControllerSaleOrder extends Controller {
 			$this->data['orders'][] = array(
 				'order_id'      => $result['order_id'],
 				'customer'      => $result['customer'],
-				'status'        => $statuses[$result['status_id']] ? $statuses[$result['status_id']] : $result['status'],
+				'status'        => isset($statuses[$result['status_id']]) ? $statuses[$result['status_id']] : $result['status'],
                 'statusId' => $result['status_id'],
 				'total'         => $this->currency->format($result['total'], $result['currency_code'], $result['currency_value']),
 				'date_added'    => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
@@ -333,7 +333,7 @@ class ControllerSaleOrder extends Controller {
 				'action'        => $action
 			);
 		}
-        $this->log->write(sizeof($this->data['orders']));
+        //$this->log->write(sizeof($this->data['orders']));
 
 		$this->data['text_no_results'] = $this->language->get('text_no_results');
 		$this->data['text_abandoned_orders'] = $this->language->get('text_abandoned_orders');

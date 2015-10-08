@@ -35,7 +35,7 @@ class ControllerCommonHeader extends Controller {
 		$this->data['text_customer'] = $this->language->get('text_customer');
 		$this->data['text_customer_group'] = $this->language->get('text_customer_group');
 		$this->data['text_customer_blacklist'] = $this->language->get('text_customer_blacklist');
-    $this->data['text_invoices'] = $this->language->get('text_invoices');
+    	$this->data['text_invoices'] = $this->language->get('text_invoices');
 		$this->data['text_sale'] = $this->language->get('text_sale');
 		$this->data['text_design'] = $this->language->get('text_design');
 		$this->data['text_documentation'] = $this->language->get('text_documentation');
@@ -230,18 +230,15 @@ class ControllerCommonHeader extends Controller {
 		}
 
 
-if ($this->user->getUsergroupId() == 1) {
-		$this->template = 'common/header.tpl.php';
-} else {
-		$this->template = 'common/headercont.tpl.php';
-}
-
-
-
+		if ($this->user->getUsergroupId() == 1) {
+				$this->template = 'common/header.tpl.php';
+		} else {
+				$this->template = 'common/headercont.tpl.php';
+		}
 		$this->render();
 	}
 
     protected function initParameters() {
-        $this->parameters['token'] = $this->session->data['token'];
+        $this->parameters['token'] = isset($this->session->data['token']) ? $this->session->data['token'] : null;
     }
 }

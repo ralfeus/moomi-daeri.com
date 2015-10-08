@@ -565,7 +565,13 @@ if(isset($this->request->get['clear_cache'])){
       $this->parameters = $this->session->data['parameters']['catalog/product'];
       $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
       $this->parameters['sort'] = empty($_REQUEST['sort']) ? null : $_REQUEST['sort'];
-      $this->parameters['token'] = isset($this->session->data['token']) ? $this->session->data['token'] : $_REQUEST['token'];
+      if (isset($this->session->data['token'])) {
+		  $this->parameters['token'] = $this->session->data['token'];
+	  } elseif (isset($_REQUEST['token'])) {
+		  $this->parameters['token'] = $_REQUEST['token'];
+	  } else {
+		  $this->parameters['token'] = null;
+	  }
   }
 
   private function getUserNames()
@@ -591,4 +597,3 @@ if(isset($this->request->get['clear_cache'])){
 
 
 }
-?>
