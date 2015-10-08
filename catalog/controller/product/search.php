@@ -201,7 +201,7 @@ class ControllerProductSearch extends Controller {
 //            function ($m) {
 //                $ar = explode("|", $m[1]);
 //                return $ar[array_rand($ar, 1)];
-//            }, 
+//            },
 //            $result['description']
 //        );
         #kabantejay synonymizer end
@@ -227,7 +227,7 @@ class ControllerProductSearch extends Controller {
                 $results = $this->sortByRelevance($results, $filter_name);
             }
 
-			for ($index = $data['start']; $index < $data['start'] + $limit; $index++) {
+			for ($index = $data['start']; ($index < $data['start'] + $limit) && ($index < sizeof($results)); $index++) {
 				if ($results[$index]['image']) {
 					$image = $this->model_tool_image->resize($results[$index]['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
 				} else {
