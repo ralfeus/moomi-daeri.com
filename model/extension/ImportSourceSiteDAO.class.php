@@ -60,7 +60,7 @@ SQL
         $query = $this->getDb()->query("
             SELECT source_site_category_id, local_category_id, price_upper_limit
             FROM imported_product_categories
-            WHERE class_name = :className
+            WHERE source_site_class_name = :className
             ", array(':className' => $className)
         );
         $result = array();

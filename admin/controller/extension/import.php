@@ -178,7 +178,6 @@ class ControllerExtensionImport extends Controller {
             'defaultSupplierId' => 0,
             'importClass' => null,
             'regularCustomerPriceRate' => 1,
-            'siteId' => null,
             'siteName' => null,
             'token' => $this->session->data['token'],
             'wholesaleCustomerPriceRate' => 1

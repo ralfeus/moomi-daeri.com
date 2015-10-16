@@ -4,42 +4,35 @@ namespace model\catalog;
 use model\DAO;
 use model\extension\ImportSourceSiteDAO;
 use \ModelCatalogProduct;
+use system\library\Filter;
 
 class ImportProductDAO extends DAO {
     /**
      * @param array $data
-     * @return null|\stdClass
+     * @return Filter
      */
     private function buildFilter(array $data) {
-        $filter = ""; $params = array();
+        $filter = new Filter(); $tmp0 = $tmp1 = '';
         if (isset($data['selectedItems'])) {
-            $this->buildSimpleFieldFilterEntry('ip.imported_product_id', $data['selectedItems'], $filter, $params);
+            $filter->addChunk($this->buildSimpleFieldFilterEntry('ip.imported_product_id', $data['selectedItems'], $tmp0, $tmp1));
         }
         if (isset($data['filterIsActive'])) {
-            $this->buildSimpleFieldFilterEntry('ip.active', $data['filterIsActive'], $filter, $params);
-//            $filter .= ($filter ? " AND" : "") . " ip.active = " . (int)$data['filterIsActive'];
+            $filter->addChunk($this->buildSimpleFieldFilterEntry('ip.active', $data['filterIsActive'], $tmp0, $tmp1));
         }
         if (!empty($data['filterItem'])) {
-            $filter .= ($filter ? " AND" : "") . " ip.name LIKE '%" . $this->db->escape($data['filterItem']) . "%' " .
-                "OR ip.description LIKE '%" . $this->db->escape($data['filterItem']) . "%'";
+            $filter->addChunk("ip.name LIKE CONCAT('%', :item, '%') OR ip.description LIKE CONCAT('%', :item, '%')", [':item' => $data['filterItem']]);
         }
         if (isset($data['filterLocalProductId'])) {
             if ($data['filterLocalProductId'] == '*') {
-                $filter .= ($filter ? " AND " : "") .  "product_id IS NOT NULL";
+                $filter->addChunk("product_id IS NOT NULL");
             } else {
-                $this->buildSimpleFieldFilterEntry("product_id", $data['filterLocalProductId'], $filter, $params);
+                $filter->addChunk($this->buildSimpleFieldFilterEntry("product_id", $data['filterLocalProductId'], $tmp0, $tmp1));
             }
         }
         if (!empty($data['filterSourceSiteClassName'])) {
-            $filter .= ($filter ? " AND" : "") . " ip.source_site_class_name IN (" . implode(', ', $data['filterSourceSiteClassName']) . ")";
+            $filter->addChunk($this->buildSimpleFieldFilterEntry("ip.source_site_class_name", $data['filterSourceSiteClassName'], $tmp, $tmp1));
         }
-        if (!$filter) {
-            return null;
-        }
-        $result = new \stdClass();
-        $result->filterString = $filter;
-        $result->params = $params;
-        return $result;
+        return $filter;
     }
 
     /**
@@ -136,11 +129,11 @@ class ImportProductDAO extends DAO {
         $sql = "
             SELECT *
             FROM imported_products AS ip
-            " . ($filter ? "WHERE " . $filter->filterString : '') . "
+            " . ($filter->isFilterSet() ? "WHERE " . $filter->getFilterString() : '') . "
             $limit"
         ;
         $result = array();
-        foreach ($this->getDb()->query($sql, $filter ? $filter->params : null)->rows as $row) {
+        foreach ($this->getDb()->query($sql, $filter->isFilterSet() ? $filter->getParams() : null)->rows as $row) {
             if ($shallow) {
                 $result[] = new ImportProduct($row['imported_product_id']);
             } else {
@@ -172,9 +165,9 @@ class ImportProductDAO extends DAO {
         $sql = "
             SELECT COUNT(*) AS quantity
             FROM imported_products AS ip
-            " . ($filter ? "WHERE " . $filter->filterString : '')
+            " . ($filter->isFilterSet() ? "WHERE " . $filter->getFilterString() : '')
         ;
-        $result = $this->getDb()->query($sql, $filter ? $filter->params : null);
+        $result = $this->getDb()->query($sql, $filter->isFilterSet() ? $filter->getParams() : null);
         return $result->row['quantity'];
     }
 

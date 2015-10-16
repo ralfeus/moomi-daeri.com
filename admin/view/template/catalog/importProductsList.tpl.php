@@ -49,10 +49,10 @@
                 <td><input type="text" name="filterItem" value="<?= $filterItem ?>" /></td>
                 <td>
                     <select name="filterSourceSiteClassName[]" multiple="true">
-<?php foreach ($sourceSites as $id => $name):
-    $selected = in_array($id, $filterSourceSiteClassName) ? 'selected' : '';
+<?php foreach ($sourceSites as $className => $name):
+    $selected = in_array($className, $filterSourceSiteClassName) ? 'selected' : '';
 ?>
-                        <option value="<?= $id ?>" <?= $selected ?> ><?= $name ?></option>
+                        <option value="<?= $className ?>" <?= $selected ?> ><?= $name ?></option>
 <?php endforeach; ?>
                     </select>
                 </td>
@@ -135,8 +135,8 @@
   </div>
 </div>
 <div id="sourceSitesSelect" title="<?= $textSelectSourceSitesToImport ?>" style="display: none;">
-<?php foreach ($sourceSites as $id => $name): ?>
-    <input id="sourceSiteId" type="checkbox" value="<?= $id ?>" />&nbsp;<label for="sourceSiteId"><?= $name ?></label><br />
+<?php foreach ($sourceSites as $className => $name): ?>
+    <input id="sourceSiteClassName" type="checkbox" value="<?= $className ?>" />&nbsp;<label for="sourceSiteClassName"><?= $name ?></label><br />
 <?php endforeach; ?>
     <input type="button" onclick="performImport();" value="Start" />
 </div>
@@ -212,7 +212,7 @@ function showProgress() {
 
 function performImport() {
     var sourceSites = '';
-    $('#sourceSiteId:checked').each(function() {
+    $('#sourceSiteClassName:checked').each(function() {
         sourceSites += '&selectedItems[]=' + this.value;
     });
     $.ajax({
