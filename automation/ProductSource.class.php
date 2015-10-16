@@ -53,8 +53,8 @@ abstract class ProductSource {
     /**
      * @param ImportCategory $category
      * @return Product[]
-     * @throws Exception
-     */
+* @throws Exception
+*/
     protected abstract function getCategoryProducts($category);
 
     /**
@@ -203,5 +203,11 @@ abstract class ProductSource {
          return $this->sourceSite;
      }
 
-     public abstract function getUrl();
+    public abstract function getUrl();
+
+    /**
+     * @return ImportSourceSite
+     * @throws Exception
+     */
+    public static function createDefaultImportSourceSiteInstance() { throw new Exception("Must be implemented in derived class"); }
 }

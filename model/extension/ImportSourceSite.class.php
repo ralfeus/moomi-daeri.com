@@ -7,7 +7,7 @@ use model\catalog\Supplier;
 use system\library\Mutable;
 
 class ImportSourceSite {
-    private $id;
+//    private $id;
     private $categoriesMap;
     private $className;
     private $defaultCategories;
@@ -20,9 +20,8 @@ class ImportSourceSite {
     private $wholesaleCustomerPriceRate;
 
     /**
-     * @param int $id
-     * @param ImportCategory[] $categoriesMap
      * @param string $className
+     * @param ImportCategory[] $categoriesMap
      * @param int[] $defaultCategories
      * @param int|Manufacturer $defaultManufacturer
      * @param int $defaultSupplier
@@ -32,12 +31,11 @@ class ImportSourceSite {
      * @param int[] $stores
      * @param float $wholesaleCustomerPriceRate
      */
-    function __construct($id, $categoriesMap = null, $className = null, $defaultCategories = null, $defaultManufacturer = null,
+    function __construct($className, $categoriesMap = null, $defaultCategories = null, $defaultManufacturer = null,
                          $defaultSupplier = null, $importMappedCategoriesOnly = null, $name = null, $regularCustomerPriceRate = null,
                          $stores = null, $wholesaleCustomerPriceRate = null) {
-        $this->id = $id;
+        $this->className = $className;
         if (!is_null($categoriesMap)) { $this->categoriesMap = new Mutable($categoriesMap); }
-        if (!is_null($className)) { $this->className = $className; }
         if (!is_null($defaultCategories)) { $this->defaultCategories = new Mutable($defaultCategories); }
         if (!is_null($defaultManufacturer)) {
             if ($defaultManufacturer instanceof Manufacturer) {
@@ -141,13 +139,13 @@ class ImportSourceSite {
     public function setDefaultSupplier($value) {
         $this->defaultSupplier->set($value);
     }
-
-    /**
-     * @return int
-     */
-    public function getId() {
-        return $this->id;
-    }
+//
+//    /**
+//     * @return int
+//     */
+//    public function getId() {
+//        return $this->id;
+//    }
 
     /**
      * @return Mutable

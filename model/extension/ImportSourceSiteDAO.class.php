@@ -18,32 +18,31 @@ class ImportSourceSiteDAO extends DAO {
             INSERT INTO imported_source_sites
             (class_name, default_category_id, default_manufacturer_id, default_store_id, default_supplier_id, name,
             regular_customer_price_rate, wholesale_customer_price_rate)
-            VALUES(?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES(:className, :defaultCategoryId, :defaultManufacturerId, :defaultStoreId, :defaultSupplierId, :name, :regularCustomerPriceRate, :wholesaleCustomerPriceRate)
 SQL
             , array(
-                's:' . $sourceSite->getClassName(),
-                's:' . implode(',', $sourceSite->getDefaultCategories()),
-                'i:' . $sourceSite->getDefaultManufacturer()->getId(),
-                's:' . implode(',', $sourceSite->getStores()),
-                'i:' . $sourceSite->getDefaultSupplier()->getId(),
-                's:' . $sourceSite->getName(),
-                'd:' . $sourceSite->getRegularCustomerPriceRate(),
-                'd:' . $sourceSite->getWholesaleCustomerPriceRate()
+                ':className' => $sourceSite->getClassName(),
+                ':defaultCategoryId' => implode(',', $sourceSite->getDefaultCategories()),
+                ':defaultManufacturerId' => $sourceSite->getDefaultManufacturer()->getId(),
+                ':defaultStoreId' => implode(',', $sourceSite->getStores()),
+                ':defaultSupplierId' => $sourceSite->getDefaultSupplier()->getId(),
+                ':name' => $sourceSite->getName(),
+                ':regularCustomerPriceRate' => $sourceSite->getRegularCustomerPriceRate(),
+                ':wholesaleCustomerPriceRate' => $sourceSite->getWholesaleCustomerPriceRate()
             )
         );
-        $sourceSiteId = $this->getDb()->getLastId();
         if (sizeof($sourceSite->getCategoriesMap())) {
             foreach ($sourceSite->getCategoriesMap() as $category) {
                 $this->getDb()->query(<<<SQL
                     INSERT INTO imported_product_categories
-                    (source_site_id, source_site_category_id, local_category_id, price_upper_limit)
-                    VALUES (?, ?, ?, ?)
+                    (source_site_class_name, source_site_category_id, local_category_id, price_upper_limit)
+                    VALUES (:sourceSiteClassName, :sourceSiteCategoryId, :localCategoryId, :priceUpperLimit)
 SQL
                     , array(
-                        "i:$sourceSiteId",
-                        "s:" . $category->getSourceSiteCategoryId(),
-                        "s:" . implode(',', $category->getLocalCategoryIds()),
-                        "d:" . $category->getPriceUpperLimit()
+                        ':sourceSiteClassName' => $sourceSite->getClassName(),
+                        ':sourceSiteCategoryId' => $category->getSourceSiteCategoryId(),
+                        ':localCategoryId' => implode(',', $category->getLocalCategoryIds()),
+                        ':priceUpperLimit' => $category->getPriceUpperLimit()
                     )
                 );
             }
@@ -51,25 +50,18 @@ SQL
     }
 
     /**
-     * @param int $siteId
+     * @param string $className
      * @return ImportCategory[]
      */
-    public function getCategoriesMap($siteId) {
-        $sourceSiteClassName = $this->getDb()->queryScalar(<<<SQL
-            SELECT class_name
-            FROM imported_source_sites
-            WHERE imported_source_site_id = ?
-SQL
-            , array("i:$siteId")
-        );
-        $sourceSiteClassName = 'automation\\SourceSite\\' . $sourceSiteClassName;
+    public function getCategoriesMap($className) {
+        $sourceSiteClassName = 'automation\\SourceSite\\' . $className;
         /** @var ProductSource $sourceSiteClassName */
         $sourceSite = $sourceSiteClassName::getInstance();
         $query = $this->getDb()->query("
             SELECT source_site_category_id, local_category_id, price_upper_limit
             FROM imported_product_categories
-            WHERE source_site_id = ?
-            ", array("i:$siteId")
+            WHERE class_name = :className
+            ", array(':className' => $className)
         );
         $result = array();
         foreach ($query->rows as $categoryMappingEntry) {
@@ -84,126 +76,125 @@ SQL
         return $result;
     }
 
-    /**
-     * @param int $siteId
-     * @return string
-     */
-    public function getClassName($siteId) {
-        return
-            $this->getDb()->queryScalar("
-                SELECT class_name
-                FROM imported_source_sites
-                WHERE imported_source_site_id = ?
-                ", array("i:$siteId")
-            );
-    }
+//    /**
+//     * @param int $siteId
+//     * @return string
+//     */
+//    public function getClassName($siteId) {
+//        return
+//            $this->getDb()->queryScalar("
+//                SELECT class_name
+//                FROM imported_source_sites
+//                WHERE class_name = :className
+//                ", array(':className' => $className)
+//            );
+//    }
 
     /**
-     * @param int $siteId
+     * @param string $className
      * @return int[]
      */
-    public function getDefaultCategories($siteId) {
+    public function getDefaultCategories($className) {
         $query = $this->getDb()->queryScalar("
             SELECT default_category_id
             FROM imported_source_sites
-            WHERE imported_source_site_id = ?
-            ", array("i:$siteId")
+            WHERE class_name = :className
+            ", array(':className' => $className)
         );
         return preg_split('/,/', $query);
     }
 
     /**
-     * @param int $siteId
+     * @param string $className
      * @return Manufacturer
      */
-    public function getDefaultManufacturer($siteId) {
+    public function getDefaultManufacturer($className) {
         $manufacturerId = $this->getDb()->queryScalar("
             SELECT default_manufacturer_id
             FROM imported_source_sites
-            WHERE imported_source_site_id = ?
-            ", array("i:$siteId")
+            WHERE class_name = :className
+            ", array(':className' => $className)
         );
         return ManufacturerDAO::getInstance()->getManufacturer($manufacturerId, true);
     }
 
     /**
-     * @param int $siteId
+     * @param string $className
      * @return Supplier
      */
-    public function getDefaultSupplier($siteId) {
+    public function getDefaultSupplier($className) {
         $supplierId = $this->getDb()->queryScalar("
             SELECT default_supplier_id
             FROM imported_source_sites
-            WHERE imported_source_site_id = ?
-            ", array("i:$siteId")
+            WHERE class_name = :className
+            ", array(':className' => $className)
         );
         return SupplierDAO::getInstance()->getSupplier($supplierId, true);
     }
 
     /**
-     * @param int $siteId
+     * @param string $className
      * @return bool
      */
-    public function getImportMappedCategoriesOnly($siteId) {
+    public function getImportMappedCategoriesOnly($className) {
         return
             $this->getDb()->queryScalar("
                 SELECT import_mapped_categories_only
                 FROM imported_source_sites
-                WHERE imported_source_site_id = ?
-                ", array("i:$siteId")
+                WHERE class_name = :className
+                ", array(':className' => $className)
             );
     }
 
     /**
-     * @param int $siteId
+     * @param string $className
      * @return string
      */
-    public function getName($siteId) {
+    public function getName($className) {
         return
             $this->getDb()->queryScalar("
                 SELECT name
                 FROM imported_source_sites
-                WHERE imported_source_site_id = ?
-                ", array("i:$siteId")
+                WHERE class_name = :className
+                ", array(':className' => $className)
             );
     }
 
     /**
-     * @param int $siteId
+     * @param string $className
      * @return float
      */
-    public function getRegularCustomerPriceRate($siteId) {
+    public function getRegularCustomerPriceRate($className) {
         return
             $this->getDb()->queryScalar("
                 SELECT regular_customer_price_rate
                 FROM imported_source_sites
-                WHERE imported_source_site_id = ?
-                ", array("i:$siteId")
+                WHERE class_name = :className
+                ", array(':className' => $className)
             );
     }
 
     /**
-     * @param int|string $sourceSite
+     * @param string $sourceSiteClassName
      * @return ImportSourceSite
      */
-    public function getSourceSite($sourceSite) {
-        if  (is_numeric($sourceSite)) {
-            $searchedColumn = "imported_source_site_id";
-        } else {
-            $sourceSite = str_replace('automation\\SourceSite\\', '', $sourceSite);
+    public function getSourceSite($sourceSiteClassName) {
+//        if  (is_numeric($sourceSite)) {
+//            $searchedColumn = "imported_source_site_id";
+//        } else {
+            $sourceSiteClassName = str_replace('automation\\SourceSite\\', '', $sourceSiteClassName);
             $searchedColumn = 'class_name';
-        }
+//        }
         $recordSet = $this->getDb()->query("
             SELECT *
             FROM imported_source_sites
             WHERE $searchedColumn = :searchedValue
-            ", array(":searchedValue" => $sourceSite)
+            ", array(":searchedValue" => $sourceSiteClassName)
         );
         return
             new ImportSourceSite(
-                $recordSet->row['imported_source_site_id'],
-                null,
                 $recordSet->row['class_name'],
+                null,
                 explode(',', $recordSet->row['default_category_id']),
                 ManufacturerDAO::getInstance()->getManufacturer($recordSet->row['default_manufacturer_id'], true),
                 SupplierDAO::getInstance()->getSupplier($recordSet->row['default_supplier_id'], true),
@@ -223,9 +214,8 @@ SQL
         $result = array();
         foreach ($query->rows as $siteEntry) {
             $result[] = new ImportSourceSite(
-                $siteEntry['imported_source_site_id'],
-                null,
                 $siteEntry['class_name'],
+                null,
                 preg_split('/,/', $siteEntry['default_category_id']),
                 ManufacturerDAO::getInstance()->getManufacturer($siteEntry['default_manufacturer_id'], true),
                 SupplierDAO::getInstance()->getSupplier($siteEntry['default_supplier_id'], true),
@@ -240,30 +230,30 @@ SQL
     }
 
     /**
-     * @param int $siteId
+     * @param string $className
      * @return int[]
      */
-    public function getStores($siteId) {
+    public function getStores($className) {
         $query = $this->getDb()->queryScalar("
             SELECT default_store_id
             FROM imported_source_sites
-            WHERE imported_source_site_id = ?
-            ", array("i:$siteId")
+            WHERE class_name = :className
+            ", array(':className' => $className)
         );
         return preg_split('/,/', $query);
     }
 
     /**
-     * @param int $siteId
+     * @param string $className
      * @return float
      */
-    public function getWholesaleCustomerPriceRate($siteId) {
+    public function getWholesaleCustomerPriceRate($className) {
         return
             $this->getDb()->queryScalar("
                 SELECT wholesale_customer_price_rate
                 FROM imported_source_sites
-                WHERE imported_source_site_id = ?
-                ", array("i:$siteId")
+                WHERE class_name = :className
+                ", array(':className' => $className)
             );
     }
 
@@ -276,13 +266,13 @@ SQL
             $sourceSite = $sourceSite->getClassName();
         }
         $this->getDb()->query(<<<SQL
-            DELETE imported_source_sites, imported_product_categories
+            DELETE iss, ipc
             FROM
                 imported_source_sites AS iss
-                JOIN imported_product_categories AS ipc ON iss.imported_source_site_id = ipc.source_site_id
-            WHERE iss.class_name = ?
+                LEFT JOIN imported_product_categories AS ipc ON iss.class_name = ipc.source_site_class_name
+            WHERE iss.class_name = :className
 SQL
-            , array('i:' . $sourceSite)
+            , array(':className' => $sourceSite)
         );
     }
 
@@ -294,42 +284,42 @@ SQL
         $this->getDb()->query(<<<SQL
             UPDATE imported_source_sites
             SET
-              default_category_id = ?,
-              default_manufacturer_id = ?,
-              default_store_id = ?,
-              default_supplier_id = ?,
-              name = ?,
-              regular_customer_price_rate = ?,
-              wholesale_customer_price_rate = ?
-            WHERE imported_source_site_id = ?
+              default_category_id = :defaultCategoryId,
+              default_manufacturer_id = :defaultManufacturerId,
+              default_store_id = :defaultStoreId,
+              default_supplier_id = :defaultSupplierId,
+              name = :name,
+              regular_customer_price_rate = :regularCustomerPriceRate,
+              wholesale_customer_price_rate = :wholesaleCustomerPriceRate
+            WHERE class_name = :className
 SQL
             , array(
-                's:' . implode(',', $sourceSite->getDefaultCategories()),
-                'i:' . $sourceSite->getDefaultManufacturer()->getId(),
-                's:' . implode(',', $sourceSite->getStores()),
-                'i:' . $sourceSite->getDefaultSupplier()->getId(),
-                's:' . $sourceSite->getName(),
-                'd:' . $sourceSite->getRegularCustomerPriceRate(),
-                'd:' . $sourceSite->getWholesaleCustomerPriceRate(),
-                'i:' . $sourceSite->getId()
+                ':defaultCategoryId' => implode(',', $sourceSite->getDefaultCategories()),
+                ':defaultManufacturerId' => $sourceSite->getDefaultManufacturer()->getId(),
+                ':defaultStoreId' => implode(',', $sourceSite->getStores()),
+                ':defaultSupplierId' => $sourceSite->getDefaultSupplier()->getId(),
+                ':name' => $sourceSite->getName(),
+                ':regularCustomerPriceRate' => $sourceSite->getRegularCustomerPriceRate(),
+                ':wholesaleCustomerPriceRate' => $sourceSite->getWholesaleCustomerPriceRate(),
+                ':className' => $sourceSite->getClassName()
             )
         );
         $this->getDb()->query("
-            DELETE FROM imported_product_categories WHERE source_site_id = ?",
-            ['i:' . $sourceSite->getId()]
+            DELETE FROM imported_product_categories WHERE source_site_class_name = :className",
+            [':className' => $sourceSite->getClassName()]
         );
         if (sizeof($sourceSite->getCategoriesMap())) {
             foreach ($sourceSite->getCategoriesMap() as $category) {
                 $this->getDb()->query(<<<SQL
                     INSERT INTO imported_product_categories
-                    (source_site_id, source_site_category_id, local_category_id, price_upper_limit)
-                    VALUES (?, ?, ?, ?)
+                    (source_site_class_name, source_site_category_id, local_category_id, price_upper_limit)
+                    VALUES (:className, :sourceSiteCategoryId, :localCategoryId, :priceUpperLimit)
 SQL
                     , array(
-                        "i:" . $sourceSite->getId(),
-                        "s:" . $category->getSourceSiteCategoryId(),
-                        "s:" . implode(',', $category->getLocalCategoryIds()),
-                        "d:" . $category->getPriceUpperLimit()
+                        ':className' => $sourceSite->getClassName(),
+                        ':sourceSiteCategoryId' => $category->getSourceSiteCategoryId(),
+                        ':localCategoryId' => implode(',', $category->getLocalCategoryIds()),
+                        ':priceUpperLimit' => $category->getPriceUpperLimit()
                     )
                 );
             }

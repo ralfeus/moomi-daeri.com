@@ -48,9 +48,9 @@
                 <td />
                 <td><input type="text" name="filterItem" value="<?= $filterItem ?>" /></td>
                 <td>
-                    <select name="filterSourceSiteId[]" multiple="true">
+                    <select name="filterSourceSiteClassName[]" multiple="true">
 <?php foreach ($sourceSites as $id => $name):
-    $selected = in_array($id, $filterSourceSiteId) ? 'selected' : '';
+    $selected = in_array($id, $filterSourceSiteClassName) ? 'selected' : '';
 ?>
                         <option value="<?= $id ?>" <?= $selected ?> ><?= $name ?></option>
 <?php endforeach; ?>
@@ -152,7 +152,7 @@ $(document).ready(function() {
 
     $('.date').datepicker({dateFormat: 'yy-mm-dd'});
 
-    $('[name=filterSourceSiteId\\[\\]]')
+    $('[name=filterSourceSiteClassName\\[\\]]')
         .multiselect({
             noneSelectedText: "No filter",
             selectedList: 1

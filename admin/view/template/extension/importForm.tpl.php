@@ -25,7 +25,6 @@
     <div class="content">
       <form action="<?= $urlAction ?>" method="post" enctype="multipart/form-data" id="form">
           <input type="hidden" name="continue" value="0" />
-          <input type="hidden" name="siteId" value="<?= $importSite->getId() ?>" />
           <input type="hidden" name="importClass" value="<?= $importSite->getClassName() ?>" />
         <table class="form">
           <tr>

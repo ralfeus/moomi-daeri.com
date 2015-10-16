@@ -30,8 +30,8 @@ class ImportProductDAO extends DAO {
                 $this->buildSimpleFieldFilterEntry("product_id", $data['filterLocalProductId'], $filter, $params);
             }
         }
-        if (!empty($data['filterSourceSiteId'])) {
-            $filter .= ($filter ? " AND" : "") . " ip.source_site_id IN (" . implode(', ', $data['filterSourceSiteId']) . ")";
+        if (!empty($data['filterSourceSiteClassName'])) {
+            $filter .= ($filter ? " AND" : "") . " ip.source_site_class_name IN (" . implode(', ', $data['filterSourceSiteClassName']) . ")";
         }
         if (!$filter) {
             return null;
@@ -111,11 +111,11 @@ class ImportProductDAO extends DAO {
             $result->row['source_product_id'],
             $result->row['product_id'],
             $result->row['name'],
-            $this->getMatchingCategories($importedProductId, $result->row['source_site_id']),
+            $this->getMatchingCategories($importedProductId, $result->row['source_site_class_name']),
             $result->row['description'],
             $correspondingProduct ? new ImportPrice($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
             new ImportPrice($result->row['price'], $result->row['price_promo']),
-            ImportSourceSiteDAO::getInstance()->getSourceSite($result->row['source_site_id']),
+            ImportSourceSiteDAO::getInstance()->getSourceSite($result->row['source_site_class_name']),
             $result->row['source_url'],
             $result->row['image_url'],
             $this->getProductImages($result->row['imported_product_id']),
@@ -150,11 +150,11 @@ class ImportProductDAO extends DAO {
                     $row['source_product_id'],
                     $row['product_id'],
                     $row['name'],
-                    $this->getMatchingCategories($row['imported_product_id'], $row['source_site_id']),
+                    $this->getMatchingCategories($row['imported_product_id'], $row['source_site_class_name']),
                     $row['description'],
                     $correspondingProduct ? new ImportPrice($correspondingProduct['price'], $correspondingProduct['promoPrice']) : null,
                     new ImportPrice($row['price'], $row['price_promo']),
-                    ImportSourceSiteDAO::getInstance()->getSourceSite($row['source_site_id']),
+                    ImportSourceSiteDAO::getInstance()->getSourceSite($row['source_site_class_name']),
                     $row['source_url'],
                     $row['image_url'],
                     $this->getProductImages($row['imported_product_id']),
@@ -187,14 +187,14 @@ class ImportProductDAO extends DAO {
     }
 
     /**
-     * @param $productId
-     * @param $siteId
+     * @param int $productId
+     * @param string $siteClassName
      * @return int[]
      */
-    private function getMatchingCategories($productId, $siteId) {
+    private function getMatchingCategories($productId, $siteClassName) {
         $productCategories = array();
         $productSourceCategories = ImportProductDAO::getInstance()->getSourceCategories($productId);
-        $sourceSiteCategoriesMapping = ImportSourceSiteDAO::getInstance()->getCategoriesMap($siteId);
+        $sourceSiteCategoriesMapping = ImportSourceSiteDAO::getInstance()->getCategoriesMap($siteClassName);
         if (sizeof($sourceSiteCategoriesMapping)) {
             foreach ($productSourceCategories as $productSourceCategory) {
                 foreach ($sourceSiteCategoriesMapping as $siteCategory) {
@@ -215,7 +215,7 @@ class ImportProductDAO extends DAO {
             }
             sort($productCategories);
         } else {
-            $productCategories = ImportSourceSiteDAO::getInstance()->getDefaultCategories($siteId);
+            $productCategories = ImportSourceSiteDAO::getInstance()->getDefaultCategories($siteClassName);
         }
         return $productCategories;
     }

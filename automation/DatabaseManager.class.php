@@ -86,7 +86,7 @@ SQL;
         $sql = <<<SQL
                 INSERT INTO imported_products
                 SET
-                    source_site_id = :sourceSiteId,
+                    source_site_class_name= :sourceSiteClassName,
                     source_url = :sourceUrl,
                     source_product_id = :sourceProductId,
                     image_url = :thumbnail,
@@ -114,7 +114,7 @@ SQL;
         foreach ($products as $product) {
 //            echo date('Y-m-d H:i:s') . " Adding " . $product->sourceProductId . "\n";
             $statement->execute(array(
-                ':sourceSiteId' => $site->getSite()->getId(),
+                ':sourceSiteClassName' => $site->getSite()->getClassName(),
                 ':sourceUrl' => $product->url,
                 ':sourceProductId' => $product->sourceProductId,
                 ':thumbnail' => $product->thumbnail,
@@ -141,11 +141,11 @@ SQL;
         $statement = $this->connection->prepare('
             UPDATE imported_products
             SET active = FALSE
-            WHERE time_modified < :lastUpdateTime AND source_site_id = :sourceSiteId
+            WHERE time_modified < :lastUpdateTime AND source_site_class_name = :sourceSiteClassName
         ');
         $statement->execute(array(
             ':lastUpdateTime' => date('Y-m-d H:i:s', $syncTime),
-            ':sourceSiteId' => $sourceSite->getSite()->getId()
+            ':sourceSiteClassName' => $sourceSite->getSite()->getClassName()
         ));
     }
 }

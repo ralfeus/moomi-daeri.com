@@ -61,6 +61,7 @@ class ControllerExtensionImport extends Controller {
      * @throws Exception
      */
     private function editGET($importSite) {
+
     }
 
     /**
@@ -150,8 +151,8 @@ class ControllerExtensionImport extends Controller {
     protected function initModel() {
         if ($this->getRequest()->getMethod() == 'POST') {
             $this->model = new ImportSourceSite(
-                $this->parameters['siteId'], [],
                 $this->parameters['importClass'],
+                [],
                 $this->parameters['defaultCategories'],
                 $this->parameters['defaultManufacturerId'],
                 $this->parameters['defaultSupplierId'],
@@ -164,7 +165,7 @@ class ControllerExtensionImport extends Controller {
         } elseif (!is_null($this->parameters['importClass'])) {
             $this->model = ImportSourceSiteDAO::getInstance()->getSourceSite($this->parameters['importClass']);
         } else {
-            $this->model = new ImportSourceSite(0);
+            $this->model = new ImportSourceSite(null);
         }
     }
 
@@ -187,10 +188,13 @@ class ControllerExtensionImport extends Controller {
     public function install() {
         if (!$this->user->hasPermission('modify', 'extension/import')) {
             $this->session->data['notifications']['error'] = $this->language->get('error_permission');
-            $this->redirect($this->url->link('extension/import', 'token=' . $this->parameters['token'], 'SSL'));
         } else {
-            $this->redirect($this->url->link('extension/import/create', $this->buildUrlParameterString($this->parameters), 'SSL'));
+            $sourceSiteName = "automation\\SourceSite\\" . $this->parameters['importClass'];
+            /** @var \automation\ProductSource $sourceSiteName */
+            $sourceSite = $sourceSiteName::createDefaultImportSourceSiteInstance();
+            ImportSourceSiteDAO::getInstance()->addSourceSite($sourceSite);
         }
+        $this->redirect($this->url->link('extension/import', 'token=' . $this->parameters['token'], 'SSL'));
     }
 
     protected function setBreadcrumbs() {
