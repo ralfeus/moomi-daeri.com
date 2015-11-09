@@ -276,8 +276,10 @@ class ModelCatalogProduct extends Model {
             $filter .= ($filter ? " AND" : "") . " p.korean_name LIKE '%" . $this->db->escape(utf8_strtolower($data['filterKoreanName'])) . "%'";
         if (isset($data['filterStatus']))
             $filter .= ($filter ? " AND" : "") . " p.status = '" . (int)$data['filterStatus'] . "'";
-        if (!empty($data['filterSupplierId']))
+        if (!empty($data['filterSupplierId'])) {
+            $this->getLogger()->write(print_r($data['filterSupplierId'], true));
             $filter .= ($filter ? " AND" : "") . " s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
+        }
         if (!empty($data['filter_category_id']))
             if (!empty($data['filter_sub_category']))
             {
