@@ -277,7 +277,7 @@ class ModelCatalogProduct extends Model {
         if (isset($data['filterStatus']))
             $filter .= ($filter ? " AND" : "") . " p.status = '" . (int)$data['filterStatus'] . "'";
         if (!empty($data['filterSupplierId'])) {
-            $this->getLogger()->write(print_r($data['filterSupplierId'], true));
+//            $this->getLogger()->write(print_r($data['filterSupplierId'], true));
             $filter .= ($filter ? " AND" : "") . " s.supplier_id IN (" . implode(', ', $data['filterSupplierId']) . ")";
         }
         if (!empty($data['filter_category_id']))
