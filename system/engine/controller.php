@@ -38,6 +38,7 @@ abstract class Controller extends OpenCartBase
         $this->response = $this->registry->get('response');
         $this->setSelfRoutes();
         $this->session = $this->registry->get('session');
+        $_REQUEST = $this->cleanoutParameters($_REQUEST);
         $this->initParameters();
         $this->data['notifications'] = array();
         $this->load->library('audit');
@@ -234,5 +235,20 @@ abstract class Controller extends OpenCartBase
         }
         else
             $this->data['notifications'] = array();
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    private function cleanoutParameters($params) {
+        $result = [];
+        foreach ($params as $key => $value) {
+            if (is_array($value) && (sizeof($value) == 1) && empty($value[0])) {
+                continue;
+            }
+            $result[$key] = $value;
+        }
+        return $result;
     }
 }
