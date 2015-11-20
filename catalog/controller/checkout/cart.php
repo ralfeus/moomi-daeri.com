@@ -573,7 +573,7 @@ class ControllerCheckoutCart extends CustomerController {
 
 		$this->data['checkout'] = $this->url->link('checkout/checkout', '', 'SSL');
 
-        $templateName = '/template/common/cart.tpl';
+        $templateName = '/template/common/cart.tpl.php';
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateName)) {
 			$this->template = $this->config->get('config_template') . $templateName;
 		} else {

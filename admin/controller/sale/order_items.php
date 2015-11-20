@@ -544,7 +544,7 @@ class ControllerSaleOrderItems extends Controller {
 //		$this->data['sort'] = $sort;
 		$this->data['order'] = $order;
 
-		$this->template = 'sale/order_items_list_print.tpl';
+		$this->template = 'sale/order_items_list_print.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'
