@@ -146,6 +146,13 @@ abstract class Controller extends OpenCartBase
         return $this->registry->get('url');
     }
 
+    /**
+     * @return User
+     */
+    protected function getUser() {
+        return $this->registry->get('user');
+    }
+
     protected function initParameters() {
 //        $this->log->write("Stub function");
     }

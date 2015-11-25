@@ -43,7 +43,9 @@
 				  <td class="right">
 					<?php echo $column_item; ?>
 				  </td>
-				  <?php /* <td class="left"><?= $textSupplier ?></td> */ ?>
+<?php if ($canSeeSuppliers): ?>
+                  <td class="left"><?= $textSupplier ?></td>
+<?php endif; ?>
 				  <td class="right">
 					<?php echo $column_quantity; ?>
 				  </td>
@@ -51,8 +53,8 @@
 				</tr>
 			  </thead>
 			  <tbody>
-				<?php if ($order_items): ?>
-					<?php foreach ($order_items as $order_item): ?>
+<?php if ($order_items): ?>
+    <?php foreach ($order_items as $order_item): ?>
 						<tr>
                             <td class="right"><?php echo $order_item['customer_nick']; ?></td>
                             <td class="right"><?php echo $order_item['order_id']; ?></td>
@@ -61,11 +63,15 @@
 						    <td class="right">
                                 <table height="100%" width="100%">
                                     <tr valign="center"><td><?php echo $order_item['name']; ?></td></tr>
-                                    <?php /*<tr valign="center"><td><?php echo $order_item['name_korean']; ?></td></tr>  */ ?>
+        <?php if ($canSeeSuppliers): ?>
+                                    <tr valign="center"><td><?php echo $order_item['name_korean']; ?></td></tr>
+        <?php endif; ?>
                                     <tr><td><?php echo $order_item['options']; ?></td></tr>
                                 </table>
 						    </td>
-						    <?php /* <td class="left"><?php echo $order_item['supplier_name']; ?></td> */ ?>
+        <?php if ($canSeeSuppliers): ?>
+                            <td class="left"><?php echo $order_item['supplier_name']; ?></td> */ ?>
+        <?php endif; ?>
 						    <td class="right"><?php echo $order_item['quantity']; ?></td>
                             <td class="right">
                                 Private<br />
@@ -74,12 +80,12 @@
                                 <?= $order_item['publicComment'] ?><br />
                             </td>
 						</tr>
-					<?php endforeach; ?>
-				<?php else: ?>
+    <?php endforeach; ?>
+<?php else: ?>
 					<tr>
 					  <td class="center" colspan="11"><?php echo $text_no_results; ?></td>
 					</tr>
-				<?php endif; ?>
+<?php endif; ?>
 			  </tbody>
 			</table>
 		  </form>

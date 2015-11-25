@@ -453,7 +453,10 @@ class ControllerSaleOrderItems extends Controller {
 		return isset($order_item_id) && OrderItemDAO::getInstance()->getOrderItem($order_item_id);
 	}
 
-	public function print_page() {
+    /**
+     * @throws Exception
+     */
+    public function print_page() {
 		$this->load->language('sale/order_items');
 
 		$this->document->setTitle($this->language->get('heading_title'));
@@ -471,6 +474,8 @@ class ControllerSaleOrderItems extends Controller {
 			'sort'              => 'supplier_name, op.name',
 			'order'             => $order
 		);
+
+        $this->data['canSeeSuppliers'] = $this->canSeeSuppliers();
 
 		foreach (OrderItemDAO::getInstance()->getOrderItems($data, null, true) as $orderItem) {
 			if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath())) {
@@ -793,4 +798,11 @@ class ControllerSaleOrderItems extends Controller {
 
 		$this->getResponse()->setOutput(json_encode($json));
 	}
+
+    /**
+     * @return bool
+     */
+    private function canSeeSuppliers() {
+         return $this->getUser()->getUsergroupId() == 1;
+    }
 }
