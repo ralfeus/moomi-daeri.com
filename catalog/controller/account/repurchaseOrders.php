@@ -300,7 +300,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
             }
         }
 
-        $template_name = '/template/account/repurchaseOrderForm.tpl';
+        $template_name = '/template/account/repurchaseOrderForm.tpl.php';
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $template_name)) {
             $this->template = $this->config->get('config_template') . $template_name;
         } else {
