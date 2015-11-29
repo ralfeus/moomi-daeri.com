@@ -585,4 +585,3 @@ class ControllerCheckoutCart extends CustomerController {
 		$this->getResponse()->setOutput(json_encode($json));
 	}
 }
-?>

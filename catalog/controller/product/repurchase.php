@@ -116,7 +116,7 @@ class ControllerProductRepurchase extends Controller
             'total'             => ''
         );
 
-        $template_name = '/template/product/repurchaseOrderForm.tpl';
+        $template_name = '/template/product/repurchaseOrderForm.tpl.php';
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $template_name)) {
             $this->template = $this->config->get('config_template') . $template_name;
         } else {
