@@ -53,8 +53,8 @@ abstract class ProductSource {
     /**
      * @param ImportCategory $category
      * @return Product[]
-* @throws Exception
-*/
+     * @throws Exception
+    */
     protected abstract function getCategoryProducts($category);
 
     /**
@@ -77,16 +77,17 @@ abstract class ProductSource {
      */
     abstract public function getCategoryUrl($sourceSiteCategoryId);
 
-     /**
-      * Gets HTML page by URL.
-      * Represents a wrapper around the file_get_html($url) function with retry functionality
-      * @param string $url
-      * @param string $method
-      * @param array $data
-      * @return simple_html_dom
-      * @throws ErrorException
-      * @throws Exception
-      */
+    /**
+     * Gets HTML page by URL.
+     * Represents a wrapper around the file_get_html($url) function with retry functionality
+     * @param string $url
+     * @param string $method
+     * @param array $data
+     * @return simple_html_dom
+     * @throws ErrorException
+     * @throws Exception
+     * @throws null
+     */
     protected function getHtmlDocument($url, $method = 'GET', $data = array()) {
         set_error_handler('handleError');
         $finalException = null;
@@ -115,27 +116,44 @@ abstract class ProductSource {
         throw $finalException;
     }
 
-    protected function getPage($url, $method = null, $params = null, $headers = null) {
-         if ($params) {
-             if (is_array($params)) {
-                 $paramString = '';
+    /**
+     * @param string $url
+     * @param string $method
+     * @param string[string]|string $params
+     * @param string[string] $headers
+     * @param string[string] $cookies
+     * @return string
+     */
+    protected function getPage($url, $method = null, $params = null, $headers = [], $cookies = []) {
+        $strParams = '';
+        if (!empty($params)) {
+            if (is_array($params)) {
                  foreach ($params as $key => $value) {
-                     $paramString .= '&' . urlencode($key) . '=' . urlencode($value);
+                     $strParams .= '&' . urlencode($key) . '=' . urlencode($value);
                  }
-                 $params = substr($paramString, 1);
+                 $params = substr($strParams, 1);
              }
-             $params = ' --data "' . $params . '"';
-         }
-         $strHeaders = '';
-         if (is_array($headers)) {
-             foreach ($headers as $header => $value) {
-                 $strHeaders .= " --header $header:$value";
-             }
-         }
-         $get = ($method == 'GET') ? ' --get' : '';
-         $command = 'curl ' . $url . $params . $strHeaders . $get;
-         $result = shell_exec($command);
-         return $result;
+             $strParams = ' --data "' . $params . '"';
+        }
+        $strHeaders = '';
+        if (is_array($headers)) {
+            foreach ($headers as $header => $value) {
+                $strHeaders .= " --header $header:$value";
+            }
+        }
+        $strCookies = '';
+        if (!empty($cookies)) {
+            if (is_array($cookies)) {
+                foreach ($cookies as $cookie => $value) {
+                    $strCookies .= "$cookie=$value;";
+                }
+            }
+            $strCookies = " --cookie \"$strCookies\"";
+        }
+        $get = ($method == 'GET') ? ' --get' : '';
+        $command = "curl $get $strParams $strHeaders $strCookies \"$url\"";
+        $result = shell_exec($command);
+        return $result;
     }
 
      /**

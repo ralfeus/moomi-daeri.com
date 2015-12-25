@@ -4,17 +4,20 @@ namespace automation;
 use PDO;
 
 class DatabaseManager {
+    protected $dbName;
     /** @var PDO */
-    private $connection;
+    protected $connection;
 
     private static $instance;
     private function __construct() {
+        $this->dbName = DB_DATABASE;
         $this->dbConnect();
     }
 
-    private function dbConnect() {
+    protected function dbConnect() {
+        if (empty($this->connection) || empty($this->connection->getAttribute(PDO::ATTR_CONNECTION_STATUS)))
         $this->connection = new PDO(
-            'mysql:host=' . DB_HOSTNAME . ';dbname=' . DB_DATABASE,
+            'mysql:host=' . DB_HOSTNAME . ';dbname=' . $this->dbName,
             DB_USERNAME,
             DB_PASSWORD,
             array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
@@ -31,7 +34,7 @@ class DatabaseManager {
     /**
      * @param Product $product
      */
-    private function addCategories($product) {
+    protected function addCategories($product) {
         $statement = $this->connection->prepare(<<<SQL
             DELETE FROM imported_product_source_categories
             WHERE imported_product_id = :productId;
@@ -58,7 +61,7 @@ SQL;
     /**
      * @param Product $product
      */
-    private function addImages($product) {
+    protected function addImages($product) {
         $deleteStatement = $this->connection->prepare(<<<SQL
             DELETE FROM imported_product_images
             WHERE imported_product_id = :productId;
@@ -82,7 +85,10 @@ SQL;
         }
     }
 
-    public function addProducts(ProductSource $site) {
+    /**
+     * @param Product[] $products
+     */
+    public function addProducts($products) {
         $sql = <<<SQL
                 INSERT INTO imported_products
                 SET
@@ -107,14 +113,13 @@ SQL;
                     time_modified = NOW(),
                     weight = :weight
 SQL;
-        $products = $site->getProducts();
         $this->dbConnect();
         $statement = $this->connection->prepare($sql);
-        echo date('Y-m-d H:i:s') . " Adding to the database " . count($products) . " products\n";
+        echo date('Y-m-d H:i:s') . " Adding to the '" . $this->dbName . "' database " . count($products) . " products\n";
         foreach ($products as $product) {
 //            echo date('Y-m-d H:i:s') . " Adding " . $product->sourceProductId . "\n";
             $statement->execute(array(
-                ':sourceSiteClassName' => $site->getSite()->getClassName(),
+                ':sourceSiteClassName' => $product->sourceSite->getSite()->getClassName(),
                 ':sourceUrl' => $product->url,
                 ':sourceProductId' => $product->sourceProductId,
                 ':thumbnail' => $product->thumbnail,
@@ -130,7 +135,7 @@ SQL;
                 $this->addCategories($product);
             }
         }
-        echo date('Y-m-d H:i:s') . " Added data to database\n";
+        echo date('Y-m-d H:i:s') . " Added data to the '" . $this->dbName . "'database\n";
     }
 
     /**

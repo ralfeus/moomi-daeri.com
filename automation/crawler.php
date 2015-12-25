@@ -40,7 +40,9 @@ if ($sites = trim(file_get_contents("crawler.lck"))) {
             $site = ImportSourceSiteDAO::getInstance()->getSourceSite($siteClassName);
             echo date('Y-m-d H:i:s') . " Crawling " . $site->getClassName() . "\n";
             $className = 'automation\\SourceSite\\' . $site->getClassName();
-            DatabaseManager::getInstance()->addProducts($className::getInstance());
+            /** @var \automation\ProductSource $className */
+            $products = $className::getInstance()->getProducts();
+            DatabaseManager::getInstance()->addProducts($products);
             DatabaseManager::getInstance()->cleanup($className::getInstance(), $startTime);
         }
     }

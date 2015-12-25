@@ -12,6 +12,14 @@ class ImportCategory {
     private $sourceSite;
     private $url;
 
+    /**
+     * ImportCategory constructor.
+     * @param ProductSource $sourceSite
+     * @param $sourceSiteCategoryId
+     * @param $localCategoryIds
+     * @param $priceUpperLimit
+     * @param null $url
+     */
     function __construct($sourceSite, $sourceSiteCategoryId, $localCategoryIds, $priceUpperLimit, $url = null) {
         $this->sourceSite = $sourceSite;
         $this->sourceSiteCategoryId = $sourceSiteCategoryId;
