@@ -4,17 +4,19 @@ namespace automation\SourceSite;
 use automation\Product;
 use automation\ProductSource;
 use model\catalog\ImportCategory;
-use model\catalog\Manufacturer;
-use model\catalog\Supplier;
-use model\extension\ImportSourceSite;
 
-class CutyKids extends ProductSource {
+abstract class CutyKids extends ProductSource {
+    /**
+     * @var int $supplierId
+     * Defines supplier ID on the site. Currently there are 8 suppliers numbered 0 through 8
+     */
+    protected $supplierId;
 
     protected function fillDetails($product) {
         $matches = array();
         $html = $this->getHtmlDocument($product->url);
-        /// Get name
-        $product->name = $html->find('font.text13 b', 0)->innertext;
+//        /// Get name
+//        $product->name = $html->find('font.text13 b', 0)->innertext;
         /// Get images
         $items = $html->find('table.table a[href="#."] img');
         foreach ($items as $item) {
@@ -30,27 +32,28 @@ class CutyKids extends ProductSource {
         if ($product->price != $promoPrice) {
             $product->promoPrice = $promoPrice;
         }
-
+        /// Get minimal amount
+        $product->minimalAmount = sizeof($html->find('input.input_enable'));
         $html->clear();
     }
 
-    protected function getCategoryProducts($category) {
-        $products = array();
-        $html = $this->getHtmlDocument($category->getUrl());
+    private function getBrandProducts($brandUrl, &$products) {
+        $html = $this->getHtmlDocument($brandUrl);
         $lastPageLink = $this->getElementWithText($html->find('table.paging a'), "맨끝");
-        $pagesNum = preg_match('/(?<=&pg=)\d+/', $lastPageLink->attr['href'], $matches) ? $matches[0] : 1;
-        $matches = array();
+        $pagesNum = (!is_null($lastPageLink) && preg_match('/(?<=&pg=)\d+/', $lastPageLink->attr['href'], $matches)) ? $matches[0] : 1;
+        $matches = [];
+        /** @var \simple_html_dom_node $item */
         for ($currPage = 1; $currPage <= $pagesNum; $currPage++) {
-            echo "Page $currPage of $pagesNum\n"; $tmp = 1;
-            $items = $html->find('a[href^="list.php?ai_id="]');
-            /** @var \simple_html_dom_node $item */
+            echo "Page $currPage of $pagesNum\n";
+            $items = $html->find('div.w1150 a[href^="list.php?ai_id="]');
             foreach ($items as $item) {
                 $sourceProductId = preg_match('/(?<=ai_id=)\d+/', $item->attr['href'], $matches) ? $matches[0] : null;
                 $products[] = new Product(
                     $this,
-                    array(preg_match('/(?<=ac_id=)\d+/', $item->attr['href'], $matches) ? $matches[0] : $category->getSourceSiteCategoryId()),
+                    null,
                     $sourceProductId,
-                    null, //mb_convert_encoding($item->first_child()->attr['title'],  'utf-8', 'euc-kr'),
+                    (preg_match('/(?<=comp_head=).+/', $brandUrl, $matches) ? $matches[0] : '') . ' - '.
+                    $item->parentNode()->parentNode()->nextSibling()->find('font[color="#6a6a6a"]', 0)->innertext(), //mb_convert_encoding($item->first_child()->attr['title'],  'utf-8', 'euc-kr'),
                     $this->getRootUrl() . '/' . $item->attr['href'],
                     $item->first_child()->attr['src'],
                     null,
@@ -59,25 +62,29 @@ class CutyKids extends ProductSource {
                 );
             }
             if ($currPage < $pagesNum) {
-                $html = $this->getHtmlDocument($category->getUrl() . '&pg=' . ($currPage + 1));
+                $html = $this->getHtmlDocument($brandUrl . '&pg=' . ($currPage + 1));
             }
         }
-        echo "Got " . sizeof($products) . " products\n";
         $html->clear();
+    }
+
+    protected function getCategoryProducts($category) {
+        $products = array();
+        $html = $this->getHtmlDocument($category->getUrl() . "/index_user.php");
+        $brands = $html->find('div#idMenu' . $this->supplierId . ' a[href^="./main.php?comp_head="]');
+        $currBrand = 1;
+        foreach ($brands as $brand) {
+            $brandUrl = $category->getUrl() . $brand->attr['href'];
+            echo "Brand " . $brand->plaintext . "(" . $currBrand++ . " of " . sizeof($brands) . ") - ~" . $this->getBrandProductsCount($brandUrl) . " products\n";
+            $this->getBrandProducts($brandUrl, $products);
+        }
+        $html->clear();
+        echo "Got " . sizeof($products) . " products\n";
         return $products;
     }
 
     protected function getAllCategories() {
-        $categories = array(); $matches = [];
-        echo "Getting categories from " . self::getUrl() . "\n";
-        $html = $this->getHtmlDocument(self::getUrl() . "/index_user.php");
-        $items = $html->find('div.w1150 a[href^="./main.php?ac_id="]');
-        foreach ($items as $categoryAElement) {
-            $categoryId = preg_match('/\d+/', $categoryAElement->attr['href'], $matches) ? $matches[0] : null;
-            $categories[] = new ImportCategory($this, $categoryId, null, null, $this->getCategoryUrl($categoryId));
-        }
-        $html->clear();
-        return $categories;
+        return [new ImportCategory($this, null, null, null, $this->getRootUrl())];
     }
 
     public function getCategoryUrl($sourceSiteCategoryId) {
@@ -87,18 +94,22 @@ class CutyKids extends ProductSource {
     public function getUrl() { return 'http://cutykids.com'; }
 
     /**
-     * @param ImportCategory $category
+     * @param string $brandUrl
      * @return int
      * The amount isn't precise as last page may contain less items than the rest of pages
      */
-    protected function getCategoryProductsCount($category) {
+    protected function getBrandProductsCount($brandUrl) {
         $matches = [];
-        $html = $this->getHtmlDocument($category->getUrl());
+        $html = $this->getHtmlDocument($brandUrl);
         $lastPageLink = $this->getElementWithText($html->find('table.paging a'), "맨끝");
-        $lastPage = preg_match('/(?<=&pg=)\d+/', $lastPageLink->attr['href'], $matches) ? $matches[0] : 1;
+        $lastPage = (!is_null($lastPageLink) && preg_match('/(?<=&pg=)\d+/', $lastPageLink->attr['href'], $matches)) ? $matches[0] : 1;
         $itemsPerPage = sizeof($html->find('a[href^="list.php?ai_id="]'));
         $html->clear();
         return $itemsPerPage * $lastPage;
+    }
+
+    protected function getCategoryProductsCount($category) {
+        return null;
     }
 
     protected function getHtmlDocument($url, $method = 'GET', $data = array()) {
@@ -112,20 +123,20 @@ class CutyKids extends ProductSource {
             ]));
     }
 
-    public static function createDefaultImportSourceSiteInstance() {
-        return new ImportSourceSite(
-            explode("\\", get_class())[2],
-            [],
-            [],
-            new Manufacturer(0),
-            new Supplier(0),
-            false,
-            "Cuty Kids",
-            1,
-            [0, 2],
-            1
-        );
-    }
+//    public static function createDefaultImportSourceSiteInstance() {
+//        return new ImportSourceSite(
+//            explode("\\", get_class())[2],
+//            [],
+//            [],
+//            new Manufacturer(0),
+//            new Supplier(0),
+//            false,
+//            "Cuty Kids",
+//            1,
+//            [0, 2],
+//            1
+//        );
+//    }
 
     /**
      * @param \simple_html_dom_node[] $elements

@@ -11,6 +11,7 @@ class ImportProduct {
     private $images;
     private $isActive;
     private $localPrice;
+    private $minimalAmount;
     private $sourcePrice;
     private $localProductId;
     private $sourceProductId;
@@ -36,14 +37,16 @@ class ImportProduct {
      * @param float $weight
      * @param string $timeModified
      * @param bool $isActive
+     * @param int $minimalAmount
      */
     public function __construct($id, $sourceProductId = null, $localProductId = null, $name = null, $categories = null,
                                 $description = null, $localPrice = null, $sourcePrice = null, $sourceSite = null,
                                 $sourceUrl = null, $thumbnailUrl = null, $images = null, $weight = null,
-                                $timeModified = null, $isActive = null) {
+                                $timeModified = null, $isActive = null, $minimalAmount = 0) {
         $this->id = $id;
         $this->localProductId = empty($localProductId) ? null : $localProductId;
         $this->categories = $categories;
+        $this->minimalAmount = $minimalAmount;
         $this->name = $name;
         $this->description = $description;
         $this->isActive = $isActive;
@@ -124,6 +127,11 @@ class ImportProduct {
      * @return ImportPrice
      */
     public function getLocalPrice() { return $this->localPrice; }
+
+    /**
+     * @return int
+     */
+    public function getMinimalAmount() { return $this->minimalAmount; }
 
     /**
      * @return string

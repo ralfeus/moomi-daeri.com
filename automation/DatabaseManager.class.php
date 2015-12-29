@@ -96,6 +96,7 @@ SQL;
                     source_url = :sourceUrl,
                     source_product_id = :sourceProductId,
                     image_url = :thumbnail,
+                    minimal_amount = :minimalAmount,
                     name = :name,
                     description = :description,
                     price = :price,
@@ -105,6 +106,7 @@ SQL;
                 ON DUPLICATE KEY UPDATE
                     source_url = :sourceUrl,
                     image_url = :thumbnail,
+                    minimal_amount = :minimalAmount,
                     name = :name,
                     description = :description,
                     price = :price,
@@ -123,6 +125,7 @@ SQL;
                 ':sourceUrl' => $product->url,
                 ':sourceProductId' => $product->sourceProductId,
                 ':thumbnail' => $product->thumbnail,
+                ':minimalAmount' => $product->minimalAmount,
                 ':name' => $product->name,
                 ':description' => $product->description,
                 ':price' => $product->price,

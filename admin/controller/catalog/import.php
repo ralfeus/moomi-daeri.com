@@ -49,7 +49,7 @@ class ControllerCatalogImport extends Controller {
             'location' => null,
             'manufacturer_id' => $productToAdd->getSourceSite()->getDefaultManufacturer()->getId(),
             'meta_keywords' => null, 'meta_description' => null,
-            'minimum' => 1,
+            'minimum' => $productToAdd->getMinimalAmount(),
             'model' => $productToAdd->getSourceProductId(),
             'points' => null,
             'price' => $productToAdd->getSourcePrice()->getPrice() * $productToAdd->getSourceSite()->getRegularCustomerPriceRate(),
@@ -229,6 +229,7 @@ class ControllerCatalogImport extends Controller {
         $this->data['textImage'] = $this->language->get('ITEM_IMAGE');
         $this->data['textItem'] = $this->language->get('ITEM');
         $this->data['textLocal'] = $this->language->get('LOCAL');
+        $this->data['textMinimalAmount'] = $this->language->get('MINIMAL_AMOUNT');
         $this->data['textNoItems'] = $this->language->get('text_no_results');
         $this->data['textNoSelectedItems'] = $this->language->get('NO_ITEMS_SELECTED');
         $this->data['textPrice'] = $this->language->get('PRICE');
@@ -296,7 +297,7 @@ class ControllerCatalogImport extends Controller {
             'location' => null,
             'manufacturer_id' => $productToUpdate->getSourceSite()->getDefaultManufacturer()->getId(),
             'meta_keywords' => null, 'meta_description' => null,
-            'minimum' => null,
+            'minimum' => $productToUpdate->getMinimalAmount(),
             'model' => $localProduct['model'],
             'points' => null,
             'price' => $productToUpdate->getSourcePrice()->getPrice() * $productToUpdate->getSourceSite()->getRegularCustomerPriceRate(),

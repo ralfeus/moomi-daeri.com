@@ -114,7 +114,8 @@ class ImportProductDAO extends DAO {
             $this->getProductImages($result->row['imported_product_id']),
             $result->row['weight'],
             $result->row['time_modified'],
-            $result->row['active']
+            $result->row['active'],
+            $result->row['minimal_amount']
         );
     }
 
@@ -153,7 +154,8 @@ class ImportProductDAO extends DAO {
                     $this->getProductImages($row['imported_product_id']),
                     $row['weight'],
                     $row['time_modified'],
-                    $row['active']
+                    $row['active'],
+                    $row['minimal_amount']
                 );
             }
         }

@@ -1,3 +1,6 @@
+<?php
+/** @var model\catalog\ImportProduct[] $products */
+?>
 <?= $header ?>
 <div id="content">
     <div class="breadcrumb">
@@ -80,7 +83,10 @@
                 <a href="<?= $product->getSourceUrl() ?>" target="_blank"><?= $product->getName() ?></a>
                 <?php /*<p><?= $product->getDescription() ?></p>*/ ?>
               </td>
-              <td><?= $product->getSourceSite()->getName() ?></td>
+              <td>
+                  <?= $product->getSourceSite()->getName() ?><br />
+                  <?= $textMinimalAmount . ": " . $product->getMinimalAmount() ?>
+              </td>
               <td>
                 <table>
                   <tbody>

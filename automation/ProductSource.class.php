@@ -151,7 +151,7 @@ abstract class ProductSource {
             $strCookies = " --cookie \"$strCookies\"";
         }
         $get = ($method == 'GET') ? ' --get' : '';
-        $command = "curl $get $strParams $strHeaders $strCookies \"$url\"";
+        $command = "curl $get $strParams $strHeaders $strCookies \"$url\" 2>/dev/null";
         $result = shell_exec($command);
         return $result;
     }
