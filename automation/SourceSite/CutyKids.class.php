@@ -25,13 +25,15 @@ abstract class CutyKids extends ProductSource {
         }
         /// Get description
         $item = $html->find('form div[align=center]', 0);
-        $product->description = trim($item->innertext);
+        if (!empty($item)) {
+            $product->description = trim($item->innertext);
 
-        /// Get price and promo price
-        $product->price = preg_replace('/\D+/', '', $this->getElementWithText($html->find('table.spec td'), "시장가")->nextSibling()->plaintext);
-        $promoPrice = $product->price = preg_replace('/\D+/', '', $this->getElementWithText($html->find('font[color="ff6100"] b'), "원")->plaintext);
-        if ($product->price != $promoPrice) {
-            $product->promoPrice = $promoPrice;
+            /// Get price and promo price
+            $product->price = preg_replace('/\D+/', '', $this->getElementWithText($html->find('table.spec td'), "시장가")->nextSibling()->plaintext);
+            $promoPrice = $product->price = preg_replace('/\D+/', '', $this->getElementWithText($html->find('font[color="ff6100"] b'), "원")->plaintext);
+            if ($product->price != $promoPrice) {
+                $product->promoPrice = $promoPrice;
+            }
         }
         /// Get minimal amount
         $product->minimalAmount = sizeof($html->find('input.input_enable'));
