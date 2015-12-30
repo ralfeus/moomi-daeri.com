@@ -14,6 +14,7 @@ use model\extension\ImportSourceSite;
 
 class Phokhi extends CutyKids {
     protected $supplierId = 2;
+    protected $excludedBrands = [];
 
     public static function createDefaultImportSourceSiteInstance() {
         return new ImportSourceSite(

@@ -11,6 +11,7 @@ abstract class CutyKids extends ProductSource {
      * Defines supplier ID on the site. Currently there are 8 suppliers numbered 0 through 8
      */
     protected $supplierId;
+    protected $excludedBrands = [];
 
     protected function fillDetails($product) {
         $matches = array();
@@ -37,7 +38,7 @@ abstract class CutyKids extends ProductSource {
         $html->clear();
     }
 
-    private function getBrandProducts($brandUrl, &$products) {
+    protected function getBrandProducts($brandUrl, &$products) {
         $html = $this->getHtmlDocument($brandUrl);
         $lastPageLink = $this->getElementWithText($html->find('table.paging a'), "맨끝");
         $pagesNum = (!is_null($lastPageLink) && preg_match('/(?<=&pg=)\d+/', $lastPageLink->attr['href'], $matches)) ? $matches[0] : 1;
@@ -75,6 +76,10 @@ abstract class CutyKids extends ProductSource {
         $currBrand = 1;
         foreach ($brands as $brand) {
             $brandUrl = $category->getUrl() . $brand->attr['href'];
+            if (in_array($brandUrl, $this->excludedBrands)) {
+                $currBrand++;
+                continue;
+            }
             echo "Brand " . $brand->plaintext . "(" . $currBrand++ . " of " . sizeof($brands) . ") - ~" . $this->getBrandProductsCount($brandUrl) . " products\n";
             $this->getBrandProducts($brandUrl, $products);
         }
