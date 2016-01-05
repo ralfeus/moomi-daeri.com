@@ -186,6 +186,19 @@ final class Image {
 		$b = hexdec($b);    
 		
 		return array($r, $g, $b);
-	}	
+	}
+
+    /**
+     * @return int
+     */
+    public function getHeight() {
+        return $this->info['height'];
+    }
+
+    /**
+     * @return int
+     */
+    public function getWidth() {
+        return $this->info['width'];
+    }
 }
-?>

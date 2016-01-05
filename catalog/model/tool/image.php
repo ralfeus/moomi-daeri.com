@@ -9,16 +9,39 @@ class ModelToolImage extends Model {
         endif;
     }
 
-	public function resize($filename, $width, $height) {
+    /**
+     * @param string $filename
+     * @param int $width
+     * @param int $height
+     * @return string
+     */
+    public function resize($filename, $width, $height) {
 		if (!file_exists(DIR_IMAGE . $filename) || !is_file(DIR_IMAGE . $filename)) {
-			return;
+			return null;
 		} 
 		
 		$info = pathinfo($filename);
 		$extension = $info['extension'];
 		
 		$old_image = $filename;
-		$new_image = 'cache/' . substr($filename, 0, strrpos($filename, '.')) . '-' . $width . 'x' . $height . '.' . $extension;
+        try {$image = new Image(DIR_IMAGE . $old_image);}
+        catch (Exception $exc) {$image = new Image(DIR_IMAGE . 'no_image.jpg');}
+        /// Ensure target size doesn't exceed original size
+        $ratio = $image->getWidth() / $image->getHeight();
+        $expectedHeight = round($width / $ratio);
+        $expectedWidth = round($height * $ratio);
+        if ($image->getWidth() >= $width) {
+            $targetWidth = $width;
+            $targetHeight = $expectedHeight;
+        } else {
+            $targetWidth = $image->getWidth();
+            $targetHeight = $image->getHeight();
+        }
+        if ($image->getHeight() < $targetHeight) {
+            $targetWidth = $expectedWidth;
+            $targetHeight = $image->getHeight();
+        }
+		$new_image = 'cache/' . substr($filename, 0, strrpos($filename, '.')) . '-' . $targetWidth . 'x' . $targetHeight . '.' . $extension;
 		
 		if (!file_exists(DIR_IMAGE . $new_image) || (filemtime(DIR_IMAGE . $old_image) > filemtime(DIR_IMAGE . $new_image))) {
 			$path = '';
@@ -33,9 +56,7 @@ class ModelToolImage extends Model {
 				}		
 			}
 
-            try {$image = new Image(DIR_IMAGE . $old_image);}
-            catch (Exception $exc) {$image = new Image(DIR_IMAGE . 'no_image.jpg');}
-			$image->resize($width, $height);
+			$image->resize($targetWidth, $targetHeight);
 			$image->save(DIR_IMAGE . $new_image);
 		}
 		
@@ -46,4 +67,3 @@ class ModelToolImage extends Model {
 		}	
 	}
 }
-?>
