@@ -138,7 +138,7 @@ abstract class ProductSource {
         $strHeaders = '';
         if (is_array($headers)) {
             foreach ($headers as $header => $value) {
-                $strHeaders .= " --header $header:$value";
+                $strHeaders .= " --header \"$header:$value\"";
             }
         }
         $strCookies = '';
