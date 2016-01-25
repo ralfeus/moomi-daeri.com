@@ -122,7 +122,7 @@ class ControllerExtensionShipping extends Controller {
 
 			require_once(DIR_APPLICATION . 'controller/shipping/' . $this->request->get['extension'] . '.php');
 			
-			$class = 'ControllerShipping' . str_replace('_', '', $this->request->get['extension']);
+			$class = 'ControllerShipping' . preg_replace('/[\W_]/', '', $this->request->get['extension']);
 			$class = new $class($this->registry);
 			
 			if (method_exists($class, 'install')) {
