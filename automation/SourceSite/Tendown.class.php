@@ -1,22 +1,12 @@
 <?php
 namespace automation\SourceSite;
 
-//class EtudeHouse extends GMarketCoKr {
-//    public function __construct() {
-//        $this->shopId = 'TE1NR38zNjMxOExwMTYwNjI0MDl/Rw==';
-//    }
-//
-//    /**
-//     * @return stdClass
-//     */
-//    public function getSite() {
-//        return (object)array( 'id' => 6, 'name' => 'Etude House');
-//    }
-//}
-
 use automation\CarProduct;
 use automation\CarProductSource;
 use model\catalog\ImportCategory;
+use model\catalog\Manufacturer;
+use model\catalog\Supplier;
+use model\extension\ImportSourceSite;
 
 class Tendown extends CarProductSource {
 
@@ -73,6 +63,8 @@ class Tendown extends CarProductSource {
                     $this->getUrl() . $item->attr['href'],
                     $item->findOne('img')->attr['src'],
                     null,
+                    "Hyundai",
+                    "Tendown",
                     null,
                     0
                 );
@@ -95,11 +87,11 @@ class Tendown extends CarProductSource {
         $matches = array();
         $html = $this->getHtmlDocument($product->url);
         /// Get name
-        $product->name = $html->findOne('input[name=product_name]')->attr['value'];
+        $product->name = mb_convert_encoding($html->findOne('input[name=product_name]')->attr['value'],  'utf-8', 'euc-kr');
 
         /// Get description
         $item = $html->findOne('img[src=/web/upload/sub_view_title1.gif]')->parent->parent->nextSibling()->firstChild();
-        $product->description = trim($item->innertext());
+        $product->description = mb_convert_encoding(trim($item->innertext()), 'utf-8', 'euc-kr');
         $product->description = preg_replace('/(?<=src=\")\//', $this->getRootUrl(), $product->description);
         /// Get images
         //TODO: Currently simple_html_dom doesn't support > sign in selector as immediate child of the element
@@ -114,8 +106,8 @@ class Tendown extends CarProductSource {
         /// Get part number
         $descItems = $item->find('p');
         foreach ($descItems as $p) {
-            if (preg_match('/^\d+ /', $p->innertext())) {
-                $product->partNumbers[] = $p->innertext();
+            if (preg_match('/\d{5} \d\w{4}(?=(\W|$))/', $p->innertext(), $matches)) {
+                $product->partNumbers[] = $matches[0];
             }
         }
 
@@ -128,5 +120,20 @@ class Tendown extends CarProductSource {
      */
     protected function getCategoryProductsCount($categoryUrl) {
         return null;
+    }
+
+    public static function createDefaultImportSourceSiteInstance() {
+        return new ImportSourceSite(
+            explode("\\", get_class())[2],
+            [],
+            [],
+            new Manufacturer(34),
+            new Supplier(92),
+            false,
+            "Tendown",
+            1,
+            [0],
+            1
+        );
     }
 }
