@@ -96,7 +96,7 @@ class ControllerCheckoutManual extends Controller {
 					if ($this->config->get($result['code'] . '_status')) {
 						$this->load->model('shipping/' . $result['code']);
 						
-						$quote = $this->{'model_shipping_' . $result['code']}->getQuote($address_data); 
+						$quote = ShippingMethodDAO::getInstance()->getMethod($result['code'])->getQuote($address_data);
 			
 						if ($quote) {
 							$json['shipping_methods'][$result['code']] = array( 

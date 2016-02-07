@@ -3,7 +3,9 @@
 @author	Dmitriy Kubarev
 @link	http://www.simpleopencart.com
 @link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
-*/  
+*/
+
+use model\shipping\ShippingMethodDAO;
 
 class ControllerCheckoutSimpleCheckoutShipping extends Controller {
     public function index() {
@@ -111,7 +113,7 @@ class ControllerCheckoutSimpleCheckoutShipping extends Controller {
                 if (empty($for_payment_methods) || ($payment_method_code && in_array($payment_method_code, $for_payment_methods))) {
                     $this->load->model('shipping/' . $result['code']);
                     
-                    $quote = $this->{'model_shipping_' . $result['code']}->getQuote($address); 
+                    $quote = ShippingMethodDAO::getInstance()->getMethod($result['code'])->getQuote($address);
         
                     if ($quote) {
                         $quote_data[$result['code']] = array( 

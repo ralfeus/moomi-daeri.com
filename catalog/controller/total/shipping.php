@@ -1,4 +1,6 @@
-<?php 
+<?php
+use model\shipping\ShippingMethodDAO;
+
 class ControllerTotalShipping extends Controller {
 	public function index() {
 		if (!isset($this->session->data['address_id']) && $this->cart->hasShipping() && $this->config->get('shipping_estimator')) {
@@ -145,7 +147,7 @@ class ControllerTotalShipping extends Controller {
 					if ($this->config->get($result['code'] . '_status')) {
 						$this->load->model('shipping/' . $result['code']);
 						
-						$quote = $this->{'model_shipping_' . $result['code']}->getQuote($address_data); 
+						$quote = ShippingMethodDAO::getInstance()->getMethod($result['code'])->getQuote($address_data);
 			
 						if ($quote) {
 							$quote_data[$result['code']] = array( 

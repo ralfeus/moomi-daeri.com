@@ -1,4 +1,6 @@
 <?php
+use model\shipping\ShippingMethodDAO;
+
 class ControllerCheckoutShipping extends Controller {
   	public function index() {
 //        $this->log->write("Opening checkout/shipping");
@@ -52,28 +54,30 @@ class ControllerCheckoutShipping extends Controller {
 					$results = $this->model_setting_extension->getExtensions('shipping');
                     $this->log->write(print_r($results, true));
 //print_r($results); die();
-          foreach ($results as $result) {
-						if ($this->config->get($result['code'] . '_status')) {
-                            $this->log->write("Trying to load shipping/" . $result['code']);
-							$this->load->model('shipping/' . $result['code']);
-							$quote = $this->{'model_shipping_' . $result['code']}->getQuote($shipping_address);
-//                            $this->log->write(print_r($quote, true));
+				foreach ($results as $result) {
+			  		$shippingMethod = ShippingMethodDAO::getInstance()->getMethod($result['code']);
+			  		if ($shippingMethod->isEnabled()) {
+//						if ($this->config->get($result['code'] . '_status')) {
+//                            $this->log->write("Trying to load shipping/" . $result['code']);
+//							$this->load->model('shipping/' . $result['code']);
+						$quote = $shippingMethod->getQuote($shipping_address);
+						//                            $this->log->write(print_r($quote, true));
 
-							if ($quote) {
-								//$res = $this->model_localisation_description->getDescription(null, $quote['quote'][$result['code']]['title']);
-								//$tempArr = reset($quote['quote']);
-								//$desc = '' . print_r($tempArr[@description], true);
-								//print_r($quote['quote']); die();
-								$quote_data[$result['code']] = array(
-									'title'      => $quote['title'],
-									//'description'=> $desc,
-									'quote'      => $quote['quote'],
-									'sort_order' => $quote['sort_order'],
-									'error'      => $quote['error']
-								);
-							}
+						if ($quote) {
+							//$res = $this->model_localisation_description->getDescription(null, $quote['quote'][$result['code']]['title']);
+							//$tempArr = reset($quote['quote']);
+							//$desc = '' . print_r($tempArr[@description], true);
+							//print_r($quote['quote']); die();
+							$quote_data[$result['code']] = array(
+								'title'      => $quote['title'],
+								//'description'=> $desc,
+								'quote'      => $quote['quote'],
+								'sort_order' => $quote['sort_order'],
+								'error'      => $quote['error']
+							);
 						}
 					}
+				}
 
 					$sort_order = array();
 

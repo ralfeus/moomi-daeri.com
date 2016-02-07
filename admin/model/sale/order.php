@@ -1,6 +1,7 @@
 <?php
 use model\sale\CustomerDAO;
 use model\sale\OrderItemDAO;
+use model\shipping\ShippingMethodDAO;
 
 class ModelSaleOrder extends Model {
 	public function addOrder($data) { //echo "asdsadas"; die();
@@ -553,11 +554,11 @@ class ModelSaleOrder extends Model {
             return null;
     }
 
-	private function getShippingCost($shipping_method, $orderItems, $ext = array())
-	{
+	private function getShippingCost($shipping_method, $orderItems, $ext = array())	{
 		$shipping_method = explode(".", $shipping_method);
-		$this->load->model("shipping/" . $shipping_method[0]);
-		return $this->{'model_shipping_' . $shipping_method[0]}->getCost($shipping_method[1], $orderItems, $ext);
+//		$this->load->model("shipping/" . $shipping_method[0]);
+		$shippingMethod = ShippingMethodDAO::getInstance()->getMethod($shipping_method[0]);
+		return $shippingMethod->getCost($shipping_method[1], $orderItems, $ext);
 	}
 
 	public function getTotalOrders($data = array()) {
