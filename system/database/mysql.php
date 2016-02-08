@@ -57,8 +57,8 @@ final class MySQL implements DBDriver{
      * @param string $sql
      * @param string[] $params
      * @param bool $log
-     * @return stdClass|int
-     * @throws PDOException
+     * @return int|stdClass
+     * @throws Exception
      */
     public function query($sql, $params = array(), $log = false) {
         $sql = trim($sql);
@@ -67,7 +67,7 @@ final class MySQL implements DBDriver{
             $log->write($sql);
         }
 
-        $attempts = 3; $statement = null; $lastError = null;
+        $attempts = 3; $statement = null; $lastError = new Exception("Unknown error has occurred during query execution");
         while ($attempts--) {
             try {
                 $statement = $this->prepareQuery($sql);
