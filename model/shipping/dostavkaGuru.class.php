@@ -1,7 +1,13 @@
 <?php
 namespace  model\shipping;
+use model\setting\SettingsDAO;
+use system\helper\WebClient;
+
 class DostavkaGuru extends ShippingMethodBase {
-	private $intermediateZoneId = 0; // Moscow
+	private $intermediateZoneId = 63; // EMS for Russia
+	private $partnerId = 9999;
+	private $key = '827ccb0eea8a706c4c34a16891f84e7b';
+
   	public function getCost($destination, $orderItems, $ext = array()) {
 //        $this->log->write(print_r($orderItems, true));
         $cost = 0;
@@ -32,6 +38,32 @@ class DostavkaGuru extends ShippingMethodBase {
 		return $cost;
   	}
 
+	/**
+	 * @param string[] $address
+	 * @return IssuePoint[]
+	 */
+	private function getIssuePoints($address) {
+		$response = WebClient::getResponse(
+			'http://api.dostavka.guru/client/pvz_list.php',
+			'POST',
+			[
+				'partner_id' => $this->partnerId,
+				'key' => $this->key,
+				'script' => 'all_list',
+				'city_name' => $address['city']
+			]);
+		$xml = new \SimpleXMLElement($response);
+		$result = [];
+		foreach ($xml->xpath('point') as $point) {
+			$issuePoint = new IssuePoint();
+			$issuePoint->name = $point->name->__toString();
+			$issuePoint->id = $point->code->__toString();
+			$issuePoint->address = $point->address->__toString();
+			$result[] = $issuePoint;
+		}
+		return $result;
+	}
+
     public function getMethodData($address) {
 //        $this->log->write(print_r($address, true));
         $sql = "
@@ -61,8 +93,7 @@ class DostavkaGuru extends ShippingMethodBase {
             return null;
     }
 
-    public function getName($languageResource = null)
-    {
+    public function getName($languageResource = null) {
         return parent::getName('shipping/dostavkaGuru');
     }
 
@@ -70,27 +101,37 @@ class DostavkaGuru extends ShippingMethodBase {
 		$this->load->language('shipping/dostavkaGuru');
 
 		$quote_data = array();
+		/// Assume the geo zone defined as intermediate exists
+		$geoZone = $this->getDb()->query("
+			SELECT *
+			FROM geo_zone
+			WHERE geo_zone_id = :intermediateZoneId
+			", [
+				":intermediateZoneId" => $this->intermediateZoneId
+			]
+		)->row;
 
-		$query = $this->getDb()->query("SELECT * FROM geo_zone ORDER BY name");
+		$issuePoints = $this->getIssuePoints($address);
+		foreach ($issuePoints as $issuePoint) {
+			$query = $this->getDb()->query("
+				SELECT *
+				FROM zone_to_geo_zone
+				WHERE
+					geo_zone_id = :intermediateZoneId
+					AND country_id = :countryId
+					AND zone_id IN (:zoneId, 0)
+				", [
+					':intermediateZoneId' => $this->intermediateZoneId,
+					':countryId' => $address['country_id'],
+					':zoneId' => $address['zone_id']
+				]
+			);
 
-		foreach ($query->rows as $result) {
-			if ($this->config->get('dostavkaGuru_' . $result['geo_zone_id'] . '_status')) {
-				$query = $this->getDb()->query("SELECT * FROM zone_to_geo_zone WHERE geo_zone_id = '" . (int)$result['geo_zone_id'] . "' AND country_id = '" . (int)$address['country_id'] . "' AND (zone_id = '" . (int)$address['zone_id'] . "' OR zone_id = '0')");
-
-				if ($query->num_rows) {
-					$status = true;
-				} else {
-					$status = false;
-				}
-			} else {
-				$status = false;
-			}
-
-			if ($status) {
+			if ($query->num_rows) {
 				$cost = '';
 				$weight = $this->cart->getWeight(true);
 
-				$rates = explode(',', $this->config->get('dostavkaGuru_' . $result['geo_zone_id'] . '_rate'));
+				$rates = explode(',', SettingsDAO::getInstance()->getSetting('dostavkaGuru', 'intermediateZoneRate'));
 
 				foreach ($rates as $rate) {
 					$data = explode(':', $rate);
@@ -103,15 +144,20 @@ class DostavkaGuru extends ShippingMethodBase {
 						break;
 					}
 				}
+				$russiaCost = $this->getRussiaShippingCost($issuePoint, $weight);
+				$textRussiaCost = "<br />Russia delivery cost: $russiaCost RUR";
 
 				if ((string)$cost != '') {
-					$quote_data['dostavkaGuru_' . $result['geo_zone_id']] = array(
-						'code'         => 'dostavkaGuru.dostavkaGuru_' . $result['geo_zone_id'],
-                        'description'  => $result['description'],
-						'title'        => $result['name'] . '  (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->config->get('config_weight_class_id')) . ')',
+					$quote_data['dostavkaGuru_' . $issuePoint->id] = array(
+						'code'         => 'dostavkaGuru.dostavkaGuru_' . $issuePoint->id,
+                        'description'  => $geoZone['description'],
+//						'title'        => $query->row['name'] . '  (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->config->get('config_weight_class_id')) . ')',
+						'title'        => $issuePoint->name . ' ' .
+							$this->weight->format($weight, $this->config->get('config_weight_class_id')) .
+							$textRussiaCost,
 						'cost'         => $cost,
-						'tax_class_id' => $this->config->get('dostavkaGuru_tax_class_id'),
-						'text'         => $this->currency->format($this->tax->calculate($cost, $this->config->get('dostavkaGuru_tax_class_id'), $this->config->get('config_tax')))
+						'tax_class_id' => SettingsDAO::getInstance()->getSetting('dostavkaGuru', 'dostavkaGuruTaxClassId'),
+						'text'         => $this->currency->format($this->tax->calculate($cost, SettingsDAO::getInstance()->getSetting('dostavkaGuru', 'dostavkaGuruTaxClassId'), $this->config->get('config_tax')))
 					);
 				}
 			}
@@ -124,7 +170,7 @@ class DostavkaGuru extends ShippingMethodBase {
         		'code'       => 'dostavkaGuru',
         		'title'      => $this->language->get('text_title'),
         		'quote'      => $quote_data,
-				'sort_order' => $this->config->get('dostavkaGuru_sort_order'),
+				'sort_order' => $this->config->get('dostavkaGuruSortOrder'),
         		'error'      => false
       		);
 		}
@@ -132,7 +178,35 @@ class DostavkaGuru extends ShippingMethodBase {
 		return $method_data;
   	}
 
+	/**
+	 * @param IssuePoint $point
+	 * @param float $weight
+	 * @return float
+	 */
+	private function getRussiaShippingCost($point, $weight) {
+		$response = WebClient::getResponse(
+			'http://api.dostavka.guru/client/calc_guru_main_2_0.php',
+			'POST',
+			[
+				'client' => $this->partnerId,
+				'key' => $this->key,
+				'method' => 'ПВЗ',
+				'weight' => $weight,
+//				'ocen_sum' => '0',
+//				'nal_plat' => '1000',
+				'point' => $point->id
+			]
+		);
+		return preg_split('/::/', $response)[0];
+	}
+
 	public function isEnabled() {
 		return $this->config->get('dostavkaGuruStatus');
 	}
+}
+
+class IssuePoint {
+	public $id;
+	public $name;
+	public $address;
 }

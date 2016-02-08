@@ -120,10 +120,10 @@ class ControllerCheckoutShipping extends Controller {
 				$this->data['comment'] = '';
 			}
 
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/shipping.tpl')) {
-				$this->template = $this->config->get('config_template') . '/template/checkout/shipping.tpl';
+			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/shipping.tpl.php')) {
+				$this->template = $this->config->get('config_template') . '/template/checkout/shipping.tpl.php';
 			} else {
-				$this->template = 'default/template/checkout/shipping.tpl';
+				$this->template = 'default/template/checkout/shipping.tpl.php';
 			}
 
 			$json['output'] = $this->render();

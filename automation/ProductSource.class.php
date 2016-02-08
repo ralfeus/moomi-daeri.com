@@ -227,5 +227,5 @@ abstract class ProductSource {
      * @return ImportSourceSite
      * @throws Exception
      */
-    public static function createDefaultImportSourceSiteInstance() { throw new Exception("Must be implemented in derived class"); }
+    public static abstract function createDefaultImportSourceSiteInstance();
 }

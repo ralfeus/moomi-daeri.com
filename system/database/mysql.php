@@ -105,7 +105,7 @@ final class MySQL implements DBDriver{
                     $statement->closeCursor();
                     return $result;
                 } else {
-                    $lastError = new PDOException(print_r($statement->errorInfo(), true), $statement->errorCode());
+                    $lastError = new PDOException(print_r($statement->errorInfo(), true));
                     error_log($statement->errorCode() . ": " . $statement->errorInfo()[2]);
                 }
             } catch (\Exception $exc) {
@@ -120,7 +120,7 @@ final class MySQL implements DBDriver{
      * @param string $sql
      * @param array $params
      * @param bool $log
-     * @return mixed|bool Returns false is no rows is returned
+     * @return array|bool Returns false is no rows is returned
      */
     public function queryScalar($sql, $params = array(), $log = false) {
         $result = $this->query($sql, $params, $log);
@@ -128,7 +128,7 @@ final class MySQL implements DBDriver{
             $temp = array_keys($result->row);
             return $result->row[$temp[0]];
         } else {
-            return null;
+            return false;
         }
     }
 
