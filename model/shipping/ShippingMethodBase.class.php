@@ -11,8 +11,18 @@ namespace {
 
 namespace model\shipping {
     use model\sale\OrderItem;
+    use system\exception\NotImplementedException;
 
     abstract class ShippingMethodBase extends \OpenCartBase {
+        /**
+         * @param string $shippingMethodCode
+         * @return string[]
+         * @throws NotImplementedException
+         */
+        public function getAddress($shippingMethodCode) {
+            throw new NotImplementedException("getAddress() isn't implemented in class " . self::class);
+        }
+
         /**
          * @param string $destination
          * @param OrderItem[] $orderItems

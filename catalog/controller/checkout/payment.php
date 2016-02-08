@@ -21,7 +21,7 @@ class ControllerCheckoutPayment extends Controller {
 		}	
 						
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
-			$this->log->write(print_r($this->request, true));
+//			$this->log->write(print_r($this->request, true));
 			if (!$json) {
 				if (!isset($this->request->post['payment_method'])) {
 					$json['error']['warning'] = $this->language->get('error_payment');

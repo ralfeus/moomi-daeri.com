@@ -68,6 +68,7 @@ final class Cache {
     }
 }
 
+//TODO: Move to system\exception
 final class CacheNotInstalledException extends \Exception {
     public function __construct() {
         trigger_error("No APC is installed on the server. No cache functionality is available");

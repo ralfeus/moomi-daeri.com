@@ -1,4 +1,7 @@
 <?php
+use model\shipping\ShippingMethodDAO;
+use system\exception\NotImplementedException;
+
 class ControllerCheckoutConfirm extends Controller {
     private $modelCheckoutOrder;
 
@@ -30,12 +33,12 @@ class ControllerCheckoutConfirm extends Controller {
 			$this->load->model('account/address');
 			
 			if ($this->customer->isLogged()) {
-				$shipping_address = $this->model_account_address->getAddress($this->session->data['shipping_address_id']);		
+				$shippingAddress = $this->model_account_address->getAddress($this->session->data['shipping_address_id']);
 			} elseif (isset($this->session->data['guest'])) {
-				$shipping_address = $this->session->data['guest']['shipping'];
+				$shippingAddress = $this->session->data['guest']['shipping'];
 			}				
 
-			if (!isset($shipping_address)) {								
+			if (!isset($shippingAddress)) {
 				$json['redirect'] = $this->url->link('checkout/checkout', '', 'SSL');
 			}
 			
@@ -128,29 +131,37 @@ class ControllerCheckoutConfirm extends Controller {
 			} else {
 				$data['payment_method'] = '';
 			}
-			
+
 			if ($this->cart->hasShipping()) {
+				$shippingAddress = [];
 				if ($this->customer->isLogged()) {
 					$this->load->model('account/address');
-					
-					$shipping_address = $this->model_account_address->getAddress($this->session->data['shipping_address_id']);
+					$shippingAddress = $this->model_account_address->getAddress($this->session->data['shipping_address_id']);
 				} elseif (isset($this->session->data['guest'])) {
-					$shipping_address = $this->session->data['guest']['shipping'];
-				}			
-				
-				$data['shipping_firstname'] = $shipping_address['firstname'];
-				$data['shipping_lastname'] = $shipping_address['lastname'];	
-				$data['shipping_company'] = $shipping_address['company'];	
-				$data['shipping_phone'] = $shipping_address['phone'];
-				$data['shipping_address_1'] = $shipping_address['address_1'];
-				$data['shipping_address_2'] = $shipping_address['address_2'];
-				$data['shipping_city'] = $shipping_address['city'];
-				$data['shipping_postcode'] = $shipping_address['postcode'];
-				$data['shipping_zone'] = $shipping_address['zone'];
-				$data['shipping_zone_id'] = $shipping_address['zone_id'];
-				$data['shipping_country'] = $shipping_address['country'];
-				$data['shipping_country_id'] = $shipping_address['country_id'];
-				$data['shipping_address_format'] = $shipping_address['address_format'];
+					$shippingAddress = $this->session->data['guest']['shipping'];
+				}
+				try {
+					$shippingMethod = explode('.', $this->session->data['shipping_method']['code']);
+					$shippingAddress = array_merge(
+						$shippingAddress,
+						ShippingMethodDAO::getInstance()->getMethod($shippingMethod[0])->getAddress($shippingMethod[1])
+					);
+				} catch (Exception $exc) {}
+
+
+				$data['shipping_firstname'] = $shippingAddress['firstname'];
+				$data['shipping_lastname'] = $shippingAddress['lastname'];
+				$data['shipping_company'] = $shippingAddress['company'];
+				$data['shipping_phone'] = $shippingAddress['phone'];
+				$data['shipping_address_1'] = $shippingAddress['address_1'];
+				$data['shipping_address_2'] = $shippingAddress['address_2'];
+				$data['shipping_city'] = $shippingAddress['city'];
+				$data['shipping_postcode'] = $shippingAddress['postcode'];
+				$data['shipping_zone'] = $shippingAddress['zone'];
+				$data['shipping_zone_id'] = $shippingAddress['zone_id'];
+				$data['shipping_country'] = $shippingAddress['country'];
+				$data['shipping_country_id'] = $shippingAddress['country_id'];
+				$data['shipping_address_format'] = $shippingAddress['address_format'];
 
 				if (isset($this->session->data['shipping_method']['title'])) {
                     //$this->log->write(print_r($this->session->data['shipping_method'], true));

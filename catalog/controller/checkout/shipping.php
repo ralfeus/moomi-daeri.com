@@ -1,5 +1,6 @@
 <?php
 use model\shipping\ShippingMethodDAO;
+use system\exception\NotImplementedException;
 
 class ControllerCheckoutShipping extends Controller {
   	public function index() {
@@ -29,7 +30,6 @@ class ControllerCheckoutShipping extends Controller {
 					$json['error']['warning'] = $this->language->get('error_shipping');
 				} else {
 					$shipping = explode('.', $this->request->post['shipping_method']);
-
 					if (!isset($this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]])) {
 						$json['error']['warning'] = $this->language->get('error_shipping');
 					}
