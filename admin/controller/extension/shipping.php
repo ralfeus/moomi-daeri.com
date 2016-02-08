@@ -1,4 +1,6 @@
 <?php
+use model\setting\SettingsDAO;
+
 class ControllerExtensionShipping extends Controller {
 	public function index() {
 		$this->load->language('extension/shipping');
@@ -140,11 +142,9 @@ class ControllerExtensionShipping extends Controller {
 			$this->redirect($this->url->link('extension/shipping', 'token=' . $this->session->data['token'], 'SSL'));
 		} else {		
 			$this->load->model('setting/extension');
-			$this->load->model('setting/setting');
-				
 			$this->model_setting_extension->uninstall('shipping', $this->request->get['extension']);
 		
-			$this->model_setting_setting->deleteSetting($this->request->get['extension']);
+			SettingsDAO::getInstance()->deleteSettings($this->request->get['extension']);
 		
 			require_once(DIR_APPLICATION . 'controller/shipping/' . $this->request->get['extension'] . '.php');
 			
@@ -159,4 +159,3 @@ class ControllerExtensionShipping extends Controller {
 		}
 	}
 }
-?>
