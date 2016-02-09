@@ -23,4 +23,25 @@ class ShippingMethodDAO extends DAO {
         $className = "model\\shipping\\" . ucfirst($code);
         return new $className($this->registry);
     }
+
+    public function getMethods($address) {
+        $logging = new Log('shipping.log');
+        $result = array();
+
+//        $logging->write(print_r($address, true));
+        $modelSettingExtension = $this->load->model('setting/extension');
+        $shippingExtensions = $modelSettingExtension->getExtensions('shipping', true, true);
+        foreach ($shippingExtensions as $shippingExtension) {
+            $methodData = $this->getMethod($shippingExtension)->getMethodData($address);
+//            $logging->write(print_r($methodData, true));
+            if (is_array($methodData))
+                foreach ($methodData as $methodDataEntry) {
+                    $result[] = $methodDataEntry;
+                    $name[] = $methodDataEntry['shippingMethodName'];
+                }
+        }
+        array_multisort($name, $result);
+//        $logging->write(print_r($result, true));
+        return $result;
+    }
 }

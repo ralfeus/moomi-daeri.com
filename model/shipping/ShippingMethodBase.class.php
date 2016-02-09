@@ -6,7 +6,7 @@
  * Time: 7:34 PM
  */
 namespace {
-    require_once("system/engine/OpenCartBase.php");
+    require_once(DIR_ROOT . "system/engine/OpenCartBase.php");
 }
 
 namespace model\shipping {

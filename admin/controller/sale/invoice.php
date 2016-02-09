@@ -3,6 +3,7 @@ use model\sale\CustomerDAO;
 use model\sale\InvoiceDAO;
 use model\sale\OrderItem;
 use model\sale\OrderItemDAO;
+use model\shipping\ShippingMethodDAO;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -171,7 +172,8 @@ class ControllerSaleInvoice extends Controller {
                 'customer' => $temp['lastname'] . ' ' . $temp['firstname'],
                 'customerId' => $temp['customer_id'],
                 'shippingCost' => $this->getCurrency()->format($invoice->getShippingCost(), $this->config->get('config_currency')),
-                'shippingMethod' => \Shipping::getName($invoice->getShippingMethod(), $this->registry),
+                'shippingMethod' => ShippingMethodDAO::getInstance()->getMethod(explode('.', $invoice->getShippingMethod())[0])->
+                    getName(),
                 'status' => $this->load->model('localisation/invoice')->getInvoiceStatus($invoice->getStatusId()),
                 'subtotal' => $this->getCurrency()->format($invoice->getSubtotal(), $this->config->get('config_currency')),
                 'total' => $this->getCurrency()->format($invoice->getTotal(), $this->config->get('config_currency')),
@@ -232,15 +234,15 @@ class ControllerSaleInvoice extends Controller {
     public function getShippingCost() {
         $this->log->write(print_r($this->parameters, true));
         $orderItems = OrderItemDAO::getInstance()->getOrderItems(array('filterOrderItemId' => $this->parameters['orderItemId']), null, true);
-        $cost =\Shipping::getCost(
+        $shippingMethod = explode('.', $this->parameters['method']);
+        $cost =ShippingMethodDAO::getInstance()->getMethod($shippingMethod[0])->getCost(
+            $shippingMethod[1],
             $orderItems,
-            $this->parameters['method'],
-            array('weight' => $this->parameters['weight']),
-            $this->registry
+            array('weight' => $this->parameters['weight'])
         );
-        $json = array(
+        $json = [
             'cost' => $cost
-        );
+        ];
         $this->getResponse()->setOutput(json_encode($json));
     }
 
@@ -466,7 +468,9 @@ $temp = $invoice->getCustomer();
         $firstItemOrder = $this->modelSaleOrder->getOrder($orderItems[0]->getOrderId());
 //        $this->log->write(print_r($firstItemOrder, true));
         $customer = CustomerDAO::getInstance()->getCustomer($firstItemOrder['customer_id']);
-        $shippingCost = \Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry);
+//        $shippingCost = \Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry);
+        $shippingCost = ShippingMethodDAO::getInstance()->getMethod(explode('.', $firstItemOrder['shipping_method'])[0])->
+            getCost($firstItemOrder['shipping_method'], $orderItems, ['weight' => $totalWeight]);
         $this->data['comment'] = '';
         $this->data['discount'] = 0;
         $this->data['invoiceId'] = 0;
@@ -491,9 +495,8 @@ $temp = $invoice->getCustomer();
             $totalCustomerCurrency +
             $this->getCurrency()->convert($shippingCost, $this->config->get('config_currency'), $customer['base_currency_code']),
             $customer['base_currency_code'], 1);
-        $this->data['shippingMethods'] =\Shipping::getShippingMethods(
-            $this->getOrderAddress($firstItemOrder), $this->registry);
-        $this->log->write(print_r($this->data, true));
+        $this->data['shippingMethods'] = ShippingMethodDAO::getInstance()->getMethods($this->getOrderAddress($firstItemOrder));
+//        $this->log->write(print_r($this->data, true));
         $this->template = 'sale/invoiceForm.tpl.php';
         $this->children = array(
             'common/header',
@@ -512,8 +515,8 @@ $temp = $invoice->getCustomer();
         /// Initialize interface values
         $this->data['button_action'] = $this->language->get('button_close');
         $this->data['readOnly'] = "disabled";
-        $this->data['shippingMethods'] =\Shipping::getShippingMethods(
-            $this->modelReferenceAddress->getAddress($invoice->getShippingAddressId()), $this->registry);
+        $this->data['shippingMethods'] = ShippingMethodDAO::getInstance()->getMethods(
+            $this->modelReferenceAddress->getAddress($invoice->getShippingAddressId()));
 
         $orderItemIdParam = '';
 

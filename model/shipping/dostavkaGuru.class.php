@@ -5,10 +5,31 @@ use system\helper\WebClient;
 
 class DostavkaGuru extends ShippingMethodBase {
 	private $intermediateZoneId = 63; // EMS for Russia
-	private $partnerId = 9999;
-	private $key = '827ccb0eea8a706c4c34a16891f84e7b';
+	private $partnerId = 9999; // Temp ID
+	private $key = '827ccb0eea8a706c4c34a16891f84e7b'; // Temp key
 
-  	public function getCost($destination, $orderItems, $ext = array()) {
+	public function getAddress($shippingMethodCode) {
+		$pointId = explode('_', $shippingMethodCode)[1];
+		$response = WebClient::getResponse(
+			'http://api.dostavka.guru/client/pvz_list.php',
+			'POST',
+			[
+				'partner_id' => $this->partnerId,
+				'key' => $this->key,
+				'script' => 'all_list',
+				'pointID' => $pointId
+			]);
+		$xml = new \SimpleXMLElement($response);
+		$result = [
+			'address_1' => $xml->point->small_address->__toString(),
+			'address_2' => '',
+			'city' => $xml->point->city_name->__toString(),
+			'postcode' => explode(',', $xml->point->address->__toString())[0]
+		];
+		return $result;
+	}
+
+	public function getCost($destination, $orderItems, $ext = array()) {
 //        $this->log->write(print_r($orderItems, true));
         $cost = 0;
         $rates = explode(',', $this->config->get($destination . '_rate'));

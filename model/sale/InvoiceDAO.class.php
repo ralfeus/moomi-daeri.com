@@ -2,6 +2,7 @@
 namespace model\sale;
 
 use model\DAO;
+use model\shipping\ShippingMethodDAO;
 
 class InvoiceDAO extends DAO {
     /**
@@ -52,7 +53,12 @@ class InvoiceDAO extends DAO {
         /// Therefore it's better to pass whole items and let shipping calculation classes use it
         if (empty($shippingMethod))
             $shippingMethod = $order['shipping_method'];
-        $shippingCost = \Shipping::getCost($orderItems, $shippingMethod, array('weight' => $weight) ,$this->registry);
+        $shippingMethodComponents = explode('.', $shippingMethod);
+        $shippingCost = ShippingMethodDAO::getInstance()->getMethod($shippingMethodComponents[0])->getCost(
+            $shippingMethodComponents[1],
+            $orderItems,
+            ['weight' => $weight]
+        );
 
         /// Calculate total. Currently it's subtotal, shipping and discount. In the future it can be something else
         $total = $subtotal + $shippingCost - $discount;
@@ -66,32 +72,32 @@ class InvoiceDAO extends DAO {
         $this->getDb()->query("
             INSERT INTO invoices
             SET
-                customer_id = ?,
-                comment = ?,
-                discount = ?,
-                shipping_address_id = ?,
-                shipping_method = ?,
-                shipping_date = ?,
-                shipping_cost = ?,
-                subtotal = ?,
+                customer_id = :customerId,
+                comment = :comment,
+                discount = :discount,
+                shipping_address_id = :shippingAddressId,
+                shipping_method = :shippingMethod,
+                shipping_date = :shippingDate,
+                shipping_cost = :shippingCost,
+                subtotal = :subtotal,
                 time_modified = NOW(),
-                total = ?,
-                total_customer_currency = ?,
-                currency_code = ?,
-                weight = ?
+                total = :total,
+                total_customer_currency = :totalCustomerCurrency,
+                currency_code = :currencyCode,
+                weight = :weight
             ", array(
-                "i:" . $order['customer_id'],
-                "s:$comment",
-                "d:$discount",
-                "i:" . $orderModel->getShippingAddressId($orderId),
-                "s:$shippingMethod",
-                "s:$shippingDate",
-                "d:$shippingCost",
-                "d:$subtotal",
-                "d:$total",
-                "d:$totalCustomerCurrency",
-                "s:" . $customer['base_currency_code'],
-                "d:$weight"
+                ':customerId' => $order['customer_id'],
+                ':comment' => $comment,
+                ':discount' => $discount,
+                ':shippingAddressId' => $orderModel->getShippingAddressId($orderId),
+                ':shippingMethod' => $shippingMethod,
+                ':shippingDate' => $shippingDate,
+                ':shippingCost' => $shippingCost,
+                ':subtotal' => $subtotal,
+                ':total' => $total,
+                ':totalCustomerCurrency' => $totalCustomerCurrency,
+                ':currencyCode' => $customer['base_currency_code'],
+                ':weight' => $weight
             )
         );
 
