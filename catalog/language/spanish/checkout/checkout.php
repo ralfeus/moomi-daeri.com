@@ -57,7 +57,7 @@ $_['entry_newsletter']               = 'Yo deseo inscribirme a %s la carta infor
 $_['entry_shipping'] 	             = 'Mis direcciones de envio y de faturacion son los mismos.';
 
 // Error
-$_['error_warning']                  = "Hubo un problema al intentar procesar su pedido! Si el problema persiste, por favor, trate de seleccionar un metodo del pago diferente o Usted puede ponerse en contacto con el propietario de la tienda por <a href="%s"> haga aqui </a>.';
+$_['error_warning']                  = 'Hubo un problema al intentar procesar su pedido! Si el problema persiste, por favor, trate de seleccionar un metodo del pago diferente o Usted puede ponerse en contacto con el propietario de la tienda por <a href="%s"> haga aqui </a>.';
 $_['error_login']                    = 'Advertencia: no hay coincidencia con la direccion del correo electronico y/o Contrasena.';
 $_['error_exists']                   = 'Advertencia: La direccion del correo electronico ya esta registrada';
 $_['error_firstname']                = 'Nombre tiene que contener entre 1 y 32 simbolos!';
@@ -75,7 +75,6 @@ $_['error_zone']                     = 'Por favor, seleccione la region/el estad
 $_['error_agree']                    = 'ADvertencia: Uste tiene que estar de acuerdo con %s!';
 $_['error_address']                  = 'Advertencia: Usted tiene que seleccionar la direccion!';
 $_['error_shipping']                 = 'Advertencia: el metodo de envio esta requerido!';
-$_['error_no_shipping']              = 'or assistance!'; Ningunas opciones del envio estan disponibles. Por favor, <a href="%s">contact us</a> fcontacte nosotros.!';
+$_['error_no_shipping']              = 'Advertencia: Ningunas opciones del envio estan disponibles. Por favor, <a href="%s">contact us</a> fcontacte nosotros.!';
 $_['error_payment']                  = 'Advertencia: el metodo del pago esta requerido';
 $_['error_no_payment']               = 'Advertencia: ningunas opciones del pago estan disponibles. Por favor, <a href="%s">contact us</a> contacte nosotros.!';
-?>
