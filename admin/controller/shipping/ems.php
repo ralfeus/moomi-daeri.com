@@ -5,7 +5,7 @@ class ControllerShippingEMS extends Controller {
     public function getCost()
     {
 //        $this->log->write(print_r($this->request->request, true));
-        $modelShippingEms = $this->load->model('shipping/ems');
+        $modelShippingEms = \model\shipping\ShippingMethodDAO::getInstance()->getMethod('ems');
         $shippingMethodElements = explode('.', $this->request->request['method']);
         $cost = $modelShippingEms->getCost(
             $shippingMethodElements[1],

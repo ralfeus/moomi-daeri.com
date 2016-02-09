@@ -145,8 +145,6 @@ class ControllerTotalShipping extends Controller {
 				
 				foreach ($results as $result) {
 					if ($this->config->get($result['code'] . '_status')) {
-						$this->load->model('shipping/' . $result['code']);
-						
 						$quote = ShippingMethodDAO::getInstance()->getMethod($result['code'])->getQuote($address_data);
 			
 						if ($quote) {

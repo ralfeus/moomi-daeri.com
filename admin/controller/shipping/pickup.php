@@ -4,7 +4,7 @@ class ControllerShippingPickup extends Controller {
 
     public function getCost()
     {
-        $modelShipping = $this->load->model('shipping/pickup');
+        $modelShipping = \model\shipping\ShippingMethodDAO::getInstance()->getMethod('pickup');
         $shippingMethodElements = explode('.', $this->request->request['method']);
         $cost = $modelShipping->getCost(
             $shippingMethodElements[1],

@@ -4,7 +4,7 @@ class ControllerShippingFlat extends Controller {
 
     public function getCost()
     {
-        $modelShippingFlat = $this->load->model('shipping/flat');
+        $modelShippingFlat = \model\shipping\ShippingMethodDAO::getInstance()->getMethod('flat');
         $shippingMethodElements = explode('.', $this->request->request['method']);
         $cost = $modelShippingFlat->getCost(
             $shippingMethodElements[1],

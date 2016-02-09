@@ -111,8 +111,6 @@ class ControllerCheckoutSimpleCheckoutShipping extends Controller {
                 }
 
                 if (empty($for_payment_methods) || ($payment_method_code && in_array($payment_method_code, $for_payment_methods))) {
-                    $this->load->model('shipping/' . $result['code']);
-                    
                     $quote = ShippingMethodDAO::getInstance()->getMethod($result['code'])->getQuote($address);
         
                     if ($quote) {
