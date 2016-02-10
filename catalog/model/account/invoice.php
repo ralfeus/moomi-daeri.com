@@ -1,4 +1,6 @@
 <?php
+use model\shipping\ShippingMethodDAO;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -27,7 +29,8 @@ class ModelAccountInvoice extends Model
             $weight = $tmpWeight;
 
         /// Get shipping cost according to destination and weight
-        $shippingCost = Shipping::getCost($order_items, $order['shipping_method'], array('weight' => $weight), $this->registry);
+        $shippingCost =  ShippingMethodDAO::getInstance()->getMethod(explode('.', $order['shipping_method'])[0])->
+            getCost(explode('.', $order['shipping_method'])[1], $order_items, ['weight' => $weight]);
 
         /// Calculate total. Currently it's just subtotal and shipping. In the future it can be something else
         $total = $subtotal + $shippingCost;

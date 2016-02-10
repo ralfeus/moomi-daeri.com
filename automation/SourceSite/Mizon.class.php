@@ -6,6 +6,21 @@ class Mizon extends GMarketCoKr {
         $this->shopId = 'TI5MR38DMTUxNY1zOTUzMzUxNjB/Rw==';
     }
 
+    public static function createDefaultImportSourceSiteInstance() {
+        return new \model\extension\ImportSourceSite(
+            explode("\\", get_class())[2],
+            [],
+            [],
+            new \model\catalog\Manufacturer(0),
+            new \model\catalog\Supplier(0),
+            false,
+            "Mizon",
+            1,
+            [0, 2],
+            1
+        );
+    }
+
 //    /**
 //     * @return \stdClass
 //     */

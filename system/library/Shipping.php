@@ -5,6 +5,7 @@
  * Date: 21.7.12
  * Time: 23:32
  * To change this template use File | Settings | File Templates.
+ * @deprecated
  */
 class Shipping {
     public static function getCost($orderItems, $shippingMethod, $ext = null, $registry = null) {

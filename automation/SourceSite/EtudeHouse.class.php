@@ -153,4 +153,19 @@ class EtudeHouse extends ProductSource {
     protected function getCategoryProductsCount($categoryUrl) {
         return null;
     }
+
+    public static function createDefaultImportSourceSiteInstance() {
+        return new \model\extension\ImportSourceSite(
+            explode("\\", get_class())[2],
+            [],
+            [],
+            new \model\catalog\Manufacturer(0),
+            new \model\catalog\Supplier(0),
+            false,
+            "Etude house",
+            1,
+            [0, 2],
+            1
+        );
+    }
 }

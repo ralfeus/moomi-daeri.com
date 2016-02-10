@@ -33,7 +33,7 @@ namespace model\shipping {
 
         abstract public function getMethodData($address);
 
-        protected function getName($languageResource = null) {
+        public function getName($languageResource = null) {
             $this->load->language($languageResource);
             return $this->getLanguage()->get('headingTitle');
         }

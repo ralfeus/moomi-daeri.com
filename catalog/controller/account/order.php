@@ -1,6 +1,7 @@
 <?php
 use model\sale\OrderItemDAO;
 use model\catalog\ProductDAO;
+use model\shipping\ShippingMethodDAO;
 use system\engine\CustomerZoneController;
 
 class ControllerAccountOrder extends CustomerZoneController {
@@ -236,7 +237,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 
 			$this->data['shipping_address'] = str_replace(array("\r\n", "\r", "\n"), '<br />', preg_replace(array("/\s\s+/", "/\r\r+/", "/\n\n+/"), '<br />', trim(str_replace($find, $replace, $format))));
 
-			$this->data['shipping_method'] =\Shipping::getName($order_info['shipping_method'], $this->registry);
+			$this->data['shipping_method'] = ShippingMethodDAO::getInstance()->getMethod(explode('.', $order_info['shipping_method'])[0])->getName();
 
 			if ($order_info['payment_address_format']) {
       			$format = $order_info['payment_address_format'];

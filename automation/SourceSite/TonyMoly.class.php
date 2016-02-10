@@ -4,10 +4,28 @@ namespace automation\SourceSite;
 use automation\Product;
 use automation\ProductSource;
 use model\catalog\ImportCategory;
+use model\catalog\Manufacturer;
+use model\catalog\Supplier;
+use model\extension\ImportSourceSite;
 
 class TonyMoly extends GMarketCoKr {
     public function __construct() {
         $this->shopId = 'TI4MR38jMzgxOc01NjUyODA0MTh/Rw==';
+    }
+
+    public static function createDefaultImportSourceSiteInstance() {
+        return new ImportSourceSite(
+            explode("\\", get_class())[2],
+            [],
+            [],
+            new Manufacturer(0),
+            new Supplier(0),
+            false,
+            "TonyMoly",
+            1,
+            [0, 2],
+            1
+        );
     }
 //    protected function fillDetails($product) {
 //        $matches = array();

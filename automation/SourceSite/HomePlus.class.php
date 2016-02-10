@@ -96,4 +96,19 @@ class HomePlus extends GMarketCoKr {
         $product->categoryIds[] = "$GdlcCd/$GdmcCd";
         $product->categoryIds[] = "$GdlcCd/$GdmcCd/$GdscCd";
     }
+
+    public static function createDefaultImportSourceSiteInstance() {
+        return new \model\extension\ImportSourceSite(
+            explode("\\", get_class())[2],
+            [],
+            [],
+            new \model\catalog\Manufacturer(0),
+            new \model\catalog\Supplier(0),
+            false,
+            "Home Plus",
+            1,
+            [0, 2],
+            1
+        );
+    }
 }

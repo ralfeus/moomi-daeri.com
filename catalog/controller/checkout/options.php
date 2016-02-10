@@ -1,4 +1,5 @@
 <?php
+use model\shipping\ShippingMethodDAO;
 
 /**
  * class options
@@ -57,7 +58,7 @@ class ControllerCheckoutOptions extends Controller
 							$fullOrder['shipping_postcode'],
 							$fullOrder['shipping_city'],
 							$fullOrder['shipping_country']),
-					'shipping_method'		=>\Shipping::getName($fullOrder['shipping_method'], $this->registry)
+					'shipping_method'		=> ShippingMethodDAO::getInstance()->getMethod(explode('.', $fullOrder['shipping_method'])[0])->getName()
 				);
 			}
 		}
