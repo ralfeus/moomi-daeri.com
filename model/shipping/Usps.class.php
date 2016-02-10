@@ -527,4 +527,8 @@ class Usps extends ShippingMethodBase {
     public function isEnabled() {
         return $this->config->get('usps_status');
     }
+
+    public function getSortOrder() {
+        return $this->config->get('usps_sort_order');
+    }
 }

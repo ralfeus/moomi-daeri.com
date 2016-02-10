@@ -94,4 +94,8 @@ class Item extends ShippingMethodBase
     public function isEnabled() {
         return $this->config->get('item_status');
     }
+
+    public function getSortOrder() {
+        return $this->config->get('item_sort_order');
+    }
 }

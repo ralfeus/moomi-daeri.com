@@ -88,4 +88,8 @@ class Flat extends ShippingMethodBase {
     public function isEnabled() {
         return $this->config->get('flat_status');
     }
+
+    public function getSortOrder() {
+        return $this->config->get('flat_sort_order');
+    }
 }

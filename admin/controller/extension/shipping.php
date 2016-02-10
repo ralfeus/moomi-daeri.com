@@ -1,5 +1,6 @@
 <?php
 use model\setting\SettingsDAO;
+use model\shipping\ShippingMethodDAO;
 
 class ControllerExtensionShipping extends Controller {
 	public function index() {
@@ -67,7 +68,7 @@ class ControllerExtensionShipping extends Controller {
 		if ($files) {
 			foreach ($files as $file) {
 				$extension = basename($file, '.php');
-    			$this->load->language('shipping/' . $extension);
+    			//$this->load->language('shipping/' . $extension);
 	
 				$action = array();
 				
@@ -87,11 +88,11 @@ class ControllerExtensionShipping extends Controller {
 						'href' => $this->url->link('extension/shipping/uninstall', 'token=' . $this->session->data['token'] . '&extension=' . $extension, 'SSL')
 					);
 				}
-										
+				$shippingMethod = ShippingMethodDAO::getInstance()->getMethod($extension);
 				$this->data['extensions'][] = array(
-					'name'       => $this->language->get('heading_title'),
-					'status'     => $this->config->get($extension . '_status') ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
-					'sort_order' => $this->config->get($extension . '_sort_order'),
+					'name'       => $shippingMethod->getName(),
+					'status'     => $shippingMethod->isEnabled() ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
+					'sort_order' => $shippingMethod->getSortOrder(),
 					'action'     => $action
 				);
 			}

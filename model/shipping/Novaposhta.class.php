@@ -135,4 +135,8 @@ class Novaposhta extends ShippingMethodBase {
 	public function isEnabled() {
 		return $this->config->get('novaposhta_status');
 	}
+
+	public function getSortOrder() {
+		return $this->config->get('novaposhta_sort_order');
+	}
 }

@@ -720,4 +720,8 @@ class Royal_mail extends ShippingMethodBase {
     public function isEnabled() {
         return $this->config->get('royal_mail_status');
     }
+
+    public function getSortOrder() {
+        return $this->config->get('royal_mail_sort_order');
+    }
 }

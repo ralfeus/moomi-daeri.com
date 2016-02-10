@@ -71,4 +71,8 @@ class EmsDiscounted extends Ems {
     public function isEnabled() {
         return $this->config->get('emsDiscounted_status');
     }
+
+    public function getSortOrder() {
+        return $this->config->get('emsDiscounted_sort_order');
+    }
 }

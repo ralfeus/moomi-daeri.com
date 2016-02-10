@@ -355,4 +355,8 @@ class Ups extends ShippingMethodBase {
 	public function isEnabled() {
 		return $this->config->get('ups_status');
 	}
+
+	public function getSortOrder() {
+		return $this->config->get('ups_sort_order');
+	}
 }

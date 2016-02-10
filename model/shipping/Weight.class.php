@@ -1,7 +1,6 @@
 <?php
 namespace  model\shipping;
-class Weight extends ShippingMethodBase
-{
+class Weight extends ShippingMethodBase {
   	public function getCost($destination, $orderItems, $ext = array())
     {
         $cost = 0;
@@ -136,5 +135,9 @@ class Weight extends ShippingMethodBase
 
     public function isEnabled() {
         return $this->config->get('weight_status');
+    }
+
+    public function getSortOrder() {
+        return $this->config->get('weight_sort_order');
     }
 }

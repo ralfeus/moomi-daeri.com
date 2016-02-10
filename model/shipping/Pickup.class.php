@@ -89,4 +89,8 @@ class Pickup extends ShippingMethodBase
     public function isEnabled() {
         return $this->config->get('pickup_status');
     }
+
+    public function getSortOrder() {
+        return $this->config->get('pickup_sort_order');
+    }
 }

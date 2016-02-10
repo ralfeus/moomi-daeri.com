@@ -135,4 +135,8 @@ class Citylink extends ShippingMethodBase {
 	public function isEnabled() {
 		return $this->config->get('citylink_status');
 	}
+
+	public function getSortOrder() {
+		return $this->config->get('citylink_sort_order');
+	}
 }

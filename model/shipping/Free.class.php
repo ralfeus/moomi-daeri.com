@@ -93,4 +93,8 @@ class Free extends ShippingMethodBase {
     public function isEnabled() {
         return $this->config->get('free_status');
     }
+
+    public function getSortOrder() {
+        return $this->config->get('free_sort_order');
+    }
 }

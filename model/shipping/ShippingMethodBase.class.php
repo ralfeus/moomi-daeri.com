@@ -39,7 +39,7 @@ namespace model\shipping {
         }
 
         abstract function getQuote($address);
-
+        public abstract function getSortOrder();
         public abstract function isEnabled();
     }
 }
