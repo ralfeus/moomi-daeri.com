@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Class ModelShippingWeight
+ * @deprecated
+ */
 class ModelShippingWeight extends Model {
   	public function getQuote($address) {
 		$this->load->language('shipping/weight');
@@ -66,4 +71,3 @@ class ModelShippingWeight extends Model {
 		return $method_data;
   	}
 }
-?>

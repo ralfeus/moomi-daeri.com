@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Class ModelShippingRoyalMail
+ * @deprecated
+ */
 class ModelShippingRoyalMail extends Model {
 	function getQuote($address) {
 		$this->load->language('shipping/royal_mail');
@@ -671,4 +676,3 @@ class ModelShippingRoyalMail extends Model {
 		return $method_data;
 	}
 }
-?>

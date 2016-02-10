@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Class ModelShippingPickup
+ * @deprecated
+ */
 class ModelShippingPickup extends Model {
 	function getQuote($address) {
 		$this->load->language('shipping/pickup');
@@ -38,4 +43,3 @@ class ModelShippingPickup extends Model {
 		return $method_data;
 	}
 }
-?>

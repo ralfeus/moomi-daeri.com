@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Class ModelShippingCitylink
+ * @deprecated
+ */
 class ModelShippingCitylink extends Model {
 	function getQuote($address) {
 		$this->load->language('shipping/citylink');
@@ -57,4 +62,3 @@ class ModelShippingCitylink extends Model {
 		return $method_data;
 	}
 }
-?>

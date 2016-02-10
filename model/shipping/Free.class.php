@@ -39,12 +39,54 @@ class Free extends ShippingMethodBase {
         return parent::getName('shipping/free');
     }
 
-    public function getQuote($address)
-    {
-        $methodData = $this->getMethodData($address);
-        $methodData['quote'] = array(
+    public function getQuote($address) {
+        $this->load->language('shipping/free');
 
-        );
+        $query = $this->getDb()->query("
+            SELECT *
+            FROM zone_to_geo_zone
+            WHERE
+              geo_zone_id = :geoZoneId
+              AND country_id = :countryId
+              AND zone_id IN (0, :zoneId)
+            ", [
+            ':geoZoneId' => $this->config->get('free_geo_zone_id'),
+            ':countryId' => $address['country_id'],
+            ':zoneId' => $address['zone_id']
+        ]);
+
+        if (!$this->config->get('free_geo_zone_id')) {
+            $status = true;
+        } else {
+            $status = boolval($query->num_rows);
+        }
+
+        if ($this->cart->getSubTotal() < $this->config->get('free_total')) {
+            $status = false;
+        }
+
+        $methodData = array();
+
+        if ($status) {
+            $quote_data = array();
+
+            $quote_data['free'] = array(
+                'code'         => 'free.free',
+                'title'        => $this->language->get('text_description'),
+                'cost'         => 0.00,
+                'tax_class_id' => 0,
+                'text'         => $this->currency->format(0.00)
+            );
+
+            $methodData = array(
+                'code'       => 'free',
+                'title'      => $this->language->get('text_title'),
+                'quote'      => $quote_data,
+                'sort_order' => $this->config->get('free_sort_order'),
+                'error'      => false
+            );
+        }
+
         return $methodData;
     }
 

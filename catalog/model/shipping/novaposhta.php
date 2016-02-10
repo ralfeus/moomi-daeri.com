@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class ModelShippingnovaposhta
+ * @deprecated
+ */
 class ModelShippingnovaposhta extends Model {
 
     function getQuote($address) {
@@ -50,5 +54,3 @@ class ModelShippingnovaposhta extends Model {
     }
 
 }
-
-?>

@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Class ModelShippingFlat
+ * @deprecated
+ */
 class ModelShippingFlat extends Model {
 	function getQuote($address) {
 		$this->load->language('shipping/flat');
@@ -44,4 +49,3 @@ class ModelShippingFlat extends Model {
 		return $method_data;
 	}
 }
-?>

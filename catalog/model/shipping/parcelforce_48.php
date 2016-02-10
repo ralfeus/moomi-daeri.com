@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Class ModelShippingParcelforce48
+ * @deprecated
+ */
 class ModelShippingParcelforce48 extends Model {
 	function getQuote($address) {
 		$this->load->language('shipping/parcelforce_48');

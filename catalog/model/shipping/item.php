@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Class ModelShippingItem
+ * @deprecated
+ */
 class ModelShippingItem extends Model {
 	public function getQuote($address) {
 		$this->load->language('shipping/item');

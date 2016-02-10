@@ -44,12 +44,50 @@ class Item extends ShippingMethodBase
         return parent::getName('shipping/item');
     }
 
-    public function getQuote($address)
-    {
-        $methodData = $this->getMethodData($address);
-        $methodData['quote'] = array(
+    public function getQuote($address) {
+        $this->load->language('shipping/item');
 
-        );
+        $query = $this->getDb()->query("
+            SELECT *
+            FROM zone_to_geo_zone
+            WHERE
+                geo_zone_id = :geoZoneId
+                AND country_id = :countryId
+                AND zone_id IN (0, :zoneId)
+            ", [
+            ':geoZoneId' => $this->config->get('item_geo_zone_id'),
+            ':countryId' => $address['country_id'],
+            ':zoneId' => $address['zone_id']
+        ]);
+
+        if (!$this->config->get('item_geo_zone_id')) {
+            $status = true;
+        } else {
+            $status = boolval($query->num_rows);
+        }
+
+        $methodData = array();
+
+        if ($status) {
+            $quote_data = array();
+
+            $quote_data['item'] = array(
+                'code'         => 'item.item',
+                'title'        => $this->language->get('text_description'),
+                'cost'         => $this->config->get('item_cost') * $this->cart->countProducts(),
+                'tax_class_id' => $this->config->get('item_tax_class_id'),
+                'text'         => $this->currency->format($this->tax->calculate($this->config->get('item_cost') * $this->cart->countProducts(), $this->config->get('item_tax_class_id'), $this->config->get('config_tax')))
+            );
+
+            $methodData = array(
+                'code'       => 'item',
+                'title'      => $this->language->get('text_title'),
+                'quote'      => $quote_data,
+                'sort_order' => $this->config->get('item_sort_order'),
+                'error'      => false
+            );
+        }
+
         return $methodData;
     }
 

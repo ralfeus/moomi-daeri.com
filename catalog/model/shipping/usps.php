@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * @deprecated Class ModelShippingUsps
+ */
 class ModelShippingUsps extends Model {
 	public function getQuote($address) {
 		$this->load->language('shipping/usps');
@@ -481,4 +485,3 @@ class ModelShippingUsps extends Model {
 		return $method_data;
 	}
 }
-?>

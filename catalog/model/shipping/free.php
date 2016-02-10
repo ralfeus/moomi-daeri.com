@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Class ModelShippingFree
+ * @deprecated
+ */
 class ModelShippingFree extends Model {
 	function getQuote($address) {
 		$this->load->language('shipping/free');
@@ -42,4 +47,3 @@ class ModelShippingFree extends Model {
 		return $method_data;
 	}
 }
-?>
