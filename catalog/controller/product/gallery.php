@@ -118,22 +118,6 @@ SQL
 
       $this->getResponse()->setOutput($this->render());
     }
-
-    protected function setBreadcrumbs()
-    {
-        $this->data['breadcrumbs'] = array();
-
-        $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('text_home'),
-            'href'      => $this->url->link('common/home'),
-            'separator' => "::"
-        );
-        $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('GALLERY'),
-            'href'      => $this->url->link('product/gallery'),
-            'separator' => "::"
-        );
-    }
 }
 
 function compareImages($a, $b)

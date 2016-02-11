@@ -898,8 +898,8 @@ cursor: pointer;
 	z-index:9999;
 	background: #FFD1D1 url('../image/warning.png') left no-repeat;
 	border:2px solid #38B0E3;-webkit-border-radius:15px 15px 15px 15px;-moz-border-radius:15px 15px 15px 15px;-khtml-border-radius:15px 15px 15px 15px;border-radius:15px 15px 15px 15px;/*border thickness & colour with rounded corners*/
-  left:200px;
-  top:-22px;
+  /*left:200px;*/
+  /*top:-22px;*/
 }
 .warning {
 	background: #FFF5CC url('../image/attention.png') left no-repeat;
