@@ -135,4 +135,8 @@ class Ems extends ShippingMethodBase {
 	public function isEnabled() {
 		return $this->config->get('ems_status');
 	}
+
+	public function getSortOrder() {
+		return $this->config->get('ems_sort_order');
+	}
 }

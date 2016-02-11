@@ -222,7 +222,11 @@ class DostavkaGuru extends ShippingMethodBase {
 	}
 
 	public function isEnabled() {
-		return $this->config->get('dostavkaGuruStatus');
+		return boolval($this->config->get('dostavkaGuruStatus'));
+	}
+
+	public function getSortOrder() {
+		return SettingsDAO::getInstance()->getSetting('dostavkaGuru', 'dostavkaGuruSortOrder');
 	}
 }
 

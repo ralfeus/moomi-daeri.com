@@ -620,9 +620,18 @@ SQL
     }
 
     public function getProductImages($product_id) {
-        $query = $this->getDb()->query("SELECT * FROM product_image WHERE product_id = '" . (int)$product_id . "' ORDER BY sort_order ASC");
-
-        return $query->rows;
+        $query = $this->getDb()->query("
+            SELECT *
+            FROM product_image
+            WHERE product_id = :productId
+            ORDER BY sort_order ASC
+            ", [':productId' => $product_id]
+        );
+        $result = [];
+        foreach ($query->rows as $row) {
+            $result[] = $row['image'];
+        }
+        return $result;
     }
 
     public function getProductRelated($product_id) {
@@ -1176,7 +1185,7 @@ SQL
 		        status = ?,
 		        sort_order = ?,
                 affiliate_commission = ?,
-                image = ?
+                image = ?,
 		        date_modified = NOW()
             WHERE product_id = ?
             ", array(
@@ -1208,34 +1217,58 @@ SQL
 
 
         if (isset($data['product_description']) && is_array($data['product_description'])) {
-            $this->db->query("DELETE FROM product_description WHERE product_id = '" . (int)$product_id . "'");
+            $this->getDb()->query("
+                DELETE FROM product_description
+                WHERE product_id = :productId
+                ", [':productId' => $product->getId()]);
             foreach ($data['product_description'] as $language_id => $value) {
-                $this->db->query("INSERT INTO product_description SET product_id = '" . (int)$product_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', description = '" . $this->db->escape($value['description']) . "', seo_title = '" . $this->db->escape($value['seo_title']) . "', seo_h1 = '" . $this->db->escape($value['seo_h1']) . "'");
+                $this->db->query("
+                    INSERT INTO product_description
+                    SET
+                        product_id = :productId,
+                        language_id = :languageId,
+                        name = :name,
+                        meta_keyword = :metaKeyword,
+                        meta_description = :metaDescription,
+                        description = :description,
+                        seo_title = :seoTitle,
+                        seo_h1 = :seoH1
+                        ", [
+                        ':productId' => $product->getId(),
+                        ':languageId' => $language_id,
+                        ':name' => $value['name'],
+                        ':metaKeyword' => $value['meta_keyword'],
+                        ':metaDescription' => $value['meta_description'],
+                        ':description' => $value['description'],
+                        ':seoTitle' => $value['seo_title'],
+                        ':seoH1' => $value['seo_h1']
+                    ]
+                );
             }
         }
 
-        $this->db->query("DELETE FROM product_to_store WHERE product_id = '" . (int)$product_id . "'");
+        $this->db->query("DELETE FROM product_to_store WHERE product_id = '" . (int)$product->getId() . "'");
         if (isset($data['product_store'])) {
             foreach ($data['product_store'] as $store_id) {
-                $this->db->query("INSERT INTO product_to_store SET product_id = '" . (int)$product_id . "', store_id = '" . (int)$store_id . "'");
+                $this->db->query("INSERT INTO product_to_store SET product_id = '" . (int)$product->getId() . "', store_id = '" . (int)$store_id . "'");
             }
         }
 
-        $this->db->query("DELETE FROM product_attribute WHERE product_id = '" . (int)$product_id . "'");
+        $this->db->query("DELETE FROM product_attribute WHERE product_id = '" . (int)$product->getId() . "'");
         if (!empty($data['product_attribute'])) {
             foreach ($data['product_attribute'] as $product_attribute) {
                 if ($product_attribute['attribute_id']) {
-                    $this->db->query("DELETE FROM product_attribute WHERE product_id = '" . (int)$product_id . "' AND attribute_id = '" . (int)$product_attribute['attribute_id'] . "'");
+                    $this->db->query("DELETE FROM product_attribute WHERE product_id = '" . (int)$product->getId() . "' AND attribute_id = '" . (int)$product_attribute['attribute_id'] . "'");
 
                     foreach ($product_attribute['product_attribute_description'] as $language_id => $product_attribute_description) {
-                        $this->db->query("INSERT INTO product_attribute SET product_id = '" . (int)$product_id . "', attribute_id = '" . (int)$product_attribute['attribute_id'] . "', language_id = '" . (int)$language_id . "', text = '" .  $this->db->escape($product_attribute_description['text']) . "'");
+                        $this->db->query("INSERT INTO product_attribute SET product_id = '" . (int)$product->getId() . "', attribute_id = '" . (int)$product_attribute['attribute_id'] . "', language_id = '" . (int)$language_id . "', text = '" .  $this->db->escape($product_attribute_description['text']) . "'");
                     }
                 }
             }
         }
 
-        $this->db->query("DELETE FROM product_option WHERE product_id = '" . (int)$product_id . "'");
-        $this->db->query("DELETE FROM product_option_value WHERE product_id = '" . (int)$product_id . "'");
+        $this->db->query("DELETE FROM product_option WHERE product_id = '" . (int)$product->getId() . "'");
+        $this->db->query("DELETE FROM product_option_value WHERE product_id = '" . (int)$product->getId() . "'");
 
         if (isset($data['product_option'])) {
             foreach ($data['product_option'] as $product_option) {
@@ -1244,7 +1277,7 @@ SQL
 					    INSERT INTO product_option
                         SET
                             product_option_id = '" . (int)$product_option['product_option_id'] . "',
-                            product_id = '" . (int)$product_id . "',
+                            product_id = '" . (int)$product->getId() . "',
                             option_id = '" . (int)$product_option['option_id'] . "',
                             required = '" . (int)$product_option['required'] . "'
                     ");
@@ -1258,7 +1291,7 @@ SQL
 							    SET
 							        product_option_value_id = '" . (int)$product_option_value['product_option_value_id'] . "',
 							        product_option_id = '" . (int)$product_option_id . "',
-							        product_id = '" . (int)$product_id . "',
+							        product_id = '" . (int)$product->getId() . "',
 							        option_id = '" . (int)$product_option['option_id'] . "',
 							        option_value_id = '" . $this->db->escape($product_option_value['option_value_id']) . "',
 							        quantity = '" . (int)$product_option_value['quantity'] . "',
@@ -1273,103 +1306,103 @@ SQL
                         }
                     }
                 } else {
-                    $this->db->query("INSERT INTO product_option SET product_option_id = '" . (int)$product_option['product_option_id'] . "', product_id = '" . (int)$product_id . "', option_id = '" . (int)$product_option['option_id'] . "', option_value = '" . $this->db->escape($product_option['option_value']) . "', required = '" . (int)$product_option['required'] . "'");
+                    $this->db->query("INSERT INTO product_option SET product_option_id = '" . (int)$product_option['product_option_id'] . "', product_id = '" . (int)$product->getId() . "', option_id = '" . (int)$product_option['option_id'] . "', option_value = '" . $this->db->escape($product_option['option_value']) . "', required = '" . (int)$product_option['required'] . "'");
                 }
             }
         }
 
-        $this->db->query("DELETE FROM product_discount WHERE product_id = '" . (int)$product_id . "'");
+        $this->db->query("DELETE FROM product_discount WHERE product_id = '" . (int)$product->getId() . "'");
 
         if (isset($data['product_discount'])) {
             foreach ($data['product_discount'] as $product_discount) {
-                $this->db->query("INSERT INTO product_discount SET product_id = '" . (int)$product_id . "', customer_group_id = '" . (int)$product_discount['customer_group_id'] . "', quantity = '" . (int)$product_discount['quantity'] . "', priority = '" . (int)$product_discount['priority'] . "', price = '" . (float)$product_discount['price'] . "', date_start = '" . $this->db->escape($product_discount['date_start']) . "', date_end = '" . $this->db->escape($product_discount['date_end']) . "'");
+                $this->db->query("INSERT INTO product_discount SET product_id = '" . (int)$product->getId() . "', customer_group_id = '" . (int)$product_discount['customer_group_id'] . "', quantity = '" . (int)$product_discount['quantity'] . "', priority = '" . (int)$product_discount['priority'] . "', price = '" . (float)$product_discount['price'] . "', date_start = '" . $this->db->escape($product_discount['date_start']) . "', date_end = '" . $this->db->escape($product_discount['date_end']) . "'");
             }
         }
 
-        $this->db->query("DELETE FROM product_special WHERE product_id = '" . (int)$product_id . "'");
+        $this->db->query("DELETE FROM product_special WHERE product_id = '" . (int)$product->getId() . "'");
 
         if (isset($data['product_special'])) {
             foreach ($data['product_special'] as $product_special) {
-                $this->db->query("INSERT INTO product_special SET product_id = '" . (int)$product_id . "', customer_group_id = '" . (int)$product_special['customer_group_id'] . "', priority = '" . (int)$product_special['priority'] . "', price = '" . (float)$product_special['price'] . "', date_start = '" . $this->db->escape($product_special['date_start']) . "', date_end = '" . $this->db->escape($product_special['date_end']) . "'");
+                $this->db->query("INSERT INTO product_special SET product_id = '" . (int)$product->getId() . "', customer_group_id = '" . (int)$product_special['customer_group_id'] . "', priority = '" . (int)$product_special['priority'] . "', price = '" . (float)$product_special['price'] . "', date_start = '" . $this->db->escape($product_special['date_start']) . "', date_end = '" . $this->db->escape($product_special['date_end']) . "'");
             }
         }
 
-        $this->db->query("DELETE FROM product_image WHERE product_id = '" . (int)$product_id . "'");
+        $this->db->query("DELETE FROM product_image WHERE product_id = '" . (int)$product->getId() . "'");
 
         if (isset($data['product_image'])) {
             foreach ($data['product_image'] as $product_image) {
-                $this->db->query("INSERT INTO product_image SET product_id = '" . (int)$product_id . "', image = '" . $this->db->escape($product_image['image']) . "', sort_order = '" . (int)$product_image['sort_order'] . "'");
+                $this->db->query("INSERT INTO product_image SET product_id = '" . (int)$product->getId() . "', image = '" . $this->db->escape($product_image['image']) . "', sort_order = '" . (int)$product_image['sort_order'] . "'");
             }
         }
 
-        $this->db->query("DELETE FROM product_to_download WHERE product_id = '" . (int)$product_id . "'");
+        $this->db->query("DELETE FROM product_to_download WHERE product_id = '" . (int)$product->getId() . "'");
 
         if (isset($data['product_download'])) {
             foreach ($data['product_download'] as $download_id) {
-                $this->db->query("INSERT INTO product_to_download SET product_id = '" . (int)$product_id . "', download_id = '" . (int)$download_id . "'");
+                $this->db->query("INSERT INTO product_to_download SET product_id = '" . (int)$product->getId() . "', download_id = '" . (int)$download_id . "'");
             }
         }
 
         if (isset($data['product_category'])) {
-            $this->db->query("DELETE FROM product_to_category WHERE product_id = '" . (int)$product_id . "'");
+            $this->db->query("DELETE FROM product_to_category WHERE product_id = '" . (int)$product->getId() . "'");
             foreach ($data['product_category'] as $category_id) {
-                $this->db->query("INSERT INTO product_to_category SET product_id = '" . (int)$product_id . "', category_id = '" . (int)$category_id . "'");
+                $this->db->query("INSERT INTO product_to_category SET product_id = '" . (int)$product->getId() . "', category_id = '" . (int)$category_id . "'");
             }
         }
 
         if (isset($data['main_category_id']) && $data['main_category_id'] > 0) {
-            $this->db->query("DELETE FROM product_to_category WHERE product_id = '" . (int)$product_id . "' AND category_id = '" . (int)$data['main_category_id'] . "'");
-            $this->db->query("INSERT INTO product_to_category SET product_id = '" . (int)$product_id . "', category_id = '" . (int)$data['main_category_id'] . "', main_category = 1");
+            $this->db->query("DELETE FROM product_to_category WHERE product_id = '" . (int)$product->getId() . "' AND category_id = '" . (int)$data['main_category_id'] . "'");
+            $this->db->query("INSERT INTO product_to_category SET product_id = '" . (int)$product->getId() . "', category_id = '" . (int)$data['main_category_id'] . "', main_category = 1");
         } elseif (isset($data['product_category'])) {
-            $this->db->query("UPDATE product_to_category SET main_category = 1 WHERE product_id = '" . (int)$product_id . "' AND category_id = '" . (int)$data['product_category'][0] . "'");
+            $this->db->query("UPDATE product_to_category SET main_category = 1 WHERE product_id = '" . (int)$product->getId() . "' AND category_id = '" . (int)$data['product_category'][0] . "'");
         }
 
-        $this->db->query("DELETE FROM product_related WHERE product_id = '" . (int)$product_id . "'");
-        $this->db->query("DELETE FROM product_related WHERE related_id = '" . (int)$product_id . "'");
+        $this->db->query("DELETE FROM product_related WHERE product_id = '" . (int)$product->getId() . "'");
+        $this->db->query("DELETE FROM product_related WHERE related_id = '" . (int)$product->getId() . "'");
 
         if (isset($data['product_related'])) {
             foreach ($data['product_related'] as $related_id) {
-                $this->db->query("DELETE FROM product_related WHERE product_id = '" . (int)$product_id . "' AND related_id = '" . (int)$related_id . "'");
-                $this->db->query("INSERT INTO product_related SET product_id = '" . (int)$product_id . "', related_id = '" . (int)$related_id . "'");
-                $this->db->query("DELETE FROM product_related WHERE product_id = '" . (int)$related_id . "' AND related_id = '" . (int)$product_id . "'");
-                $this->db->query("INSERT INTO product_related SET product_id = '" . (int)$related_id . "', related_id = '" . (int)$product_id . "'");
+                $this->db->query("DELETE FROM product_related WHERE product_id = '" . (int)$product->getId() . "' AND related_id = '" . (int)$related_id . "'");
+                $this->db->query("INSERT INTO product_related SET product_id = '" . (int)$product->getId() . "', related_id = '" . (int)$related_id . "'");
+                $this->db->query("DELETE FROM product_related WHERE product_id = '" . (int)$related_id . "' AND related_id = '" . (int)$product->getId() . "'");
+                $this->db->query("INSERT INTO product_related SET product_id = '" . (int)$related_id . "', related_id = '" . (int)$product->getId() . "'");
             }
         }
 
-        $this->db->query("DELETE FROM product_reward WHERE product_id = '" . (int)$product_id . "'");
+        $this->db->query("DELETE FROM product_reward WHERE product_id = '" . (int)$product->getId() . "'");
 
         if (isset($data['product_reward'])) {
             foreach ($data['product_reward'] as $customer_group_id => $value) {
-                $this->db->query("INSERT INTO product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . (int)$customer_group_id . "', points = '" . (int)$value['points'] . "'");
+                $this->db->query("INSERT INTO product_reward SET product_id = '" . (int)$product->getId() . "', customer_group_id = '" . (int)$customer_group_id . "', points = '" . (int)$value['points'] . "'");
             }
         }
 
-        $this->db->query("DELETE FROM product_to_layout WHERE product_id = '" . (int)$product_id . "'");
+        $this->db->query("DELETE FROM product_to_layout WHERE product_id = '" . (int)$product->getId() . "'");
 
         if (isset($data['product_layout'])) {
             foreach ($data['product_layout'] as $store_id => $layout) {
                 if ($layout['layout_id']) {
-                    $this->db->query("INSERT INTO product_to_layout SET product_id = '" . (int)$product_id . "', store_id = '" . (int)$store_id . "', layout_id = '" . (int)$layout['layout_id'] . "'");
+                    $this->db->query("INSERT INTO product_to_layout SET product_id = '" . (int)$product->getId() . "', store_id = '" . (int)$store_id . "', layout_id = '" . (int)$layout['layout_id'] . "'");
                 }
             }
         }
 
-        $this->db->query("DELETE FROM product_tag WHERE product_id = '" . (int)$product_id. "'");
+        $this->db->query("DELETE FROM product_tag WHERE product_id = '" . (int)$product->getId(). "'");
 
         foreach ($data['product_tag'] as $language_id => $value) {
             if ($value) {
                 $tags = explode(',', $value);
 
                 foreach ($tags as $tag) {
-                    $this->db->query("INSERT INTO product_tag SET product_id = '" . (int)$product_id . "', language_id = '" . (int)$language_id . "', tag = '" . $this->db->escape(trim($tag)) . "'");
+                    $this->db->query("INSERT INTO product_tag SET product_id = '" . (int)$product->getId() . "', language_id = '" . (int)$language_id . "', tag = '" . $this->db->escape(trim($tag)) . "'");
                 }
             }
         }
 
-        $this->db->query("DELETE FROM url_alias WHERE query = 'product_id=" . (int)$product_id. "'");
+        $this->db->query("DELETE FROM url_alias WHERE query = 'product_id=" . (int)$product->getId(). "'");
 
         if ($data['keyword']) {
-            $this->db->query("INSERT INTO url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
+            $this->db->query("INSERT INTO url_alias SET query = 'product_id=" . (int)$product->getId() . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
         }
         $this->saveWKAuction($product->getId());
         $this->cache->delete('product');

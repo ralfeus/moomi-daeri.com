@@ -1,5 +1,6 @@
 <?php
 use model\catalog\ManufacturerDAO;
+use model\catalog\ProductDAO;
 
 class ControllerProductProduct extends Controller {
 	private $error = array();
@@ -212,7 +213,7 @@ class ControllerProductProduct extends Controller {
 				$this->data['popup'] = '';
 			}
 
-            $results = $this->model_catalog_product->getProductImages($this->request->get['product_id']);
+			$results = ProductDAO::getInstance()->getProductImages($this->request->get['product_id']);
 
             if ($results) {
                 $this->data['thumb'] = $this->model_tool_image->resize($results[0], $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'));
