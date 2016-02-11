@@ -4,7 +4,8 @@ use model\setting\SettingsDAO;
 use system\helper\WebClient;
 
 class DostavkaGuru extends ShippingMethodBase {
-	private $intermediateZoneId = 63; // EMS for Russia
+	private $intermediateZoneId = 26; // EMS - сборная самовывоз
+	private $intermediateShippingMethod = 'ems';
 	private $partnerId = 9999; // Temp ID
 	private $key = '827ccb0eea8a706c4c34a16891f84e7b'; // Temp key
 
@@ -134,6 +135,7 @@ class DostavkaGuru extends ShippingMethodBase {
 
 		$issuePoints = $this->getIssuePoints($address);
 		foreach ($issuePoints as $issuePoint) {
+			$shippingMethod = ShippingMethodDAO::getInstance()->getMethod($this->intermediateShippingMethod);
 			$query = $this->getDb()->query("
 				SELECT *
 				FROM zone_to_geo_zone
@@ -166,14 +168,14 @@ class DostavkaGuru extends ShippingMethodBase {
 					}
 				}
 				$russiaCost = $this->getRussiaShippingCost($issuePoint, $weight);
-				$textRussiaCost = "<br />Russia delivery cost: $russiaCost RUR";
+				$textRussiaCost = "<br />" . $this->getLanguage()->get('RUSSIA_DELIVERY_COST') . ": $russiaCost RUR";
 
 				if ((string)$cost != '') {
 					$quote_data['dostavkaGuru_' . $issuePoint->id] = array(
 						'code'         => 'dostavkaGuru.dostavkaGuru_' . $issuePoint->id,
                         'description'  => $geoZone['description'],
 //						'title'        => $query->row['name'] . '  (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->config->get('config_weight_class_id')) . ')',
-						'title'        => $issuePoint->name . ' ' .
+						'title'        => $issuePoint->address . ' ' .
 							$this->weight->format($weight, $this->config->get('config_weight_class_id')) .
 							$textRussiaCost,
 						'cost'         => $cost,

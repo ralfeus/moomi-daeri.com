@@ -1,4 +1,5 @@
 <?php
-$_['headingTitle'] = 'Dostavka.guru shipping';
+$_['headingTitle'] = 'Сборная';
 $_['text_title']  = $_['headingTitle'];
-$_['text_weight'] = 'Weight:'; 
+$_['text_weight'] = 'Вес:';
+$_['RUSSIA_DELIVERY_COST'] = 'Стоимость доставки по России';
