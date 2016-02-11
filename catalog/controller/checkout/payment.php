@@ -20,7 +20,7 @@ class ControllerCheckoutPayment extends Controller {
 			$json['redirect'] = $this->url->link('checkout/cart');				
 		}	
 
-		if (!empty($json)) {
+		if (empty($json)) {
 			if ($this->request->server['REQUEST_METHOD'] == 'POST') {
 				$json = $this->submitPaymentMethod();
 			} else {
