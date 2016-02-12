@@ -417,7 +417,7 @@ class ControllerCatalogInformation extends Controller {
 		
 		$this->data['layouts'] = $this->model_design_layout->getLayouts();
 				
-		$this->template = 'catalog/information_form.tpl';
+		$this->template = 'catalog/information_form.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'
