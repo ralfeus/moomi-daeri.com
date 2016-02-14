@@ -786,7 +786,6 @@ SQL
 
 						} else {
 							$implode[] = "LCASE(pd.name) LIKE '%" . $this->db->escape(utf8_strtolower($word)) . "%'" . "OR LCASE(p.model) LIKE '%" . $this->db->escape(utf8_strtolower($word)) . "%'";
-
 						}
 					}
 
