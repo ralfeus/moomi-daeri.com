@@ -1,13 +1,23 @@
 <?php
 namespace model\setting;
 use model\DAO;
+use model\extension\ExtensionBase;
 
 class ExtensionDAO extends DAO {
     /**
      * @param string $type
+     * @param string $code
+     * @return ExtensionBase
+     */
+    function getExtension($type, $code) {
+        $className = 'model\\' . $type . '\\' . ucfirst($code);
+        return new $className($this->registry, $code);
+    }
+    /**
+     * @param string $type
      * @param bool $installedOnly
      * @param bool $enabledOnly
-     * @return DAO[]
+     * @return ExtensionBase[]
      */
     function getExtensions($type, $installedOnly = true, $enabledOnly = true) {
         $result = array();
@@ -18,10 +28,17 @@ class ExtensionDAO extends DAO {
                 WHERE `type` = ?
                 ", array("s:$type")
             );
-            foreach ($query->rows as $extension) {
-                if (!$enabledOnly || $this->config->get($extension['code'] . '_status')) {
-                    $extension = $extension['class']::getInstance();
-                    $result[] = $extension;
+            foreach ($query->rows as $row) {
+                try {
+                    $extension = $this->getExtension($row['type'], $row['code']);
+                    if (!$enabledOnly || $extension->isEnabled()) {
+                        $result[] = $extension;
+                    }
+                } catch (\Exception $exc) {
+                    $enabled = boolval($this->config->get($row['code'] . '_status'));
+                    if (!$enabledOnly || $enabled) {
+                        $result[] = $extension;
+                    }
                 }
             }
             return $result;
@@ -36,4 +53,3 @@ class ExtensionDAO extends DAO {
 		$this->getDb()->query("DELETE FROM extension WHERE `type` = '" . $this->getDb()->escape($type) . "' AND `code` = '" . $this->getDb()->escape($code) . "'");
 	}
 }
-?>

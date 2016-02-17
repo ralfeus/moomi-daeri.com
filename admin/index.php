@@ -17,13 +17,16 @@ if (!defined('DIR_APPLICATION')) {
  */
 spl_autoload_register(function($class) {
     if ((strpos($class, '\\') !== false) && (strpos($class, '\\') > 0)) {
-        $class = DIR_ROOT . preg_replace('/\\\\/', '/', $class) . '.class.php';
+        $classPath = DIR_ROOT . preg_replace('/\\\\/', '/', $class) . '.class.php';
     } else if (strpos($class, '\\') == 0) { // legacy classes
-        $class = DIR_SYSTEM . 'library/' . substr(strtolower($class), 1) . '.php';
+		$classPath = DIR_SYSTEM . 'library/' . substr(strtolower($class), 1) . '.php';
     } else {
         return false;
     }
-    include($class);
+    include($classPath);
+	if (!class_exists($class)) {
+		throw new ErrorException("Class $class was not found");
+	}
 });
 
 // Startup

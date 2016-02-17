@@ -232,10 +232,10 @@ class ControllerSaleInvoice extends Controller {
     }
 
     public function getShippingCost() {
-        $this->log->write(print_r($this->parameters, true));
+//        $this->log->write(print_r($this->parameters, true));
         $orderItems = OrderItemDAO::getInstance()->getOrderItems(array('filterOrderItemId' => $this->parameters['orderItemId']), null, true);
         $shippingMethod = explode('.', $this->parameters['method']);
-        $cost =ShippingMethodDAO::getInstance()->getMethod($shippingMethod[0])->getCost(
+        $cost = ShippingMethodDAO::getInstance()->getMethod($shippingMethod[0])->getCost(
             $shippingMethod[1],
             $orderItems,
             array('weight' => $this->parameters['weight'])
@@ -250,11 +250,10 @@ class ControllerSaleInvoice extends Controller {
 //        $modelTransaction = $this->load->model('sale/transaction');
         $invoice = InvoiceDAO::getInstance()->getInvoice($invoiceId);
 //        $customer = CustomerDAO::getInstance()->getCustomer($invoice['customer_id']);
-$temp = $invoice->getCustomer();
-        if ($temp['await_invoice_confirmation'])
+        $temp = $invoice->getCustomer();
+        if ($temp['await_invoice_confirmation']) {
             InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_CUSTOMER_CONFIRMATION);
-        else
-        {
+        } else {
             $totalToPay = $this->getCurrency()->convert(
                 $invoice->getTotalCustomerCurrency(),
                 $invoice->getCurrencyCode(),
@@ -472,7 +471,7 @@ $temp = $invoice->getCustomer();
             $totalCustomerCurrency +
             $this->getCurrency()->convert($shippingCost, $this->config->get('config_currency'), $customer['base_currency_code']),
             $customer['base_currency_code'], 1);
-        $this->data['shippingMethods'] = ShippingMethodDAO::getInstance()->getMethods($this->getOrderAddress($firstItemOrder));
+        $this->data['shippingMethods'] = ShippingMethodDAO::getInstance()->getShippingOptions($this->getOrderAddress($firstItemOrder));
 //        $this->log->write(print_r($this->data, true));
         $this->template = 'sale/invoiceForm.tpl.php';
         $this->children = array(
@@ -492,7 +491,7 @@ $temp = $invoice->getCustomer();
         /// Initialize interface values
         $this->data['button_action'] = $this->language->get('button_close');
         $this->data['readOnly'] = "disabled";
-        $this->data['shippingMethods'] = ShippingMethodDAO::getInstance()->getMethods(
+        $this->data['shippingMethods'] = ShippingMethodDAO::getInstance()->getShippingOptions(
             $this->modelReferenceAddress->getAddress($invoice->getShippingAddressId()));
 
         $orderItemIdParam = '';

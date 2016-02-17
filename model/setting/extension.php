@@ -3,9 +3,13 @@ class ModelSettingExtension extends Model {
     function getExtensions($type, $installedOnly = true, $enabledOnly = false)
     {
         $result = array();
-        if ($installedOnly)
-        {
-            $query = $this->getDb()->query("SELECT code FROM extension WHERE `type` = '" . $this->getDb()->escape($type) . "'");
+        if ($installedOnly) {
+            $query = $this->getDb()->query("
+				SELECT code
+				FROM extension
+				WHERE `type` = :type
+				", [ ':type' => $type ]
+			);
             foreach ($query->rows as $extension)
                 if (!$enabledOnly || $this->config->get($extension['code'] . '_status'))
                     $result[] = $extension['code'];
