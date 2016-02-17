@@ -2,6 +2,8 @@
 namespace model\shipping;
 use Log;
 use model\DAO;
+use model\setting\ExtensionDAO;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -20,27 +22,31 @@ class ShippingMethodDAO extends DAO {
      * @return ShippingMethodBase
      */
     public function getMethod($code) {
-        $className = "model\\shipping\\" . ucfirst($code);
-        return new $className($this->registry);
+        return ExtensionDAO::getInstance()->getExtension('shipping', $code);
     }
 
-    public function getMethods($address) {
+    /**
+     * @param array $address
+     * @return array
+     * @throws \Exception
+     */
+    public function getShippingOptions($address) {
         $logging = new Log('shipping.log');
         $result = array();
 
 //        $logging->write(print_r($address, true));
         $modelSettingExtension = $this->load->model('setting/extension');
-        $shippingExtensions = $modelSettingExtension->getExtensions('shipping', true, true);
+        /** @var ShippingMethodBase[] $shippingExtensions */
+        $shippingExtensions = ExtensionDAO::getInstance()->getExtensions('shipping', true, true);
         foreach ($shippingExtensions as $shippingExtension) {
-            $methodData = $this->getMethod($shippingExtension)->getMethodData($address);
-//            $logging->write(print_r($methodData, true));
-            if (is_array($methodData))
-                foreach ($methodData as $methodDataEntry) {
-                    $result[] = $methodDataEntry;
-                    $name[] = $methodDataEntry['shippingMethodName'];
-                }
+            $result = array_merge($result, $shippingExtension->getMethodData($address));
         }
-        array_multisort($name, $result);
+
+        usort($result, function($a, $b) {
+            /** @var ShippingMethodBase $a */
+            /** @var ShippingMethodBase $b */
+            return strcmp($a['title'], $b['title']);
+        });
 //        $logging->write(print_r($result, true));
         return $result;
     }

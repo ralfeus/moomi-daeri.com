@@ -41,9 +41,9 @@ class EmsDiscounted extends Ems {
             return null;
     }
 
-    public function getName($languageResource = null)
+    public function getName()
     {
-        return parent::getName('shipping/emsDiscounted');
+        return $this->getNameByResource('shipping/emsDiscounted');
     }
 
     public function getQuote($address)

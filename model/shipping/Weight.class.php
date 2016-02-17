@@ -58,8 +58,8 @@ class Weight extends ShippingMethodBase {
             return null;
     }
 
-    public function getName($languageResource = null) {
-        return parent::getName('shipping/weight');
+    public function getName() {
+        return $this->getNameByResource('shipping/weight');
     }
 
     public function getQuote($address) {

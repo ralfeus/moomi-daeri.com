@@ -33,8 +33,8 @@ class Royal_mail extends ShippingMethodBase {
             return null;
     }
 
-    public function getName($languageResource = null) {
-        return parent::getName('shipping/royal_mail');
+    public function getName() {
+        return $this->getNameByResource('shipping/royal_mail');
     }
 
     function getQuote($address) {

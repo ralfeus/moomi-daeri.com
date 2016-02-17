@@ -34,8 +34,8 @@ class Flat extends ShippingMethodBase {
             return null;
     }
 
-    public function getName($languageResource = null) {
-        return parent::getName('shipping/flat');
+    public function getName() {
+        return $this->getNameByResource('shipping/flat');
     }
 
     public function getQuote($address) {

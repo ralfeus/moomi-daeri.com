@@ -62,9 +62,9 @@ class Ups extends ShippingMethodBase {
             return null;
     }
 
-    public function getName($languageResource = null)
+    public function getName()
     {
-        return parent::getName('shipping/ups');
+        return $this->getNameByResource('shipping/ups');
     }
 
 	function getQuote($address) {

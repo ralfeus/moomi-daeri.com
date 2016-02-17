@@ -35,9 +35,9 @@ class Pickup extends ShippingMethodBase
             return null;
     }
 
-    public function getName($languageResource = null)
+    public function getName()
     {
-        return parent::getName('shipping/pickup');
+        return $this->getNameByResource('shipping/pickup');
     }
 
     function getQuote($address) {

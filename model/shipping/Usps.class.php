@@ -30,8 +30,8 @@ class Usps extends ShippingMethodBase {
             return null;
     }
 
-    public function getName($languageResource = null) {
-        return parent::getName('shipping/usps');
+    public function getName() {
+        return $this->getNameByResource('shipping/usps');
     }
 
     public function getQuote($address) {

@@ -61,9 +61,9 @@ class Novaposhta extends ShippingMethodBase {
             return null;
     }
 
-    public function getName($languageResource = null)
+    public function getName()
     {
-        return parent::getName('shipping/novaposhta');
+        return $this->getNameByResource('shipping/novaposhta');
     }
 
     public function getQuote($address) {

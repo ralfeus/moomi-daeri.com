@@ -33,8 +33,8 @@ class Parcelforce_48 extends ShippingMethodBase {
             return null;
     }
 
-    public function getName($languageResource = null) {
-        return parent::getName('shipping/parcelforce_48');
+    public function getName() {
+        return $this->getNameByResource('shipping/parcelforce_48');
     }
 
     function getQuote($address) {

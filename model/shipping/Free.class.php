@@ -34,9 +34,9 @@ class Free extends ShippingMethodBase {
             return null;
     }
 
-    public function getName($languageResource = null)
+    public function getName()
     {
-        return parent::getName('shipping/free');
+        return $this->getNameByResource('shipping/free');
     }
 
     public function getQuote($address) {

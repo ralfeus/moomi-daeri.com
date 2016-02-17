@@ -61,9 +61,9 @@ class Citylink extends ShippingMethodBase {
             return null;
     }
 
-    public function getName($languageResource = null)
+    public function getName()
     {
-        return parent::getName('shipping/citylink');
+        return $this->getNameByResource('shipping/citylink');
     }
 
     public function getQuote($address) {

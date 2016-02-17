@@ -39,9 +39,9 @@ class Item extends ShippingMethodBase
             return null;
     }
 
-    public function getName($languageResource = null)
+    public function getName()
     {
-        return parent::getName('shipping/item');
+        return $this->getNameByResource('shipping/item');
     }
 
     public function getQuote($address) {
