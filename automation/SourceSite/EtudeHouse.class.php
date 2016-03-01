@@ -147,10 +147,10 @@ class EtudeHouse extends ProductSource {
     }
 
     /**
-     * @param string $categoryUrl
+     * @param string $category
      * @return int
      */
-    protected function getCategoryProductsCount($categoryUrl) {
+    protected function getCategoryProductsCount($category) {
         return null;
     }
 

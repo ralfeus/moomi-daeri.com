@@ -78,7 +78,7 @@
               <td><input type="checkbox" name="selectedItems[]" value="<?= $product->getId() ?>"</td>
               <td><?= $product->getId() ?></td>
               <td><a href="<?= $product->localProductUrl ?>"><?= $product->getLocalProductId() ?></a></td>
-              <td><img src="<?= $product->getThumbnailUrl() ?>" /></td>
+              <td><img src="<?= $product->getThumbnailUrl() ?>" style="max-width: 200px" /></td>
               <td>
                 <a href="<?= $product->getSourceUrl() ?>" target="_blank"><?= $product->getName() ?></a>
                 <?php /*<p><?= $product->getDescription() ?></p>*/ ?>

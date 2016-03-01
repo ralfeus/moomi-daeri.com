@@ -11,7 +11,9 @@ class ModelToolImage extends Model {
             if ($fileName) {
                 $dirName = DIR_IMAGE . 'upload/' . session_id();
                 if (!file_exists($dirName)) {
-                    mkdir($dirName);
+                    if (!mkdir($dirName)) {
+                        throw new Exception("Couldn't create a folder '$dirName'");
+                    }
                 }
                 file_put_contents($dirName . '/' . $fileName, file_get_contents($url));
                 return 'upload/' . session_id() . '/' . $fileName;

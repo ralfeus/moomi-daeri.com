@@ -45,10 +45,27 @@ abstract class ProductSource {
      */
     protected abstract function fillDetails($product);
 
-    /**
-     * @return ImportCategory[]
-     */
     protected abstract function getAllCategories();
+
+    /**
+     * @param string $linkSelector
+     * @param string $categoryIdPattern
+     * @return ImportCategory[]
+     * @throws ErrorException
+     * @throws Exception
+     */
+    protected function getAllCategoriesByParams($linkSelector, $categoryIdPattern) {
+        $categories = []; $matches = [];
+        $html = $this->getHtmlDocument($this->getUrl());
+        /** @var \simple_html_dom_node[] $links */
+        $links = $html->find($linkSelector);
+        foreach ($links as $link) {
+            $url = $this->getRootUrl() . $link->attr['href'];
+            $categoryId = preg_match($categoryIdPattern, $url, $matches) ? $matches[0] : null;
+            $categories[] = new ImportCategory($this, $categoryId, null, null, $url);
+        }
+        return $categories;
+    }
 
     /**
      * @param ImportCategory $category

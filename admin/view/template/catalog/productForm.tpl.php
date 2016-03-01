@@ -193,7 +193,10 @@
             <tr>
               <td><?= $entry_image_path ?></td>
               <td>
-                <output>/image/</output><input type="text" name="image" value="<?= $image ?>" id="image" />
+                  <label style="float: left">/image/</label>
+                  <div style="overflow: hidden">
+                      <input type="text" name="image" value="<?= $image ?>" id="image" style="width: 100%"/>
+                  </div>
               </td>
             </tr>
             <tr>

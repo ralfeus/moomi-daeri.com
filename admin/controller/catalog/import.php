@@ -487,14 +487,19 @@ class ControllerCatalogImport extends Controller {
         try {
             $thumbnail = $modelToolImage->download($product->getThumbnailUrl());
         } catch (Exception $e) {
-            $this->getLogger()->write("Couldn't download a thumbnail '" . $product->getThumbnailUrl() .
-                "' for product " . $product->getId());
+            $error = "Couldn't download a thumbnail '" . $product->getThumbnailUrl() .
+                "' for product " . $product->getId();
+            $this->getLogger()->write($error);
+            $this->getLogger()->write($e->getMessage());
+            $this->data['notifications']['error'] .= "$error<br />";
         }
         foreach ($product->getImages() as $imageUrl) {
             try {
                 $images[] = array('image' => $modelToolImage->download($imageUrl));
             } catch (Exception $e) {
-                $this->getLogger()->write("Couldn't download a thumbnail '$imageUrl' for product " . $product->getId());
+                $error = "Couldn't download an image '$imageUrl' for product " . $product->getId();
+                $this->getLogger()->write($error);
+                $this->data['notifications']['error'] .= "$error<br />";
             }
         }
     }
