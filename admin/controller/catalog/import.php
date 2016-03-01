@@ -140,9 +140,10 @@ class ControllerCatalogImport extends Controller {
 
 
     private function showList() {
-        $this->parameters['start'] = intval(($this->parameters['page'] - 1) * $this->config->get('config_admin_limit'));
-        $this->parameters['limit'] = intval($this->config->get('config_admin_limit'));
-        $filter = $this->parameters; unset($filter['selectedItems']);
+        $filter = $this->parameters;
+        $filter['start'] = intval(($this->parameters['page'] - 1) * $this->config->get('config_admin_limit'));
+        $filter['limit'] = intval($this->config->get('config_admin_limit'));
+        unset($filter['selectedItems']);
         foreach (ImportProductDAO::getInstance()->getImportedProducts($filter) as $product) {
             $productItem = $product;
             $productItem->actions = $this->getProductActions($product);
@@ -175,7 +176,7 @@ class ControllerCatalogImport extends Controller {
         $this->data['urlSyncSelected'] = $this->url->link('catalog/import/synchronize', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
         $this->data['urlSyncSelectedNoImages'] = $this->url->link('catalog/import/synchronizeWithoutImages', $this->buildUrlParameterString($this->parameters) . '&what=selectedItems', 'SSL');
 
-        $page = $this->parameters['page']; unset($filter['page']);
+        $page = $this->parameters['page']; unset($this->parameters['page']);
         $pagination = new Pagination(
             $page,
             $this->config->get('config_admin_limit'),

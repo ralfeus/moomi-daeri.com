@@ -20,11 +20,13 @@ class ImportProductDAO extends DAO {
             $filter->addChunk($this->buildSimpleFieldFilterEntry('ip.active', $data['filterIsActive'], $tmp0, $tmp1));
         }
         if (!empty($data['filterItem'])) {
-            $filter->addChunk("ip.name LIKE CONCAT('%', :item, '%') OR ip.description LIKE CONCAT('%', :item, '%')", [':item' => $data['filterItem']]);
+            $filter->addChunk("(ip.name LIKE CONCAT('%', :item, '%') OR ip.description LIKE CONCAT('%', :item, '%'))", [':item' => $data['filterItem']]);
         }
         if (isset($data['filterLocalProductId'])) {
             if ($data['filterLocalProductId'] == '*') {
                 $filter->addChunk("product_id IS NOT NULL");
+            } elseif ($data['filterLocalProductId'] == 'NULL') {
+                $filter->addChunk("product_id IS NULL");
             } else {
                 $filter->addChunk($this->buildSimpleFieldFilterEntry("product_id", $data['filterLocalProductId'], $tmp0, $tmp1));
             }
@@ -164,10 +166,10 @@ class ImportProductDAO extends DAO {
 
     public function getImportedProductsQuantity(array $data) {
         $filter = $this->buildFilter($data);
-        $sql = "
+        $sql = '
             SELECT COUNT(*) AS quantity
             FROM imported_products AS ip
-            " . ($filter->isFilterSet() ? "WHERE " . $filter->getFilterString() : '')
+            ' . ($filter->isFilterSet() ? "WHERE " . $filter->getFilterString() : '')
         ;
         $result = $this->getDb()->query($sql, $filter->isFilterSet() ? $filter->getParams() : null);
         return $result->row['quantity'];
