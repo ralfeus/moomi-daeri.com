@@ -31,7 +31,7 @@ class BBPrincess extends ProductSource {
     protected function getCategoryProducts($category) {
         $products = array(); $matches = array();
         $html = $this->getHtmlDocument($category->getUrl());
-        $lastPage = $html->find('div.xans-product-normalpaging a[href$="page"]', -1);
+        $lastPage = $html->find('div.xans-product-normalpaging a[href*="page"]', -1);
         $pagesNum = (!is_null($lastPage) && preg_match('/(?<=page=)\d+/', $lastPage->attr['href'], $matches))
             ? $matches[0] : 1;
         for ($currPage = 1; $currPage <= $pagesNum; $currPage++) {
@@ -63,7 +63,7 @@ class BBPrincess extends ProductSource {
                 );
             }
             if ($currPage < $pagesNum)
-                $html = $this->getHtmlDocument($category->getUrl() . "&pageNum=" . ($currPage + 1));
+                $html = $this->getHtmlDocument($category->getUrl() . "&page=" . ($currPage + 1));
         }
         echo "Got " . sizeof($products) . " products\n";
         return $products;
