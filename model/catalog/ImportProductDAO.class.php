@@ -24,11 +24,11 @@ class ImportProductDAO extends DAO {
         }
         if (isset($data['filterLocalProductId'])) {
             if ($data['filterLocalProductId'] == '*') {
-                $filter->addChunk("product_id IS NOT NULL");
+                $filter->addChunk("(product_id IS NOT NULL OR source_product_id IS NOT NULL");
             } elseif ($data['filterLocalProductId'] == 'NULL') {
-                $filter->addChunk("product_id IS NULL");
+                $filter->addChunk("(product_id IS NULL AND source_product_id IS NULL)");
             } else {
-                $filter->addChunk($this->buildSimpleFieldFilterEntry("product_id", $data['filterLocalProductId'], $tmp0, $tmp1));
+                $filter->addChunk("(product_id = :productId OR source_product_id = :productId)", [':productId' => $data['filterLocalProductId']]);
             }
         }
         if (!empty($data['filterSourceSiteClassName'])) {
