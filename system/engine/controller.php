@@ -154,7 +154,9 @@ abstract class Controller extends OpenCartBase
     }
 
     protected function initParameters() {
-//        $this->log->write("Stub function");
+        $_REQUEST = $_COOKIE;
+        $_REQUEST = array_merge($_REQUEST, $_GET);
+        $_REQUEST = array_merge($_REQUEST, $_POST);
     }
 
     /**
