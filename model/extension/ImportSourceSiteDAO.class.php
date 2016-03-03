@@ -288,6 +288,7 @@ SQL
               default_manufacturer_id = :defaultManufacturerId,
               default_store_id = :defaultStoreId,
               default_supplier_id = :defaultSupplierId,
+              import_mapped_categories_only = :importMappedCategoriesOnly,
               name = :name,
               regular_customer_price_rate = :regularCustomerPriceRate,
               wholesale_customer_price_rate = :wholesaleCustomerPriceRate
@@ -298,6 +299,7 @@ SQL
                 ':defaultManufacturerId' => $sourceSite->getDefaultManufacturer()->getId(),
                 ':defaultStoreId' => implode(',', $sourceSite->getStores()),
                 ':defaultSupplierId' => $sourceSite->getDefaultSupplier()->getId(),
+                ':importMappedCategoriesOnly' => $sourceSite->isImportMappedCategoriesOnly(),
                 ':name' => $sourceSite->getName(),
                 ':regularCustomerPriceRate' => $sourceSite->getRegularCustomerPriceRate(),
                 ':wholesaleCustomerPriceRate' => $sourceSite->getWholesaleCustomerPriceRate(),

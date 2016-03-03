@@ -52,10 +52,12 @@ final class Request {
      * @return mixed
      */
     public function getParam($param, $defaultValue = null) {
-        if (isset($_GET[$param])) {
-            return $_GET[$param];
-        } elseif (isset($_POST[$param])) {
-            return $_POST[$param];
+		if (isset($_POST[$param])) {
+			return $_POST[$param];
+		} elseif (isset($_GET[$param])) {
+			return $_GET[$param];
+		} elseif (isset($_COOKIE[$param])) {
+			return $_COOKIE[$param];
         } else {
             return $defaultValue;
         }

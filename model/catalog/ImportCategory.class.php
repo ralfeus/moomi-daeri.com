@@ -2,6 +2,7 @@
 namespace model\catalog;
 
 use automation\ProductSource;
+use model\extension\ImportSourceSite;
 use system\library\Mutable;
 
 class ImportCategory {
@@ -15,15 +16,15 @@ class ImportCategory {
     /**
      * ImportCategory constructor.
      * @param ProductSource $sourceSite
-     * @param $sourceSiteCategoryId
-     * @param $localCategoryIds
-     * @param $priceUpperLimit
-     * @param null $url
+     * @param string $sourceSiteCategoryId
+     * @param int[] $localCategoryIds
+     * @param float $priceUpperLimit
+     * @param string $url
      */
     function __construct($sourceSite, $sourceSiteCategoryId, $localCategoryIds, $priceUpperLimit, $url = null) {
         $this->sourceSite = $sourceSite;
         $this->sourceSiteCategoryId = $sourceSiteCategoryId;
-        $this->localCategoryIds = new Mutable($localCategoryIds);
+        $this->localCategoryIds = $localCategoryIds;
         $this->priceUpperLimit = $priceUpperLimit;
         if (!is_null($url)) { $this->url = $url; }
     }
@@ -32,7 +33,7 @@ class ImportCategory {
      * @return int[]
      */
     public function getLocalCategoryIds() {
-        return $this->localCategoryIds->get();
+        return $this->localCategoryIds;
     }
 
     /**
@@ -54,6 +55,13 @@ class ImportCategory {
      */
     public function setPriceUpperLimit($priceUpperLimit) {
         $this->priceUpperLimit = $priceUpperLimit;
+    }
+
+    /**
+     * @param ProductSource $value
+     */
+    public function setSourceSite($value) {
+        $this->sourceSite = $value;
     }
 
     /**

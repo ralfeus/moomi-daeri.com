@@ -18,21 +18,25 @@ class ControllerExtensionImport extends Controller {
     }
 
     public function edit() {
-        global $_SERVER;
         $this->initModel();
         /// Initialize general elements
         $this->data = array_merge($this->data, $this->parameters);
         $this->data['manufacturers'] = ManufacturerDAO::getInstance()->getManufacturers();
         $this->data['suppliers'] = SupplierDAO::getInstance()->getSuppliers();
 
+        $this->data['textAddEntry'] = $this->language->get("ADD_ENTRY");
         $this->data['textCancel'] = $this->language->get("CANCEL");
         $this->data['textClassName'] = $this->language->get("CLASS");
         $this->data['textDefaultCategories'] = $this->language->get("DEFAULT_CATEGORIES");
         $this->data['textDefaultManufacturer'] = $this->language->get("DEFAULT_MANUFACTURER");
         $this->data['textDefaultSupplier'] = $this->language->get("DEFAULT_SUPPLIER");
+        $this->data['textLocalCategoryId'] = $this->language->get("LOCAL_CATEGORY_ID");
+        $this->data['textImportMappedCategoriesOnly'] = $this->language->get("IMPORT_MAPPED_CATEGORIES_ONLY");
         $this->data['textRegularCustomerPriceRate'] = $this->language->get("PRICE_RATE_REGULAR_CUSTOMER");
+        $this->data['textRemoveEntry'] = $this->language->get("DELETE");
         $this->data['textSave'] = $this->language->get("SAVE");
         $this->data['textSaveContinueEdit'] = $this->language->get("SAVE_CONTINUE_EDIT");
+        $this->data['textSourceSiteCategoryId'] = $this->language->get("SOURCE_SITE_CATEGORY_ID");
         $this->data['textSiteName'] = $this->language->get("SITE");
         $this->data['textStores'] = $this->language->get("STORES");
         $this->data['textWholesaleCustomerPriceRate'] = $this->language->get("PRICE_RATE_WHOLESALE_CUSTOMER");
@@ -47,9 +51,9 @@ class ControllerExtensionImport extends Controller {
 
         /// Process site data
         $this->data['importSite'] = $this->model;
-        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+        if ($this->getRequest()->getMethod() == 'GET') {
             $this->editGET($this->model);
-        } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        } elseif ($this->getRequest()->getMethod() == 'POST') {
             $this->editPOST($this->model);
         }
 
@@ -150,13 +154,17 @@ class ControllerExtensionImport extends Controller {
 
     protected function initModel() {
         if ($this->getRequest()->getMethod() == 'POST') {
+            $categories  = [];
+            foreach ($this->parameters['category'] as $category) {
+                $categories[] = new \model\catalog\ImportCategory(null, $category['source'], explode(',', $category['local']), null, null);
+            }
             $this->model = new ImportSourceSite(
                 $this->parameters['importClass'],
-                [],
+                $categories,
                 $this->parameters['defaultCategories'],
                 $this->parameters['defaultManufacturerId'],
                 $this->parameters['defaultSupplierId'],
-                false,
+                $this->parameters['importMappedCategoriesOnly'],
                 $this->parameters['siteName'],
                 $this->parameters['regularCustomerPriceRate'],
                 $this->parameters['stores'],
@@ -170,9 +178,12 @@ class ControllerExtensionImport extends Controller {
     }
 
     protected function initParameters() {
+        parent::initParameters();
+        $this->parameters['importMappedCategoriesOnly'] = !empty($_REQUEST['importMappedCategoriesOnly']) ? true : false;
         $this->parameters['defaultCategories'] = !empty($_REQUEST['defaultCategories']) ? explode(',', $_REQUEST['defaultCategories']) : array();
         $this->parameters['stores'] = !empty($_REQUEST['stores']) ? explode(',', $_REQUEST['stores']) : array();
-        $this->initParametersWithDefaults(array(
+        $this->initParametersWithDefaults([
+            'category' => [],
             'continue' => 0,
             'defaultManufacturerId' => 0,
             'defaultSupplierId' => 0,
@@ -181,7 +192,7 @@ class ControllerExtensionImport extends Controller {
             'siteName' => null,
             'token' => $this->session->data['token'],
             'wholesaleCustomerPriceRate' => 1
-        ));
+        ]);
     }
 
     public function install() {
@@ -194,22 +205,6 @@ class ControllerExtensionImport extends Controller {
             ImportSourceSiteDAO::getInstance()->addSourceSite($sourceSite);
         }
         $this->redirect($this->url->link('extension/import', 'token=' . $this->parameters['token'], 'SSL'));
-    }
-
-    protected function setBreadcrumbs() {
-        $this->data['breadcrumbs'] = array();
-
-        $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('text_home'),
-            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
-            'separator' => false
-        );
-
-        $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('headingTitle'),
-            'href'      => '#',
-            'separator' => ' :: '
-        );
     }
 
     public function uninstall() {

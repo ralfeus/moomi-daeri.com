@@ -2,8 +2,8 @@
 use automation\DatabaseManager;
 use model\extension\ImportSourceSiteDAO;
 
-require_once("simple_html_dom.php");
 require_once('../config.php');
+require_once(DIR_SYSTEM . "library/simple_html_dom.php");
 
 spl_autoload_register(function($class) {
     if (strpos($class, '\\') !== false) {

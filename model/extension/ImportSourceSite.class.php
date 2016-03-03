@@ -35,7 +35,12 @@ class ImportSourceSite {
                          $defaultSupplier = null, $importMappedCategoriesOnly = null, $name = null, $regularCustomerPriceRate = null,
                          $stores = null, $wholesaleCustomerPriceRate = null) {
         $this->className = $className;
-        if (!is_null($categoriesMap)) { $this->categoriesMap = new Mutable($categoriesMap); }
+        if (!is_null($categoriesMap)) {
+            $this->categoriesMap = $categoriesMap;
+            foreach ($this->categoriesMap as $category) {
+                $category->setSourceSite($this);
+            }
+        }
         if (!is_null($defaultCategories)) { $this->defaultCategories = new Mutable($defaultCategories); }
         if (!is_null($defaultManufacturer)) {
             if ($defaultManufacturer instanceof Manufacturer) {
@@ -51,7 +56,7 @@ class ImportSourceSite {
                 $this->defaultSupplier = new Mutable(new Supplier($defaultSupplier));
             }
         }
-        if (!is_null($importMappedCategoriesOnly)) { $this->importMappedCategoriesOnly = new Mutable($importMappedCategoriesOnly); }
+        if (!is_null($importMappedCategoriesOnly)) { $this->importMappedCategoriesOnly = $importMappedCategoriesOnly; }
         if (!is_null($name)) { $this->name = new Mutable($name); }
         $this->regularCustomerPriceRate = floatval($regularCustomerPriceRate)
             ? new Mutable($regularCustomerPriceRate)
@@ -67,9 +72,9 @@ class ImportSourceSite {
      */
     public function getCategoriesMap() {
         if (!isset($this->categoriesMap)) {
-            $this->categoriesMap = new Mutable(ImportSourceSiteDAO::getInstance()->getCategoriesMap($this->id));
+            $this->categoriesMap = ImportSourceSiteDAO::getInstance()->getCategoriesMap($this->className);
         }
-        return $this->categoriesMap->get();
+        return $this->categoriesMap;
     }
 
     /**
@@ -148,20 +153,20 @@ class ImportSourceSite {
 //    }
 
     /**
-     * @return Mutable
+     * @return bool
      */
-    public function getImportMappedCategoriesOnly() {
+    public function isImportMappedCategoriesOnly() {
         if (!isset($this->importMappedCategoriesOnly)) {
-            $this->importMappedCategoriesOnly = new Mutable(ImportSourceSiteDAO::getInstance()->getImportMappedCategoriesOnly($this->id));
+            $this->importMappedCategoriesOnly = ImportSourceSiteDAO::getInstance()->getImportMappedCategoriesOnly($this->className);
         }
-        return $this->importMappedCategoriesOnly->get();
+        return $this->importMappedCategoriesOnly;
     }
 
     /**
-     * @param Mutable $importMappedCategoriesOnly
+     * @param bool $importMappedCategoriesOnly
      */
     public function setImportMappedCategoriesOnly($importMappedCategoriesOnly) {
-        $this->importMappedCategoriesOnly->set($importMappedCategoriesOnly);
+        $this->importMappedCategoriesOnly = $importMappedCategoriesOnly;
     }
 
     /**

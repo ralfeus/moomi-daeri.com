@@ -74,20 +74,66 @@
                 <td><input type="text" name="wholesaleCustomerPriceRate" value="<?= $importSite->getWholesaleCustomerPriceRate() ?>"/></td>
             </tr>
             <tr>
-                <table border="1">
-                    <tr id="categoryMapEntry">
-                        <td>
-
-                        </td>
-                    </tr>
-                </table>
+                <td><label for="importMappedCategoriesOnly"><?= $textImportMappedCategoriesOnly ?></label></td>
+                <td>
+                    <input
+                        type="checkbox"
+                        name="importMappedCategoriesOnly"
+                        id="importMappedCategoriesOnly"
+                        <?= $importSite->isImportMappedCategoriesOnly() ? 'checked' : '' ?> />
+                </td>
             </tr>
+        </table>
+        <table id="categoriesMap" border="1">
+            <thead>
+                <tr>
+                    <td><?= $textSourceSiteCategoryId ?></td>
+                    <td><?= $textLocalCategoryId ?></td>
+                    <td><a class="button" onclick="addCategoryMapEntry()"><?= $textAddEntry ?></a></td>
+                </tr>
+                <tr id="categoryMapEntry">
+                    <td><input name="category[][source]" value="" /></td>
+                    <td><input name="category[][local]" value="" /></td>
+                    <td><a class="button" onclick="removeCategoryMapEntry(this)"><?= $textRemoveEntry ?></a></td>
+                </tr>
+            </thead>
+<?php foreach ($importSite->getCategoriesMap() as $category): ?>
+            <tr>
+                <td><input name="category[<?= $category->getSourceSiteCategoryId() ?>][source]" value="<?= $category->getSourceSiteCategoryId() ?>"  title="" /></td>
+                <td><input name="category[<?= $category->getSourceSiteCategoryId() ?>][local]" value="<?= implode(',', $category->getLocalCategoryIds()) ?>" title="" /></td>
+                <td><a class="button" onclick="removeCategoryMapEntry(this)"><?= $textRemoveEntry ?></a></td>
+            </tr>
+<?php endforeach; ?>
         </table>
       </form>
     </div>
   </div>
 </div>
 <script type="text/javascript"><!--
+var templateEntry;
+
+$().ready(function(){
+    var entry = $('tr#categoryMapEntry');
+    templateEntry = entry.clone();
+    entry.remove();
+});
+
+function addCategoryMapEntry() {
+    var newEntry = templateEntry.clone();
+    var index = (new Date).getTime();
+    newEntry.find('input').each(function(i) {
+        this.name = this.name.replace(/\[\]/, "[" + index + "]");
+    });
+    $('table#categoriesMap').append(newEntry);
+    $(newEntry).hide();
+    $(newEntry).fadeIn();
+}
+
+function removeCategoryMapEntry(sender) {
+    $(sender.parentNode.parentNode).fadeOut();
+    $(sender.parentNode.parentNode).remove();
+}
+
 function save() {
     $('#form').submit();
 }

@@ -81,7 +81,7 @@ abstract class ProductSource {
     protected abstract function getCategoryProductsCount($category);
 
     public function getCategories() {
-        if ($this->getSite()->getImportMappedCategoriesOnly()) {
+        if ($this->getSite()->isImportMappedCategoriesOnly()) {
             return $this->getSite()->getCategoriesMap();
         } else {
             return $this->getAllCategories();
@@ -197,7 +197,7 @@ abstract class ProductSource {
         $urlCount = 1;
         $products = array();
         foreach ($categories as $category) {
-            echo date('Y-m-d H:i:s ') . "Crawling category " . $urlCount++ . " of " . count($categories) . "\n";
+            echo date('Y-m-d H:i:s ') . "Crawling category ID=" . $category->getSourceSiteCategoryId() . " (" . $urlCount++ . " of " . count($categories) . ")\n";
             $productsCount = $this->getCategoryProductsCount($category);
             echo date('Y-m-d H:i:s') . " $productsCount products are to be imported\n";
             $categoryProducts = $this->getCategoryProducts($category);
