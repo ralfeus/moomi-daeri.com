@@ -39,15 +39,17 @@ class BBPrincess extends ProductSource {
             /** @var \simple_html_dom_node[] $items */
             $items = $html->find('div.xans-product li.item');
             foreach ($items as $item) {
-                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . sizeof($items) . "\n";
+//                echo date('H:i:s') . "\tItem " . $tmp++ . " of " . sizeof($items) . "\n";
                 if (!sizeof($item->find('img')))
                     continue;
                 $itemId = preg_match('/(?<=anchorBoxId_)\d+/', $item->attr['id'], $matches) ? $matches[0] : null;
                 /** @var \simple_html_dom_node[] $priceItems */
-                $priceItems = $item->find('ul.xans-product-listitem span');
+                $priceItems = $item->find('ul.xans-product-listitem span text');
+                $price = 0;
                 foreach ($priceItems as $priceItem) {
                     if (preg_match('/\d+,\d+/', $priceItem->text(), $matches)) {
                         $price = str_replace(',', '', $matches[0]);
+                        break;
                     }
                 }
                 $products[] = new Product(
