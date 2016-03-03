@@ -26,6 +26,7 @@ class ControllerCatalogImport extends Controller {
         $thumbnail = null; $images = array();
         if ($synchronizeImages) {
             $this->getImages($productToAdd, $images, $thumbnail);
+            $productToAdd->setDescription($this->updateDescriptionImages($productToAdd->getId(), $productToAdd->getDescription()));
         }
         /// Preparing name, korean name, link and description
         $product_description = array();
@@ -137,7 +138,6 @@ class ControllerCatalogImport extends Controller {
         unset($this->parameters['selectedItems']);
         $this->redirect($this->url->link('catalog/import', $this->buildUrlParameterString($this->parameters)));
     }
-
 
     private function showList() {
         $filter = $this->parameters;
@@ -275,8 +275,10 @@ class ControllerCatalogImport extends Controller {
     private function updateFromSource($productToUpdate, $synchronizeImages = true) {
         $localProduct = $this->modelCatalogProduct->getProduct($productToUpdate->getLocalProductId());
         $thumbnail = null; $images = array();
+        $imageDescription = $localProduct['image_description'] ? $localProduct['image_description'] : $productToUpdate->getDescription();
         if ($synchronizeImages) {
             $this->getImages($productToUpdate, $images, $thumbnail);
+            $imageDescription = $this->updateDescriptionImages($productToUpdate->getId(), $imageDescription);
         }
         /// Preparing name, korean name and description
 //        $product_description = array();
@@ -293,7 +295,7 @@ class ControllerCatalogImport extends Controller {
         $localProductCategories = $this->modelCatalogProduct->getProductCategories($productToUpdate->getLocalProductId());
         $this->modelCatalogProduct->editProduct($productToUpdate->getLocalProductId(), array(
             'date_available' => $localProduct['date_available'],
-            'image_description' => $localProduct['image_description'] ? $localProduct['image_description'] : $productToUpdate->getDescription(),
+            'image_description' => $imageDescription,
             'height' => null,
             'image' => $thumbnail,
             'length' => null, 'length_class_id' => 1,
@@ -503,6 +505,30 @@ class ControllerCatalogImport extends Controller {
                 $this->data['notifications']['error'] .= "$error<br />";
             }
         }
+    }
+
+    /**
+     * @param int $id
+     * @param string $description
+     * @return string
+     * @throws Exception
+     */
+    private function updateDescriptionImages($id, $description) {
+        /** @var ModelToolImage $modelToolImage */
+        $modelToolImage = $this->load->model('tool/image');
+        /// Download images in image description
+        $html = new \simple_html_dom($description);
+        $descriptionImages = $html->find('img');
+        foreach ($descriptionImages as $image) {
+            try {
+                $image->attr['src'] = HTTP_IMAGE . $modelToolImage->download($image->attr['src']);
+            } catch (Exception $e) {
+                $error = "Couldn't download an image '" . $image->attr['src'] . "'' for product $id.  Original image will be used instead";
+                $this->getLogger()->write($error);
+                $this->data['notifications']['error'] .= "$error<br />";
+            }
+        }
+        return $html->__toString();
     }
 
 }

@@ -99,6 +99,13 @@ class ImportProduct {
     }
 
     /**
+     * @param string $value
+     */
+    public function setDescription($value) {
+        $this->description = $value;
+    }
+
+    /**
      * @return integer
      */
     public function getId() { return $this->id; }
