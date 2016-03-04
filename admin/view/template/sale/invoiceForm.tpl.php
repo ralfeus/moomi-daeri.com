@@ -141,7 +141,7 @@
         </div>
     </div>
 </div>
-<script type="text/javascript"><!--
+<script type="text/javascript">//<!--
 $(document).ready(function() {
     $('.date').datepicker({dateFormat: 'yy-mm-dd'});
     if ($('#totalWeight').disabled)
@@ -166,7 +166,8 @@ function formatCurrencies(value) {
         dataType: 'json',
         async: false,
         data: {
-            value: value
+            value: value,
+            customerCurrency: '<?= $customerCurrencyCode ?>'
         },
         error: function(jqXHR, textStatus, errorThrown) {
             alert('formatCurrency():\n' + jqXHR.responseText);

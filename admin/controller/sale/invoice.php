@@ -381,7 +381,6 @@ class ControllerSaleInvoice extends Controller {
 
     private function showCreateForm() {
         //$this->log->write(print_r($this->request->request, true));
-        $this->setBreadcrumbs();
         if (!sizeof($this->parameters['selectedItems'])) {
             return;
         }
@@ -473,19 +472,13 @@ class ControllerSaleInvoice extends Controller {
             $customer['base_currency_code'], 1);
         $this->data['shippingMethods'] = ShippingMethodDAO::getInstance()->getShippingOptions($this->getOrderAddress($firstItemOrder));
 //        $this->log->write(print_r($this->data, true));
-        $this->template = 'sale/invoiceForm.tpl.php';
-        $this->children = array(
-            'common/header',
-            'common/footer'
-        );
-        $this->getResponse()->setOutput($this->render());
+        $this->data['customerCurrencyCode'] = $customer['base_currency_code'];
     }
 
     private function showEditForm() {
         if (!$this->parameters['invoiceId'])
             return;
 
-        $this->setBreadcrumbs();
         $invoice = InvoiceDAO::getInstance()->getInvoice($this->parameters['invoiceId']);
 
         /// Initialize interface values
@@ -566,17 +559,12 @@ class ControllerSaleInvoice extends Controller {
             $this->getCurrency()->format(
                 $invoice->getTotal(),
                 $this->config->get('config_currency'));
+        $this->data['customerCurrencyCode'] = $invoice->getCurrencyCode();
 //        $this->log->write(print_r($this->data, true));
-
-        $this->template = 'sale/invoiceForm.tpl.php';
-        $this->children = array(
-            'common/header',
-            'common/footer'
-        );
-        $this->getResponse()->setOutput($this->render());
     }
 
     public function showForm() {
+        $this->setBreadcrumbs();
         $this->data['buttonRecalculateShippingCost'] = $this->language->get('RECALCULATE_SHIPPING_COST');
         $this->data['textDiscount'] = $this->language->get('DISCOUNT');
         $this->data['textComment'] = $this->language->get('textComment');
@@ -600,13 +588,19 @@ class ControllerSaleInvoice extends Controller {
         $this->data['textTotalCustomerCurrency'] = $this->language->get('TOTAL_CUSTOMER_CURRENCY');
         $this->data['textWeight'] = $this->language->get('textWeight');
 
-        if ($this->getRequest()->getServerVariable('REQUEST_METHOD') == 'GET') {
+        if ($this->getRequest()->getMethod() == 'GET') {
           $this->data['submitAction'] = "javascript:window.close();";
           $this->showEditForm();
-        } elseif ($this->getRequest()->getServerVariable('REQUEST_METHOD') == 'POST') {
+        } elseif ($this->getRequest()->getMethod() == 'POST') {
           $this->data['submitAction'] = $this->url->link('sale/invoice/create', 'token=' . $this->session->data['token'], 'SSL');
           $this->showCreateForm();
         }
+        $this->template = 'sale/invoiceForm.tpl.php';
+        $this->children = array(
+            'common/header',
+            'common/footer'
+        );
+        $this->getResponse()->setOutput($this->render());
     }
 
     private function validateDeletion($invoiceId)
@@ -637,7 +631,7 @@ class ControllerSaleInvoice extends Controller {
         foreach ($localShipping as $supplierEntry) {
             /** @var OrderItem $orderItem */
             $orderItem = $supplierEntry['orderItem'];
-            if ($supplierEntry['total'] >= $orderItem->getSupplier()->getFreeShippingThreshold()) {
+            if ($supplierEntry['total'] - $orderItem->getShippingCost() >= $orderItem->getSupplier()->getFreeShippingThreshold()) {
                 $orderItem->setShippingCost(0);
             } else {
                 $total += $orderItem->getShippingCost();
