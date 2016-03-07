@@ -24,6 +24,11 @@ abstract class Controller extends OpenCartBase
     protected $selfUrl;
     /** @var Session */
     protected $session;
+    /**
+     * @deprecated Deprecated as used only in one method render().
+     * @var string
+     * Defines template file name. Deprecated as used only in one method render().
+     */
     protected $template;
 
     /**
@@ -177,25 +182,29 @@ abstract class Controller extends OpenCartBase
     protected function loadStrings() {}
 
     /**
+     * @param string $template
      * @return string
      * @throws Exception
      */
-	protected function render() {
+	protected function render($template = null) {
 		foreach ($this->children as $child) {
 			$this->data[basename($child)] = $this->getChild($child);
 		}
 		$this->loadStrings();
-		if (file_exists(DIR_TEMPLATE . $this->template)) {
+        if (is_null($template)) {
+            $template = $this->template;
+        }
+		if (file_exists(DIR_TEMPLATE . $template)) {
 			extract($this->data);
 			
       		ob_start();
-	  		require(DIR_TEMPLATE . $this->template);
+	  		require(DIR_TEMPLATE . $template);
 	  		$this->output = ob_get_contents();
       		ob_end_clean();
       		
 			return $this->output;
     	} else {
-			throw new Exception('Error: Could not load template ' . DIR_TEMPLATE . $this->template . '!');
+			throw new Exception('Error: Could not load template ' . DIR_TEMPLATE . $template . '!');
     	}
 	}
 
