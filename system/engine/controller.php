@@ -171,9 +171,10 @@ abstract class Controller extends OpenCartBase
         }
     }
 
-    protected function loadStrings() {
-        /// Stub function. Should be replaced with abstract one once all Controller derived classes implement it
-    }
+    /**
+     * Stub function. Should be replaced with abstract one once all Controller derived classes implement it
+     */
+    protected function loadStrings() {}
 
     /**
      * @return string
