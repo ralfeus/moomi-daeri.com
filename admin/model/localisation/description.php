@@ -1,5 +1,5 @@
 <?php
-
+//TODO: Remove this class
 class ModelLocalisationDescription extends Model {
 	function getDescription($geo_zone_id = null, $schipping_name = '') {
 		if(!is_null($geo_zone_id)) {
@@ -12,5 +12,3 @@ class ModelLocalisationDescription extends Model {
 		return $result->rows;
 	}
 }
-
-?>
