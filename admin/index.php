@@ -136,7 +136,7 @@ foreach ($query->rows as $result) {
 $config->set('config_language_id', $languages[$config->get('config_admin_language')]['language_id']);
 
 // Language	
-$language = new Language($languages[$config->get('config_admin_language')]['directory']);
+$language = new Language($languages[$config->get('config_admin_language')]['directory'], $languages[$config->get('config_admin_language')]['language_id']);
 $language->load($languages[$config->get('config_admin_language')]['filename']);	
 $registry->set('language', $language); 		
 

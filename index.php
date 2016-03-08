@@ -202,11 +202,11 @@ $config->set('config_language_id', $languages[$code]['language_id']);
 $config->set('config_language', $languages[$code]['code']);
 
 // Language
-$language = new Language($languages[$code]['directory']);
+$language = new Language($languages[$code]['directory'], $languages[$code]['language_id']);
 try {
     $language->load($languages[$code]['filename']);
 } catch (Exception $exc) {
-    $language = new Language($languages[$config->get('config_admin_language')]['directory']);
+    $language = new Language($languages[$config->get('config_admin_language')]['directory'], $languages[$config->get('config_admin_language')]['language_id']);
     $language->load($languages[$config->get('config_admin_language')]['filename']);
 }
 $registry->set('language', $language);
