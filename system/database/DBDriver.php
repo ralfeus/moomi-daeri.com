@@ -1,6 +1,16 @@
 <?php
 interface DBDriver {
     /**
+     * @return bool
+     * Begins transaction
+     */
+    public function beginTransaction();
+
+    /**
+     * @return bool
+     */
+    public function commitTransaction();
+    /**
      * @return int
      */
     public function countAffected();
@@ -31,4 +41,9 @@ interface DBDriver {
      * @return mixed|bool Returns false is no rows is returned
      */
     public function queryScalar($sql, $params = array(), $log = false);
+
+    /**
+     * @return bool
+     */
+    public function rollbackTransaction();
 }

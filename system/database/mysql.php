@@ -156,4 +156,16 @@ final class MySQL implements DBDriver{
         unset($this->connection);
         file_put_contents(DIR_LOGS . '/sql.queries.log', self::$queriesLog, FILE_APPEND);
 	}
+
+    public function beginTransaction() {
+        return $this->connection->beginTransaction();
+    }
+
+    public function commitTransaction() {
+        return $this->connection->commit();
+    }
+
+    public function rollbackTransaction() {
+        return $this->connection->rollBack();
+    }
 }

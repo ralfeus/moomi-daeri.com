@@ -1,31 +1,54 @@
 <?php
 namespace model\catalog;
 
+use model\localization\DescriptionCollection;
 use system\library\Dimensions;
 use system\library\Mutable;
 use system\library\Weight;
 
 class Product {
     private $id;
+    /** @var Mutable */
+    private $attributes;
+    /** @var  Mutable */
+    private $categories;
+    /** @var Mutable */
     private $description;
     private $dimension;
+    /** @var  Mutable */
+    private $discounts;
+    /** @var Mutable */
+    private $downloads;
+    private $imageDescription;
     /** @var  Mutable */
     private $images;
     private $imagePath;
     private $keyword;
     private $koreanName;
+    /** @var  Mutable */
+    private $layouts;
     private $model;
-    private $options;
+    /** @var Mutable */
+    private $productOptions;
     private $sku;
     private $upc;
     private $location;
     private $quantity;
     private $stockStatusId;
+    /** @var Mutable */
     private $stores;
     private $manufacturerId;
+    /** @var  Mutable */
+    private $related;
+    /** @var  Mutable */
+    private $rewards;
     private $shipping;
+    /** @var  Mutable */
+    private $specials;
     private $supplier;
     private $supplierUrl;
+    /** @var Mutable  */
+    private $tags;
     private $price;
     private $points;
     private $dateAvailable;
@@ -48,7 +71,7 @@ class Product {
      * @param string $dateAdded
      * @param string $dateAvailable
      * @param string $dateModified
-     * @param string[] $description
+     * @param DescriptionCollection $description
      * @param Dimensions $dimension
      * @param string $imagePath
      * @param string $keyword
@@ -57,7 +80,7 @@ class Product {
      * @param int $manufacturerId
      * @param float $minimum
      * @param string $model
-     * @param ProductOption[] $options
+     * @param ProductOption[] $productOptions
      * @param int $points
      * @param float $price
      * @param int $quantity
@@ -75,42 +98,67 @@ class Product {
      * @param int $userId
      * @param int $viewed
      * @param Weight $weight
+     * @param array $attributes
+     * @param array $discounts
+     * @param array $specials
+     * @param array $downloads
+     * @param array $categories
+     * @param int[] $related
+     * @param array $layouts
+     * @param array $rewards
+     * @param null $imageDescription
      */
     public function __construct($id, $afcId = null, $affiliateCommission = null, $dateAdded = null, $dateAvailable = null, $dateModified = null,
                                 $description = null, $dimension = null, $imagePath = null, $keyword = null, $koreanName = null, $location = null,
-                                $manufacturerId = null, $minimum = null, $model = null, $options = null, $points = null,
+                                $manufacturerId = null, $minimum = null, $model = null, $productOptions = null, $points = null,
                                 $price = null, $quantity = null, $shipping = null, $sku = null, $sortOrder = null, $status = null,
                                 $stockStatusId = null, $stores = null, $subtract = null, $supplier = null, $supplierUrl = null,
-                                $tag = null, $upc = null, $userId = null, $viewed = null, $weight = null) {
+                                $tag = null, $upc = null, $userId = null, $viewed = null, $weight = null, $attributes = null,
+                                $discounts = null, $specials = null, $downloads = null, $categories = null, $related = null,
+                                $layouts = null, $rewards = null, $imageDescription = null) {
         $this->id = $id;
-        if (!is_null($afcId)) { $this->afcId = new Mutable($afcId); }
+        if (!is_null($afcId)) { $this->afcId = $afcId; }
         if (!is_null($affiliateCommission)) { $this->affiliateCommission = new Mutable($affiliateCommission); }
+        if (!is_null($attributes)) { $this->attributes = new Mutable($attributes); }
+        if (!is_null($categories)) { $this->categories = new Mutable($categories); }
         if (!is_null($dateAdded)) { $this->$dateAdded = $dateAdded; }
-        if (!is_null($dateAvailable)) { $this->$dateAvailable = new Mutable($dateAvailable); }
+        if (!is_null($dateAvailable)) { $this->$dateAvailable = $dateAvailable; }
         if (!is_null($dateModified)) { $this->dateModified = $dateModified; }
         if (!is_null($description)) { $this->description = new Mutable($description); }
         if (!is_null($dimension)) { $this->dimension = new Mutable($dimension); }
+        if (!is_null($discounts)) { $this->discounts = new Mutable($discounts); }
+        if (!is_null($downloads)) { $this->downloads = new Mutable($downloads); }
+        if (!is_null($imageDescription)) { $this->imageDescription = $imageDescription; }
         if (!is_null($imagePath)) { $this->imagePath = new Mutable($imagePath); }
         if (!is_null($keyword)) { $this->koreanName = new Mutable($keyword); }
         if (!is_null($koreanName)) { $this->koreanName = new Mutable($koreanName); }
-        if (!is_null($location)) { $this->location = new Mutable($location); }
+        if (!is_null($location)) { $this->location = $location; }
         if (!is_null($manufacturerId)) { $this->manufacturerId = new Mutable($manufacturerId); }
         if (!is_null($minimum)) { $this->minimum = new Mutable($minimum); }
         if (!is_null($model)) { $this->model = new Mutable($model); }
-        if (!is_null($options)) { $this->options = new Mutable($options); }
+        if (!is_null($productOptions)) {
+            $tempProductOptions = new ProductOptionCollection();
+            foreach ($productOptions as $option) {
+                $tempProductOptions->attach($option);
+            }
+            $this->productOptions = new Mutable($tempProductOptions);
+        }
         if (!is_null($points)) { $this->points = new Mutable($points); }
         if (!is_null($price)) { $this->price = new Mutable($price); }
         if (!is_null($quantity)) { $this->quantity = new Mutable($quantity); }
+        if (!is_null($related)) { $this->related = new Mutable($related); }
+        if (!is_null($rewards)) { $this->rewards = new Mutable($rewards); }
         if (!is_null($shipping)) { $this->shipping = new Mutable($shipping); }
         if (!is_null($sku)) { $this->sku = new Mutable($sku); }
         if (!is_null($sortOrder)) { $this->sortOrder = new Mutable($sortOrder); }
+        if (!is_null($specials)) { $this->specials = new Mutable($specials); }
         if (!is_null($status)) { $this->status = new Mutable($status); }
         if (!is_null($stockStatusId)) { $this->stockStatusId= new Mutable($stockStatusId); }
         if (!is_null($stores)) { $this->stores= new Mutable($stores); }
         if (!is_null($subtract)) { $this->subtract = new Mutable($subtract); }
         if (!is_null($supplier)) { $this->supplier = new Mutable($supplier); }
         if (!is_null($supplierUrl)) { $this->supplierUrl = new Mutable($supplierUrl); }
-        if (!is_null($tag)) { $this->tag = new Mutable($tag); }
+        if (!is_null($tag)) { $this->tags = new Mutable($tag); }
         if (!is_null($upc)) { $this->upc = new Mutable($upc); }
         if (!is_null($userId)) { $this->userId = new Mutable($userId); }
         if (!is_null($viewed)) { $this->viewed = new Mutable($viewed); }
@@ -122,13 +170,13 @@ class Product {
      */
     public function getAfcId() {
         if (!isset($this->afcId)) {
-            $this->afcId = new Mutable(ProductDAO::getInstance()->getAfcId($this->id));
+            $this->afcId = ProductDAO::getInstance()->getAfcId($this->id);
         }
-        return $this->afcId->get();
+        return $this->afcId;
     }
 
     public function setAfcId($value) {
-        $this->afcId->set($value);
+        $this->afcId = $value;
     }
 
     /**
@@ -146,6 +194,40 @@ class Product {
     }
 
     /**
+     * @return array
+     */
+    public function getAttributes() {
+        if (!isset($this->attributes)) {
+            $this->attributes = new Mutable(ProductDAO::getInstance()->getProductAttributes($this->id));
+        }
+        return $this->attributes->get();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAttributesModified() {
+        return !is_null($this->attributes) && $this->attributes->isModified();
+    }
+
+    /**
+     * @return array
+     */
+    public function getCategories() {
+        if (!isset($this->categories)) {
+            $this->categories = new Mutable(ProductDAO::getInstance()->getCategories($this->id));
+        }
+        return $this->categories->get();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCategoriesModified() {
+        return !is_null($this->categories) && $this->categories->isModified();
+    }
+
+    /**
      * @return string
      */
     public function getDateAdded() {
@@ -160,13 +242,16 @@ class Product {
      */
     public function getDateAvailable() {
         if (!isset($this->dateAvailable)) {
-            $this->dateAvailable = new Mutable(ProductDAO::getInstance()->getDateAvailable($this->id));
+            $this->dateAvailable = ProductDAO::getInstance()->getDateAvailable($this->id);
         }
-        return $this->dateAvailable->get();
+        return $this->dateAvailable;
     }
 
+    /**
+     * @param string $value
+     */
     public function setDateAvailable($value) {
-        $this->dateAvailable->set($value);
+        $this->dateAvailable = $value;
     }
 
     /**
@@ -179,13 +264,23 @@ class Product {
         return $this->dateModified;
     }
 
+    /**
+     * @return DescriptionCollection
+     */
     public function getDescription() {
         if (!isset($this->description)) {
             $this->description = new Mutable(ProductDAO::getInstance()->getDescription($this->id));
         }
         return $this->description->get();
-
     }
+
+    /**
+     * @return bool
+     */
+    public function isDescriptionModified() {
+        return !is_null($this->description) && $this->description->isModified();
+    }
+
     /**
      * @return Dimensions
      */
@@ -204,10 +299,51 @@ class Product {
     }
 
     /**
+     * @return array
+     */
+    public function getDiscounts() {
+        if (!isset($this->discounts)) {
+            $this->discounts = new Mutable(ProductDAO::getInstance()->getProductDiscounts($this->id));
+        }
+        return $this->dimension->get();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDiscountsModified() {
+        return !is_null($this->discounts) && $this->discounts->isModified();
+    }
+
+    /**
+     * @return array
+     */
+    public function getDownloads() {
+        if (!isset($this->downloads)) {
+            $this->downloads = new Mutable(ProductDAO::getInstance()->getProductDownloads($this->id));
+        }
+        return $this->downloads->get();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDownloadsModified() {
+        return !is_null($this->downloads) && $this->downloads->isModified();
+    }
+
+    /**
      * @return int
      */
     public function getId() {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImageDescription() {
+        return $this->imageDescription;
     }
 
     /**
@@ -232,6 +368,13 @@ class Product {
             $this->images = new Mutable(ProductDAO::getInstance()->getProductImages($this->id));
         }
         return $this->images->get();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isImagesModified() {
+        return !is_null($this->images) && $this->images->isModified();
     }
 
     public function setImages($value) {
@@ -259,18 +402,32 @@ class Product {
         $this->koreanName->set($value);
     }
 
+    public function getLayouts() {
+        if (!isset($this->layouts)) {
+            $this->layouts = new Mutable(ProductDAO::getInstance()->getProductLayoutId($this->id));
+        }
+        return $this->layouts;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLayoutsModified() {
+        return !is_null($this->layouts) && $this->layouts->isModified();
+    }
+
     /**
      * @return string
      */
     public function getLocation() {
         if (!isset($this->location)) {
-            $this->location = new Mutable(ProductDAO::getInstance()->getLocation($this->id));
+            $this->location = ProductDAO::getInstance()->getLocation($this->id);
         }
-        return $this->location->get();
+        return $this->location;
     }
 
     public function setLocation($value) {
-        $this->location->set($value);
+        $this->location = $value;
     }
 
     /**
@@ -316,6 +473,27 @@ class Product {
     }
 
     /**
+     * @return ProductOptionCollection
+     */
+    public function getOptions() {
+        if (!isset($this->productOptions)) {
+            $tempProductOptions = new ProductOptionCollection();
+            foreach (ProductDAO::getInstance()->getProductOptions($this->id) as $option) {
+                $tempProductOptions->attach($option);
+            }
+            $this->productOptions = new Mutable($tempProductOptions);
+        }
+        return $this->productOptions->get();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOptionsModified() {
+        return !is_null($this->productOptions) && $this->productOptions->isModified();
+    }
+
+    /**
      * @return int
      */
     public function getPoints() {
@@ -355,6 +533,40 @@ class Product {
 
     public function setQuantity($value) {
         $this->quantity->set($value);
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getRelated() {
+        if (!isset($this->related)) {
+            $this->related = new Mutable(ProductDAO::getInstance()->getProductRelated($this->id));
+        }
+        return $this->related->get();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRelatedModified() {
+        return !is_null($this->related) && $this->related->isModified();
+    }
+
+    /**
+     * @return array
+     */
+    public function getRewards() {
+        if (!isset($this->rewards)) {
+            $this->rewards = new Mutable(ProductDAO::getInstance()->getProductRewards($this->id));
+        }
+        return $this->rewards->get();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRewardsModified() {
+        return !is_null($this->rewards) && $this->rewards->isModified();
     }
 
     /**
@@ -400,6 +612,23 @@ class Product {
     }
 
     /**
+     * @return array
+     */
+    public function getSpecials() {
+        if (!isset($this->specials)) {
+            $this->specials = new Mutable(ProductDAO::getInstance()->getProductSpecials($this->id));
+        }
+        return $this->specials->get();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSpecialsModified() {
+        return !is_null($this->specials) && $this->specials->isModified();
+    }
+
+    /**
      * @return mixed
      */
     public function getStatus() {
@@ -436,6 +665,10 @@ class Product {
             $this->stores = new Mutable(ProductDAO::getInstance()->getStores($this->id));
         }
         return $this->stores->get();
+    }
+
+    public function isStoresModified() {
+        return !is_null($this->stores) && $this->stores->isModified();
     }
 
     public function setStores($value) {
@@ -477,12 +710,22 @@ class Product {
         $this->supplierUrl->set($value);
     }
 
-    public function getTag() {
-        if (!isset($this->tag)) {
-            $this->tag = new Mutable(ProductDAO::getInstance()->getProductTags($this->id));
+    /**
+     * @return string[]
+     */
+    public function getTags() {
+        if (!isset($this->tags)) {
+            $this->tags = new Mutable(ProductDAO::getInstance()->getProductTags($this->id));
         }
-        return $this->tag->get();
+        return $this->tags->get();
 
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTagsModified() {
+        return !is_null($this->tags) && $this->tags->isModified();
     }
 
     /**

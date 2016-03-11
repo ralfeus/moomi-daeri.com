@@ -2,6 +2,9 @@
 namespace model\catalog;
 
 use model\DAO;
+use model\localization\Description;
+use model\localization\DescriptionCollection;
+use system\exception\NotImplementedException;
 use system\library\Dimensions;
 use system\library\MeasureUnit;
 use system\library\Weight;
@@ -143,7 +146,8 @@ SQL
                         $query->row['sort_order'], $query->row['status'], $query->row['stock_status_id'], null, $query->row['subtract'],
                         SupplierDAO::getInstance()->getSupplier($query->row['supplier_id'], true),
                         $query->row['supplier_url'], null, $query->row['upc'], $query->row['user_id'], $query->row['viewed'],
-                        new Weight($query->row['weight_class_id'], $query->row['weight'])
+                        new Weight($query->row['weight_class_id'], $query->row['weight']), null, null, null, null, null,
+                        null, null, null, $query->row['image_description']
                     );
             } else {
                 return $query->row;
@@ -550,55 +554,94 @@ SQL
         return $product_attribute_group_data;
     }
 
-    public function getProductOptions($product_id) {
-        $product_option_data = array();
+    public function getProductDownloads($product_id) {
+        $product_download_data = array();
 
-        $product_option_query = $this->getDb()->query("SELECT * FROM product_option po LEFT JOIN `option` o ON (po.option_id = o.option_id) LEFT JOIN option_description od ON (o.option_id = od.option_id) WHERE po.product_id = '" . (int)$product_id . "' AND od.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY o.sort_order");
+        $query = $this->db->query("SELECT * FROM product_to_download WHERE product_id = '" . (int)$product_id . "'");
 
-        foreach ($product_option_query->rows as $product_option) {
-            if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image') {
-                $product_option_value_data = array();
-
-                $product_option_value_query = $this->getDb()->query("SELECT * FROM product_option_value pov LEFT JOIN option_value ov ON (pov.option_value_id = ov.option_value_id) LEFT JOIN option_value_description ovd ON (ov.option_value_id = ovd.option_value_id) WHERE pov.product_id = '" . (int)$product_id . "' AND pov.product_option_id = '" . (int)$product_option['product_option_id'] . "' AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY ov.sort_order");
-
-                foreach ($product_option_value_query->rows as $product_option_value) {
-                    $product_option_value_data[] = array(
-                        'product_option_value_id' => $product_option_value['product_option_value_id'],
-                        'option_value_id'         => $product_option_value['option_value_id'],
-                        'name'                    => $product_option_value['name'],
-                        'image'                   => $product_option_value['image'],
-                        'quantity'                => $product_option_value['quantity'],
-                        'subtract'                => $product_option_value['subtract'],
-                        'price'                   => $product_option_value['price'],
-                        'price_prefix'            => $product_option_value['price_prefix'],
-                        'weight'                  => $product_option_value['weight'],
-                        'weight_prefix'           => $product_option_value['weight_prefix']
-                    );
-                }
-
-                $product_option_data[] = array(
-                    'product_option_id' => $product_option['product_option_id'],
-                    'option_id'         => $product_option['option_id'],
-                    'name'              => $product_option['name'],
-                    'type'              => $product_option['type'],
-                    'option_value'      => $product_option_value_data,
-                    'required'          => $product_option['required']
-                );
-            } else {
-                $product_option_data[] = array(
-                    'product_option_id' => $product_option['product_option_id'],
-                    'option_id'         => $product_option['option_id'],
-                    'name'              => $product_option['name'],
-                    'type'              => $product_option['type'],
-                    'option_value'      => $product_option['option_value'],
-                    'required'          => $product_option['required']
-                );
-            }
+        foreach ($query->rows as $result) {
+            $product_download_data[] = $result['download_id'];
         }
 
-        return $product_option_data;
+        return $product_download_data;
     }
 
+    /**
+     * @param int $productId
+     * @return ProductOption[]
+     */
+    public function getProductOptions($productId) {
+        $product_option_query = $this->getDb()->query(
+            "SELECT * FROM product_option WHERE product_id = :productId",
+            [':productId' => $productId]
+        );
+
+        $productOptions = [];
+        foreach ($product_option_query->rows as $productOptionRow) {
+            $productOption = new ProductOption(
+                $productOptionRow['product_option_id'],
+                $this->getProduct($productId, true),
+                OptionDAO::getInstance()->getOptionById($productOptionRow['option_id']),
+                OptionDAO::getInstance()->getOptionById($productOptionRow['parent_option_id']),
+                $productOptionRow['required'],
+                $productOptionRow['afc_id']
+            );
+            $productOptions[$productOption->getId()] = $productOption;
+        }
+        return $productOptions;
+    }
+
+    /**
+     * @param ProductOption $productOption
+     * @return ProductOptionValueCollection|string
+     */
+    public function getProductOptionValues($productOption) {
+        if ($productOption->getOption()->isSingleValueType()) {
+            return $this->getDb()->queryScalar(
+                "SELECT option_value FROM product_option WHERE product_option_id = :productOptionId",
+                [':productOptionId' => $productOption->getId()]
+            );
+        } elseif ($productOption->getOption()->isMultiValueType()) {
+            $product_option_value_query = $this->getDb()->query("
+                    SELECT *
+                    FROM
+                        product_option_value AS pov
+                        LEFT JOIN option_value AS ov ON pov.option_value_id = ov.option_value_id
+                        LEFT JOIN option_value_description AS ovd ON ov.option_value_id = ovd.option_value_id
+                    WHERE
+                        pov.product_id = :productId
+                        AND pov.product_option_id = :productOptionId
+                        AND ovd.language_id = :languageId
+                    ORDER BY ov.sort_order
+                    ", [
+                ':productId' => $productOption->getProduct()->getId(),
+                ':productOptionId' => $productOption->getId(),
+                ':languageId' => $this->config->get('config_language_id')
+            ]);
+
+            $productOptionValues = new ProductOptionValueCollection();
+            foreach ($product_option_value_query->rows as $productOptionValueRow) {
+                $productOptionValues->attach(new ProductOptionValue(
+                    $productOptionValueRow['product_option_value_id'],
+                    $productOption,
+                    OptionDAO::getInstance()->getOptionValues($productOption->getOption()->getId())->getById($productOptionValueRow['option_value_id']),
+                    $productOptionValueRow['quantity'],
+                    $productOptionValueRow['subtract'],
+                    $productOptionValueRow['price_prefix'] == '+' ? $productOptionValueRow['price'] : -$productOptionValueRow['price'],
+                    $productOptionValueRow['points_prefix'] == '+' ? $productOptionValueRow['points'] : -$productOptionValueRow['points'],
+                    $productOptionValueRow['weight_prefix'] == '+' ? $productOptionValueRow['weight'] : -$productOptionValueRow['weight'],
+                    $productOptionValueRow['afc_id']
+                ));
+            }
+            return $productOptionValues;
+        } else {
+            throw new \InvalidArgumentException("Unknown option value type '" . $productOption->getOption()->getType() . "'");
+        }
+    }
+    /**
+     * @param Product $product_id
+     * @return array
+     */
     public function getProductDiscounts($product_id) {
         if ($this->getCurrentCustomer()->isLogged()) {
             $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
@@ -703,11 +746,23 @@ SQL
         $query = $this->getDb()->query(<<<SQL
             SELECT *
             FROM product_description
-            WHERE product_id = ?
+            WHERE product_id = :productId
 SQL
-            , array("i:$productId")
+            , [':productId' => $productId]
         );
-        return $query->rows;
+        $result = new DescriptionCollection();
+        foreach ($query->rows as $row) {
+            $result->addDescription(new Description(
+                $row['language_id'],
+                $row['name'],
+                $row['description'],
+                $row['meta_description'],
+                $row['meta_keyword'],
+                $row['seo_title'],
+                $row['seo_h1']
+            ));
+        }
+        return $result;
     }
 
     /**
@@ -1156,256 +1211,111 @@ SQL
         return $product_data;
     }
 
+
+    public function getProductRewards($product_id) {
+        $product_reward_data = array();
+
+        $query = $this->db->query("SELECT * FROM product_reward WHERE product_id = '" . (int)$product_id . "'");
+
+        foreach ($query->rows as $result) {
+            $product_reward_data[$result['customer_group_id']] = array('points' => $result['points']);
+        }
+
+        return $product_reward_data;
+    }
+
     /**
      * @param Product $product
      */
     public function saveProduct($product) {
-        $this->getDb()->query("
+        $this->getDb()->beginTransaction();
+        try {
+            $this->getDb()->query("
 		    UPDATE product
 		    SET
-		        model = ?,
-		        sku = ?,
-		        upc = ?,
-		        location = ?,
-		        minimum = ?,
-		        subtract = ?,
-		        stock_status_id = ?,
-		        date_available = ?,
-		        manufacturer_id = ?,
-		        supplier_id = ?,
-		        shipping = ?,
-		        price = ?,
-		        points = ?,
-		        weight = ?,
-		        weight_class_id = ?,
-		        length = ?,
-		        width = ?,
-		        height = ?,
-		        length_class_id = ?,
-		        status = ?,
-		        sort_order = ?,
-                affiliate_commission = ?,
-                image = ?,
-		        date_modified = NOW()
-            WHERE product_id = ?
+		        model = :model,
+		        sku = :sku,
+		        upc = :upc,
+		        location = :location,
+		        minimum = :minimum,
+		        subtract = :subtract,
+		        stock_status_id = :stockStatusId,
+		        date_available = :dateAvailable,
+		        manufacturer_id = :manufacturerId,
+		        supplier_id = :supplierId,
+		        shipping = :shipping,
+		        price = :price,
+		        points = :points,
+		        weight = :weight,
+		        weight_class_id = :weightClassId,
+		        length = :length,
+		        width = :width,
+		        height = :height,
+		        length_class_id = :lengthClassId,
+		        status = :status,
+		        sort_order = :sortOrder,
+                affiliate_commission = :affiliateCommission,
+                image = :image,
+		        date_modified = NOW(),
+		        korean_name = :koreanName,
+		        supplier_url = :supplierUrl,
+		        image_description = :imageDescription
+            WHERE product_id = :productId
             ", array(
-                's:' . $product->getModel(),
-                's:' . $product->getSku(),
-                's:' . $product->getLocation(),
-                'i:' . $product->getMinimum(),
-                'i:' . $product->getSubtract(),
-                'i:' . $product->getStockStatusId(),
-                's:' . $product->getDateAvailable(),
-                'i:' . $product->getManufacturerId(),
-                'i:' . $product->getSupplier()->getId(),
-                'i:' . $product->getShipping(),
-                'd:' . $product->getPrice(),
-                'i:' . $product->getPoints(),
-                'd:' . $product->getWeight()->getWeight(),
-                'i:' . $product->getWeight()->getUnit()->getId(),
-                'd:' . $product->getDimension()->getLength(),
-                'd:' . $product->getDimension()->getWidth(),
-                'd:' . $product->getDimension()->getHeight(),
-                'i:' . $product->getDimension()->getUnit(),
-                'i:' . $product->getStatus(),
-                'i:' . $product->getSortOrder(),
-                'd:' . $product->getAffiliateCommission(),
-                's:' . $product->getImagePath(),
-                'i:' . $product->getId()
-            )
-        );
+                    ':model' => $product->getModel(),
+                    ':sku' => $product->getSku(),
+                    ':upc' => $product->getUpc(),
+                    ':location' => $product->getLocation(),
+                    ':minimum' => $product->getMinimum(),
+                    ':subtract' => $product->getSubtract(),
+                    ':stockStatusId' => $product->getStockStatusId(),
+                    ':dateAvailable' => $product->getDateAvailable(),
+                    ':manufacturerId' => $product->getManufacturerId(),
+                    ':supplierId' => $product->getSupplier()->getId(),
+                    ':shipping' => $product->getShipping(),
+                    ':price' => $product->getPrice(),
+                    ':points' => $product->getPoints(),
+                    ':weight' => $product->getWeight()->getWeight(),
+                    ':weightClassId' => $product->getWeight()->getUnit()->getId(),
+                    ':length' => $product->getDimension()->getLength(),
+                    ':width' => $product->getDimension()->getWidth(),
+                    ':height' => $product->getDimension()->getHeight(),
+                    ':lengthClassId' => $product->getDimension()->getUnit(),
+                    ':status' => $product->getStatus(),
+                    ':sortOrder' => $product->getSortOrder(),
+                    ':affiliateCommission' => $product->getAffiliateCommission(),
+                    ':image' => $product->getImagePath(),
+                    ':productId' => $product->getId(),
+                    ':koreanName' => $product->getKoreanName(),
+                    ':supplierUrl' => $product->getSupplierUrl(),
+                    ':imageDescription' => $product->getImageDescription()
+                )
+            );
 
 
-        if (isset($data['product_description']) && is_array($data['product_description'])) {
-            $this->getDb()->query("
-                DELETE FROM product_description
-                WHERE product_id = :productId
-                ", [':productId' => $product->getId()]);
-            foreach ($data['product_description'] as $language_id => $value) {
-                $this->db->query("
-                    INSERT INTO product_description
-                    SET
-                        product_id = :productId,
-                        language_id = :languageId,
-                        name = :name,
-                        meta_keyword = :metaKeyword,
-                        meta_description = :metaDescription,
-                        description = :description,
-                        seo_title = :seoTitle,
-                        seo_h1 = :seoH1
-                        ", [
-                        ':productId' => $product->getId(),
-                        ':languageId' => $language_id,
-                        ':name' => $value['name'],
-                        ':metaKeyword' => $value['meta_keyword'],
-                        ':metaDescription' => $value['meta_description'],
-                        ':description' => $value['description'],
-                        ':seoTitle' => $value['seo_title'],
-                        ':seoH1' => $value['seo_h1']
-                    ]
-                );
-            }
+            $this->saveDescription($product);
+            $this->saveStores($product);
+            $this->saveAttributes($product);
+            $this->saveOptions($product);
+            $this->saveDiscounts($product);
+            $this->saveSpecials($product);
+            $this->saveImages($product);
+            $this->saveDownloads($product);
+            $this->saveCategories($product);
+            $this->saveRelated($product);
+            $this->saveRewards($product);
+            $this->saveLayouts($product);
+            $this->saveTags($product);
+            $this->saveUrlAliases($product);
+            $this->saveWKAuction($product->getId());
+
+            $this->getCache()->delete('product');
+            $this->getDb()->commitTransaction();
+        } catch (\Exception $e) {
+            $this->getLogger()->write($e->getMessage());
+            $this->getLogger()->write($e->getTraceAsString());
+            $this->getDb()->rollbackTransaction();
         }
-
-        $this->db->query("DELETE FROM product_to_store WHERE product_id = '" . (int)$product->getId() . "'");
-        if (isset($data['product_store'])) {
-            foreach ($data['product_store'] as $store_id) {
-                $this->db->query("INSERT INTO product_to_store SET product_id = '" . (int)$product->getId() . "', store_id = '" . (int)$store_id . "'");
-            }
-        }
-
-        $this->db->query("DELETE FROM product_attribute WHERE product_id = '" . (int)$product->getId() . "'");
-        if (!empty($data['product_attribute'])) {
-            foreach ($data['product_attribute'] as $product_attribute) {
-                if ($product_attribute['attribute_id']) {
-                    $this->db->query("DELETE FROM product_attribute WHERE product_id = '" . (int)$product->getId() . "' AND attribute_id = '" . (int)$product_attribute['attribute_id'] . "'");
-
-                    foreach ($product_attribute['product_attribute_description'] as $language_id => $product_attribute_description) {
-                        $this->db->query("INSERT INTO product_attribute SET product_id = '" . (int)$product->getId() . "', attribute_id = '" . (int)$product_attribute['attribute_id'] . "', language_id = '" . (int)$language_id . "', text = '" .  $this->db->escape($product_attribute_description['text']) . "'");
-                    }
-                }
-            }
-        }
-
-        $this->db->query("DELETE FROM product_option WHERE product_id = '" . (int)$product->getId() . "'");
-        $this->db->query("DELETE FROM product_option_value WHERE product_id = '" . (int)$product->getId() . "'");
-
-        if (isset($data['product_option'])) {
-            foreach ($data['product_option'] as $product_option) {
-                if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image') {
-                    $this->db->query("
-					    INSERT INTO product_option
-                        SET
-                            product_option_id = '" . (int)$product_option['product_option_id'] . "',
-                            product_id = '" . (int)$product->getId() . "',
-                            option_id = '" . (int)$product_option['option_id'] . "',
-                            required = '" . (int)$product_option['required'] . "'
-                    ");
-
-                    $product_option_id = $this->db->getLastId();
-
-                    if (isset($product_option['product_option_value'])) {
-                        foreach ($product_option['product_option_value'] as $product_option_value) {
-                            $this->db->query("
-							    INSERT INTO product_option_value
-							    SET
-							        product_option_value_id = '" . (int)$product_option_value['product_option_value_id'] . "',
-							        product_option_id = '" . (int)$product_option_id . "',
-							        product_id = '" . (int)$product->getId() . "',
-							        option_id = '" . (int)$product_option['option_id'] . "',
-							        option_value_id = '" . $this->db->escape($product_option_value['option_value_id']) . "',
-							        quantity = '" . (int)$product_option_value['quantity'] . "',
-							        subtract = '" . (int)$product_option_value['subtract'] . "',
-							        price = '" . (float)$product_option_value['price'] . "',
-							        price_prefix = '" . $this->db->escape($product_option_value['price_prefix']) . "',
-							        points = '" . (int)$product_option_value['points'] . "',
-							        points_prefix = '" . $this->db->escape($product_option_value['points_prefix']) . "',
-							        weight = '" . (float)$product_option_value['weight'] . "',
-							        weight_prefix = '" . $this->db->escape($product_option_value['weight_prefix']) . "'
-                            ");
-                        }
-                    }
-                } else {
-                    $this->db->query("INSERT INTO product_option SET product_option_id = '" . (int)$product_option['product_option_id'] . "', product_id = '" . (int)$product->getId() . "', option_id = '" . (int)$product_option['option_id'] . "', option_value = '" . $this->db->escape($product_option['option_value']) . "', required = '" . (int)$product_option['required'] . "'");
-                }
-            }
-        }
-
-        $this->db->query("DELETE FROM product_discount WHERE product_id = '" . (int)$product->getId() . "'");
-
-        if (isset($data['product_discount'])) {
-            foreach ($data['product_discount'] as $product_discount) {
-                $this->db->query("INSERT INTO product_discount SET product_id = '" . (int)$product->getId() . "', customer_group_id = '" . (int)$product_discount['customer_group_id'] . "', quantity = '" . (int)$product_discount['quantity'] . "', priority = '" . (int)$product_discount['priority'] . "', price = '" . (float)$product_discount['price'] . "', date_start = '" . $this->db->escape($product_discount['date_start']) . "', date_end = '" . $this->db->escape($product_discount['date_end']) . "'");
-            }
-        }
-
-        $this->db->query("DELETE FROM product_special WHERE product_id = '" . (int)$product->getId() . "'");
-
-        if (isset($data['product_special'])) {
-            foreach ($data['product_special'] as $product_special) {
-                $this->db->query("INSERT INTO product_special SET product_id = '" . (int)$product->getId() . "', customer_group_id = '" . (int)$product_special['customer_group_id'] . "', priority = '" . (int)$product_special['priority'] . "', price = '" . (float)$product_special['price'] . "', date_start = '" . $this->db->escape($product_special['date_start']) . "', date_end = '" . $this->db->escape($product_special['date_end']) . "'");
-            }
-        }
-
-        $this->db->query("DELETE FROM product_image WHERE product_id = '" . (int)$product->getId() . "'");
-
-        if (isset($data['product_image'])) {
-            foreach ($data['product_image'] as $product_image) {
-                $this->db->query("INSERT INTO product_image SET product_id = '" . (int)$product->getId() . "', image = '" . $this->db->escape($product_image['image']) . "', sort_order = '" . (int)$product_image['sort_order'] . "'");
-            }
-        }
-
-        $this->db->query("DELETE FROM product_to_download WHERE product_id = '" . (int)$product->getId() . "'");
-
-        if (isset($data['product_download'])) {
-            foreach ($data['product_download'] as $download_id) {
-                $this->db->query("INSERT INTO product_to_download SET product_id = '" . (int)$product->getId() . "', download_id = '" . (int)$download_id . "'");
-            }
-        }
-
-        if (isset($data['product_category'])) {
-            $this->db->query("DELETE FROM product_to_category WHERE product_id = '" . (int)$product->getId() . "'");
-            foreach ($data['product_category'] as $category_id) {
-                $this->db->query("INSERT INTO product_to_category SET product_id = '" . (int)$product->getId() . "', category_id = '" . (int)$category_id . "'");
-            }
-        }
-
-        if (isset($data['main_category_id']) && $data['main_category_id'] > 0) {
-            $this->db->query("DELETE FROM product_to_category WHERE product_id = '" . (int)$product->getId() . "' AND category_id = '" . (int)$data['main_category_id'] . "'");
-            $this->db->query("INSERT INTO product_to_category SET product_id = '" . (int)$product->getId() . "', category_id = '" . (int)$data['main_category_id'] . "', main_category = 1");
-        } elseif (isset($data['product_category'])) {
-            $this->db->query("UPDATE product_to_category SET main_category = 1 WHERE product_id = '" . (int)$product->getId() . "' AND category_id = '" . (int)$data['product_category'][0] . "'");
-        }
-
-        $this->db->query("DELETE FROM product_related WHERE product_id = '" . (int)$product->getId() . "'");
-        $this->db->query("DELETE FROM product_related WHERE related_id = '" . (int)$product->getId() . "'");
-
-        if (isset($data['product_related'])) {
-            foreach ($data['product_related'] as $related_id) {
-                $this->db->query("DELETE FROM product_related WHERE product_id = '" . (int)$product->getId() . "' AND related_id = '" . (int)$related_id . "'");
-                $this->db->query("INSERT INTO product_related SET product_id = '" . (int)$product->getId() . "', related_id = '" . (int)$related_id . "'");
-                $this->db->query("DELETE FROM product_related WHERE product_id = '" . (int)$related_id . "' AND related_id = '" . (int)$product->getId() . "'");
-                $this->db->query("INSERT INTO product_related SET product_id = '" . (int)$related_id . "', related_id = '" . (int)$product->getId() . "'");
-            }
-        }
-
-        $this->db->query("DELETE FROM product_reward WHERE product_id = '" . (int)$product->getId() . "'");
-
-        if (isset($data['product_reward'])) {
-            foreach ($data['product_reward'] as $customer_group_id => $value) {
-                $this->db->query("INSERT INTO product_reward SET product_id = '" . (int)$product->getId() . "', customer_group_id = '" . (int)$customer_group_id . "', points = '" . (int)$value['points'] . "'");
-            }
-        }
-
-        $this->db->query("DELETE FROM product_to_layout WHERE product_id = '" . (int)$product->getId() . "'");
-
-        if (isset($data['product_layout'])) {
-            foreach ($data['product_layout'] as $store_id => $layout) {
-                if ($layout['layout_id']) {
-                    $this->db->query("INSERT INTO product_to_layout SET product_id = '" . (int)$product->getId() . "', store_id = '" . (int)$store_id . "', layout_id = '" . (int)$layout['layout_id'] . "'");
-                }
-            }
-        }
-
-        $this->db->query("DELETE FROM product_tag WHERE product_id = '" . (int)$product->getId(). "'");
-
-        foreach ($data['product_tag'] as $language_id => $value) {
-            if ($value) {
-                $tags = explode(',', $value);
-
-                foreach ($tags as $tag) {
-                    $this->db->query("INSERT INTO product_tag SET product_id = '" . (int)$product->getId() . "', language_id = '" . (int)$language_id . "', tag = '" . $this->db->escape(trim($tag)) . "'");
-                }
-            }
-        }
-
-        $this->db->query("DELETE FROM url_alias WHERE query = 'product_id=" . (int)$product->getId(). "'");
-
-        if ($data['keyword']) {
-            $this->db->query("INSERT INTO url_alias SET query = 'product_id=" . (int)$product->getId() . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
-        }
-        $this->saveWKAuction($product->getId());
-        $this->cache->delete('product');
     }
 
     /**
@@ -1426,5 +1336,312 @@ SQL
                 }
             }
         }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveOptions($product) {
+        if ($product->isOptionsModified()) {
+            $this->getDb()->query("DELETE FROM product_option WHERE product_id = :productId", [':productId' => $product->getId()]);
+            $this->getDb()->query("DELETE FROM product_option_value WHERE product_id = :productId", [':productId' => $product->getId()]);
+
+            foreach ($product->getOptions() as $productOption) {
+                $params = [
+                    ':productOptionId' => $productOption->getId(),
+                    ':productId' => $product->getId(),
+                    ':optionId' => $productOption->getOption()->getId(),
+                    ':isRequired' => $productOption->isRequired(),
+                    ':optionValue' => $productOption->getValue()
+                ];
+                if ($params[':optionValue'] instanceof ProductOptionValueCollection) {
+                    $params[':optionValue'] = '';
+                }
+                $this->getDb()->query("
+                    INSERT INTO product_option
+                    SET
+                        product_option_id = :productOptionId,
+                        product_id = :productId,
+                        option_id = :optionId,
+                        required = :isRequired,
+                        option_value = :optionValue
+                    ", $params);
+                $productOption->setId($this->getDb()->getLastId());
+
+                //TODO: Should work regardless of type based on values only
+//                if ($productOption->getType() == 'select' || $productOption->getType() == 'radio' ||
+//                    $productOption->getType() == 'checkbox' || $productOption->getType() == 'image') {
+                foreach ($productOption->getValue() as $productOptionValue) {
+                    $this->getDb()->query("
+                        INSERT INTO product_option_value
+                        SET
+                            product_option_value_id = :productOptionValueId,
+                            product_option_id = :productOptionId,
+                            product_id = :productId,
+                            option_id = :optionId,
+                            option_value_id = :optionValueId,
+                            quantity = :quantity,
+                            subtract = :subtract,
+                            price = :price,
+                            price_prefix = :pricePrefix,
+                            points = :points,
+                            points_prefix = :pointsPrefix,
+                            weight = :weight,
+                            weight_prefix = :weightPrefix
+                    ", [
+                        ':productOptionValueId' => $productOptionValue->getId(),
+                        ':productOptionId' => $productOption->getId(),
+                        ':productId' => $product->getId(),
+                        ':optionId' => $productOption->getOption()->getId(),
+                        ':optionValueId' => $productOptionValue->getOptionValue()->getId(),
+                        ':quantity' => $productOptionValue->getQuantity(),
+                        ':subtract' => $productOptionValue->getSubtract(),
+                        ':price' => abs($productOptionValue->getPrice()),
+                        ':pricePrefix' => $productOptionValue->getPrice() < 0 ? '-' : '+',
+                        ':points' => abs($productOptionValue->getPoints()),
+                        ':pointsPrefix' => $productOptionValue->getPoints() < 0 ? '-' : '+',
+                        ':weight' => abs($productOptionValue->getWeight()),
+                        ':weightPrefix' => $productOptionValue->getWeight() < 0 ? '-' : '+'
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveDescription($product) {
+        if ($product->isDescriptionModified()) {
+            $this->getDb()->query("DELETE FROM product_description WHERE product_id = :productId", [':productId' => $product->getId()]);
+            foreach ($product->getDescription() as $description) {
+                $this->db->query("
+                    INSERT INTO product_description
+                    SET
+                        product_id = :productId,
+                        language_id = :languageId,
+                        name = :name,
+                        meta_keyword = :metaKeyword,
+                        meta_description = :metaDescription,
+                        description = :description,
+                        seo_title = :seoTitle,
+                        seo_h1 = :seoH1
+                    ", [
+                    ':productId' => $product->getId(),
+                    ':languageId' => $description->getLanguageId(),
+                    ':name' => $description->getName(),
+                    ':metaKeyword' => $description->getMetaKeyword(),
+                    ':metaDescription' => $description->getMetaDescription(),
+                    ':description' => $description->getDescription(),
+                    ':seoTitle' => $description->getSeoTitle(),
+                    ':seoH1' => $description->getSeoH1()
+                ]);
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveStores(Product $product) {
+        if ($product->isStoresModified()) {
+            $this->getDb()->query("DELETE FROM product_to_store WHERE product_id = :productId", [':productId' => $product->getId()]);
+            foreach ($product->getStores() as $store) {
+                $this->getDb()->query("
+                    INSERT INTO product_to_store
+                    SET
+                        product_id = :productId,
+                        store_id = :storeId
+                    ", [':productId' => $product->getId(), ':storeId' => $store]
+                );
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     * @return void
+     */
+    private function saveAttributes(Product $product) {
+        if ($product->isAttributesModified()) {
+            $this->getDb()->query("DELETE FROM product_attribute WHERE product_id = :productId", [':productId' => $product->getId()]);
+            foreach ($product->getAttributes() as $attribute) {
+                if ($attribute['attribute_id']) {
+                    $this->getDb()->query(
+                        "DELETE FROM product_attribute WHERE product_id = :productId AND attribute_id = :attributeId",
+                        [':productId' => $product->getId(), ':attributeId' => $attribute['attribute_id']]
+                    );
+
+                    foreach ($attribute['product_attribute_description'] as $language_id => $product_attribute_description) {
+                        $this->getDb()->query("
+                            INSERT INTO product_attribute
+                            SET
+                                product_id = :productId,
+                                attribute_id = :attributeId,
+                                language_id = :languageId,
+                                `text` = :text
+                            ", [
+                            ':productId' => $product->getId(),
+                            ':attributeId' => $attribute['attribute_id'],
+                            ':languageId' => $language_id,
+                            ':text' => $product_attribute_description['text']
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveDiscounts($product) {
+        if ($product->isDiscountsModified()) {
+            $this->db->query("DELETE FROM product_discount WHERE product_id = '" . (int)$product->getId() . "'");
+            foreach ($product->getDiscounts() as $product_discount) {
+                $this->db->query("INSERT INTO product_discount SET product_id = '" . (int)$product->getId() . "', customer_group_id = '" . (int)$product_discount['customer_group_id'] . "', quantity = '" . (int)$product_discount['quantity'] . "', priority = '" . (int)$product_discount['priority'] . "', price = '" . (float)$product_discount['price'] . "', date_start = '" . $this->db->escape($product_discount['date_start']) . "', date_end = '" . $this->db->escape($product_discount['date_end']) . "'");
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveSpecials($product) {
+        if ($product->isSpecialsModified()) {
+            $this->db->query("DELETE FROM product_special WHERE product_id = '" . (int)$product->getId() . "'");
+
+            foreach ($product->getSpecials() as $product_special) {
+                $this->db->query("INSERT INTO product_special SET product_id = '" . (int)$product->getId() . "', customer_group_id = '" . (int)$product_special['customer_group_id'] . "', priority = '" . (int)$product_special['priority'] . "', price = '" . (float)$product_special['price'] . "', date_start = '" . $this->db->escape($product_special['date_start']) . "', date_end = '" . $this->db->escape($product_special['date_end']) . "'");
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveImages($product) {
+        if ($product->isImagesModified()) {
+            $this->db->query("DELETE FROM product_image WHERE product_id = '" . (int)$product->getId() . "'");
+            foreach ($product->getImages() as $product_image) {
+                $this->db->query("INSERT INTO product_image SET product_id = '" . (int)$product->getId() . "', image = '" . $this->db->escape($product_image['image']) . "', sort_order = '" . (int)$product_image['sort_order'] . "'");
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveDownloads($product) {
+        if ($product->isDownloadsModified()) {
+            $this->db->query("DELETE FROM product_to_download WHERE product_id = '" . (int)$product->getId() . "'");
+            foreach ($product->getDownloads() as $download_id) {
+                $this->db->query("INSERT INTO product_to_download SET product_id = '" . (int)$product->getId() . "', download_id = '" . (int)$download_id . "'");
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveCategories($product) {
+        if ($product->isCategoriesModified()) {
+            $this->getDb()->query("DELETE FROM product_to_category WHERE product_id = :productId", [':productId' => $product->getId()]);
+            foreach ($product->getCategories() as $category) {
+                $this->db->query("
+                    INSERT INTO product_to_category
+                    SET
+                        product_id = :productId,
+                        category_id = :categoryId,
+                        main_category = :isMainCategory
+
+                    ", [
+                    ':productId' => $product->getId(),
+                    ':categoryId' => $category['category_id'],
+                    ':isMainCategory' => !empty($category['main_category'])
+                ]);
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveRelated($product) {
+        if ($product->isRelatedModified()) {
+            foreach ($product->getRelated() as $related) {
+                $this->getDb()->query("
+                    DELETE FROM product_related
+                    WHERE
+                        (product_id = :productId AND related_id = :relatedId)
+                        OR (related_id = :productId AND product_id = :relatedId)
+                    ", [
+                    ':productId' => $product->getId(),
+                    ':relatedId' => $related
+                ]);
+                $this->getDb()->query(
+                    "INSERT INTO product_related VALUES (:productId, :relatedId), (:relatedId, :productId)",
+                    [':productId' => $product->getId(), ':relatedId' => $related]
+                );
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveRewards($product) {
+        if ($product->isRewardsModified()) {
+            $this->db->query("DELETE FROM product_reward WHERE product_id = '" . (int)$product->getId() . "'");
+            foreach ($product->getRewards() as $customer_group_id => $value) {
+                $this->db->query("INSERT INTO product_reward SET product_id = '" . (int)$product->getId() . "', customer_group_id = '" . (int)$customer_group_id . "', points = '" . (int)$value['points'] . "'");
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveLayouts($product) {
+        if ($product->isLayoutsModified()) {
+            $this->db->query("DELETE FROM product_to_layout WHERE product_id = '" . (int)$product->getId() . "'");
+            foreach ($product->getLayouts() as $store_id => $layout) {
+                if ($layout['layout_id']) {
+                    $this->db->query("INSERT INTO product_to_layout SET product_id = '" . (int)$product->getId() . "', store_id = '" . (int)$store_id . "', layout_id = '" . (int)$layout['layout_id'] . "'");
+                }
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     */
+    private function saveTags($product) {
+        if ($product->isTagsModified()) {
+            $this->db->query("DELETE FROM product_tag WHERE product_id = '" . (int)$product->getId() . "'");
+            foreach ($product->getTags() as $language_id => $value) {
+                if ($value) {
+                    $tags = explode(',', $value);
+
+                    foreach ($tags as $tag) {
+                        $this->db->query("INSERT INTO product_tag SET product_id = '" . (int)$product->getId() . "', language_id = '" . (int)$language_id . "', tag = '" . $this->db->escape(trim($tag)) . "'");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     * @throws NotImplementedException
+     */
+    private function saveUrlAliases($product) {
+//        if ($product->isUrlAliasesModified()) {
+//            $this->db->query("DELETE FROM url_alias WHERE query = 'product_id=" . (int)$product->getId() . "'");
+
+//            if ($data['keyword']) {
+//                $this->db->query("INSERT INTO url_alias SET query = 'product_id=" . (int)$product->getId() . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
+//            }
+//        }
     }
 } 

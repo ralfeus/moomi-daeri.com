@@ -89,7 +89,7 @@ class Manufacturer {
     }
 
     /**
-     * @return Mutable
+     * @return string
      */
     public function getName() {
         if (!isset($this->name)) {

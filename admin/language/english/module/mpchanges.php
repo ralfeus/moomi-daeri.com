@@ -80,3 +80,10 @@ $_['success_discount_added']   = 'Скидкии добавлены';
 $_['success_delete']   = 'Элементы удалены';
 
 $_['store_default']                  = "Основной";
+$_['OPTIONS'] = 'Options';
+$_['OPTION_VALUES'] = 'Option values';
+$_['ADD_OPTION'] = 'Add new option';
+$_['DEL_OPTION'] = 'Delete existing option';
+$_['ADD_OPTION_VALUE'] = 'Add a value to existing or new option';
+$_['DEL_OPTION_VALUE'] = 'Delete existing option value';
+$_['EXECUTE'] = 'Execute operation';

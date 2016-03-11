@@ -2,12 +2,12 @@
 namespace system\library;
 
 class Mutable {
-    protected $value = null;
-    /** @var bool */
-    private $modified = false;
+    private $valueThumbprint;
+    private $value = null;
 
     public function __construct($value) {
         $this->value = $value;
+        $this->valueThumbprint = md5(serialize($this->value));
     }
 
     /**
@@ -21,24 +21,20 @@ class Mutable {
      * @return bool
      */
     public function isModified() {
-        return $this->modified;
+        return md5(serialize($this->value)) != $this->valueThumbprint;
     }
 
     /**
      * @return void
      */
     public function resetModified() {
-        $this->modified = false;
+        $this->valueThumbprint = md5(serialize($this->value));
     }
 
     /**
      * @param mixed $value
      */
     public function set($value) {
-        if ($this->value = $value) {
-            return;
-        }
         $this->value = $value;
-        $this->modified = true;
     }
 }

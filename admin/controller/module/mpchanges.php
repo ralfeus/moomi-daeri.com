@@ -1,5 +1,12 @@
 <?php
 use model\catalog\ManufacturerDAO;
+use model\catalog\OptionValue;
+use model\catalog\ProductDAO;
+use model\catalog\Option;
+use model\catalog\OptionDAO;
+use model\catalog\ProductOption;
+use model\catalog\ProductOptionValue;
+use model\catalog\SupplierDAO;
 
 class ControllerModuleMpchanges extends Controller {
     private $mpfilter = array();
@@ -166,31 +173,26 @@ class ControllerModuleMpchanges extends Controller {
         $this->mpfilter["products"] = $this->model_module_mpchanges->getProducts($data);
         $this->mpfilter["total"] = $this->model_module_mpchanges->getTotalProducts($data);
     }
+
+    public function getOptionValues() {
+        $result = OptionDAO::getInstance()->getOptionValues($this->parameters['optionId']);
+        $json = [];
+        foreach ($result as $optionValue) {
+            $json[] = ['id' => $optionValue->getId(), 'text' => $optionValue->getName()];
+        }
+        $this->getResponse()->setOutput(json_encode($json));
+    }
+
 	public function index() {
         $this->load->language('module/mpchanges');
         $this->load->model('catalog/category');
         $this->load->model('setting/store');
         $this->load->model('sale/customer_group');
 
-        $this->data['breadcrumbs'] = array();
-
-        $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('text_home'),
-            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
-            'separator' => false
-        );
-
-        $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('text_module'),
-            'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
-            'separator' => ' :: '
-        );
-
-        $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('heading_title'),
-            'href'      => $this->url->link('module/mpchanges', 'token=' . $this->session->data['token'], 'SSL'),
-            'separator' => ' :: '
-        );
+        $this->setBreadcrumbs([[
+            'text' => $this->language->get('text_module'),
+            'route' => 'extension/module'
+        ]]);
 
         if (isset($this->error['warning'])) {
             $this->data['error_warning'] = $this->error['warning'];
@@ -199,6 +201,53 @@ class ControllerModuleMpchanges extends Controller {
         }
 
         $this->document->setTitle($this->language->get('heading_title'));
+
+        $this->data['token'] = $this->session->data['token'];
+        $this->data['url_cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['action_change_price'] = $this->url->link('module/mpchanges/changeprice', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['action_change_specials'] = $this->url->link('module/mpchanges/changespecial', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['action_save_specials'] = $this->url->link('module/mpchanges/addspecial', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['action_change_discounts'] = $this->url->link('module/mpchanges/changediscounts', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['action_save_discounts'] = $this->url->link('module/mpchanges/adddiscounts', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['action_del_elements'] = $this->url->link('module/mpchanges/delelements', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['urlGetOptionValues'] = $this->url->link('module/mpchanges/getOptionValues', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['urlSetOption'] = $this->url->link('module/mpchanges/setOption', 'token=' . $this->session->data['token'], 'SSL');
+
+        $this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
+        $this->data['manufacturers'] = ManufacturerDAO::getInstance()->getManufacturers();
+        $this->data['suppliers'] = SupplierDAO::getInstance()->getSuppliers();
+        $this->data['categories'] = $this->model_catalog_category->getCategories();
+        $this->data['options'] = OptionDAO::getInstance()->getOptions();
+
+		$this->children = array(
+			'common/header',
+			'common/footer'
+		);
+				
+		$this->getResponse()->setOutput($this->render('module/mpchanges.tpl.php'));
+	}
+
+    protected function initParameters() {
+        $this->initParametersWithDefaults([
+            'operation' => null,
+            'optionId' => null,
+            'optionValue' => null,
+//            'optionValueType' => null,
+            'products' => []
+        ]);
+    }
+
+    public function loadFilteredProducts() {
+        $json = array();
+        $this->loadFilter();
+
+        $json['products'] = $this->mpfilter['products'];
+        $json['total'] = $this->mpfilter['total'];
+
+        $this->getResponse()->setOutput(json_encode($json));
+    }
+
+    protected function loadStrings() {
         $this->data['heading_title'] = $this->language->get('heading_title');
         $this->data['button_cancel'] = $this->language->get('button_cancel');
         $this->data['button_change_price'] = $this->language->get('button_change_price');
@@ -220,6 +269,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->data['tab_del_section'] = $this->language->get('tab_del_section');
 
         $this->data['entry_manufacturer'] = $this->language->get('entry_manufacturer');
+        $this->data['textSupplier'] = $this->language->get('SUPPLIER');
         $this->data['entry_category'] = $this->language->get('entry_category');
         $this->data['entry_price'] = $this->language->get('entry_price');
         $this->data['entry_specials'] = $this->language->get('entry_specials');
@@ -262,37 +312,13 @@ class ControllerModuleMpchanges extends Controller {
 
         $this->data['label_quantity_prefix'] = $this->language->get('label_quantity_prefix');
         $this->data['label_quantity_postfix'] = $this->language->get('label_quantity_postfix');
-
-        $this->data['token'] = $this->session->data['token'];
-        $this->data['url_cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['action_change_price'] = $this->url->link('module/mpchanges/changeprice', 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['action_change_specials'] = $this->url->link('module/mpchanges/changespecial', 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['action_save_specials'] = $this->url->link('module/mpchanges/addspecial', 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['action_change_discounts'] = $this->url->link('module/mpchanges/changediscounts', 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['action_save_discounts'] = $this->url->link('module/mpchanges/adddiscounts', 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['action_del_elements'] = $this->url->link('module/mpchanges/delelements', 'token=' . $this->session->data['token'], 'SSL');
-
-        $this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
-        $this->data['manufacturers'] = ManufacturerDAO::getInstance()->getManufacturers();
-        $this->data['categories'] = $this->model_catalog_category->getCategories();
-
-        $this->template = 'module/mpchanges.tpl.php';
-		$this->children = array(
-			'common/header',
-			'common/footer'
-		);
-				
-		$this->getResponse()->setOutput($this->render());
-	}
-
-    public function loadFilteredProducts() {
-        $json = array();
-        $this->loadFilter();
-
-        $json['products'] = $this->mpfilter['products'];
-        $json['total'] = $this->mpfilter['total'];
-
-        $this->getResponse()->setOutput(json_encode($json));
+        $this->data['textAddOption'] = $this->language->get('ADD_OPTION');
+        $this->data['textAddOptionValue'] = $this->language->get('ADD_OPTION_VALUE');
+        $this->data['textDelOption'] = $this->language->get('DEL_OPTION');
+        $this->data['textDelOptionValue'] = $this->language->get('DEL_OPTION_VALUE');
+        $this->data['textExecute'] = $this->language->get('EXECUTE');
+        $this->data['textOptions'] = $this->language->get('OPTIONS');
+        $this->data['textOptionValues'] = $this->language->get('OPTION_VALUES');
     }
 
     private function getDiffValue($value, $diff, $diffValue, $type = "number"){
@@ -660,5 +686,78 @@ class ControllerModuleMpchanges extends Controller {
             return round($price);
         }
     }
+
+    public function setOption() {
+        $option = OptionDAO::getInstance()->getOptionById($this->parameters['optionId']);
+        foreach ($this->parameters['products'] as $productId) {
+            $product = ProductDAO::getInstance()->getProduct($productId, true);
+            $productOptions = $product->getOptions();
+            if ($this->parameters['operation'] == 'AddOption') {
+                if (is_null($productOptions->getByOptionId($option->getId()))) {
+                    $productOptions->attach(new ProductOption(
+                        null,
+                        $product,
+                        $option,
+                        null,
+                        false,
+                        null
+                    ));
+                }
+            } elseif ($this->parameters['operation'] == 'DelOption') {
+                $productOptions->detach($productOptions->getByOptionId($option->getId()));
+            } elseif ($this->parameters['operation'] == 'AddValue') {
+                $productOption = $productOptions->getByOptionId($option->getId());
+                if (is_null($productOption)){
+                    $productOption = new ProductOption(
+                        null,
+                        $product,
+                        $option,
+                        null,
+                        false,
+                        null
+                    );
+                    $productOptions->attach($productOption);
+                }
+                if ($productOption->getOption()->isSingleValueType()) {
+                    $productOption->setValue($this->parameters['optionValue']);
+                } else { // Option value type is multivalue
+                    if (is_null($productOption->getValue()->getByOptionValueId($this->parameters['optionValue']))) {
+                        $productOption->setValue(new ProductOptionValue(
+                            null,
+                            $productOption,
+                            new OptionValue($option, $this->parameters['optionValue']),
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            null
+                        ));
+                    }
+                }
+            } elseif ($this->parameters['operation'] == 'DelValue') {
+                $productOption = $productOptions->getByOptionId($option->getId());
+                if (!is_null($productOption)) {
+                    if ($productOption->getOption()->isSingleValueType()) {
+                        $productOption->deleteValue();
+                    } elseif ($productOption->getOption()->isMultiValueType()) {
+                        $productOption->deleteValue(new ProductOptionValue(
+                            null,
+                            $productOption,
+                            new OptionValue($option, $this->parameters['optionValue']),
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null
+                        ));
+                    } else {
+                        throw new InvalidArgumentException("Not acceptable option value type '" . $this->parameters['optionValueType'] . "'");
+                    }
+                }
+            }
+            ProductDAO::getInstance()->saveProduct($product);
+        }
+    }
 }
-?>
