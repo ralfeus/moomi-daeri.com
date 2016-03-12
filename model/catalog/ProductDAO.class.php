@@ -791,6 +791,14 @@ SQL
 
     /**
      * @param int $productId
+     * @return bool|string
+     */
+    public function getImageDescription($productId) {
+        return $this->getSingleValue($productId, 'image_description');
+    }
+
+    /**
+     * @param int $productId
      * @return string
      */
     public function getKeyword($productId) {

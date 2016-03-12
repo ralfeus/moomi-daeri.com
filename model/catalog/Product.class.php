@@ -343,6 +343,9 @@ class Product {
      * @return string
      */
     public function getImageDescription() {
+        if (is_null($this->imageDescription)) {
+            $this->imageDescription = ProductDAO::getInstance()->getImageDescription($this->id);
+        }
         return $this->imageDescription;
     }
 
