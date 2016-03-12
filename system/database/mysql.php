@@ -113,6 +113,11 @@ final class MySQL implements DBDriver{
                 $this->reconnect();
             }
         }
+        if (!$log) {
+            $log = new Log('error.log');
+        }
+        $log->write($sql);
+        $log->write(print_r($params, true));
         throw $lastError;
     }
 

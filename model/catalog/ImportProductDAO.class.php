@@ -24,9 +24,9 @@ class ImportProductDAO extends DAO {
         }
         if (isset($data['filterLocalProductId'])) {
             if ($data['filterLocalProductId'] == '*') {
-                $filter->addChunk("(product_id IS NOT NULL OR source_product_id IS NOT NULL");
+                $filter->addChunk("product_id IS NOT NULL");
             } elseif ($data['filterLocalProductId'] == 'NULL') {
-                $filter->addChunk("(product_id IS NULL AND source_product_id IS NULL)");
+                $filter->addChunk("(product_id IS NULL)");
             } else {
                 $filter->addChunk("(product_id = :productId OR source_product_id = :productId)", [':productId' => $data['filterLocalProductId']]);
             }
@@ -166,11 +166,11 @@ class ImportProductDAO extends DAO {
 
     public function getImportedProductsQuantity(array $data) {
         $filter = $this->buildFilter($data);
-        $sql = '
-            SELECT COUNT(*) AS quantity
-            FROM imported_products AS ip
-            ' . ($filter->isFilterSet() ? "WHERE " . $filter->getFilterString() : '')
-        ;
+        $sql = 'SELECT COUNT(*) AS quantity FROM imported_products AS ip';
+        if ($filter->isFilterSet()) {
+            $sql .= " WHERE " . $filter->getFilterString();
+        }
+
         $result = $this->getDb()->query($sql, $filter->isFilterSet() ? $filter->getParams() : null);
         return $result->row['quantity'];
     }
