@@ -82,6 +82,7 @@ $_['success_delete']   = 'Элементы удалены';
 $_['store_default']                  = "Основной";
 $_['OPTIONS'] = 'Options';
 $_['OPTION_VALUES'] = 'Option values';
+$_['WEIGHT'] = 'Weight';
 $_['ADD_OPTION'] = 'Add new option';
 $_['DEL_OPTION'] = 'Delete existing option';
 $_['ADD_OPTION_VALUE'] = 'Add a value to existing or new option';

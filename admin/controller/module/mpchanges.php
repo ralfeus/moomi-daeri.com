@@ -235,6 +235,8 @@ class ControllerModuleMpchanges extends Controller {
 //            'optionValueType' => null,
             'products' => []
         ]);
+        $this->parameters['price'] = (is_numeric($this->getRequest()->getParam('price', 0))) ? $this->getRequest()->getParam('price', 0) : 0;
+        $this->parameters['weight'] = (is_numeric($this->getRequest()->getParam('weight', 0))) ? $this->getRequest()->getParam('weight', 0) : 0;
     }
 
     public function loadFilteredProducts() {
@@ -319,6 +321,8 @@ class ControllerModuleMpchanges extends Controller {
         $this->data['textExecute'] = $this->language->get('EXECUTE');
         $this->data['textOptions'] = $this->language->get('OPTIONS');
         $this->data['textOptionValues'] = $this->language->get('OPTION_VALUES');
+        $this->data['textOptionValuePrice'] = $this->language->get('PRICE');
+        $this->data['textOptionValueWeight'] = $this->language->get('WEIGHT');
     }
 
     private function getDiffValue($value, $diff, $diffValue, $type = "number"){
@@ -728,9 +732,9 @@ class ControllerModuleMpchanges extends Controller {
                             new OptionValue($option, $this->parameters['optionValue']),
                             0,
                             0,
+                            $this->parameters['price'],
                             0,
-                            0,
-                            0,
+                            $this->parameters['weight'],
                             null
                         ));
                     }

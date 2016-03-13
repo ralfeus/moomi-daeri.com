@@ -369,11 +369,25 @@
                         <?php endforeach; ?>
                     </select>
                     <br />
-                    <div id="optionValuesSection" style="display: none">
-                        <label for="optionValues"><?= $textOptionValues ?></label><br />
-                        <select class="optionValue" title="<?= $textOptionValues ?>"></select>
-                        <input class="optionValue" title="<?= $textOptionValues ?>" />
-                    </div>
+                    <table id="optionValuesSection" style="display: none">
+                        <tr><td><label for="optionValues"><?= $textOptionValues ?></label><br /></td></tr>
+                        <tr id="singleValue"><td>
+                            <input class="optionValue" title="<?= $textOptionValues ?>" />
+                        </td></tr>
+                        <tr id="multiValue">
+                            <td>
+                                <select class="optionValue" title="<?= $textOptionValues ?>"></select>
+                            </td>
+                            <td>
+                                <label for="price"><?= $textOptionValuePrice ?></label>
+                                <input type="text" id="price" title="<?= $textOptionValuePrice ?>" />
+                            </td>
+                            <td>
+                                <label for="weight"><?= $textOptionValueWeight ?></label>
+                                <input type="text" id="weight" title="<?= $textOptionValueWeight ?>" />
+                            </td>
+                        </tr>
+                    </table>
                 </form>
                 <a class="button" onclick="setOptions()"><?= $textExecute ?></a>
             </div>
@@ -551,9 +565,9 @@ $(document).ready(function() {
 $('input[name="optionOperation"]').click(function() {
     if (this.value.indexOf('Value') != -1) {
         reloadOptionValues($('select#options')[0]);
-        $('div#optionValuesSection').fadeIn();
+        $('table#optionValuesSection').fadeIn();
     } else {
-        $('div#optionValuesSection').fadeOut();
+        $('table#optionValuesSection').fadeOut();
     }
 });
 
@@ -566,18 +580,19 @@ function reloadOptionValues(sender) {
             optionId: sender.value
         },
         success: function(json) {
-            $('.optionValue').fadeOut();
             if ($.inArray(sender.selectedOptions[0].attributes['content'].value, ['select']) > -1) {
+                $('tr#singleValue').fadeOut();
+                $('tr#multiValue').fadeIn();
                 var selectOptions = $('select.optionValue');
                 selectOptions.empty();
-                selectOptions.fadeIn();
                 for (var optionValueItem of json) {
                     selectOptions.append('<option value="' + optionValueItem.id + '">' + optionValueItem.text + '</option>');
                 }
             } else if ($.inArray(sender.selectedOptions[0].attributes['content'].value, ['text', 'textarea']) > -1) {
                 var optionValue = $('input.optionValue');
                 optionValue.val(json);
-                optionValue.fadeIn();
+                $('tr#multiValue').fadeOut();
+                $('tr#singleValue').fadeIn();
             }
         }
     })
@@ -594,7 +609,9 @@ function setOptions() {
             operation: $('input[name="optionOperation"]:checked').val(),
             optionId: $('select#options').val(),
             optionValue: optionValue.length ? optionValue.val() : '',
-            optionValueType: optionValue.length ? (optionValue[0].nodeName == 'INPUT' ? 'single' : 'multi') : ''
+            optionValueType: optionValue.length ? (optionValue[0].nodeName == 'INPUT' ? 'single' : 'multi') : '',
+            price: optionValue.length ? $('input#price').val() : '',
+            weight: optionValue.length ? $('input#weight').val() : ''
         },
         beforeSend: function() {
             $.blockUI({message: $('#wait')});
