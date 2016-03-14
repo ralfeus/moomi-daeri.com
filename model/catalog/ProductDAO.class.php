@@ -6,10 +6,72 @@ use model\localization\Description;
 use model\localization\DescriptionCollection;
 use system\exception\NotImplementedException;
 use system\library\Dimensions;
+use system\library\Filter;
 use system\library\MeasureUnit;
 use system\library\Weight;
 
 class ProductDAO extends DAO {
+    /**
+     * @param array $data
+     * @return Filter
+     */
+    private function buildFilter(array $data) {
+        $filter = new Filter(); $tmp0 = $tmp1 = '';
+        if (isset($data['selectedItems'])) {
+            $filter->addChunk($this->buildSimpleFieldFilterEntry('p.product_id', $data['selectedItems'], $tmp0, $tmp1));
+        }
+        if (!empty($data['filterCategoryId'])) {
+            $categories = [];
+            $categories[] = $data['filterCategoryId'];
+            if (!empty($data['filterSubCategories'])) {
+                foreach (CategoryDAO::getInstance()->getCategoriesByParentId($data['filterCategoryId']) as $category) {
+                    $categories[] = $category->getId();
+                }
+            }
+            $filter->addChunk($this->buildSimpleFieldFilterEntry('p2c.category_id', $categories, $tmp0, $tmp1));
+        }
+        if (!empty($data['filterManufacturerId'])) {
+            $filter->addChunk($this->buildSimpleFieldFilterEntry('p.manufacturer_id', $data['filterManufacturerId'], $tmp0, $tmp1));
+        }
+        if (!empty($data['filterModel'])) {
+            $filter->addChunk("p.model LIKE CONCAT('%', :model, '%')", [':model' => $data['filterModel']]);
+        }
+        if (!empty($data['filterName'])) {
+            $words = explode(' ', $data['filterName']); $filterString = ''; $filterParams = [];
+            for ($i = 0; $i < sizeof($words); $i++) {
+                $filterString .= " OR pd.name LIKE CONCAT('%', :name$i, '%') OR pd.description LIKE CONCAT('%', :name$i, '%'))";
+                $filterParams[":name$i"] = $words[$i];
+            }
+            $filter->addChunk("(" . substr($filterString, 4) . ")", $filterParams);
+        }
+        if (!empty($data['filterPriceRange'])) {
+            $filterString = '';
+            if (!is_null($data['filterPriceRange'][0])) {
+                $filterString = " AND p.price >= :priceFrom";
+            }
+            if (!is_null($data['filterPriceRange'][1])) {
+                $filterString .= "AND p.price <= :priceTo";
+            }
+            $filter->addChunk(substr($filterString, 4), [':priceFrom' => $data['filterPriceRange'][0], ':priceTo' => $data['filterPriceRange'][1]]);
+        }
+        if (!empty($data['filterStoreId'])) {
+            $filter->addChunk($this->buildSimpleFieldFilterEntry('p2s.store_id', $data['filterStoreId'], $tmp0, $tmp1));
+        }
+        if (!empty($data['filterSupplierId'])) {
+            $filter->addChunk($this->buildSimpleFieldFilterEntry('p.supplier_id', $data['filterSupplierId'], $tmp0, $tmp1));
+        }
+        if (!empty($data['filterTag'])) {
+            $words = explode(' ', $data['filterTag']); $filterString = ''; $filterParams = [];
+            for ($i = 0; $i < sizeof($words); $i++) {
+                $filterString .= " OR pt.tag LIKE CONCAT('%', :tag$i, '%')";
+                $filterParams[":tag$i"] = $words[$i];
+            }
+            $filter->addChunk("(" . substr($filterString, 4) . ")", $filterParams);
+        }
+
+        return $filter;
+    }
+
     private function getSingleValue($productId, $columnName) {
         return $this->getDb()->queryScalar("SELECT $columnName FROM product WHERE product_id = ?", array("i:$productId"));
     }
@@ -33,112 +95,33 @@ class ProductDAO extends DAO {
         if ($shallow) {
             return new Product($productId);
         }
-        $customerGroupId = $this->getCurrentCustomer()->isLogged()
+        $customerGroupId = (!is_null($this->getCurrentCustomer()) && $this->getCurrentCustomer()->isLogged())
             ? $this->getCurrentCustomer()->getCustomerGroupId()
             : $this->config->get('config_customer_group_id');
 
         $query = $this->getDb()->query(<<<SQL
-		    SELECT DISTINCT
-		        *, pd.name AS name, p.image, m.name AS manufacturer,
-		        (
-		            SELECT price
-		            FROM product_discount pd2
-		            WHERE
-		                pd2.product_id = p.product_id
-		                AND pd2.customer_group_id = ?
-		                AND pd2.quantity = 1
-		                AND (
-		                    (pd2.date_start = '0000-00-00' OR pd2.date_start < ?)
-		                    AND (pd2.date_end = '0000-00-00' OR pd2.date_end > ?)
-                        )
-                    ORDER BY pd2.priority ASC, pd2.price ASC
-                    LIMIT 1
-                ) AS discount,
-                (
-                    SELECT price
-                    FROM product_special ps
-                    WHERE
-                        ps.product_id = p.product_id
-                        AND ps.customer_group_id = ?
-                        AND ((ps.date_start = '0000-00-00' OR ps.date_start < ?)
-                        AND (ps.date_end = '0000-00-00' OR ps.date_end > ?))
-                    ORDER BY ps.priority ASC, ps.price ASC
-                    LIMIT 1
-                ) AS special,
-                (
-                    SELECT points
-                    FROM product_reward pr
-                    WHERE pr.product_id = p.product_id AND customer_group_id = ?
-                ) AS reward,
-                (
-                    SELECT ss.name
-                    FROM stock_status ss
-                    WHERE ss.stock_status_id = p.stock_status_id AND ss.language_id = ?
-                ) AS stock_status,
-                (
-                    SELECT wcd.unit
-                    FROM weight_class_description wcd
-                    WHERE p.weight_class_id = wcd.weight_class_id AND wcd.language_id = ?
-                ) AS weight_class,
-                (
-                    SELECT lcd.unit
-                    FROM length_class_description lcd
-                    WHERE p.length_class_id = lcd.length_class_id AND lcd.language_id = ?
-                ) AS length_class,
-                (
-                    SELECT AVG(rating) AS total
-                    FROM review r1
-                    WHERE r1.product_id = p.product_id AND r1.status = '1'
-                    GROUP BY r1.product_id
-                ) AS rating,
-                (
-                    SELECT COUNT(*) AS total
-                    FROM review r2
-                    WHERE r2.product_id = p.product_id AND r2.status = '1'
-                    GROUP BY r2.product_id
-                ) AS reviews,
-                p.sort_order
-            FROM
-                product p
-                LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
-                LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
-                LEFT JOIN manufacturer m ON (p.manufacturer_id = m.manufacturer_id)
-                LEFT JOIN url_alias AS ua ON ua.query =  'product_id=' + p.product_id
-
-            WHERE
-                p.product_id = ?
-                AND pd.language_id = ?
-                AND p.status = '1'
-                AND p.date_available <= ?
-                AND p2s.store_id = ?
+		    SELECT *
+            FROM product AS p
+            WHERE p.product_id = :productId
 SQL
-            , array(
-                "i:$customerGroupId",
-                's:' . date('Y-m-d H:00:00'),
-                's:' . date('Y-m-d H:00:00', strtotime('+1 hour')),
-                "i:$customerGroupId",
-                's:' . date('Y-m-d H:00:00'),
-                's:' . date('Y-m-d H:00:00', strtotime('+1 hour')),
-                "i:$customerGroupId",
-                'i:' . $this->config->get('config_language_id'),
-                'i:' . $this->config->get('config_language_id'),
-                'i:' . $this->config->get('config_language_id'),
-                "i:$productId",
-                's:' . $this->config->get('config_language_id'),
-                's:' . date('Y-m-d H:00:00'),
-                'i:' . $this->config->get('config_store_id')
-            )
-        );
+            , [
+//                ':customerGroupId' => $customerGroupId,
+//                ':dateStart' => date('Y-m-d H:00:00'),
+//                ':dateEnd' => date('Y-m-d H:00:00', strtotime('+1 hour')),
+//                ':languageId' => $this->config->get('config_language_id'),
+                ':productId' => $productId,
+//                ':storeId' => $this->config->get('config_store_id')
+        ]);
 
         if ($query->num_rows) {
-            $query->row['price'] = ($query->row['discount'] ? $query->row['discount'] : $query->row['price']);
-            $query->row['rating'] = (int)$query->row['rating'];
+//            $query->row['price'] = ($query->row['discount'] ? $query->row['discount'] : $query->row['price']);
+//            $query->row['rating'] = (int)$query->row['rating'];
 
             if ($object) {
                 return
                     new Product(
                         $query->row['product_id'], $query->row['afc_id'], $query->row['affiliate_commission'],
-                        $query->row['date_added'], $query->row['date_available'], $query->row['date_modified'], array(),
+                        $query->row['date_added'], $query->row['date_available'], $query->row['date_modified'], null,
                         new Dimensions($query->row['length_class_id'], $query->row['height'], $query->row['length'], $query->row['width']),
                         $query->row['image'], $query->row['keyword'], $query->row['korean_name'], $query->row['location'],
                         $query->row['manufacturer_id'], $query->row['minimum'], $query->row['model'], null, $query->row['points'],
@@ -147,7 +130,7 @@ SQL
                         SupplierDAO::getInstance()->getSupplier($query->row['supplier_id'], true),
                         $query->row['supplier_url'], null, $query->row['upc'], $query->row['user_id'], $query->row['viewed'],
                         new Weight($query->row['weight_class_id'], $query->row['weight']), null, null, null, null, null,
-                        null, null, null, $query->row['image_description']
+                        null, null, null, $query->row['image_description'], $this->getLanguage()->getId()
                     );
             } else {
                 return $query->row;
@@ -157,8 +140,13 @@ SQL
         }
     }
 
+    /**
+     * @param array $data
+     * @return Product[]
+     * @throws \CacheNotInstalledException
+     */
     public function getProducts($data = array()) {
-        if ($this->getCurrentCustomer()->isLogged()) {
+        if (!is_null($this->getCurrentCustomer()) && $this->getCurrentCustomer()->isLogged()) {
             $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
         } else {
             $customer_group_id = $this->config->get('config_customer_group_id');
@@ -172,104 +160,26 @@ SQL
             $product_data = $this->getCache()->get('product.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$customer_group_id . '.' . $cache);
 
         if (!$product_data) {
-            $sql = "
+            $filter = $this->buildFilter($data);
+            $sql = <<<SQL
 			    SELECT
 			        p.product_id,
 			        (
 			            SELECT AVG(rating) AS total
 			            FROM review r1
-			            WHERE r1.product_id = p.product_id AND r1.status = '1'
+			            WHERE r1.product_id = p.product_id AND r1.status = 1
 			            GROUP BY r1.product_id
                     ) AS rating
                 FROM
                     product p
                     LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
                     LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
-            ";
-
-            if (!empty($data['filter_tag'])) {
-                $sql .= " LEFT JOIN product_tag pt ON (p.product_id = pt.product_id)";
-            }
-
-            if (!empty($data['filter_category_id'])) {
-                $sql .= " LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)";
-            }
-
-            $sql .= "
-			    WHERE
-			        pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
-			        AND p.status = '1'
-			        AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
-			        AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
-            ";
-
-            if (!empty($data['filter_name']) || !empty($data['filter_tag'])) {
-                $sql .= " AND (";
-
-                if (!empty($data['filter_name'])) {
-                    $implode = array();
-
-                    $words = explode(' ', $data['filter_name']);
-
-                    foreach ($words as $word) {
-                        if (!empty($data['filter_description'])) {
-                            $implode[] = "LCASE(pd.name) LIKE '%" . $this->getDb()->escape(utf8_strtolower($word)) . "%' OR LCASE(pd.description) LIKE '%" . $this->getDb()->escape(utf8_strtolower($word)) . "%'";
-                        } else {
-                            $implode[] = "LCASE(pd.name) LIKE '%" . $this->getDb()->escape(utf8_strtolower($word)) . "%'";
-                        }
-                    }
-
-                    if ($implode) {
-                        $sql .= " " . implode(" OR ", $implode) . "";
-                    }
-                }
-
-                if (!empty($data['filter_name']) && !empty($data['filter_tag'])) {
-                    $sql .= " OR ";
-                }
-
-                if (!empty($data['filter_tag'])) {
-                    $implode = array();
-
-                    $words = explode(' ', $data['filter_tag']);
-
-                    foreach ($words as $word) {
-                        $implode[] = "LCASE(pt.tag) LIKE '%" . $this->getDb()->escape(utf8_strtolower($data['filter_tag'])) . "%' AND pt.language_id = '" . (int)$this->config->get('config_language_id') . "'";
-                    }
-
-                    if ($implode) {
-                        $sql .= " " . implode(" OR ", $implode) . "";
-                    }
-                }
-
-                $sql .= ")";
-            }
-
-            if (!empty($data['filter_category_id'])) {
-                if (!empty($data['filter_sub_category'])) {
-                    $implode_data = array();
-
-                    $implode_data[] = "p2c.category_id = '" . (int)$data['filter_category_id'] . "'";
-
-                    $this->load->model('catalog/category');
-
-                    $categories = $this->model_catalog_category->getCategoriesByParentId($data['filter_category_id']);
-
-                    foreach ($categories as $category_id) {
-                        $implode_data[] = "p2c.category_id = '" . (int)$category_id . "'";
-                    }
-
-                    $sql .= " AND (" . implode(' OR ', $implode_data) . ")";
-                } else {
-                    $sql .= " AND p2c.category_id IN (" . $data['filter_category_id'] . ")";
-                }
-            }
-
-            if (!empty($data['filter_manufacturer_id'])) {
-                $sql .= " AND p.manufacturer_id = '" . (int)$data['filter_manufacturer_id'] . "'";
-            }
-
-            $sql .= " GROUP BY p.product_id";
+                    LEFT JOIN product_tag pt ON (p.product_id = pt.product_id)
+                    LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
+SQL
+            ;
+            $sql .= $filter->getFilterString(true) . '
+                GROUP BY p.product_id';
 
             $sort_data = array(
                 'pd.name',
@@ -297,110 +207,50 @@ SQL
                 $sql .= " ASC";
             }
 
-            if (isset($data['start']) || isset($data['limit'])) {
-                if ($data['start'] < 0) {
-                    $data['start'] = 0;
-                }
-
-                if ($data['limit'] < 1) {
-                    $data['limit'] = 20;
-                }
-
-                $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
-            }
+            $sql .= $this->buildLimitString($data['start'], $data['limit']);
 
             $product_data = array();
             //print_r($sql);exit();
-            $query = $this->getDb()->query($sql);
+            $query = $this->getDb()->query($sql, $filter->getParams());
 
             foreach ($query->rows as $result) {
-                $product_data[$result['product_id']] = $this->getProduct($result['product_id']);
+                $product_data[$result['product_id']] = $this->getProduct($result['product_id'], false, true);
             }
 
-            $this->cache->set('product.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$customer_group_id . '.' . $cache, $product_data);
+            $this->getCache()->set('product.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$customer_group_id . '.' . $cache, $product_data);
         }
 
         return $product_data;
     }
 
-    public function getProductSpecials($data = array()) {
-        if ($this->getCurrentCustomer()->isLogged()) {
-            $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
-        } else {
-            $customer_group_id = $this->config->get('config_customer_group_id');
+    /**
+     * @param array $data
+     * @return int
+     * @throws \CacheNotInstalledException
+     */
+    public function getProductsCount($data = array()) {
+        /// Cache implementation
+        $dataHash = base64_encode(serialize($data)) . $this->config->get('config_store_id');
+        if (is_null($this->getCache()->get("productsCount.$dataHash"))) {
+//        $this->log->write("Go to DB");
+            $filter = $this->buildFilter($data);
+            $sql = "SELECT COUNT(DISTINCT p.product_id) AS total FROM product AS p";
+            $sql .= $filter->getFilterString(true);
+            $result = $this->getDb()->queryScalar($sql, $filter->getParams());
+            $this->getCache()->set("productsCount.$dataHash", $result);
         }
+        return $this->getCache()->get("productsCount.$dataHash");
+    }
 
-        $sql = "
-		    SELECT DISTINCT
-		        ps.product_id,
-		        (
-                    SELECT AVG(rating)
-                    FROM review r1
-                    WHERE
-                        r1.product_id = ps.product_id
-                        AND r1.status = '1'
-                    GROUP BY r1.product_id
-                ) AS rating
-            FROM
-                product_special ps
-                LEFT JOIN product p ON (ps.product_id = p.product_id)
-                LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
-                LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
-            WHERE
-                p.status = '1'
-                AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
-                AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'
-                AND ps.customer_group_id = '" . (int)$customer_group_id . "'
-                AND ((ps.date_start = '0000-00-00' OR ps.date_start < '" . date('Y-m-d H:00:00') . "')
-                AND (ps.date_end = '0000-00-00' OR ps.date_end > '" . date('Y-m-d H:00:00', strtotime('+1 hour')) . "'))
-            GROUP BY ps.product_id
-        ";
-
-        $sort_data = array(
-            'pd.name',
-            'p.model',
-            'ps.price',
-            'rating',
-            'p.sort_order'
-        );
-
-        if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
-            if ($data['sort'] == 'pd.name' || $data['sort'] == 'p.model') {
-                $sql .= " ORDER BY LCASE(" . $data['sort'] . ")";
-            } else {
-                $sql .= " ORDER BY " . $data['sort'];
-            }
-        } else {
-            $sql .= " ORDER BY p.sort_order";
-        }
-
-        if (isset($data['order']) && ($data['order'] == 'DESC')) {
-            $sql .= " DESC";
-        } else {
-            $sql .= " ASC";
-        }
-
-        if (isset($data['start']) || isset($data['limit'])) {
-            if ($data['start'] < 0) {
-                $data['start'] = 0;
-            }
-
-            if ($data['limit'] < 1) {
-                $data['limit'] = 20;
-            }
-
-            $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
-        }
-
-        $product_data = array();
-
-        $query = $this->getDb()->query($sql);
-
-        foreach ($query->rows as $result) {
-            $product_data[$result['product_id']] = $this->getProduct($result['product_id']);
-        }
-
-        return $product_data;
+    public function getProductSpecials($productId) {
+        $query = "
+            SELECT *
+            FROM product_special AS p
+            WHERE product_id = :productId
+            ORDER BY priority, price
+    ";
+//		$this->log->write($query);
+        return $this->getDb()->query($query, [':productId' => $productId])->rows;
     }
 
     public function getLatestProducts($limit) {
@@ -643,7 +493,7 @@ SQL
      * @return array
      */
     public function getProductDiscounts($product_id) {
-        if ($this->getCurrentCustomer()->isLogged()) {
+        if (!is_null($this->getCurrentCustomer()) && $this->getCurrentCustomer()->isLogged()) {
             $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
         } else {
             $customer_group_id = $this->config->get('config_customer_group_id');
@@ -887,107 +737,6 @@ SQL
 
     public function getSupplierUrl($productId) {
         return $this->getSingleValue($productId, 'supplier_url');
-    }
-
-    public function getTotalProducts($data = array()) {
-        /// Cache implementation
-        $dataHash = base64_encode(serialize($data)) . $this->config->get('config_store_id');
-        $result = $this->cache->get("productsCount.$dataHash");
-        if (isset($result))
-            return $result;
-//        $this->log->write("Go to DB");
-        $sql = "
-		    SELECT COUNT(DISTINCT p.product_id) AS total
-            FROM
-                product p
-                LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
-                LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)";
-
-        if (!empty($data['filter_category_id'])) {
-            $sql .= " LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)";
-        }
-
-        if (!empty($data['filter_tag'])) {
-            $sql .= " LEFT JOIN product_tag pt ON (p.product_id = pt.product_id)";
-        }
-
-        $sql .= "
-		    WHERE
-		        pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
-		        AND p.status = '1'
-		        AND p.date_available <= '" . date('Y-m-d H:00:00') . "'
-		        AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'";
-        if (!empty($data['filter_name']) || !empty($data['filter_tag'])) {
-            $sql .= " AND (";
-
-            if (!empty($data['filter_name'])) {
-                $implode = array();
-
-                $words = explode(' ', $data['filter_name']);
-
-                foreach ($words as $word) {
-                    if (!empty($data['filter_description'])) {
-                        $implode[] = "LCASE(pd.name) LIKE '%" . $this->getDb()->escape(utf8_strtolower($word)) . "%' OR LCASE(pd.description) LIKE '%" . $this->getDb()->escape(utf8_strtolower($word)) . "%'";
-                    } else {
-                        $implode[] = "LCASE(pd.name) LIKE '%" . $this->getDb()->escape(utf8_strtolower($word)) . "%'";
-                    }
-                }
-
-                if ($implode) {
-                    $sql .= " " . implode(" OR ", $implode) . "";
-                }
-            }
-
-            if (!empty($data['filter_name']) && !empty($data['filter_tag'])) {
-                $sql .= " OR ";
-            }
-
-            if (!empty($data['filter_tag'])) {
-                $implode = array();
-
-                $words = explode(' ', $data['filter_tag']);
-
-                foreach ($words as $word) {
-                    $implode[] = "LCASE(pt.tag) LIKE '%" . $this->getDb()->escape(utf8_strtolower($data['filter_tag'])) . "%' AND pt.language_id = '" . (int)$this->config->get('config_language_id') . "'";
-                }
-
-                if ($implode) {
-                    $sql .= " " . implode(" OR ", $implode) . "";
-                }
-            }
-
-            $sql .= ")";
-        }
-
-        if (!empty($data['filter_category_id'])) {
-            if (!empty($data['filter_sub_category'])) {
-                $implode_data = array();
-
-                $implode_data[] = "p2c.category_id = '" . (int)$data['filter_category_id'] . "'";
-
-                $this->load->model('catalog/category');
-
-                $categories = $this->model_catalog_category->getCategoriesByParentId($data['filter_category_id']);
-
-                foreach ($categories as $category_id) {
-                    $implode_data[] = "p2c.category_id = '" . (int)$category_id . "'";
-                }
-
-                $sql .= " AND (" . implode(' OR ', $implode_data) . ")";
-            } else {
-                $sql .= " AND p2c.category_id = '" . (int)$data['filter_category_id'] . "'";
-            }
-        }
-
-        if (!empty($data['filter_manufacturer_id'])) {
-            $sql .= " AND p.manufacturer_id = '" . (int)$data['filter_manufacturer_id'] . "'";
-        }
-
-        //print_r($sql);exit();
-
-        $query = $this->getDb()->query($sql);
-        $this->cache->set("productsCount.$dataHash", $query->row['total']);
-        return $query->row['total'];
     }
 
     public function getTotalProductSpecials() {

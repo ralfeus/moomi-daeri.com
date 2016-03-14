@@ -416,6 +416,10 @@
                     check_all = $('input', '#check-all').prop('checked') ? 'checked="checked"' : '';
                     html = productHTML(json['products'], check_all);
                     $('#filtered-products').append(html);
+                },
+                error: function() {
+                    $.blockUI({message: 'Internal server error has occurred. Click to continue'});
+                    $('.blockOverlay').attr('title','Click to continue').click($.unblockUI);
                 }
             });
         })
@@ -478,7 +482,7 @@ function addDiscounts() {
 function productHTML(products, check_all){
     html= '';
     index = 0;
-    for (product in products){
+    for (var product in products){
         var discount = "&nbsp;";
         var special = "&nbsp;";
 
@@ -518,6 +522,10 @@ function load_products(start, limit){
             check_all = $('input', '#check-all').prop('checked') ? 'checked="checked"' : '';
             html = productHTML(json['products'], check_all);
             $('#filtered-products').append(html);
+        },
+        error: function() {
+            $.blockUI({message: 'Internal server error has occurred. Click to continue'});
+            $('.blockOverlay').attr('title','Click to continue').click($.unblockUI);
         }
     });
 }
@@ -594,6 +602,10 @@ function reloadOptionValues(sender) {
                 $('tr#multiValue').fadeOut();
                 $('tr#singleValue').fadeIn();
             }
+        },
+        error: function() {
+            $.blockUI({message: 'Internal server error has occurred. Click to continue'});
+            $('.blockOverlay').attr('title','Click to continue').click($.unblockUI);
         }
     })
 }
@@ -621,7 +633,7 @@ function setOptions() {
             $('.blockOverlay').attr('title','Click to continue').click($.unblockUI);
         },
         error: function() {
-            $.blockUI({message: 'And error has occurred during option set. Click to continue'});
+            $.blockUI({message: 'An error has occurred during option set. Click to continue'});
             $('.blockOverlay').attr('title','Click to continue').click($.unblockUI);
         }
     })

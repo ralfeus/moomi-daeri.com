@@ -36,10 +36,19 @@ class Filter {
     }
 
     /**
+     * @param bool $complete
      * @return string
      */
-    public function getFilterString() {
-        return $this->filterString;
+    public function getFilterString($complete = false) {
+        if ($complete) {
+            if ($this->isFilterSet()) {
+                return "\r\nWHERE " . $this->filterString;
+            } else {
+                return '';
+            }
+        } else {
+            return $this->filterString;
+        }
     }
 
     /**

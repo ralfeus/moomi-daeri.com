@@ -10,7 +10,7 @@ abstract class Model extends OpenCartBase {
      */
     protected function buildLimitString($start = null, $limit = null) {
         if (isset($start) && isset($limit)) {
-            return "LIMIT $start, $limit";
+            return "\r\nLIMIT $start, $limit";
         } else {
             return '';
         }

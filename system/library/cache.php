@@ -24,6 +24,7 @@ final class Cache {
     /**
      * @param string $key
      * @return mixed
+     * @throws CacheNotInstalledException
      */
     public function get($key) {
         if (function_exists('apc_exists')) {

@@ -12,6 +12,7 @@ class Product {
     private $attributes;
     /** @var  Mutable */
     private $categories;
+    private $defaultLanguageId;
     /** @var Mutable */
     private $description;
     private $dimension;
@@ -107,6 +108,7 @@ class Product {
      * @param array $layouts
      * @param array $rewards
      * @param null $imageDescription
+     * @param int $defaultLanguageId
      */
     public function __construct($id, $afcId = null, $affiliateCommission = null, $dateAdded = null, $dateAvailable = null, $dateModified = null,
                                 $description = null, $dimension = null, $imagePath = null, $keyword = null, $koreanName = null, $location = null,
@@ -115,7 +117,7 @@ class Product {
                                 $stockStatusId = null, $stores = null, $subtract = null, $supplier = null, $supplierUrl = null,
                                 $tag = null, $upc = null, $userId = null, $viewed = null, $weight = null, $attributes = null,
                                 $discounts = null, $specials = null, $downloads = null, $categories = null, $related = null,
-                                $layouts = null, $rewards = null, $imageDescription = null) {
+                                $layouts = null, $rewards = null, $imageDescription = null, $defaultLanguageId = null) {
         $this->id = $id;
         if (!is_null($afcId)) { $this->afcId = $afcId; }
         if (!is_null($affiliateCommission)) { $this->affiliateCommission = new Mutable($affiliateCommission); }
@@ -132,6 +134,7 @@ class Product {
         if (!is_null($imagePath)) { $this->imagePath = new Mutable($imagePath); }
         if (!is_null($keyword)) { $this->koreanName = new Mutable($keyword); }
         if (!is_null($koreanName)) { $this->koreanName = new Mutable($koreanName); }
+        if (!is_null($defaultLanguageId)) { $this->defaultLanguageId = $defaultLanguageId; }
         if (!is_null($location)) { $this->location = $location; }
         if (!is_null($manufacturerId)) { $this->manufacturerId = new Mutable($manufacturerId); }
         if (!is_null($minimum)) { $this->minimum = new Mutable($minimum); }
@@ -305,7 +308,7 @@ class Product {
         if (!isset($this->discounts)) {
             $this->discounts = new Mutable(ProductDAO::getInstance()->getProductDiscounts($this->id));
         }
-        return $this->dimension->get();
+        return $this->discounts->get();
     }
 
     /**
@@ -473,6 +476,17 @@ class Product {
 
     public function setModel($value) {
         $this->model->set($value);
+    }
+
+    /**
+     * @param int $languageId
+     * @return string
+     */
+    public function getName($languageId = null) {
+        if (is_null($languageId)) {
+            $languageId = $this->defaultLanguageId;
+        }
+        return $this->getDescription()->getDescription($languageId)->getName();
     }
 
     /**

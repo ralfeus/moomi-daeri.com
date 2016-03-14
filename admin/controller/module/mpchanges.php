@@ -2,7 +2,6 @@
 use model\catalog\ManufacturerDAO;
 use model\catalog\OptionValue;
 use model\catalog\ProductDAO;
-use model\catalog\Option;
 use model\catalog\OptionDAO;
 use model\catalog\ProductOption;
 use model\catalog\ProductOptionValue;
@@ -15,163 +14,46 @@ class ControllerModuleMpchanges extends Controller {
     private function loadFilter(){
         $data = array();
 
-        $this->mpfilter["name"] = "";
-        if (isset($this->request->post['name'])) {
-            $this->mpfilter["name"] = $this->request->post['name'];
-            $data['filter_name'] = $this->mpfilter["name"];
-        }
+        $this->mpfilter["filter_price_from"] = $this->parameters['filterPriceFrom'];
+        $this->mpfilter["filter_price_to"] = $this->parameters['filterPriceTo'];
+        $data["filterPriceRange"] = [$this->parameters['filterPriceFrom'], $this->parameters['filterPriceTo']];
 
-        $this->mpfilter["model"] = "";
-        if (isset($this->request->post['model'])) {
-            $this->mpfilter["model"] = $this->request->post['model'];
-            $data['filterModel'] = $this->mpfilter["model"];
-        }
+        $this->mpfilter["start"] = $data['start'] = $this->parameters['start'];
+        $this->mpfilter["limit"] = $data['limit'] = $this->parameters['limit'];
+        $this->mpfilter["name"] = $data['filterName'] = $this->parameters['name'];
+        $this->mpfilter["model"] = $data['filterModel'] = $this->parameters['model'];
+        $this->mpfilter["change_all"] = $this->parameters['changeAll'];
+        $this->mpfilter["change_ids"] = $this->parameters['productToChange'];
+        $this->mpfilter["change_special"] = $this->parameters['changeSpecial'];
+        $this->mpfilter["change_discount"] = $this->parameters['changeDiscount'];
+        $this->mpfilter["store_id"] = is_null($data['filterStoreId'] = $this->parameters['storeId']) ? -1 : $data['filterStoreId'];
+        $this->mpfilter["manufacturer_id"] = $data['filterManufacturerId'] = $this->parameters['manufacturerId'];
+        $this->mpfilter["supplierId"] = $data['filterSupplierId'] = $this->parameters['supplierId'];
+        $this->mpfilter["category_id"] = $data['filterCategoryId'] = $this->parameters['categoryId'];
+        $this->mpfilter["filter_sub_category"] = $data["filterSubCategory"] = $this->parameters['filterSubCategory'];
+        $this->mpfilter["manufacturer_price"] = $this->parameters['manufacturerPrice'];
+        $this->mpfilter["manufacturer_quantities"] = $this->parameters['manufacturerQuantities'];
+        $this->mpfilter["customer_group"] = $this->parameters['customerGroup'];
+        $this->mpfilter["change_type"] = $this->parameters['changeType'];
+        $this->mpfilter["change_type_quantities"] = $this->parameters['changeTypeQuantities'];
+        $this->mpfilter['quantities_diff'] = $this->parameters['quantitiesDiff'];
+        $this->mpfilter["price_diff"] = $this->parameters['priceDiff'];
+        $this->mpfilter["round_decimal"] = $this->parameters['roundDecimal'];
 
-        $this->mpfilter["change_all"] = false;
-        if (isset($this->request->post['change_all'])) {
-            $this->mpfilter["change_all"] = true;
+//        $this->load->model('module/mpchanges');
+//        $this->mpfilter["products"] = $this->model_module_mpchanges->getProducts($data);
+//        $this->mpfilter["total"] = $this->model_module_mpchanges->getTotalProducts($data);
+        foreach (ProductDAO::getInstance()->getProducts($data) as $product) {
+            $this->mpfilter['products'][] = [
+                'product_id' => $product->getId(),
+                'discount' => sizeof($product->getDiscounts()) > 0,
+                'special' => sizeof($product->getSpecials()) > 0,
+                'name' => $product->getName(),
+                'price' => $product->getPrice(),
+                'quantity' => $product->getQuantity()
+            ];
         }
-
-        $this->mpfilter["change_ids"] = array();
-        if (isset($this->request->post['product_to_change'])) {
-            $this->mpfilter["change_ids"] = $this->request->post['product_to_change'];
-        }
-
-        if (isset($this->request->get['product_list'])) {
-            $this->mpfilter["start"] = 0;
-            $this->mpfilter["limit"] = 30;
-            if (isset($this->request->get['start'])) {
-                $this->mpfilter["start"] = $this->request->get['start'];
-                $data['start'] = $this->mpfilter["start"];
-            }
-            if (isset($this->request->get['limit'])) {
-                $this->mpfilter["limit"] = $this->request->get['limit'];
-                $data['limit'] = $this->mpfilter["limit"];
-            }
-        }
-
-        if ($this->request->post['filter_price_from'] > 0) {
-            $this->mpfilter["filter_price_from"] = (int) $this->request->post['filter_price_from'];
-            $data["filter_price_from"] = (int) $this->request->post['filter_price_from'];
-        }
-
-        if ($this->request->post['filter_price_to'] > 0) {
-            $this->mpfilter["filter_price_to"] = (int) $this->request->post['filter_price_to'];
-            $data["filter_price_to"] = (int) $this->request->post['filter_price_to'];
-        }
-
-        $this->mpfilter["change_special"] = false;
-        if (isset($this->request->post['change_special'])) {
-            $this->mpfilter["change_special"] = true;
-        }
-
-        $this->mpfilter["change_discount"] = false;
-        if (isset($this->request->post['change_discount'])) {
-            $this->mpfilter["change_discount"] = true;
-        }
-
-        $this->mpfilter["store_id"] = -1;
-        if (isset($this->request->post['store_id'])) {
-            if ($this->request->post['store_id'] >= 0){
-                $this->mpfilter["store_id"] = $this->request->post['store_id'];
-                $data['filter_store_id'] = $this->mpfilter["store_id"];
-            }
-        }
-
-        $this->mpfilter["manufacturer_id"] = 0;
-        if (isset($this->request->post['manufacturer_id'])) {
-            $this->mpfilter["manufacturer_id"] = $this->request->post['manufacturer_id'];
-            $data['filter_manufacturer_id'] = $this->mpfilter["manufacturer_id"];
-        }
-
-        $this->mpfilter["category_id"] = 0;
-        if (isset($this->request->post['category_id'])) {
-            $this->mpfilter["category_id"] = $this->request->post['category_id'];
-            $data['filter_category_id'] = $this->mpfilter["category_id"];
-        }
-
-        $this->mpfilter["filter_sub_category"] = false;
-        $data["filter_sub_category"] = false;
-        if (isset($this->request->post['filter_sub_category'])) {
-            $this->mpfilter["filter_sub_category"] = true;
-            $data["filter_sub_category"] = true;
-        }
-
-        $this->mpfilter["manufacturer_price"] = 0;
-        if (isset($this->request->post['manufacturer_price'])) {
-            $this->mpfilter["manufacturer_price"] = $this->request->post['manufacturer_price'];
-        }
-
-        $this->mpfilter["manufacturer_quantities"] = 0;
-        if (isset($this->request->post['manufacturer_quantities'])) {
-            $this->mpfilter["manufacturer_quantities"] = $this->request->post['manufacturer_quantities'];
-        }
-
-        $this->mpfilter["customer_group"] = 0;
-        if (isset($this->request->post['customer_group'])) {
-            $this->mpfilter["customer_group"] = $this->request->post['customer_group'];
-        }
-
-        $this->mpfilter["change_type"] = "percent";
-        if (isset($this->request->post['change_type'])) {
-            $this->mpfilter["change_type"] = $this->request->post['change_type'];
-        }
-
-        $this->mpfilter["change_type_quantities"] = "percent";
-        if (isset($this->request->post['change_type_quantities'])) {
-            $this->mpfilter["change_type_quantities"] = $this->request->post['change_type_quantities'];
-        }
-
-        $this->mpfilter["quantities_diff"] = "-";
-        if (isset($this->request->post['quantities_diff'])) {
-            switch ($this->request->post['quantities_diff']){
-                case '-':
-                    $this->mpfilter["quantities_diff"] = '-';
-                    break;
-                case '+':
-                    $this->mpfilter["quantities_diff"] = '+';
-                    break;
-                case '*':
-                    $this->mpfilter["quantities_diff"] = '*';
-                    break;
-                case '/':
-                    $this->mpfilter["quantities_diff"] = '/';
-                    break;
-                case '=':
-                    $this->mpfilter["quantities_diff"] = '=';
-                    break;
-            }
-        }
-
-        $this->mpfilter["price_diff"] = '-';
-        if (isset($this->request->post['price_diff'])) {
-            switch ($this->request->post['price_diff']){
-                case '-':
-                    $this->mpfilter["price_diff"] = '-';
-                    break;
-                case '+':
-                    $this->mpfilter["price_diff"] = '+';
-                    break;
-                case '*':
-                    $this->mpfilter["price_diff"] = '*';
-                    break;
-                case '/':
-                    $this->mpfilter["price_diff"] = '/';
-                    break;
-                case '=':
-                    $this->mpfilter["price_diff"] = '=';
-                    break;
-            }
-        }
-
-        $this->mpfilter["round_decimal"] = 0;
-        if (isset($this->request->post['filter_round'])) {
-            $this->mpfilter["round_decimal"] = (int)$this->request->post['filter_round'];
-        }
-
-        $this->load->model('module/mpchanges');
-        $this->mpfilter["products"] = $this->model_module_mpchanges->getProducts($data);
-        $this->mpfilter["total"] = $this->model_module_mpchanges->getTotalProducts($data);
+        $this->mpfilter['total'] = ProductDAO::getInstance()->getProductsCount($data);
     }
 
     public function getOptionValues() {
@@ -229,14 +111,38 @@ class ControllerModuleMpchanges extends Controller {
 
     protected function initParameters() {
         $this->initParametersWithDefaults([
+            'category_id' => 0,
+            'change_all' => false,
+            'change_discount' => false,
+            'change_special' => false,
+            'change_type' => 'percent',
+            'change_type_quantities' => 'percent',
+            'customer_group' => 0,
+            'filter_price_from' => null,
+            'filter_price_to' => null,
+            'filter_sub_category' => false,
+            'limit' => $this->config->get('admin_page_size'),
+            'name' => '',
+            'manufacturer_id' => 0,
+            'manufacturer_price' => 0,
+            'manufacturer_quantities' => 0,
+            'model' => '',
             'operation' => null,
             'optionId' => null,
             'optionValue' => null,
 //            'optionValueType' => null,
-            'products' => []
+            'product_list' => null,
+            'product_to_change' => [],
+            'products' => [],
+            'round_decimal' => 0,
+            'start' => 0,
+            'storeId' => null,
+            'supplierId' => 0
         ]);
-        $this->parameters['price'] = (is_numeric($this->getRequest()->getParam('price', 0))) ? $this->getRequest()->getParam('price', 0) : 0;
-        $this->parameters['weight'] = (is_numeric($this->getRequest()->getParam('weight', 0))) ? $this->getRequest()->getParam('weight', 0) : 0;
+        $this->parameters['priceDiff'] = in_array($this->getRequest()->getParam('price_diff', '-'), ['-', '+', '*', '/', '=']) ? $this->getRequest()->getParam('price_diff', '-') : '-';
+        $this->parameters['quantitiesDiff'] = in_array($this->getRequest()->getParam('quantities_diff', '-'), ['-', '+', '*', '/', '=']) ? $this->getRequest()->getParam('quantities_diff', '-') : '-';
+        $this->parameters['price'] = is_numeric($this->getRequest()->getParam('price', 0)) ? $this->getRequest()->getParam('price', 0) : 0;
+        $this->parameters['weight'] = is_numeric($this->getRequest()->getParam('weight', 0)) ? $this->getRequest()->getParam('weight', 0) : 0;
     }
 
     public function loadFilteredProducts() {

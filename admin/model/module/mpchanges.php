@@ -132,19 +132,17 @@ class ModelModuleMpchanges extends Model {
     }
 
     public function getProducts($data = array()) {
-        $sql = "SELECT pd.name, p.product_id, p.price, p.quantity, !isnull(pd2.price) as discount, !isnull(ps.price) as special FROM product p LEFT JOIN product_description pd ON (p.product_id = pd.product_id)";
-
-        if (!empty($data['filter_category_id'])) {
-            $sql .= " LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id) ";}
-
-        if (!empty($data['filter_store_id'])) {
-            $sql .= " RIGHT JOIN product_to_store p2s ON (p.product_id = p2s.product_id) ";}
-
-        $sql .= " LEFT JOIN product_discount pd2 ON (p.product_id = pd2.product_id) ";
-        $sql .= " LEFT JOIN product_special ps ON (p.product_id = ps.product_id) ";
-
-        $sql .= " WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "'";
-
+        $sql = "
+            SELECT pd.name, p.product_id, p.price, p.quantity, !isnull(pd2.price) as discount, !isnull(ps.price) as special
+            FROM
+                product AS p
+                LEFT JOIN product_description AS pd ON p.product_id = pd.product_id
+                LEFT JOIN product_to_category AS p2c ON p.product_id = p2c.product_id
+                RIGHT JOIN product_to_store AS p2s ON p.product_id = p2s.product_id
+                LEFT JOIN product_discount AS pd2 ON p.product_id = pd2.product_id
+                LEFT JOIN product_special AS ps ON p.product_id = ps.product_id
+                WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
+        ";
         if (isset($data['filter_price_from'])) {
             $sql .= " AND p.price >= " . $data['filter_price_from'] . " ";}
 
@@ -153,6 +151,9 @@ class ModelModuleMpchanges extends Model {
 
         if (!empty($data['filter_manufacturer_id'])) {
             $sql .= " AND manufacturer_id = " . (int)$data['filter_manufacturer_id'] . " ";}
+
+        if (!empty($data['filter_supplier_id'])) {
+            $sql .= " AND supplier_id = " . (int)$data['filter_supplier_id'] . " ";}
 
         if (!empty($data['filter_name'])) {
             $sql .= " AND LCASE(pd.name) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%'";}
