@@ -30,7 +30,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->mpfilter["manufacturer_id"] = $data['filterManufacturerId'] = $this->parameters['manufacturerId'];
         $this->mpfilter["supplierId"] = $data['filterSupplierId'] = $this->parameters['supplierId'];
         $this->mpfilter["category_id"] = $data['filterCategoryId'] = $this->parameters['categoryId'];
-        $this->mpfilter["filter_sub_category"] = $data["filterSubCategory"] = $this->parameters['filterSubCategory'];
+        $this->mpfilter["filter_sub_category"] = $data["filterSubCategories"] = $this->parameters['filterSubCategory'];
         $this->mpfilter["manufacturer_price"] = $this->parameters['manufacturerPrice'];
         $this->mpfilter["manufacturer_quantities"] = $this->parameters['manufacturerQuantities'];
         $this->mpfilter["customer_group"] = $this->parameters['customerGroup'];
@@ -43,11 +43,15 @@ class ControllerModuleMpchanges extends Controller {
 //        $this->load->model('module/mpchanges');
 //        $this->mpfilter["products"] = $this->model_module_mpchanges->getProducts($data);
 //        $this->mpfilter["total"] = $this->model_module_mpchanges->getTotalProducts($data);
-        foreach (ProductDAO::getInstance()->getProducts($data) as $product) {
+        $this->mpfilter['products'] = [];
+        $productIds = ProductDAO::getInstance()->getProductIds($data); $count = 0;
+        foreach ($productIds as $productId => $productPlaceholder) {
+            $product = ProductDAO::getInstance()->getProduct($productId, false, true);
+            file_put_contents('/tmp/progress', "Getting product " . $count++ . " of " . sizeof($productIds));
             $this->mpfilter['products'][] = [
-                'product_id' => $product->getId(),
-                'discount' => sizeof($product->getDiscounts()) > 0,
-                'special' => sizeof($product->getSpecials()) > 0,
+                'product_id' => $productId,
+                'discount' => ProductDAO::getInstance()->getProductDiscountsCount($productId) > 0,
+                'special' => ProductDAO::getInstance()->getProductSpecialsCount($productId) > 0,
                 'name' => $product->getName(),
                 'price' => $product->getPrice(),
                 'quantity' => $product->getQuantity()
@@ -63,6 +67,10 @@ class ControllerModuleMpchanges extends Controller {
             $json[] = ['id' => $optionValue->getId(), 'text' => $optionValue->getName()];
         }
         $this->getResponse()->setOutput(json_encode($json));
+    }
+
+    public function getProgress() {
+        $this->getResponse()->setOutput(file_get_contents('/tmp/progress'));
     }
 
 	public function index() {
@@ -93,6 +101,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->data['action_save_discounts'] = $this->url->link('module/mpchanges/adddiscounts', 'token=' . $this->session->data['token'], 'SSL');
         $this->data['action_del_elements'] = $this->url->link('module/mpchanges/delelements', 'token=' . $this->session->data['token'], 'SSL');
         $this->data['urlGetOptionValues'] = $this->url->link('module/mpchanges/getOptionValues', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['urlGetProgress'] = $this->url->link('module/mpchanges/getProgress', 'token=' . $this->session->data['token'], 'SSL');
         $this->data['urlSetOption'] = $this->url->link('module/mpchanges/setOption', 'token=' . $this->session->data['token'], 'SSL');
 
         $this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
@@ -320,7 +329,7 @@ class ControllerModuleMpchanges extends Controller {
                             $discounts = $this->model_module_mpchanges->getProductCurrentDiscounts($product['product_id']);
                             foreach ($discounts as $discount) {
                                 if ($discount['customer_group_id'] == $this->mpfilter["customer_group"] or $this->mpfilter["customer_group"] == 0){
-                                    $discount['product_id'] = $discount['product_id'];
+//                                    $discount['product_id'] = $discount['product_id'];
                                     $discount['price'] = $this->roundPrice($this->getDiffValue($discount['price'], $this->mpfilter["price_diff"], $this->mpfilter["manufacturer_price"], $this->mpfilter["change_type"]), $this->mpfilter['round_decimal']);
 
                                     if ($product['price'] < $discount['price']) $discount['price'] = $product['price'];
@@ -598,76 +607,85 @@ class ControllerModuleMpchanges extends Controller {
     }
 
     public function setOption() {
+        $initialTime = ini_get('max_execution_time');
+        ini_set('max_execution_time', 3600);
+        session_write_close();
         $option = OptionDAO::getInstance()->getOptionById($this->parameters['optionId']);
-        foreach ($this->parameters['products'] as $productId) {
-            $product = ProductDAO::getInstance()->getProduct($productId, true);
-            $productOptions = $product->getOptions();
-            if ($this->parameters['operation'] == 'AddOption') {
-                if (is_null($productOptions->getByOptionId($option->getId()))) {
-                    $productOptions->attach(new ProductOption(
-                        null,
-                        $product,
-                        $option,
-                        null,
-                        false,
-                        null
-                    ));
-                }
-            } elseif ($this->parameters['operation'] == 'DelOption') {
-                $productOptions->detach($productOptions->getByOptionId($option->getId()));
-            } elseif ($this->parameters['operation'] == 'AddValue') {
-                $productOption = $productOptions->getByOptionId($option->getId());
-                if (is_null($productOption)){
-                    $productOption = new ProductOption(
-                        null,
-                        $product,
-                        $option,
-                        null,
-                        false,
-                        null
-                    );
-                    $productOptions->attach($productOption);
-                }
-                if ($productOption->getOption()->isSingleValueType()) {
-                    $productOption->setValue($this->parameters['optionValue']);
-                } else { // Option value type is multivalue
-                    if (is_null($productOption->getValue()->getByOptionValueId($this->parameters['optionValue']))) {
-                        $productOption->setValue(new ProductOptionValue(
+        $this->loadFilter();
+        $count = 0;
+        foreach ($this->mpfilter["products"] as $product) {
+            file_put_contents('/tmp/progress', "Step 2 of 2. Setting options for product " . $count++ . " of " . sizeof($this->mpfilter["products"]));
+            if (in_array($product['product_id'], $this->mpfilter['change_ids']) or $this->mpfilter['change_all']) {
+                $product = ProductDAO::getInstance()->getProduct($product['product_id'], true);
+                $productOptions = $product->getOptions();
+                if ($this->parameters['operation'] == 'AddOption') {
+                    if (is_null($productOptions->getByOptionId($option->getId()))) {
+                        $productOptions->attach(new ProductOption(
                             null,
-                            $productOption,
-                            new OptionValue($option, $this->parameters['optionValue']),
-                            0,
-                            0,
-                            $this->parameters['price'],
-                            0,
-                            $this->parameters['weight'],
+                            $product,
+                            $option,
+                            null,
+                            false,
                             null
                         ));
                     }
-                }
-            } elseif ($this->parameters['operation'] == 'DelValue') {
-                $productOption = $productOptions->getByOptionId($option->getId());
-                if (!is_null($productOption)) {
+                } elseif ($this->parameters['operation'] == 'DelOption') {
+                    $productOptions->detach($productOptions->getByOptionId($option->getId()));
+                } elseif ($this->parameters['operation'] == 'AddValue') {
+                    $productOption = $productOptions->getByOptionId($option->getId());
+                    if (is_null($productOption)) {
+                        $productOption = new ProductOption(
+                            null,
+                            $product,
+                            $option,
+                            null,
+                            false,
+                            null
+                        );
+                        $productOptions->attach($productOption);
+                    }
                     if ($productOption->getOption()->isSingleValueType()) {
-                        $productOption->deleteValue();
-                    } elseif ($productOption->getOption()->isMultiValueType()) {
-                        $productOption->deleteValue(new ProductOptionValue(
-                            null,
-                            $productOption,
-                            new OptionValue($option, $this->parameters['optionValue']),
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null
-                        ));
-                    } else {
-                        throw new InvalidArgumentException("Not acceptable option value type '" . $this->parameters['optionValueType'] . "'");
+                        $productOption->setValue($this->parameters['optionValue']);
+                    } else { // Option value type is multivalue
+                        if (is_null($productOption->getValue()->getByOptionValueId($this->parameters['optionValue']))) {
+                            $productOption->setValue(new ProductOptionValue(
+                                null,
+                                $productOption,
+                                new OptionValue($option, $this->parameters['optionValue']),
+                                0,
+                                0,
+                                $this->parameters['price'],
+                                0,
+                                $this->parameters['weight'],
+                                null
+                            ));
+                        }
+                    }
+                } elseif ($this->parameters['operation'] == 'DelValue') {
+                    $productOption = $productOptions->getByOptionId($option->getId());
+                    if (!is_null($productOption)) {
+                        if ($productOption->getOption()->isSingleValueType()) {
+                            $productOption->deleteValue();
+                        } elseif ($productOption->getOption()->isMultiValueType()) {
+                            $productOption->deleteValue(new ProductOptionValue(
+                                null,
+                                $productOption,
+                                new OptionValue($option, $this->parameters['optionValue']),
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null
+                            ));
+                        } else {
+                            throw new InvalidArgumentException("Not acceptable option value type '" . $this->parameters['optionValueType'] . "'");
+                        }
                     }
                 }
+                ProductDAO::getInstance()->saveProduct($product);
             }
-            ProductDAO::getInstance()->saveProduct($product);
         }
+        ini_set('max_execution_time', $initialTime);
     }
 }

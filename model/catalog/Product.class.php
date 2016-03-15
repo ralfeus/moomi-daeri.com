@@ -110,35 +110,35 @@ class Product {
      * @param null $imageDescription
      * @param int $defaultLanguageId
      */
-    public function __construct($id, $afcId = null, $affiliateCommission = null, $dateAdded = null, $dateAvailable = null, $dateModified = null,
+    public function __construct($id, $defaultLanguageId, $afcId = null, $affiliateCommission = null, $dateAdded = null, $dateAvailable = null, $dateModified = null,
                                 $description = null, $dimension = null, $imagePath = null, $keyword = null, $koreanName = null, $location = null,
                                 $manufacturerId = null, $minimum = null, $model = null, $productOptions = null, $points = null,
                                 $price = null, $quantity = null, $shipping = null, $sku = null, $sortOrder = null, $status = null,
                                 $stockStatusId = null, $stores = null, $subtract = null, $supplier = null, $supplierUrl = null,
                                 $tag = null, $upc = null, $userId = null, $viewed = null, $weight = null, $attributes = null,
                                 $discounts = null, $specials = null, $downloads = null, $categories = null, $related = null,
-                                $layouts = null, $rewards = null, $imageDescription = null, $defaultLanguageId = null) {
+                                $layouts = null, $rewards = null, $imageDescription = null) {
         $this->id = $id;
         if (!is_null($afcId)) { $this->afcId = $afcId; }
-        if (!is_null($affiliateCommission)) { $this->affiliateCommission = new Mutable($affiliateCommission); }
+        if (!is_null($affiliateCommission)) { $this->affiliateCommission = $affiliateCommission; }
         if (!is_null($attributes)) { $this->attributes = new Mutable($attributes); }
         if (!is_null($categories)) { $this->categories = new Mutable($categories); }
         if (!is_null($dateAdded)) { $this->$dateAdded = $dateAdded; }
         if (!is_null($dateAvailable)) { $this->$dateAvailable = $dateAvailable; }
         if (!is_null($dateModified)) { $this->dateModified = $dateModified; }
+        $this->defaultLanguageId = $defaultLanguageId;
         if (!is_null($description)) { $this->description = new Mutable($description); }
-        if (!is_null($dimension)) { $this->dimension = new Mutable($dimension); }
+        if (!is_null($dimension)) { $this->dimension = $dimension; }
         if (!is_null($discounts)) { $this->discounts = new Mutable($discounts); }
         if (!is_null($downloads)) { $this->downloads = new Mutable($downloads); }
         if (!is_null($imageDescription)) { $this->imageDescription = $imageDescription; }
-        if (!is_null($imagePath)) { $this->imagePath = new Mutable($imagePath); }
-        if (!is_null($keyword)) { $this->koreanName = new Mutable($keyword); }
-        if (!is_null($koreanName)) { $this->koreanName = new Mutable($koreanName); }
-        if (!is_null($defaultLanguageId)) { $this->defaultLanguageId = $defaultLanguageId; }
+        if (!is_null($imagePath)) { $this->imagePath = $imagePath; }
+        if (!is_null($keyword)) { $this->keyword = $keyword; }
+        if (!is_null($koreanName)) { $this->koreanName = $koreanName; }
         if (!is_null($location)) { $this->location = $location; }
-        if (!is_null($manufacturerId)) { $this->manufacturerId = new Mutable($manufacturerId); }
-        if (!is_null($minimum)) { $this->minimum = new Mutable($minimum); }
-        if (!is_null($model)) { $this->model = new Mutable($model); }
+        if (!is_null($manufacturerId)) { $this->manufacturerId = $manufacturerId; }
+        if (!is_null($minimum)) { $this->minimum = $minimum; }
+        if (!is_null($model)) { $this->model = $model; }
         if (!is_null($productOptions)) {
             $tempProductOptions = new ProductOptionCollection();
             foreach ($productOptions as $option) {
@@ -147,25 +147,41 @@ class Product {
             $this->productOptions = new Mutable($tempProductOptions);
         }
         if (!is_null($points)) { $this->points = new Mutable($points); }
-        if (!is_null($price)) { $this->price = new Mutable($price); }
-        if (!is_null($quantity)) { $this->quantity = new Mutable($quantity); }
+        if (!is_null($price)) { $this->price = $price; }
+        if (!is_null($quantity)) { $this->quantity = $quantity; }
         if (!is_null($related)) { $this->related = new Mutable($related); }
         if (!is_null($rewards)) { $this->rewards = new Mutable($rewards); }
-        if (!is_null($shipping)) { $this->shipping = new Mutable($shipping); }
-        if (!is_null($sku)) { $this->sku = new Mutable($sku); }
-        if (!is_null($sortOrder)) { $this->sortOrder = new Mutable($sortOrder); }
+        if (!is_null($shipping)) { $this->shipping = $shipping; }
+        if (!is_null($sku)) { $this->sku = $sku; }
+        if (!is_null($sortOrder)) { $this->sortOrder = $sortOrder; }
         if (!is_null($specials)) { $this->specials = new Mutable($specials); }
-        if (!is_null($status)) { $this->status = new Mutable($status); }
-        if (!is_null($stockStatusId)) { $this->stockStatusId= new Mutable($stockStatusId); }
+        if (!is_null($status)) { $this->status = $status; }
+        if (!is_null($stockStatusId)) { $this->stockStatusId= $stockStatusId; }
         if (!is_null($stores)) { $this->stores= new Mutable($stores); }
-        if (!is_null($subtract)) { $this->subtract = new Mutable($subtract); }
-        if (!is_null($supplier)) { $this->supplier = new Mutable($supplier); }
-        if (!is_null($supplierUrl)) { $this->supplierUrl = new Mutable($supplierUrl); }
+        if (!is_null($subtract)) { $this->subtract = $subtract; }
+        if (!is_null($supplier)) { $this->supplier = $supplier; }
+        if (!is_null($supplierUrl)) { $this->supplierUrl = $supplierUrl; }
         if (!is_null($tag)) { $this->tags = new Mutable($tag); }
-        if (!is_null($upc)) { $this->upc = new Mutable($upc); }
-        if (!is_null($userId)) { $this->userId = new Mutable($userId); }
-        if (!is_null($viewed)) { $this->viewed = new Mutable($viewed); }
-        if (!is_null($weight)) { $this->weight = new Mutable($weight); }
+        if (!is_null($upc)) { $this->upc = $upc; }
+        if (!is_null($userId)) { $this->userId = $userId; }
+        if (!is_null($viewed)) { $this->viewed = $viewed; }
+        if (!is_null($weight)) { $this->weight = $weight; }
+    }
+    
+    public function __destruct() {
+        $this->attributes = null;
+        $this->categories = null;
+        $this->description = null;
+        $this->discounts = null;
+        $this->downloads = null;
+        $this->images = null;
+        $this->layouts = null;
+        $this->productOptions = null;
+        $this->stores = null;
+        $this->related = null;
+        $this->rewards = null;
+        $this->specials = null;
+        $this->tags = null;
     }
 
     /**
@@ -187,13 +203,13 @@ class Product {
      */
     public function getAffiliateCommission() {
         if (!isset($this->affiliateCommission)) {
-            $this->affiliateCommission = new Mutable(ProductDAO::getInstance()->getAffiliateCommission($this->id));
+            $this->affiliateCommission = ProductDAO::getInstance()->getAffiliateCommission($this->id);
         }
-        return $this->affiliateCommission->get();
+        return $this->affiliateCommission;
     }
 
     public function setAffiliateCommission($value) {
-        $this->affiliateCommission->set($value);
+        $this->affiliateCommission = $value;
     }
 
     /**
@@ -289,16 +305,16 @@ class Product {
      */
     public function getDimension() {
         if (!isset($this->dimension)) {
-            $this->dimension = new Mutable(ProductDAO::getInstance()->getDimension($this->id));
+            $this->dimension = ProductDAO::getInstance()->getDimension($this->id);
         }
-        return $this->dimension->get();
+        return $this->dimension;
     }
 
     /**
      * @param Dimensions $value
      */
     public function setDimension($value) {
-        $this->dimension->set($value);
+        $this->dimension = $value;
     }
 
     /**
@@ -357,13 +373,13 @@ class Product {
      */
     public function getImagePath() {
         if (!isset($this->imagePath)) {
-            $this->imagePath = new Mutable(ProductDAO::getInstance()->getImage($this->id));
+            $this->imagePath = ProductDAO::getInstance()->getImage($this->id);
         }
-        return $this->imagePath->get();
+        return $this->imagePath;
     }
 
     public function setImagePath($value) {
-        $this->imagePath->set($value);
+        $this->imagePath = $value;
     }
 
     /**
@@ -389,9 +405,9 @@ class Product {
 
     public function getKeyword() {
         if (!isset($this->keyword)) {
-            $this->keyword = new Mutable(ProductDAO::getInstance()->getKeyword($this->id));
+            $this->keyword = ProductDAO::getInstance()->getKeyword($this->id);
         }
-        return $this->keyword->get();
+        return $this->keyword;
     }
 
     /**
@@ -399,13 +415,13 @@ class Product {
      */
     public function getKoreanName() {
         if (!isset($this->koreanName)) {
-            $this->koreanName = new Mutable(ProductDAO::getInstance()->getKoreanName($this->id));
+            $this->koreanName = ProductDAO::getInstance()->getKoreanName($this->id);
         }
-        return $this->koreanName->get();
+        return $this->koreanName;
     }
 
     public function setKoreanName($value) {
-        $this->koreanName->set($value);
+        $this->koreanName = $value;
     }
 
     public function getLayouts() {
@@ -441,13 +457,13 @@ class Product {
      */
     public function getManufacturerId() {
         if (!isset($this->manufacturerId)) {
-            $this->manufacturerId = new Mutable(ProductDAO::getInstance()->getManufacturerId($this->id));
+            $this->manufacturerId = ProductDAO::getInstance()->getManufacturerId($this->id);
         }
-        return $this->manufacturerId->get();
+        return $this->manufacturerId;
     }
 
     public function setManufacturerId($value) {
-        $this->manufacturerId->set($value);
+        $this->manufacturerId = $value;
     }
 
     /**
@@ -455,13 +471,13 @@ class Product {
      */
     public function getMinimum() {
         if (!isset($this->minimum)) {
-            $this->minimum = new Mutable(ProductDAO::getInstance()->getMinimum($this->id));
+            $this->minimum = ProductDAO::getInstance()->getMinimum($this->id);
         }
-        return $this->minimum->get();
+        return $this->minimum;
     }
 
     public function setMinimum($value) {
-        $this->minimum->set($value);
+        $this->minimum = $value;
     }
 
     /**
@@ -469,13 +485,13 @@ class Product {
      */
     public function getModel() {
         if (!isset($this->model)) {
-            $this->model = new Mutable(ProductDAO::getInstance()->getModel($this->id));
+            $this->model = ProductDAO::getInstance()->getModel($this->id);
         }
-        return $this->model->get();
+        return $this->model;
     }
 
     public function setModel($value) {
-        $this->model->set($value);
+        $this->model = $value;
     }
 
     /**
@@ -486,7 +502,7 @@ class Product {
         if (is_null($languageId)) {
             $languageId = $this->defaultLanguageId;
         }
-        return $this->getDescription()->getDescription($languageId)->getName();
+        return is_null($this->getDescription()->getDescription($languageId)) ? '' : $this->getDescription()->getDescription($languageId)->getName();
     }
 
     /**
@@ -529,13 +545,13 @@ class Product {
      */
     public function getPrice() {
         if (!isset($this->price)) {
-            $this->price = new Mutable(ProductDAO::getInstance()->getPrice($this->id));
+            $this->price = ProductDAO::getInstance()->getPrice($this->id);
         }
-        return $this->price->get();
+        return $this->price;
     }
 
     public function setPrice($value) {
-        $this->price->set($value);
+        $this->price = $value;
     }
 
     /**
@@ -543,13 +559,13 @@ class Product {
      */
     public function getQuantity() {
         if (!isset($this->quantity)) {
-            $this->quantity = new Mutable(ProductDAO::getInstance()->getQuantity($this->id));
+            $this->quantity = ProductDAO::getInstance()->getQuantity($this->id);
         }
-        return $this->quantity->get();
+        return $this->quantity;
     }
 
     public function setQuantity($value) {
-        $this->quantity->set($value);
+        $this->quantity = $value;
     }
 
     /**
@@ -591,13 +607,13 @@ class Product {
      */
     public function getShipping() {
         if (!isset($this->shipping)) {
-            $this->shipping = new Mutable(ProductDAO::getInstance()->getShipping($this->id));
+            $this->shipping = ProductDAO::getInstance()->getShipping($this->id);
         }
-        return $this->shipping->get();
+        return $this->shipping;
     }
 
     public function setShipping($value) {
-        $this->shipping->set($value);
+        $this->shipping = $value;
     }
 
     /**
@@ -605,13 +621,13 @@ class Product {
      */
     public function getSku() {
         if (!isset($this->sku)) {
-            $this->sku = new Mutable(ProductDAO::getInstance()->getSku($this->id));
+            $this->sku = ProductDAO::getInstance()->getSku($this->id);
         }
-        return $this->sku->get();
+        return $this->sku;
     }
 
     public function setSku($value) {
-        $this->sku->set($value);
+        $this->sku = $value;
     }
 
     /**
@@ -619,13 +635,13 @@ class Product {
      */
     public function getSortOrder() {
         if (!isset($this->sortOrder)) {
-            $this->sortOrder = new Mutable(ProductDAO::getInstance()->getSortOrder($this->id));
+            $this->sortOrder = ProductDAO::getInstance()->getSortOrder($this->id);
         }
-        return $this->sortOrder->get();
+        return $this->sortOrder;
     }
 
     public function setSortOrder($value) {
-        $this->sortOrder->set($value);
+        $this->sortOrder = $value;
     }
 
     /**
@@ -650,13 +666,13 @@ class Product {
      */
     public function getStatus() {
         if (!isset($this->status)) {
-            $this->status = new Mutable(ProductDAO::getInstance()->getStatus($this->id));
+            $this->status = ProductDAO::getInstance()->getStatus($this->id);
         }
-        return $this->status->get();
+        return $this->status;
     }
 
     public function setStatus($value) {
-        $this->status->set($value);
+        $this->status = $value;
     }
 
     /**
@@ -664,13 +680,13 @@ class Product {
      */
     public function getStockStatusId() {
         if (!isset($this->stockStatusId)) {
-            $this->stockStatusId = new Mutable(ProductDAO::getInstance()->getStockStatusId($this->id));
+            $this->stockStatusId = ProductDAO::getInstance()->getStockStatusId($this->id);
         }
-        return $this->stockStatusId->get();
+        return $this->stockStatusId;
     }
 
     public function setStockStatusId($value) {
-        $this->stockStatusId->set($value);
+        $this->stockStatusId = $value;
     }
 
 
@@ -697,13 +713,13 @@ class Product {
      */
     public function getSubtract() {
         if (!isset($this->subtract)) {
-            $this->subtract = new Mutable(ProductDAO::getInstance()->getSubtract($this->id));
+            $this->subtract = ProductDAO::getInstance()->getSubtract($this->id);
         }
-        return $this->subtract->get();
+        return $this->subtract;
     }
 
     public function setSubtract($value) {
-        $this->subtract->set($value);
+        $this->subtract = $value;
     }
 
     /**
@@ -711,20 +727,20 @@ class Product {
      */
     public function getSupplier() {
         if (!isset($this->supplier)) {
-            $this->supplier = new Mutable(ProductDAO::getInstance()->getSupplier($this->id));
+            $this->supplier = ProductDAO::getInstance()->getSupplier($this->id);
         }
-        return $this->supplier->get();
+        return $this->supplier;
     }
 
     public function getSupplierUrl() {
         if (!isset($this->supplierUrl)) {
-            $this->supplierUrl = new Mutable(ProductDAO::getInstance()->getSupplierUrl($this->id));
+            $this->supplierUrl = ProductDAO::getInstance()->getSupplierUrl($this->id);
         }
-        return $this->supplierUrl->get();
+        return $this->supplierUrl;
     }
 
     public function setSupplierUrl($value) {
-        $this->supplierUrl->set($value);
+        $this->supplierUrl = $value;
     }
 
     /**
@@ -735,7 +751,6 @@ class Product {
             $this->tags = new Mutable(ProductDAO::getInstance()->getProductTags($this->id));
         }
         return $this->tags->get();
-
     }
 
     /**
@@ -750,13 +765,13 @@ class Product {
      */
     public function getUpc() {
         if (!isset($this->upc)) {
-            $this->upc = new Mutable(ProductDAO::getInstance()->getUpc($this->id));
+            $this->upc = ProductDAO::getInstance()->getUpc($this->id);
         }
-        return $this->upc->get();
+        return $this->upc;
     }
 
     public function setUpc($value) {
-        $this->upc->set($value);
+        $this->upc = $value;
     }
 
     /**
@@ -764,16 +779,16 @@ class Product {
      */
     public function getUserId() {
         if (!isset($this->userId)) {
-            $this->userId = new Mutable(ProductDAO::getInstance()->getUserId($this->id));
+            $this->userId = ProductDAO::getInstance()->getUserId($this->id);
         }
-        return $this->userId->get();
+        return $this->userId;
     }
 
     /**
      * @param int $value
      */
     public function setUserId($value) {
-        $this->userId->set($value);
+        $this->userId = $value;
     }
 
     /**
@@ -781,16 +796,16 @@ class Product {
      */
     public function getViewed() {
         if (!isset($this->viewed)) {
-            $this->viewed = new Mutable(ProductDAO::getInstance()->getViewed($this->id));
+            $this->viewed = ProductDAO::getInstance()->getViewed($this->id);
         }
-        return $this->viewed->get();
+        return $this->viewed;
     }
 
     /**
      * @param int $value
      */
     public function setViewed($value) {
-        $this->viewed->set($value);
+        $this->viewed = $value;
     }
 
     /**
@@ -798,15 +813,15 @@ class Product {
      */
     public function getWeight() {
         if (!isset($this->weight)) {
-            $this->weight = new Mutable(ProductDAO::getInstance()->getWeight($this->id));
+            $this->weight = ProductDAO::getInstance()->getWeight($this->id);
         }
-        return $this->weight->get();
+        return $this->weight;
     }
 
     /**
      * @param Weight $value
      */
     public function setWeight($value) {
-        $this->weight->set($value);
+        $this->weight = $value;
     }
 }

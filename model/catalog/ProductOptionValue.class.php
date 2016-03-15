@@ -43,6 +43,11 @@ class ProductOptionValue {
         $this->afcId = $afcId;
     }
 
+    public function __destruct() {
+        $this->productOption = null;
+        $this->optionValue = null;
+    }
+
     /**
      * @return int
      */

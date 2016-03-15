@@ -14,8 +14,9 @@ use SplObjectStorage;
 class OptionValueCollection extends SplObjectStorage {
     /**
      * @param OptionValue $object
+     * @param null $data
      */
-    public function attach($object) {
+    public function attach($object, $data = null) {
         parent::attach($object, null);
     }
 

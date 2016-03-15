@@ -39,7 +39,7 @@ class ProductDAO extends DAO {
         if (!empty($data['filterName'])) {
             $words = explode(' ', $data['filterName']); $filterString = ''; $filterParams = [];
             for ($i = 0; $i < sizeof($words); $i++) {
-                $filterString .= " OR pd.name LIKE CONCAT('%', :name$i, '%') OR pd.description LIKE CONCAT('%', :name$i, '%'))";
+                $filterString .= " OR pd.name LIKE CONCAT('%', :name$i, '%') OR pd.description LIKE CONCAT('%', :name$i, '%')";
                 $filterParams[":name$i"] = $words[$i];
             }
             $filter->addChunk("(" . substr($filterString, 4) . ")", $filterParams);
@@ -93,7 +93,7 @@ class ProductDAO extends DAO {
      */
     public function getProduct($productId, $shallow = false, $object = false) { //TODO: Перевести на об'єкт
         if ($shallow) {
-            return new Product($productId);
+            return new Product($productId, $this->getLanguage()->getId());
         }
         $customerGroupId = (!is_null($this->getCurrentCustomer()) && $this->getCurrentCustomer()->isLogged())
             ? $this->getCurrentCustomer()->getCustomerGroupId()
@@ -120,17 +120,17 @@ SQL
             if ($object) {
                 return
                     new Product(
-                        $query->row['product_id'], $query->row['afc_id'], $query->row['affiliate_commission'],
+                        $query->row['product_id'], $this->getLanguage()->getId(), $query->row['afc_id'], $query->row['affiliate_commission'],
                         $query->row['date_added'], $query->row['date_available'], $query->row['date_modified'], null,
                         new Dimensions($query->row['length_class_id'], $query->row['height'], $query->row['length'], $query->row['width']),
-                        $query->row['image'], $query->row['keyword'], $query->row['korean_name'], $query->row['location'],
+                        $query->row['image'], null, $query->row['korean_name'], $query->row['location'],
                         $query->row['manufacturer_id'], $query->row['minimum'], $query->row['model'], null, $query->row['points'],
                         $query->row['price'], $query->row['quantity'], $query->row['shipping'], $query->row['sku'],
                         $query->row['sort_order'], $query->row['status'], $query->row['stock_status_id'], null, $query->row['subtract'],
                         SupplierDAO::getInstance()->getSupplier($query->row['supplier_id'], true),
                         $query->row['supplier_url'], null, $query->row['upc'], $query->row['user_id'], $query->row['viewed'],
                         new Weight($query->row['weight_class_id'], $query->row['weight']), null, null, null, null, null,
-                        null, null, null, $query->row['image_description'], $this->getLanguage()->getId()
+                        null, null, null, $query->row['image_description']
                     );
             } else {
                 return $query->row;
@@ -142,10 +142,10 @@ SQL
 
     /**
      * @param array $data
-     * @return Product[]
+     * @return array
      * @throws \CacheNotInstalledException
      */
-    public function getProducts($data = array()) {
+    public function getProductIds($data = []) {
         if (!is_null($this->getCurrentCustomer()) && $this->getCurrentCustomer()->isLogged()) {
             $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
         } else {
@@ -154,12 +154,12 @@ SQL
 
         $cache = md5(http_build_query($data));
 
-        if (isset($data['nocache']))
-            $product_data = 0;
-        else
-            $product_data = $this->getCache()->get('product.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$customer_group_id . '.' . $cache);
-
-        if (!$product_data) {
+        if (isset($data['nocache'])) {
+            $rows = null;
+        } else {
+            $rows = $this->getCache()->get('product.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$customer_group_id . '.' . $cache);
+        }
+        if (!$rows) {
             $filter = $this->buildFilter($data);
             $sql = <<<SQL
 			    SELECT
@@ -209,15 +209,27 @@ SQL
 
             $sql .= $this->buildLimitString($data['start'], $data['limit']);
 
-            $product_data = array();
             //print_r($sql);exit();
             $query = $this->getDb()->query($sql, $filter->getParams());
+            $rows = $query->rows;
+            $this->getCache()->set('product.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$customer_group_id . '.' . $cache, $rows);
+        }
+        $result = [];
+        foreach ($rows as $row) {
+            $result[$row['product_id']] = $row;
+        }
+        return $result;
+    }
 
-            foreach ($query->rows as $result) {
-                $product_data[$result['product_id']] = $this->getProduct($result['product_id'], false, true);
-            }
-
-            $this->getCache()->set('product.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$customer_group_id . '.' . $cache, $product_data);
+    /**
+     * @param array $data
+     * @param bool $shallow
+     * @return Product[]
+     */
+    public function getProducts($data = array(), $shallow = false) {
+        $product_data = [];
+        foreach ($this->getProductIds($data) as $result) {
+            $product_data[$result['product_id']] = $this->getProduct($result['product_id'], $shallow, true);
         }
 
         return $product_data;
@@ -234,7 +246,15 @@ SQL
         if (is_null($this->getCache()->get("productsCount.$dataHash"))) {
 //        $this->log->write("Go to DB");
             $filter = $this->buildFilter($data);
-            $sql = "SELECT COUNT(DISTINCT p.product_id) AS total FROM product AS p";
+            $sql = "
+                SELECT COUNT(DISTINCT p.product_id) AS total
+                FROM
+                    product AS p
+                    LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
+                    LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
+                    LEFT JOIN product_tag pt ON (p.product_id = pt.product_id)
+                    LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
+            ";
             $sql .= $filter->getFilterString(true);
             $result = $this->getDb()->queryScalar($sql, $filter->getParams());
             $this->getCache()->set("productsCount.$dataHash", $result);
@@ -251,6 +271,20 @@ SQL
     ";
 //		$this->log->write($query);
         return $this->getDb()->query($query, [':productId' => $productId])->rows;
+    }
+
+    /**
+     * @param int $productId
+     * @return bool|mixed
+     */
+    public function getProductSpecialsCount($productId) {
+        $query = "
+            SELECT COUNT(product_special_id) AS total
+            FROM product_special AS p
+            WHERE product_id = :productId
+    ";
+//		$this->log->write($query);
+        return $this->getDb()->queryScalar($query, [':productId' => $productId]);
     }
 
     public function getLatestProducts($limit) {
@@ -512,6 +546,33 @@ SQL
         return $query->rows;
     }
 
+    /**
+     * @param int $productId
+     * @return bool|mixed
+     */
+    public function getProductDiscountsCount($productId) {
+        if (!is_null($this->getCurrentCustomer()) && $this->getCurrentCustomer()->isLogged()) {
+            $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
+        } else {
+            $customer_group_id = $this->config->get('config_customer_group_id');
+        }
+        $query = $this->getDb()->queryScalar("
+		    SELECT COUNT(product_discount_id) AS total
+		    FROM product_discount
+		    WHERE
+		        product_id = :productId
+                AND customer_group_id = :customerGroupId
+                AND quantity > 1 AND ((date_start = '0000-00-00' OR date_start < :startTime)
+                AND (date_end = '0000-00-00' OR date_end > :endTime))
+        ", [
+            ':productId' => $productId,
+            ':customerGroupId' => $customer_group_id,
+            ':startTime' => date('Y-m-d H:00:00'),
+            ':endTime' => date('Y-m-d H:00:00', strtotime('+1 hour'))
+        ]);
+        return $query;
+    }
+
     public function getProductImages($product_id) {
         $query = $this->getDb()->query("
             SELECT *
@@ -590,7 +651,7 @@ SQL
 
     /**
      * @param int $productId
-     * @return array
+     * @return DescriptionCollection
      */
     public function getDescription($productId) {
         $query = $this->getDb()->query(<<<SQL
@@ -1037,7 +1098,7 @@ SQL
                     ':length' => $product->getDimension()->getLength(),
                     ':width' => $product->getDimension()->getWidth(),
                     ':height' => $product->getDimension()->getHeight(),
-                    ':lengthClassId' => $product->getDimension()->getUnit(),
+                    ':lengthClassId' => $product->getDimension()->getUnit()->getId(),
                     ':status' => $product->getStatus(),
                     ':sortOrder' => $product->getSortOrder(),
                     ':affiliateCommission' => $product->getAffiliateCommission(),

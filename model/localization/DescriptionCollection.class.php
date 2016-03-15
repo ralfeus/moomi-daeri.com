@@ -25,6 +25,11 @@ class DescriptionCollection implements \Iterator {
         $this->currentPosition = sizeof($this->keys) - 1;
     }
 
+    public function __destruct() {
+        $this->descriptions = null;
+        $this->keys = null;
+    }
+
     /**
      * @param Description $description
      */
@@ -58,7 +63,7 @@ class DescriptionCollection implements \Iterator {
      * @return Description
      */
     public function getDescription($languageId) {
-        return $this->descriptions[$languageId];
+        return isset($this->descriptions[$languageId]) ? $this->descriptions[$languageId] : null;
     }
 
     /**

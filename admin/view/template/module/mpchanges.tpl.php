@@ -397,8 +397,10 @@
         #filtered-products div:hover{background: lightgrey;}
         #filtered-products div{height:16px;}
     </style>
-    <img id="wait" src="<?= HTTP_IMAGE ?>ajax-loader.gif" style="display: none;" />
-
+    <div id="wait" style="display: none;">
+        <p id="message"></p>
+        <img src="<?= HTTP_IMAGE ?>ajax-loader.gif" />
+    </div>
 <script>
     $(function(){
         $(".submit-form").live('click', function(){
@@ -612,29 +614,48 @@ function reloadOptionValues(sender) {
 
 function setOptions() {
     var optionValue = $('.optionValue:visible');
+    var intervalId;
     $.ajax({
         url: '<?= str_replace('&amp;', '&', $urlSetOption) ?>',
         type: 'post',
         dataType: 'json',
-        data: {
-            products: $('input[name="product_to_change\[\]"]').map(function() {return this.value;}).get(),
-            operation: $('input[name="optionOperation"]:checked').val(),
-            optionId: $('select#options').val(),
-            optionValue: optionValue.length ? optionValue.val() : '',
-            optionValueType: optionValue.length ? (optionValue[0].nodeName == 'INPUT' ? 'single' : 'multi') : '',
-            price: optionValue.length ? $('input#price').val() : '',
-            weight: optionValue.length ? $('input#weight').val() : ''
-        },
+        data: $.merge(
+            [
+                {name: 'products', value: $('input[name="product_to_change\[\]"]').map(function() {return this.value;}).get()},
+                {name: 'operation', value: $('input[name="optionOperation"]:checked').val()},
+                {name: 'optionId', value: $('select#options').val()},
+                {name: 'optionValue', value: optionValue.length ? optionValue.val() : ''},
+                {name: 'optionValueType', value: optionValue.length ? (optionValue[0].nodeName == 'INPUT' ? 'single' : 'multi') : ''},
+                {name: 'price', value: optionValue.length ? $('input#price').val() : ''},
+                {name: 'weight', value: optionValue.length ? $('input#weight').val() : ''}
+            ],
+            $('.filter_option, input[name="change_all"]').serializeArray()
+        ),
         beforeSend: function() {
+//            intervalId = setInterval(function() {
+//                $.ajax({
+//                    url: '<?//= str_replace('&amp;', '&', $urlGetProgress) ?>//',
+//                    success: function(data) {
+//                        var wait = $('#wait');
+//                        var message = wait.find('#message');
+//                        message
+//                            .empty()
+//                            .append(data);
+//                        $.blockUI({message: wait});
+//                    }
+//                })
+//            }, 10000);
             $.blockUI({message: $('#wait')});
         },
         success: function() {
             $.blockUI({message: 'Option is set successfully. Click to continue'});
             $('.blockOverlay').attr('title','Click to continue').click($.unblockUI);
+            clearInterval(intervalId);
         },
         error: function() {
             $.blockUI({message: 'An error has occurred during option set. Click to continue'});
             $('.blockOverlay').attr('title','Click to continue').click($.unblockUI);
+            clearInterval(intervalId);
         }
     })
 }

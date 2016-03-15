@@ -14,8 +14,8 @@ class Option {
     /** @var  OptionValueCollection */
     private $values;
 
-    private $singleValueTypes = ['text', 'textarea'];
-    private $multiValueTypes = ['select'];
+    private $singleValueTypes = ['text', 'textarea', 'file'];
+    private $multiValueTypes = ['select', 'radio', 'checkbox', 'image'];
 
     /**
      * ProductOption constructor.
@@ -28,11 +28,18 @@ class Option {
     public function __construct($id, $descriptions = null, $sortOrder = null, $type = null, $defaultLanguageId = null) {
         $this->id = $id;
         $this->defaultLanguageId = $defaultLanguageId;
-        foreach ($descriptions as $description) {
-            $this->descriptions->addDescription($description);
+        if (is_array($descriptions)) {
+            foreach ($descriptions as $description) {
+                $this->descriptions->addDescription($description);
+            }
         }
         $this->sortOrder = $sortOrder;
         $this->type = $type;
+    }
+
+    public function __destruct() {
+        $this->descriptions = null;
+        $this->values = null;
     }
 
     /**
