@@ -518,12 +518,16 @@ function load_products(start, limit){
         type: 'post',
         data: $('#filter .filter_option, #filter input[type="checkbox"]:checked'),
         dataType: 'json',
+        beforeSend: function() {
+            $.blockUI({message: $('#wait')});
+        },
         success: function(json) {
             productTotal = parseInt(json['total']);
             $('#product-total').html(json['total']);
             check_all = $('input', '#check-all').prop('checked') ? 'checked="checked"' : '';
             html = productHTML(json['products'], check_all);
             $('#filtered-products').append(html);
+            $.unblockUI();
         },
         error: function() {
             $.blockUI({message: 'Internal server error has occurred. Click to continue'});
@@ -632,19 +636,19 @@ function setOptions() {
             $('.filter_option, input[name="change_all"]').serializeArray()
         ),
         beforeSend: function() {
-//            intervalId = setInterval(function() {
-//                $.ajax({
-//                    url: '<?//= str_replace('&amp;', '&', $urlGetProgress) ?>//',
-//                    success: function(data) {
-//                        var wait = $('#wait');
-//                        var message = wait.find('#message');
-//                        message
-//                            .empty()
-//                            .append(data);
-//                        $.blockUI({message: wait});
-//                    }
-//                })
-//            }, 10000);
+            intervalId = setInterval(function() {
+                $.ajax({
+                    url: '<?= str_replace('&amp;', '&', $urlGetProgress) ?>',
+                    success: function(data) {
+                        var wait = $('#wait');
+                        var message = wait.find('#message');
+                        message
+                            .empty()
+                            .append(data);
+                        $.blockUI({message: wait});
+                    }
+                })
+            }, 10000);
             $.blockUI({message: $('#wait')});
         },
         success: function() {

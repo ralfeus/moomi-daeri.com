@@ -47,7 +47,7 @@ class ControllerModuleMpchanges extends Controller {
         $productIds = ProductDAO::getInstance()->getProductIds($data); $count = 0;
         foreach ($productIds as $productId => $productPlaceholder) {
             $product = ProductDAO::getInstance()->getProduct($productId, false, true);
-            file_put_contents('/tmp/progress', "Getting product " . $count++ . " of " . sizeof($productIds));
+            $this->getCache()->set('progress', "Getting product " . $count++ . " of " . sizeof($productIds));
             $this->mpfilter['products'][] = [
                 'product_id' => $productId,
                 'discount' => ProductDAO::getInstance()->getProductDiscountsCount($productId) > 0,
@@ -70,7 +70,7 @@ class ControllerModuleMpchanges extends Controller {
     }
 
     public function getProgress() {
-        $this->getResponse()->setOutput(file_get_contents('/tmp/progress'));
+        $this->getResponse()->setOutput($this->getCache()->get('progress'));
     }
 
 	public function index() {
@@ -607,14 +607,19 @@ class ControllerModuleMpchanges extends Controller {
     }
 
     public function setOption() {
+        if ($this->getCache()->get('isSetOptionRunning')) {
+            $this->getLogger()->write("Tried to run setOption() again");
+            return;
+        }
         $initialTime = ini_get('max_execution_time');
         ini_set('max_execution_time', 3600);
         session_write_close();
+        $this->getCache()->set('isSetOptionRunning', true);
         $option = OptionDAO::getInstance()->getOptionById($this->parameters['optionId']);
         $this->loadFilter();
         $count = 0;
         foreach ($this->mpfilter["products"] as $product) {
-            file_put_contents('/tmp/progress', "Step 2 of 2. Setting options for product " . $count++ . " of " . sizeof($this->mpfilter["products"]));
+            $this->getCache()->set('progress', "Step 2 of 2. Setting options for product " . $count++ . " of " . sizeof($this->mpfilter["products"]));
             if (in_array($product['product_id'], $this->mpfilter['change_ids']) or $this->mpfilter['change_all']) {
                 $product = ProductDAO::getInstance()->getProduct($product['product_id'], true);
                 $productOptions = $product->getOptions();
@@ -687,5 +692,6 @@ class ControllerModuleMpchanges extends Controller {
             }
         }
         ini_set('max_execution_time', $initialTime);
+        $this->getCache()->delete('isSetOptionRunning');
     }
 }

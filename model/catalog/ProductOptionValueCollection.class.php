@@ -19,8 +19,9 @@ use system\library\Collection;
 class ProductOptionValueCollection extends Collection {
     /**
      * @param ProductOptionValue $object
+     * @param null $data
      */
-    public function attach($object) {
+    public function attach($object, $data = null) {
         parent::attach($object, null);
     }
 
