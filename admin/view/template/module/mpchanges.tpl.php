@@ -654,15 +654,17 @@ function setOptions() {
             }, 10000);
             $.blockUI({message: $('#wait')});
         },
+        complete: function() {
+            clearInterval(intervalId);
+            $('#wait').find('#message').empty();
+            $('.blockOverlay').attr('title','Click to continue').click($.unblockUI);
+
+        },
         success: function() {
             $.blockUI({message: 'Option is set successfully. Click to continue'});
-            $('.blockOverlay').attr('title','Click to continue').click($.unblockUI);
-            clearInterval(intervalId);
         },
         error: function() {
             $.blockUI({message: 'An error has occurred during option set. Click to continue'});
-            $('.blockOverlay').attr('title','Click to continue').click($.unblockUI);
-            clearInterval(intervalId);
         }
     })
 }
