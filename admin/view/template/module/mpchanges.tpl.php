@@ -60,11 +60,14 @@
 <?php endforeach; ?>
                         </select>
                     </td>
-                </tr>                <tr>
+                </tr>
+                <tr>
                     <td><?= $entry_name ?></td>
-                    <td>
-                        <input type="text" name="name" value="" class="filter_option"/>
-                    </td>
+                    <td><input type="text" name="name" value="" class="filter_option"/></td>
+                </tr>
+                <tr>
+                    <td><?= $textKoreanName ?></td>
+                    <td><input type="text" name="filterKoreanName" value="" class="filter_option"/></td>
                 </tr>
                 <tr>
                     <td><?= $entry_model ?></td>
@@ -352,7 +355,7 @@
                 </form>
             </div>
             <div id="options" class="vtabs-content">
-                <form action="<?= $urlActionOptions ?>" method="post" enctype="multipart/form-data" id="formOptions">
+                <form action="#" method="post" enctype="multipart/form-data" id="formOptions">
                     <input id="optionOperationAddOption" name="optionOperation" type="radio" value="AddOption" title="<?= $textAddOption ?>" />
                     <label for="optionOperationAddOption"><?= $textAddOption ?></label>
                     <input id="optionOperationDelOption" name="optionOperation" type="radio" value="DelOption" title="<?= $textDelOption ?>" />

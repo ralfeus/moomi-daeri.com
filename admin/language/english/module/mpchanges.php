@@ -28,7 +28,6 @@ $_['entry_category']            = 'Категория';
 $_['entry_price']               = 'Цена';
 $_['entry_specials']            = 'Цена';
 $_['entry_model']               = 'Модель начинается с';
-$_['entry_name']                = 'Наименование начинается с';
 $_['entry_store']               = 'Магазин';
 $_['entry_where']               = 'где количество';
 $_['entry_customer_group']      = 'Группа';

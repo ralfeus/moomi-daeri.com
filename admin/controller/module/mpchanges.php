@@ -26,6 +26,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->mpfilter["change_ids"] = $this->parameters['productToChange'];
         $this->mpfilter["change_special"] = $this->parameters['changeSpecial'];
         $this->mpfilter["change_discount"] = $this->parameters['changeDiscount'];
+        $this->mpfilter['filterKoreanName'] = $data['filterKoreanName'] = $this->parameters['filterKoreanName'];
         $this->mpfilter["store_id"] = is_null($data['filterStoreId'] = $this->parameters['storeId']) ? -1 : $data['filterStoreId'];
         $this->mpfilter["manufacturer_id"] = $data['filterManufacturerId'] = $this->parameters['manufacturerId'];
         $this->mpfilter["supplierId"] = $data['filterSupplierId'] = $this->parameters['supplierId'];
@@ -127,6 +128,7 @@ class ControllerModuleMpchanges extends Controller {
             'change_type' => 'percent',
             'change_type_quantities' => 'percent',
             'customer_group' => 0,
+            'filterKoreanName' => null,
             'filter_price_from' => null,
             'filter_price_to' => null,
             'filter_sub_category' => false,
@@ -193,7 +195,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->data['entry_discounts'] = $this->language->get('entry_discounts');
         $this->data['entry_quantities'] = $this->language->get('entry_quantities');
         $this->data['entry_model'] = $this->language->get('entry_model');
-        $this->data['entry_name'] = $this->language->get('entry_name');
+        $this->data['entry_name'] = $this->language->get('NAME');
         $this->data['entry_store'] = $this->language->get('entry_store');
         $this->data['entry_subcategory'] = $this->language->get('entry_subcategory');
         $this->data['store_default'] = $this->language->get('store_default');
@@ -234,6 +236,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->data['textDelOption'] = $this->language->get('DEL_OPTION');
         $this->data['textDelOptionValue'] = $this->language->get('DEL_OPTION_VALUE');
         $this->data['textExecute'] = $this->language->get('EXECUTE');
+        $this->data['textKoreanName'] = $this->language->get('KOREAN_NAME');
         $this->data['textOptions'] = $this->language->get('OPTIONS');
         $this->data['textOptionValues'] = $this->language->get('OPTION_VALUES');
         $this->data['textOptionValuePrice'] = $this->language->get('PRICE');
