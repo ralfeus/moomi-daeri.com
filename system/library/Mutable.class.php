@@ -7,7 +7,7 @@ class Mutable {
 
     public function __construct($value) {
         $this->value = $value;
-        $this->valueThumbprint = md5(json_encode($this->value));
+        $this->valueThumbprint = md5(serialize($this->value));
     }
 
     /**
@@ -21,14 +21,14 @@ class Mutable {
      * @return bool
      */
     public function isModified() {
-        return md5(json_encode($this->value)) != $this->valueThumbprint;
+        return md5(serialize($this->value)) != $this->valueThumbprint;
     }
 
     /**
      * @return void
      */
     public function resetModified() {
-        $this->valueThumbprint = md5(json_encode($this->value));
+        $this->valueThumbprint = md5(serialize($this->value));
     }
 
     /**
