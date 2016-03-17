@@ -144,7 +144,6 @@ class ControllerModuleMpchanges extends Controller {
 //            'optionValueType' => null,
             'product_list' => null,
             'product_to_change' => [],
-            'products' => [],
             'round_decimal' => 0,
             'start' => 0,
             'storeId' => null,
@@ -623,7 +622,7 @@ class ControllerModuleMpchanges extends Controller {
         $count = 0;
         foreach ($this->mpfilter["products"] as $product) {
             $this->getCache()->set('progress', "Step 2 of 2. Setting options for product " . $count++ . " of " . sizeof($this->mpfilter["products"]));
-            if (in_array($product['product_id'], $this->mpfilter['change_ids']) or $this->mpfilter['change_all']) {
+            if (in_array($product['product_id'], $this->mpfilter['change_ids']) || $this->mpfilter['change_all']) {
                 $product = ProductDAO::getInstance()->getProduct($product['product_id'], true);
                 $productOptions = $product->getOptions();
                 if ($this->parameters['operation'] == 'AddOption') {

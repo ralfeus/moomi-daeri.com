@@ -628,7 +628,6 @@ function setOptions() {
         dataType: 'json',
         data: $.merge(
             [
-                {name: 'products', value: $('input[name="product_to_change\[\]"]').map(function() {return this.value;}).get()},
                 {name: 'operation', value: $('input[name="optionOperation"]:checked').val()},
                 {name: 'optionId', value: $('select#options').val()},
                 {name: 'optionValue', value: optionValue.length ? optionValue.val() : ''},
@@ -636,7 +635,7 @@ function setOptions() {
                 {name: 'price', value: optionValue.length ? $('input#price').val() : ''},
                 {name: 'weight', value: optionValue.length ? $('input#weight').val() : ''}
             ],
-            $('.filter_option, input[name="change_all"]').serializeArray()
+            $('.filter_option, input[name="change_all"], input[name="product_to_change\[\]"]').serializeArray()
         ),
         beforeSend: function() {
             intervalId = setInterval(function() {
