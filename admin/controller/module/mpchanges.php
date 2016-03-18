@@ -26,6 +26,8 @@ class ControllerModuleMpchanges extends Controller {
         $this->mpfilter["change_ids"] = $this->parameters['productToChange'];
         $this->mpfilter["change_special"] = $this->parameters['changeSpecial'];
         $this->mpfilter["change_discount"] = $this->parameters['changeDiscount'];
+        $data['filterDateAddedFrom'] = $this->parameters['filterDateAddedFrom'];
+        $data['filterDateAddedTo'] = $this->parameters['filterDateAddedTo'];
         $this->mpfilter['filterKoreanName'] = $data['filterKoreanName'] = $this->parameters['filterKoreanName'];
         $this->mpfilter["store_id"] = is_null($data['filterStoreId'] = $this->parameters['storeId']) ? -1 : $data['filterStoreId'];
         $this->mpfilter["manufacturer_id"] = $data['filterManufacturerId'] = $this->parameters['manufacturerId'];
@@ -128,6 +130,8 @@ class ControllerModuleMpchanges extends Controller {
             'change_type' => 'percent',
             'change_type_quantities' => 'percent',
             'customer_group' => 0,
+            'filterDateAddedFrom' => null,
+            'filterDateAddedTo' => null,
             'filterKoreanName' => null,
             'filter_price_from' => null,
             'filter_price_to' => null,
@@ -232,6 +236,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->data['label_quantity_postfix'] = $this->language->get('label_quantity_postfix');
         $this->data['textAddOption'] = $this->language->get('ADD_OPTION');
         $this->data['textAddOptionValue'] = $this->language->get('ADD_OPTION_VALUE');
+        $this->data['textDateAdded'] = $this->language->get('DATE_ADDED');
         $this->data['textDelOption'] = $this->language->get('DEL_OPTION');
         $this->data['textDelOptionValue'] = $this->language->get('DEL_OPTION_VALUE');
         $this->data['textExecute'] = $this->language->get('EXECUTE');

@@ -27,9 +27,9 @@
         <div class="content">
             <table class="form" id="filter">
                 <tr>
-                    <td><?= $entry_store ?></td>
+                    <td><label for="store_id"<?= $entry_store ?></label></td>
                     <td>
-                        <select name="store_id" class="filter_option">
+                        <select id="store_id" name="store_id" class="filter_option">
                             <option value="0"><?= $store_default ?></option>
                         </select>
                     </td>
@@ -66,8 +66,8 @@
                     <td><input type="text" name="name" value="" class="filter_option"/></td>
                 </tr>
                 <tr>
-                    <td><?= $textKoreanName ?></td>
-                    <td><input type="text" name="filterKoreanName" value="" class="filter_option"/></td>
+                    <td><label for="filterKoreanName"><?= $textKoreanName ?></label></td>
+                    <td><input type="text" id="filterKoreanName" name="filterKoreanName" value="" class="filter_option"/></td>
                 </tr>
                 <tr>
                     <td><?= $entry_model ?></td>
@@ -113,6 +113,13 @@
                     <td><?= $label_round ?></td>
                     <td>
                         <input type="text" size="3" id="filter_round" name="filter_round" value="0" class="filter_option"/><?= $label_round_decimal ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="filterDateAddedFrom" for="filterDateAddedTo"><?= $textDateAdded ?></label></td>
+                    <td>
+                        <input type="text" id="filterDateAddedFrom" name="filterDateAddedFrom" value="" class="filter_option date"/>&nbsp;-&nbsp;
+                        <input type="text" id="filterDateAddedTo" name="filterDateAddedTo" value="" class="filter_option date"/>
                     </td>
                 </tr>
             </table>
@@ -577,6 +584,7 @@ $('#filtered-products').bind('scroll',function(){
 })
 
 $(document).ready(function() {
+    $('.date').datepicker({dateFormat: 'yy-mm-dd'});
     reloadOptionValues($('select#options')[0]);
 });
 $('input[name="optionOperation"]').click(function() {

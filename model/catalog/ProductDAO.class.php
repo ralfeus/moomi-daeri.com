@@ -30,6 +30,10 @@ class ProductDAO extends DAO {
             }
             $filter->addChunk($this->buildSimpleFieldFilterEntry('p2c.category_id', $categories, $tmp0, $tmp1));
         }
+        if (!empty($data['filterDateAddedFrom']))
+            $filter->addChunk("p.date_added > :dateAddedFrom", [":dateAddedFrom" => $data['filterDateAddedFrom']]);
+        if (!empty($data['filterDateAddedTo']))
+            $filter->addChunk("p.date_added < :dateAddedTo", [":dateAddedTo" => date('Y-m-d', strtotime($data['filterDateAddedTo']) + 86400)]);
         if (!empty($data['filterKoreanName'])) {
             $filter->addChunk("p.korean_name LIKE CONCAT('%', :koreanName, '%')", [':koreanName' => $data['filterKoreanName']]);
         }
