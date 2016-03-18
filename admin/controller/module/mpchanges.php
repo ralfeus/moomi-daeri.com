@@ -28,6 +28,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->mpfilter["change_discount"] = $this->parameters['changeDiscount'];
         $data['filterDateAddedFrom'] = $this->parameters['filterDateAddedFrom'];
         $data['filterDateAddedTo'] = $this->parameters['filterDateAddedTo'];
+        $data['filterEnabled'] = $this->parameters['filterEnabled'];
         $this->mpfilter['filterKoreanName'] = $data['filterKoreanName'] = $this->parameters['filterKoreanName'];
         $this->mpfilter["store_id"] = is_null($data['filterStoreId'] = $this->parameters['storeId']) ? -1 : $data['filterStoreId'];
         $this->mpfilter["manufacturer_id"] = $data['filterManufacturerId'] = $this->parameters['manufacturerId'];
@@ -153,6 +154,7 @@ class ControllerModuleMpchanges extends Controller {
             'storeId' => null,
             'supplierId' => 0
         ]);
+        $this->parameters['filterEnabled'] = is_numeric($this->getRequest()->getParam('filterEnabled')) ? $this->getRequest()->getParam('filterEnabled') : null;
         $this->parameters['priceDiff'] = in_array($this->getRequest()->getParam('price_diff', '-'), ['-', '+', '*', '/', '=']) ? $this->getRequest()->getParam('price_diff', '-') : '-';
         $this->parameters['quantitiesDiff'] = in_array($this->getRequest()->getParam('quantities_diff', '-'), ['-', '+', '*', '/', '=']) ? $this->getRequest()->getParam('quantities_diff', '-') : '-';
         $this->parameters['price'] = is_numeric($this->getRequest()->getParam('price', 0)) ? $this->getRequest()->getParam('price', 0) : 0;
@@ -239,6 +241,7 @@ class ControllerModuleMpchanges extends Controller {
         $this->data['textDateAdded'] = $this->language->get('DATE_ADDED');
         $this->data['textDelOption'] = $this->language->get('DEL_OPTION');
         $this->data['textDelOptionValue'] = $this->language->get('DEL_OPTION_VALUE');
+        $this->data['textEnabled'] = $this->language->get('ENABLED');
         $this->data['textExecute'] = $this->language->get('EXECUTE');
         $this->data['textKoreanName'] = $this->language->get('KOREAN_NAME');
         $this->data['textOptions'] = $this->language->get('OPTIONS');

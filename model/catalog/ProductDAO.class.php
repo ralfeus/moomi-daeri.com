@@ -34,6 +34,8 @@ class ProductDAO extends DAO {
             $filter->addChunk("p.date_added > :dateAddedFrom", [":dateAddedFrom" => $data['filterDateAddedFrom']]);
         if (!empty($data['filterDateAddedTo']))
             $filter->addChunk("p.date_added < :dateAddedTo", [":dateAddedTo" => date('Y-m-d', strtotime($data['filterDateAddedTo']) + 86400)]);
+        if (!is_null($data['filterEnabled']))
+            $filter->addChunk("p.status = :enabled", [":enabled" => $data['filterEnabled']]);
         if (!empty($data['filterKoreanName'])) {
             $filter->addChunk("p.korean_name LIKE CONCAT('%', :koreanName, '%')", [':koreanName' => $data['filterKoreanName']]);
         }

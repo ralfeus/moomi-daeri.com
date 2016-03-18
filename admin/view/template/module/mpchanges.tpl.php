@@ -122,6 +122,16 @@
                         <input type="text" id="filterDateAddedTo" name="filterDateAddedTo" value="" class="filter_option date"/>
                     </td>
                 </tr>
+                <tr>
+                    <td><label for="filterEnabled"><?= $textEnabled ?></label></td>
+                    <td>
+                        <select id="filterEnabled" name="filterEnabled" class="filter_option">
+                            <option></option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </td>
+                </tr>
             </table>
             <div class="vtabs">
                 <a href="#prices">
