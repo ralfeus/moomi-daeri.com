@@ -124,7 +124,7 @@ class ControllerModuleMpchanges extends Controller {
 
     protected function initParameters() {
         $this->initParametersWithDefaults([
-            'category_id' => 0,
+            'category_id' => [0, function($value) {return !empty($value);}],
             'change_all' => false,
             'change_discount' => false,
             'change_special' => false,
@@ -133,6 +133,7 @@ class ControllerModuleMpchanges extends Controller {
             'customer_group' => 0,
             'filterDateAddedFrom' => null,
             'filterDateAddedTo' => null,
+            'filterEnabled' => [null, function($v) {return is_numeric($v);}],
             'filterKoreanName' => null,
             'filter_price_from' => null,
             'filter_price_to' => null,
@@ -154,7 +155,7 @@ class ControllerModuleMpchanges extends Controller {
             'storeId' => null,
             'supplierId' => 0
         ]);
-        $this->parameters['filterEnabled'] = is_numeric($this->getRequest()->getParam('filterEnabled')) ? $this->getRequest()->getParam('filterEnabled') : null;
+//        $this->parameters['filterEnabled'] = is_numeric($this->getRequest()->getParam('filterEnabled')) ? $this->getRequest()->getParam('filterEnabled') : null;
         $this->parameters['priceDiff'] = in_array($this->getRequest()->getParam('price_diff', '-'), ['-', '+', '*', '/', '=']) ? $this->getRequest()->getParam('price_diff', '-') : '-';
         $this->parameters['quantitiesDiff'] = in_array($this->getRequest()->getParam('quantities_diff', '-'), ['-', '+', '*', '/', '=']) ? $this->getRequest()->getParam('quantities_diff', '-') : '-';
         $this->parameters['price'] = is_numeric($this->getRequest()->getParam('price', 0)) ? $this->getRequest()->getParam('price', 0) : 0;

@@ -165,14 +165,23 @@ abstract class Controller extends OpenCartBase
     }
 
     /**
-     * @param array $paramsMap
+     * @param array $paramsMap Key is parameter name.
+     * Value can be of two types:
+     * 1. Array of two values: default value and predicate function like this:
+     *      function($value) { return someValueCondition($value); }
+     * 2. Default value for cases request parameter is empty
      */
     protected function initParametersWithDefaults($paramsMap) {
-        foreach ($paramsMap as $param => $defaultValue) {
+        foreach ($paramsMap as $param => $value) {
             $paramName = preg_replace_callback('/_(\w)/', function($m) {
                 return strtoupper($m[1]);
             }, $param);
-            $this->parameters[$paramName] = empty($_REQUEST[$param]) ? $defaultValue : $_REQUEST[$param];
+                $this->parameters[$paramName] =
+                    is_array($value)
+                        ? (isset($value[1]) // Predicate
+                            ? ($value[1]($_REQUEST[$param]) ? $_REQUEST[$param] : $value[0])
+                            : (!empty($_REQUEST[$param]) ? $_REQUEST[$param] : $value[0]))
+                        : (!empty($_REQUEST[$param]) ? $_REQUEST[$param] : $value);
         }
     }
 
@@ -255,6 +264,7 @@ abstract class Controller extends OpenCartBase
         else
             $this->data['notifications'] = array();
     }
+
 
     /**
      * @param array $params
