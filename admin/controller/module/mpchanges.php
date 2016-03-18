@@ -147,19 +147,17 @@ class ControllerModuleMpchanges extends Controller {
             'operation' => null,
             'optionId' => null,
             'optionValue' => null,
-//            'optionValueType' => null,
+            'price' => [0, function($v) {return is_numeric($v);}],
+            'priceDiff' => ['-', function($v) {return in_array($v, ['-', '+', '*', '/', '=']);}],
             'product_list' => null,
             'product_to_change' => [],
+            'quantitiesDiff' => ['-', function($v) {return in_array($v, ['-', '+', '*', '/', '=']);}],
             'round_decimal' => 0,
             'start' => 0,
             'storeId' => null,
-            'supplierId' => 0
+            'supplierId' => 0,
+            'weight' => [0, function($v) {return is_numeric($v);}]
         ]);
-//        $this->parameters['filterEnabled'] = is_numeric($this->getRequest()->getParam('filterEnabled')) ? $this->getRequest()->getParam('filterEnabled') : null;
-        $this->parameters['priceDiff'] = in_array($this->getRequest()->getParam('price_diff', '-'), ['-', '+', '*', '/', '=']) ? $this->getRequest()->getParam('price_diff', '-') : '-';
-        $this->parameters['quantitiesDiff'] = in_array($this->getRequest()->getParam('quantities_diff', '-'), ['-', '+', '*', '/', '=']) ? $this->getRequest()->getParam('quantities_diff', '-') : '-';
-        $this->parameters['price'] = is_numeric($this->getRequest()->getParam('price', 0)) ? $this->getRequest()->getParam('price', 0) : 0;
-        $this->parameters['weight'] = is_numeric($this->getRequest()->getParam('weight', 0)) ? $this->getRequest()->getParam('weight', 0) : 0;
     }
 
     public function loadFilteredProducts() {
