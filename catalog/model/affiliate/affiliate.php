@@ -1,7 +1,42 @@
 <?php
 class ModelAffiliateAffiliate extends Model {
 	public function addAffiliate($data) {
-      	$this->getDb()->query("INSERT INTO affiliate SET firstname = '" . $this->getDb()->escape($data['firstname']) . "', lastname = '" . $this->getDb()->escape($data['lastname']) . "', email = '" . $this->getDb()->escape($data['email']) . "', telephone = '" . $this->getDb()->escape($data['telephone']) . "', fax = '" . $this->getDb()->escape($data['fax']) . "', password = '" . $this->getDb()->escape(md5($data['password'])) . "', company = '" . $this->getDb()->escape($data['company']) . "', address_1 = '" . $this->getDb()->escape($data['address_1']) . "', address_2 = '" . $this->getDb()->escape($data['address_2']) . "', city = '" . $this->getDb()->escape($data['city']) . "', postcode = '" . $this->getDb()->escape($data['postcode']) . "', country_id = '" . (int)$data['country_id'] . "', zone_id = '" . (int)$data['zone_id'] . "', code = '" . $this->getDb()->escape(uniqid()) . "', commission = '" . (float)$this->config->get('config_commission') . "', tax = '" . $this->getDb()->escape($data['tax']) . "', payment = '" . $this->getDb()->escape($data['payment']) . "', cheque = '" . $this->getDb()->escape($data['cheque']) . "', paypal = '" . $this->getDb()->escape($data['paypal']) . "', bank_name = '" . $this->getDb()->escape($data['bank_name']) . "', bank_branch_number = '" . $this->getDb()->escape($data['bank_branch_number']) . "', bank_swift_code = '" . $this->getDb()->escape($data['bank_swift_code']) . "', bank_account_name = '" . $this->getDb()->escape($data['bank_account_name']) . "', bank_account_number = '" . $this->getDb()->escape($data['bank_account_number']) . "', status = '1', date_added = NOW()");
+      	$this->getDb()->query("
+			INSERT INTO affiliate 
+			(firstname, lastname, email, telephone, fax, password, company, address_1, address_2, city, postcode, country_id, 
+			zone_id, code, commission, tax, payment, cheque, paypal, bank_name, bank_branch_number, bank_swift_code, bank_account_name,
+			bank_account_number, status, approved, date_added)
+			VALUES (
+				:firstName, :lastName, :email, :phone, :fax, :password, :company, :address1, :address2, :city, :zip, 
+				:countryId, :zoneId, :code, :commission, :tax, :payment, :cheque, :paypal, :bankName, :bankBranchNumber, 
+				:bankSwiftCode, :bankAccountName, :bankAccountNumber, 1, 1, NOW()
+			)
+			", [
+			":firstName" => $data['firstname'],
+			":lastName" => $data['lastname'],
+			":email" => $data['email'],
+			":phone" => $data['telephone'],
+			":fax" => $data['fax'],
+			":password" => md5($data['password']),
+			":company" => $data['company'],
+			":address1" => $data['address_1'],
+			":address2" => $data['address_2'],
+			":city" => $data['city'],
+			":zip" => $data['postcode'],
+			":countryId" => $data['country_id'],
+			":zoneId" => $data['zone_id'],
+			":code" => uniqid(),
+			":commission" => $this->config->get('config_commission'),
+			":tax" => $data['tax'],
+			":payment" => $data['payment'],
+			":cheque" => $data['cheque'],
+			":paypal" => $data['paypal'],
+			":bankName" => $data['bank_name'],
+			":bankBranchNumber" => $data['bank_branch_number'],
+			":bankSwiftCode" => $data['bank_swift_code'],
+			":bankAccountName" => $data['bank_account_name'],
+			":bankAccountNumber" => $data['bank_account_number']
+		]);
 	
 		$this->language->load('mail/affiliate');
 		
@@ -60,4 +95,3 @@ class ModelAffiliateAffiliate extends Model {
 		return $query->row['total'];
 	}
 }
-?>

@@ -26,18 +26,15 @@ class ControllerAffiliateSuccess extends Controller {
       	);
 
     	$this->data['heading_title'] = $this->language->get('heading_title');
-
 		$this->data['text_message'] = sprintf($this->language->get('text_approval'), $this->config->get('config_name'), $this->url->link('information/contact'));
-		
     	$this->data['button_continue'] = $this->language->get('button_continue');
-		
 		$this->data['continue'] = $this->url->link('affiliate/account', '', 'SSL');
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/success.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/common/success.tpl';
-		} else {
-			$this->template = 'default/template/common/success.tpl';
-		}
+		$template = (
+			file_exists(DIR_TEMPLATE . $this->config->get('config_template')) 
+				? DIR_TEMPLATE . $this->config->get('config_template')
+				: "default"
+			) . '/template/common/success.tpl';
 		
 		$this->children = array(
 			'common/column_left',
@@ -48,7 +45,6 @@ class ControllerAffiliateSuccess extends Controller {
 			'common/header'	
 		);
 				
-		$this->getResponse()->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render($template));
   	}
 }
-?>
