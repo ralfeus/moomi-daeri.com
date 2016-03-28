@@ -3,7 +3,7 @@ namespace automation\SourceSite;
 
 class Mizon extends GMarketCoKr {
     public function __construct() {
-        $this->shopId = 'TI5MR38DMTUxNY1zOTUzMzUxNjB/Rw==';
+        $this->shopId = 'DI2OR38DNzQxNUwyOTk1NzMzNDh/Rw==';
     }
 
     public static function createDefaultImportSourceSiteInstance() {
