@@ -39,7 +39,10 @@ class ShippingMethodDAO extends DAO {
         /** @var ShippingMethodBase[] $shippingExtensions */
         $shippingExtensions = ExtensionDAO::getInstance()->getExtensions('shipping', true, true);
         foreach ($shippingExtensions as $shippingExtension) {
-            $result = array_merge($result, $shippingExtension->getMethodData($address));
+            $shippingMethods = $shippingExtension->getMethodData($address);
+            if (is_array($shippingMethods)) {
+                $result = array_merge($result, $shippingMethods);
+            }
         }
 
         usort($result, function($a, $b) {
