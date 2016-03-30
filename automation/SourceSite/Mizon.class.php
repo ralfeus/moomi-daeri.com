@@ -1,18 +1,22 @@
 <?php
 namespace automation\SourceSite;
 
+use model\catalog\Manufacturer;
+use model\catalog\Supplier;
+use model\extension\ImportSourceSite;
+
 class Mizon extends GMarketCoKr {
     public function __construct() {
         $this->shopId = 'DI2OR38DNzQxNUwyOTk1NzMzNDh/Rw==';
     }
 
     public static function createDefaultImportSourceSiteInstance() {
-        return new \model\extension\ImportSourceSite(
+        return new ImportSourceSite(
             explode("\\", get_class())[2],
             [],
             [],
-            new \model\catalog\Manufacturer(0),
-            new \model\catalog\Supplier(0),
+            new Manufacturer(0),
+            new Supplier(0),
             false,
             "Mizon",
             1,

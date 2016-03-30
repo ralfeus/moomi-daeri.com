@@ -8,8 +8,7 @@ class Free extends ShippingMethodBase {
 
     public function getMethodData($address)
     {
-        if ($this->config->get('free_status'))
-        {
+        if ($this->config->get('free_status')) {
             $sql = "
                 SELECT gz.geo_zone_id, gz.name, gz.description
                 FROM
@@ -21,17 +20,16 @@ class Free extends ShippingMethodBase {
                     AND (ztgz.zone_id = " . (int)$address['zone_id'] . " OR ztgz.zone_id = 0)
             ";
             $query = $this->getDb()->query($sql);
-            if ($query->row)
-            {
+            if ($query->row) {
                 $query->row['code'] = 'free.free';
                 $query->row['shippingMethodName'] = 'Free shipping';
-                return array($query->row);
+                return [$query->row];
+            } else {
+                return [];
             }
-            else
-                return null;
+        } else {
+            return [];
         }
-        else
-            return null;
     }
 
     public function getName()
