@@ -105,8 +105,8 @@ final class MySQL implements DBDriver{
                     $statement->closeCursor();
                     return $result;
                 } else {
-                    $lastError = new PDOException(print_r($statement->errorInfo(), true));
                     error_log($statement->errorCode() . ": " . $statement->errorInfo()[2]);
+                    throw new PDOException(print_r($statement->errorInfo(), true));
                 }
             } catch (\Exception $exc) {
                 $lastError = $exc;
