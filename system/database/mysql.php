@@ -108,8 +108,10 @@ final class MySQL implements DBDriver{
                     error_log($statement->errorCode() . ": " . $statement->errorInfo()[2]);
                     throw new PDOException(print_r($statement->errorInfo(), true));
                 }
-            } catch (\Exception $exc) {
+            } catch (PDOException $exc) {
                 $lastError = $exc;
+                error_log($exc->getMessage());
+                error_log($exc->getTraceAsString());
                 $this->reconnect();
             }
         }
