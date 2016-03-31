@@ -236,13 +236,13 @@ class ControllerAccountSimpleRegister extends Controller {
 
         $this->data['simple'] = $this->simple;
 
-        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/account/simpleregister.tpl')) {
-            $this->template = $this->config->get('config_template') . '/template/account/simpleregister.tpl';
-            $this->data['template'] = $this->config->get('config_template');
-        } else {
-            $this->template = 'default/template/account/simpleregister.tpl';
-            $this->data['template'] = 'default';
-        }
+        $templateFileName = '/template/account/simpleregister.tpl';
+        $templatePrefix = file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateFileName)
+            ? $this->config->get('config_template')
+            : "default";
+        $this->data["template"] = file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateFileName)
+            ? $this->config->get('config_template')
+            : "default";
 
         $this->simple->add_static($this->data['template'], 'simpleregister');
 
@@ -255,7 +255,7 @@ class ControllerAccountSimpleRegister extends Controller {
             'common/header'
         );
 
-        $this->response->setOutput($this->render());
+        $this->response->setOutput($this->render($templatePrefix . $templateFileName));
     }
 
     public function zone() {
