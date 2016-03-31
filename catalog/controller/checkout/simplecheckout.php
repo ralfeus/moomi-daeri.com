@@ -304,13 +304,12 @@ class ControllerCheckoutSimpleCheckout extends Controller {
 
              $this->document->addStyle('catalog/view/theme/'.$this->config->get('config_template').'/stylesheet/simple.css');
 
-            if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/simplecheckout_cart_empty.tpl')) {
-                $this->template = $this->config->get('config_template') . '/template/checkout/simplecheckout_cart_empty.tpl';
-                $this->data['template'] = $this->config->get('config_template');
-            } else {
-                $this->template = 'default/template/checkout/simplecheckout_cart_empty.tpl';
-                $this->data['template'] = 'default';
-            }
+            $templatePrefix = file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/simplecheckout_cart_empty.tpl')
+                ? $this->config->get('config_template')
+                : "default";
+            $this->data["template"] = file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/simplecheckout_cart_empty.tpl')
+                ? $this->config->get('config_template')
+                : "default";
             
             $this->children = array(
                 'common/column_left',
@@ -321,7 +320,7 @@ class ControllerCheckoutSimpleCheckout extends Controller {
                 'common/header'    
             );
                     
-            $this->response->setOutput($this->render());            
+            $this->response->setOutput($this->render($templatePrefix . '/template/checkout/simplecheckout_cart_empty.tpl'));
         }
     }
     
