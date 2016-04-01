@@ -264,51 +264,15 @@ class ControllerSaleCoupon extends Controller {
 		$this->data['sort'] = $sort;
 		$this->data['order'] = $order;
 		
-		$this->template = 'sale/coupon_list.tpl';
 		$this->children = array(
 			'common/header',	
 			'common/footer'	
 		);
 		
-		$this->getResponse()->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render('sale/coupon_list.tpl'));
   	}
 
   	private function getForm() {
-    	$this->data['heading_title'] = $this->language->get('heading_title');
-
-    	$this->data['text_enabled'] = $this->language->get('text_enabled');
-    	$this->data['text_disabled'] = $this->language->get('text_disabled');
-    	$this->data['text_yes'] = $this->language->get('text_yes');
-    	$this->data['text_no'] = $this->language->get('text_no');
-    	$this->data['text_percent'] = $this->language->get('text_percent');
-    	$this->data['text_amount'] = $this->language->get('text_amount');
-        $this->data['textSelectAll'] = $this->language->get('SELECT_ALL');
-        $this->data['textUnselectAll'] = $this->language->get('UNSELECT_ALL');
-        $this->data['textCollapseAll'] = $this->language->get('COLLAPSE_ALL');
-        $this->data['textExpandAll'] = $this->language->get('EXPAND_ALL');
-				
-		$this->data['entry_name'] = $this->language->get('entry_name');
-    	$this->data['entry_description'] = $this->language->get('entry_description');
-    	$this->data['entry_code'] = $this->language->get('entry_code');
-		$this->data['entry_discount'] = $this->language->get('entry_discount');
-		$this->data['entry_logged'] = $this->language->get('entry_logged');
-		$this->data['entry_shipping'] = $this->language->get('entry_shipping');
-		$this->data['entry_type'] = $this->language->get('entry_type');
-		$this->data['entry_total'] = $this->language->get('entry_total');
-		$this->data['entry_category'] = $this->language->get('entry_category');
-		$this->data['entry_product'] = $this->language->get('entry_product');
-    	$this->data['entry_date_start'] = $this->language->get('entry_date_start');
-    	$this->data['entry_date_end'] = $this->language->get('entry_date_end');
-    	$this->data['entry_uses_total'] = $this->language->get('entry_uses_total');
-		$this->data['entry_uses_customer'] = $this->language->get('entry_uses_customer');
-		$this->data['entry_status'] = $this->language->get('entry_status');
-
-    	$this->data['button_save'] = $this->language->get('button_save');
-    	$this->data['button_cancel'] = $this->language->get('button_cancel');
-
-		$this->data['tab_general'] = $this->language->get('tab_general');
-		$this->data['tab_coupon_history'] = $this->language->get('tab_coupon_history');
-
 		$this->data['token'] = $this->session->data['token'];
 	
 		if (isset($this->request->get['coupon_id'])) {
@@ -361,19 +325,7 @@ class ControllerSaleCoupon extends Controller {
 			$url .= '&order=' . $this->request->get['order'];
 		}
 
-  		$this->data['breadcrumbs'] = array();
-
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
-      		'separator' => false
-   		);
-
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('heading_title'),
-			'href'      => $this->url->link('sale/coupon', 'token=' . $this->session->data['token'] . $url, 'SSL'),
-      		'separator' => ' :: '
-   		);
+		$this->setBreadcrumbs();
 									
 		if (!isset($this->request->get['coupon_id'])) {
 			$this->data['action'] = $this->url->link('sale/coupon/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
@@ -514,16 +466,52 @@ class ControllerSaleCoupon extends Controller {
       		$this->data['status'] = 1;
     	}
 		
-		$this->template = 'sale/coupon_form.tpl';
 		$this->children = array(
 			'common/header',	
 			'common/footer'	
 		);
 		
-		$this->getResponse()->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render('sale/coupon_form.tpl.php'));
   	}
 	
-  	private function validateForm() {
+	protected function loadStrings() {
+		$this->data['heading_title'] = $this->language->get('heading_title');
+
+		$this->data['text_enabled'] = $this->language->get('text_enabled');
+		$this->data['text_disabled'] = $this->language->get('text_disabled');
+		$this->data['text_yes'] = $this->language->get('text_yes');
+		$this->data['text_no'] = $this->language->get('text_no');
+		$this->data['text_percent'] = $this->language->get('text_percent');
+		$this->data['text_amount'] = $this->language->get('text_amount');
+		$this->data['textSelectAll'] = $this->language->get('SELECT_ALL');
+		$this->data['textUnselectAll'] = $this->language->get('UNSELECT_ALL');
+		$this->data['textCollapseAll'] = $this->language->get('COLLAPSE_ALL');
+		$this->data['textExpandAll'] = $this->language->get('EXPAND_ALL');
+
+		$this->data['entry_name'] = $this->language->get('entry_name');
+		$this->data['entry_description'] = $this->language->get('entry_description');
+		$this->data['entry_code'] = $this->language->get('entry_code');
+		$this->data['entry_discount'] = $this->language->get('entry_discount');
+		$this->data['entry_logged'] = $this->language->get('entry_logged');
+		$this->data['entry_shipping'] = $this->language->get('entry_shipping');
+		$this->data['entry_type'] = $this->language->get('entry_type');
+		$this->data['entry_total'] = $this->language->get('entry_total');
+		$this->data['entry_category'] = $this->language->get('entry_category');
+		$this->data['entry_product'] = $this->language->get('entry_product');
+		$this->data['entry_date_start'] = $this->language->get('entry_date_start');
+		$this->data['entry_date_end'] = $this->language->get('entry_date_end');
+		$this->data['entry_uses_total'] = $this->language->get('entry_uses_total');
+		$this->data['entry_uses_customer'] = $this->language->get('entry_uses_customer');
+		$this->data['entry_status'] = $this->language->get('entry_status');
+
+		$this->data['button_save'] = $this->language->get('button_save');
+		$this->data['button_cancel'] = $this->language->get('button_cancel');
+
+		$this->data['tab_general'] = $this->language->get('tab_general');
+		$this->data['tab_coupon_history'] = $this->language->get('tab_coupon_history');
+	}
+
+	private function validateForm() {
     	if (!$this->user->hasPermission('modify', 'sale/coupon')) {
       		$this->error['warning'] = $this->language->get('error_permission');
     	}

@@ -160,7 +160,7 @@ final class MySQL implements DBDriver{
   	}
 
 	public function __destruct() {
-        unset($this->connection);
+        $this->connection = null;
         file_put_contents(DIR_LOGS . '/sql.queries.log', self::$queriesLog, FILE_APPEND);
 	}
 

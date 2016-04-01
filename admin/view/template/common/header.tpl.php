@@ -34,6 +34,7 @@
 <script type="text/javascript" src="view/javascript/jquery/jquery.checkboxtree.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/jquery.blockUI.js"></script>
+<!--<script type="text/javascript" src="view/javascript/jquery/jquery.noty.packaged.min.js"></script>-->
 <link rel="stylesheet" type="text/css" href="view/javascript/jquery/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
 <script type="text/javascript">
     $(function  () {
@@ -356,6 +357,10 @@ $(document).ready(function(){
       </li>
       <li id="store"><a class="top" href="<?php echo $logout; ?>"><?php echo $text_logout; ?></a></li>
     </ul>
+      <div id="wait" style="display: none;">
+          <p id="message"></p>
+          <img src="<?= HTTP_IMAGE ?>ajax-loader.gif" />
+      </div>
     <script type="text/javascript"><!--
 $(document).ready(function() {
 	$('#menu > ul').superfish({

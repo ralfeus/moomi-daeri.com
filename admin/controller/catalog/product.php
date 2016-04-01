@@ -1,5 +1,6 @@
 <?php
 use model\catalog\ManufacturerDAO;
+use model\catalog\ProductDAO;
 use model\catalog\SupplierDAO;
 use model\sale\OrderItemDAO;
 use system\engine\AdminController;
@@ -1599,23 +1600,25 @@ class ControllerCatalogProduct extends AdminController {
 				$limit = 20;	
 			}			
 						
-			$data = array(
-				'filter_name'         => $filter_name,
+			$data = [
+				'filterEnabled' => true,
+				'filterName'         => $filter_name,
 				'filterModel'        => $filterModel,
-				'filter_category_id'  => $filter_category_id,
-				'filter_sub_category' => $filter_sub_category,
+				'filterCategoryId'  => $filter_category_id,
+				'filterSubCategories' => $filter_sub_category,
 				'start'               => 0,
 				'limit'               => $limit
-			);
+			];
 			
-			$results = $this->model_catalog_product->getProductsEnabled($data);
+//			$results = $this->model_catalog_product->getProductsEnabled($data);
+			$products = ProductDAO::getInstance()->getProducts($data);
 			
-			foreach ($results as $result) {
-				$product_options = $this->model_catalog_product->getProductOptions($result['product_id']);	
+			foreach ($products as $product) {
+				$product_options = $this->model_catalog_product->getProductOptions($product->getId());
 				$json[] = array(
-					'product_id' => $result['product_id'],
-					'name'       => html_entity_decode($result['name'], ENT_QUOTES, 'UTF-8'),	
-					'model'      => $result['model']
+					'product_id' => $product->getId(),
+					'name'       => html_entity_decode($product->getName(), ENT_QUOTES, 'UTF-8'),
+					'model'      => $product->getModel()
 				);	
 			}
 		}
