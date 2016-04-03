@@ -1,4 +1,6 @@
-<?php  
+<?php
+use model\sale\CouponDAO;
+
 class ControllerSaleCoupon extends Controller {
 	private $error = array();
      
@@ -6,8 +8,6 @@ class ControllerSaleCoupon extends Controller {
 		$this->load->language('sale/coupon');
     	
 		$this->document->setTitle($this->language->get('heading_title'));
-		
-		$this->load->model('sale/coupon');
 		
 		$this->getList();
   	}
@@ -20,7 +20,7 @@ class ControllerSaleCoupon extends Controller {
 		$this->load->model('sale/coupon');
 		
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_sale_coupon->addCoupon($this->request->post);
+			CouponDAO::getInstance()->addCoupon($this->request->post);
 			
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -52,7 +52,7 @@ class ControllerSaleCoupon extends Controller {
 		$this->load->model('sale/coupon');
 				
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_sale_coupon->editCoupon($this->request->get['coupon_id'], $this->request->post);
+			CouponDAO::getInstance()->editCoupon($this->request->get['coupon_id'], $this->request->post);
       		
 			$this->session->data['success'] = $this->language->get('text_success');
 	  
@@ -85,7 +85,7 @@ class ControllerSaleCoupon extends Controller {
 		
     	if (isset($this->request->post['selected']) && $this->validateDelete()) { 
 			foreach ($this->request->post['selected'] as $coupon_id) {
-				$this->model_sale_coupon->deleteCoupon($coupon_id);
+				CouponDAO::getInstance()->deleteCoupon($coupon_id);
 			}
       		
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -169,9 +169,9 @@ class ControllerSaleCoupon extends Controller {
 			'limit' => $this->config->get('config_admin_limit')
 		);
 		
-		$coupon_total = $this->model_sale_coupon->getTotalCoupons();
+		$coupon_total = CouponDAO::getInstance()->getTotalCoupons();
 	
-		$results = $this->model_sale_coupon->getCoupons($data);
+		$results = CouponDAO::getInstance()->getCoupons($data);
  
     	foreach ($results as $result) {
 			$action = array();
@@ -336,7 +336,7 @@ class ControllerSaleCoupon extends Controller {
 		$this->data['cancel'] = $this->url->link('sale/coupon', 'token=' . $this->session->data['token'] . $url, 'SSL');
   		
 		if (isset($this->request->get['coupon_id']) && (!$this->request->server['REQUEST_METHOD'] != 'POST')) {
-      		$coupon_info = $this->model_sale_coupon->getCoupon($this->request->get['coupon_id']);
+      		$coupon_info = CouponDAO::getInstance()->getCoupon($this->request->get['coupon_id']);
     	}
 		
     	if (isset($this->request->post['name'])) {
@@ -398,33 +398,39 @@ class ControllerSaleCoupon extends Controller {
 		if (isset($this->request->post['coupon_product'])) {
 			$products = $this->request->post['coupon_product'];
 		} elseif (isset($this->request->get['coupon_id'])) {		
-			$products = $this->model_sale_coupon->getCouponProducts($this->request->get['coupon_id']);
+			$products = CouponDAO::getInstance()->getCouponProducts($this->request->get['coupon_id']);
 		} else {
 			$products = array();
 		}
 		
-		$this->load->model('catalog/product');
-		
-		$this->data['coupon_product'] = array();
-		
-		foreach ($products as $product_id) {
-			$product_info = $this->model_catalog_product->getProduct($product_id);
-			
-			if ($product_info) {
-				$this->data['coupon_product'][] = array(
-					'product_id' => $product_info['product_id'],
-					'name'       => $product_info['name']
-				);
+		if (!empty($coupon_info) && $coupon_info['applies_to_categories']) {
+			foreach ($products as $categoryId) {
+				$this->data['selectedCategories'][] = $categoryId;
+			}
+		} else {
+			$this->load->model('catalog/product');
+
+			$this->data['coupon_product'] = array();
+
+			foreach ($products as $product_id) {
+				$product_info = $this->model_catalog_product->getProduct($product_id);
+
+				if ($product_info) {
+					$this->data['coupon_product'][] = array(
+						'product_id' => $product_info['product_id'],
+						'name' => $product_info['name']
+					);
+				}
 			}
 		}
-
 		$this->load->model('catalog/category');
 				
 		$this->data['categories'] = $this->model_catalog_category->getCategories(0);
 
 		$categories = $this->model_catalog_category->getAllCategories();
 		$this->data['categories'] = $this->getAllCategories($categories);
-		$this->data['categoriesParent'] = $this->getCategoriesParent(0, $this->data['product_category']);
+		$this->data['categoriesParent'] = $this->getCategoriesParent(
+			0, $this->data['product_category'], !empty($coupon_info) && $coupon_info['applies_to_categories']);
 					
 		if (isset($this->request->post['date_start'])) {
        		$this->data['date_start'] = $this->request->post['date_start'];
@@ -563,7 +569,7 @@ class ControllerSaleCoupon extends Controller {
 		
 		$this->data['histories'] = array();
 			
-		$results = $this->model_sale_coupon->getCouponHistories($this->request->get['coupon_id'], ($page - 1) * 10, 10);
+		$results = CouponDAO::getInstance()->getCouponHistories($this->request->get['coupon_id'], ($page - 1) * 10, 10);
       		
 		foreach ($results as $result) {
         	$this->data['histories'][] = array(
@@ -574,49 +580,35 @@ class ControllerSaleCoupon extends Controller {
         	);
       	}			
 		
-		$history_total = $this->model_sale_coupon->getTotalCouponHistories($this->request->get['coupon_id']);
+		$history_total = CouponDAO::getInstance()->getTotalCouponHistories($this->request->get['coupon_id']);
 			
 		$pagination = new Pagination();
 		$pagination->total = $history_total;
 		$pagination->page = $page;
 		$pagination->limit = 10; 
 		$pagination->url = $this->url->link('sale/coupon/history', 'token=' . $this->session->data['token'] . '&coupon_id=' . $this->request->get['coupon_id'] . '&page={page}', 'SSL');
-			
 		$this->data['pagination'] = $pagination->render();
-		
-		$this->template = 'sale/coupon_history.tpl';		
-		
-		$this->getResponse()->setOutput($this->render());
+
+		$this->getResponse()->setOutput($this->render('sale/coupon_history.tpl'));
   	}	
     
-   	private function getCategoriesParent($parent_id, $product_category) {
+   	private function getCategoriesParent($parent_id, $product_category, $selectedCategories = false) {
 
 		$results = $this->model_catalog_category->getCategoriesParent($parent_id);
 		$output = '<ul id="tree1">';
 		
 		foreach ($results as $result) {
-        $children = $this->model_catalog_category->getCategoriesParent($result['category_id']);
-        if (empty($children)) {
-				  $output .= '<li>';
-          if (in_array($result['category_id'], $product_category)) {
-          $output .= '<input type="checkbox" name="category[]" value="' . $result['category_id'] . '" checked="checked" />';
-          } else {
-          $output .= '<input type="checkbox" name="category[]" value="' . $result['category_id'] . '" />';
-          }
-          $output .= $result['name'];
-          $output .= '</li>';
-        } else {
-		      $output .= '<li>';
-          if (in_array($result['category_id'], $product_category)) {
-          $output .= '<input type="checkbox" name="category[]" value="' . $result['category_id'] . '" checked="checked" />';
-          } else {
-          $output .= '<input type="checkbox" name="category[]" value="' . $result['category_id'] . '" />';
-          }
-          $output .= $result['name'];
-				  
-          $output .= $this->getCategoriesParent($result['category_id'], $product_category);
-				  $output .= '</li>';
-        }
+			$checked = ($selectedCategories && in_array($result['category_id'], $this->data['selectedCategories'])) ||
+				(in_array($result['category_id'], $product_category)) ? 'checked="checked"' : '';
+			$output .=
+				'<li>' .
+				'<input type="checkbox" name="category[]" value="' . $result['category_id'] . "\" $checked />" .
+				$result['name'];
+			$children = $this->model_catalog_category->getCategoriesParent($result['category_id']);
+			if (!empty($children)) {
+			  	$output .= $this->getCategoriesParent($result['category_id'], $product_category, $selectedCategories);
+			}
+			$output .= '</li>';
 		}
 		
 		$output .= '</ul>';

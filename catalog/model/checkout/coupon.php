@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Class ModelCheckoutCoupon
+ * @Deprecated
+ */
 class ModelCheckoutCoupon extends Model {
 	public function getCoupon($code, $chosenOnes = false) {
 		$status = true;
@@ -87,4 +92,3 @@ class ModelCheckoutCoupon extends Model {
 		$this->getDb()->query("INSERT INTO `coupon_history` SET coupon_id = '" . (int)$coupon_id . "', order_id = '" . (int)$order_id . "', customer_id = '" . (int)$customer_id . "', amount = '" . (float)$amount . "', date_added = NOW()");
 	}
 }
-?>

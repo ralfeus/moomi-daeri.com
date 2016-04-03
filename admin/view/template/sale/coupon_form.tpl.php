@@ -167,46 +167,47 @@
 var categories = 0;
 
 $('input[name=\'category[]\']').bind('change', function() {
-    var filterCategory = this;
-    categories++;
-    $.ajax({
-        url: 'index.php?route=catalog/product/autocompleteEnabled&token=<?= $token ?>&filter_category_id=' + filterCategory.value + '&limit=200',
-        dataType: 'json',
-        beforeSend: function () {
-            var wait = $('#wait');
-            wait.find('#message')
-                .empty()
-                .append(categories + " categories to get");
-            $.blockUI({message: wait});
-        },
-        complete: function () {
-            $('.wait').remove();
-        },
-        success: function (json) {
-            var couponProduct = $('#coupon-product');
-            for (i = 0; i < json.length; i++) {
-                if ($(filterCategory).attr('checked') == 'checked') {
-                    $('#coupon-product' + json[i]['product_id']).remove();
-
-                    couponProduct.append('<div id="coupon-product' + json[i]['product_id'] + '">' + json[i]['name'] + '<img src="view/image/delete.png" /><input type="hidden" name="coupon_product[]" value="' + json[i]['product_id'] + '" /></div>');
-                } else {
-                    $('#coupon-product' + json[i]['product_id']).remove();
-                }
-            }
-            couponProduct.find('div:odd').attr('class', 'odd');
-            couponProduct.find('div:even').attr('class', 'even');
-            categories--;
-            if (categories == 0) {
-                $.unblockUI();
-            } else {
-                var wait = $('#wait');
-                wait.find('#message')
-                    .empty()
-                    .append(categories + " categories to get");
-                $.blockUI({message: wait});
-            }
-        }
-    });
+    $('div#coupon-product div[id^="coupon-product"]').remove();
+//    var filterCategory = this;
+//    categories++;
+//    $.ajax({
+//        url: 'index.php?route=catalog/product/autocompleteEnabled&token=<?//= $token ?>//&filter_category_id=' + filterCategory.value + '&limit=200',
+//        dataType: 'json',
+//        beforeSend: function () {
+//            var wait = $('#wait');
+//            wait.find('#message')
+//                .empty()
+//                .append(categories + " categories to get");
+//            $.blockUI({message: wait});
+//        },
+//        complete: function () {
+//            $('.wait').remove();
+//        },
+//        success: function (json) {
+//            var couponProduct = $('#coupon-product');
+//            for (i = 0; i < json.length; i++) {
+//                if ($(filterCategory).attr('checked') == 'checked') {
+//                    $('#coupon-product' + json[i]['product_id']).remove();
+//
+//                    couponProduct.append('<div id="coupon-product' + json[i]['product_id'] + '">' + json[i]['name'] + '<img src="view/image/delete.png" /><input type="hidden" name="coupon_product[]" value="' + json[i]['product_id'] + '" /></div>');
+//                } else {
+//                    $('#coupon-product' + json[i]['product_id']).remove();
+//                }
+//            }
+//            couponProduct.find('div:odd').attr('class', 'odd');
+//            couponProduct.find('div:even').attr('class', 'even');
+//            categories--;
+//            if (categories == 0) {
+//                $.unblockUI();
+//            } else {
+//                var wait = $('#wait');
+//                wait.find('#message')
+//                    .empty()
+//                    .append(categories + " categories to get");
+//                $.blockUI({message: wait});
+//            }
+//        }
+//    });
 });
 
 $('input[name=\'product\']').autocomplete({
@@ -215,12 +216,12 @@ $('input[name=\'product\']').autocomplete({
 		$.ajax({
 			url: 'index.php?route=catalog/product/autocompleteEnabled&token=<?php echo $token; ?>&filter_name=' +  encodeURIComponent(request.term),
 			dataType: 'json',
-    beforeSend: function () {
-      $('#waiting').after('<span class="wait">&nbsp;<img src="view/image/loading.gif" alt="" /></span>');
-    },
-    complete: function () {
-      $('.wait').remove();
-    },
+            beforeSend: function () {
+              $('#waiting').after('<span class="wait">&nbsp;<img src="view/image/loading.gif" alt="" /></span>');
+            },
+            complete: function () {
+              $('.wait').remove();
+            },
 			success: function(json) {		
 				response($.map(json, function(item) {
 					return {
@@ -240,6 +241,9 @@ $('input[name=\'product\']').autocomplete({
 		$('#coupon-product div:even').attr('class', 'even');
 		
 		$('input[name=\'product\']').val('');
+        var categoryTree = $('#tree1');
+        categoryTree.checkboxTree('uncheckAll');
+        categoryTree.checkboxTree('collapseAll');
 		
 		return false;
 	}

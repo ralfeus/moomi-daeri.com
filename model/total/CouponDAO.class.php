@@ -11,9 +11,7 @@ class CouponDAO extends TotalBaseDAO {
 		if (isset($this->session->data['coupon'])) {
 			$this->load->language('total/coupon');
 			
-			$this->load->model('checkout/coupon');
-			 
-			$coupon_info = $this->model_checkout_coupon->getCoupon($this->session->data['coupon']);
+			$coupon_info = \model\sale\CouponDAO::getInstance()->applyCoupon($this->session->data['coupon']);
 			
 			if ($coupon_info) {
 				$discount_total = 0;
@@ -104,13 +102,10 @@ class CouponDAO extends TotalBaseDAO {
 		if ($start && $end) {  
 			$code = substr($order_total['title'], $start, $end - $start);
 		}	
-		
-		$this->load->model('checkout/coupon');
-		
-		$coupon_info = $this->model_checkout_coupon->getCoupon($code);
+		$coupon_info = \model\sale\CouponDAO::getInstance()->applyCoupon($code);
 			
 		if ($coupon_info) {
-			$this->model_checkout_coupon->redeem($coupon_info['coupon_id'], $order_info['order_id'], $order_info['customer_id'], $order_total['value']);	
+			\model\sale\CouponDAO::getInstance()->redeem($coupon_info['coupon_id'], $order_info['order_id'], $order_info['customer_id'], $order_total['value']);	
 		}						
 	}
 

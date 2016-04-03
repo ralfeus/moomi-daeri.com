@@ -36,7 +36,7 @@ class ControllerTotalCoupon extends Controller {
 		if (isset($this->request->post['coupon'])) {
 			$this->load->model('checkout/coupon');
 	
-			$coupon_info = $this->model_checkout_coupon->getCoupon($this->request->post['coupon']);			
+			$coupon_info = \model\sale\CouponDAO::getInstance()->applyCoupon($this->request->post['coupon']);
 			
 			if ($coupon_info) {			
 				$this->session->data['coupon'] = $this->request->post['coupon'];
