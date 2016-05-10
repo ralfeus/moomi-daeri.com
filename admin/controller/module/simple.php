@@ -471,13 +471,13 @@ class ControllerModuleSimple extends Controller {
 
         $fields_for_autoreloading_needed = false;
         
-        $payment_extensions = $this->model_setting_extension->getInstalled('payment');
+        $payment_extensions = \model\setting\ExtensionDAO::getInstance()->getExtensions('payment');
         $tmp = array();
         foreach ($payment_extensions as $extension) {
-            if ($this->config->get($extension . '_status')) {
+            if ($this->config->get($extension['code'] . '_status')) {
                 $tmp[] = $extension;
             }
-            if ($this->config->get($extension . '_geo_zone_id')) {
+            if ($this->config->get($extension['code'] . '_geo_zone_id')) {
                 $fields_for_autoreloading_needed = true;
             }
         }
@@ -498,13 +498,13 @@ class ControllerModuleSimple extends Controller {
             }
         }
       
-        $shipping_extensions = $this->model_setting_extension->getInstalled('shipping');
+        $shipping_extensions = \model\setting\ExtensionDAO::getInstance()->getExtensions('shipping');
         $tmp = array();
         foreach ($shipping_extensions as $extension) {
-            if ($this->config->get($extension . '_status')) {
+            if ($this->config->get($extension['code'] . '_status')) {
                 $tmp[] = $extension;
             }
-            if ($this->config->get($extension . '_geo_zone_id')) {
+            if ($this->config->get($extension['code'] . '_geo_zone_id')) {
                 $fields_for_autoreloading_needed = true;
             }
         }

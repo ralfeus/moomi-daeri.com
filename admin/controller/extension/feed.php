@@ -46,11 +46,11 @@ class ControllerExtensionFeed extends Controller {
 
 		$this->load->model('setting/extension');
 
-		$extensions = $this->model_setting_extension->getInstalled('feed');
+		$extensions = \model\setting\ExtensionDAO::getInstance()->getExtensions('feed');
 		
 		foreach ($extensions as $key => $value) {
-			if (!file_exists(DIR_APPLICATION . 'controller/feed/' . $value . '.php')) {
-				$this->model_setting_extension->uninstall('feed', $value);
+			if (!file_exists(DIR_APPLICATION . 'controller/feed/' . $value['code'] . '.php')) {
+				\model\setting\ExtensionDAO::getInstance()->uninstall('feed', $value['code']);
 				
 				unset($extensions[$key]);
 			}
@@ -62,32 +62,37 @@ class ControllerExtensionFeed extends Controller {
 		
 		if ($files) {
 			foreach ($files as $file) {
-				$extension = basename($file, '.php');
+				$extensionFileName = basename($file, '.php');
 			
-				$this->load->language('feed/' . $extension);
+				$this->load->language('feed/' . $extensionFileName);
 
-				$action = array();
-			
-				if (!in_array($extension, $extensions)) {
+				$action = array(); $installed = false;
+				foreach ($extensions as $extensionCode => $extension) {
+					if ($extensionCode == $extensionFileName) {
+						$installed = true;
+						break;
+					}
+				}
+				if (!$installed) {
 					$action[] = array(
 						'text' => $this->language->get('text_install'),
-						'href' => $this->url->link('extension/feed/install', 'token=' . $this->session->data['token'] . '&extension=' . $extension, 'SSL')
+						'href' => $this->url->link('extension/feed/install', 'token=' . $this->session->data['token'] . '&extension=' . $extensionFileName, 'SSL')
 					);
 				} else {
 					$action[] = array(
 						'text' => $this->language->get('text_edit'),
-						'href' => $this->url->link('feed/' . $extension . '', 'token=' . $this->session->data['token'], 'SSL')
+						'href' => $this->url->link('feed/' . $extensionFileName . '', 'token=' . $this->session->data['token'], 'SSL')
 					);
 							
 					$action[] = array(
 						'text' => $this->language->get('text_uninstall'),
-						'href' => $this->url->link('extension/feed/uninstall', 'token=' . $this->session->data['token'] . '&extension=' . $extension, 'SSL')
+						'href' => $this->url->link('extension/feed/uninstall', 'token=' . $this->session->data['token'] . '&extension=' . $extensionFileName, 'SSL')
 					);
 				}
 									
 				$this->data['extensions'][] = array(
 					'name'   => $this->language->get('heading_title'),
-					'status' => $this->config->get($extension . '_status') ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
+					'status' => $this->config->get($extensionFileName . '_status') ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
 					'action' => $action
 				);
 			}
@@ -110,7 +115,7 @@ class ControllerExtensionFeed extends Controller {
     	} else {
 			$this->load->model('setting/extension');
 		
-			$this->model_setting_extension->install('feed', $this->request->get['extension']);
+			\model\setting\ExtensionDAO::getInstance()->install('feed', $this->request->get['extension']);
 		
 			$this->load->model('user/user_group');
 		
@@ -139,7 +144,7 @@ class ControllerExtensionFeed extends Controller {
 			$this->load->model('setting/extension');
 			$this->load->model('setting/setting');
 			
-			$this->model_setting_extension->uninstall('feed', $this->request->get['extension']);
+			\model\setting\ExtensionDAO::getInstance()->uninstall('feed', $this->request->get['extension']);
 		
 			$this->model_setting_setting->deleteSetting($this->request->get['extension']);
 		

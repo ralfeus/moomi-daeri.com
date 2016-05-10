@@ -33,17 +33,18 @@ require_once(DIR_SYSTEM . 'library/cart.php');
  * new operator is called but the class definition is not found.
  */
 spl_autoload_register(function($class) {
-    if (strpos($class, '\\') !== false) {
-        $class = preg_replace('/\\\\/', '/', $class);
-        include(DIR_SYSTEM . "../$class.class.php");
-    }
-//    $directoryIterator = new RecursiveDirectoryIterator(DIR_SYSTEM . '/../', FilesystemIterator::SKIP_DOTS);
-//    foreach ($directoryIterator as $directory) {
-//        if (file_exists($directory . "/$class.class.php")) {
-//            include($directory . "/$class.class.php");
-//            break;
-//        }
-//    }
+	if ((strpos($class, '\\') !== false) && (strpos($class, '\\') > 0)) {
+		$classPath = DIR_ROOT . preg_replace('/\\\\/', '/', $class) . '.class.php';
+	} else if (strpos($class, '\\') == 0) { // legacy classes
+		$classPath = DIR_SYSTEM . 'library/' . str_replace('\\', '', strtolower($class)) . '.php';
+	} else {
+		return false;
+	}
+	include($classPath);
+	if (!class_exists($class)) {
+		throw new ErrorException("Class $class was not found");
+	}
+	return true;
 });
 
 

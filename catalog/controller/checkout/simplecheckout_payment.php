@@ -52,7 +52,7 @@ class ControllerCheckoutSimpleCheckoutPayment extends Controller {
         
         $sort_order = array(); 
         
-        $results = $this->model_setting_extension->getExtensions('total');
+        $results = \model\setting\ExtensionDAO::getInstance()->getExtensions('total');
         
         foreach ($results as $key => $value) {
             $sort_order[$key] = $this->config->get($value['code'] . '_sort_order');
@@ -71,7 +71,7 @@ class ControllerCheckoutSimpleCheckoutPayment extends Controller {
         
         $this->load->model('setting/extension');
         
-        $results = $this->model_setting_extension->getExtensions('payment');
+        $results = \model\setting\ExtensionDAO::getInstance()->getExtensions('payment');
         
         $simple_links = $this->cart->hasShipping() ? $this->config->get('simple_links') : array();
         

@@ -90,7 +90,7 @@ class ControllerCheckoutManual extends Controller {
 					'address_format' => $address_format
 				);
 				
-				$results = $this->model_setting_extension->getExtensions('shipping');
+				$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('shipping');
 				
 				foreach ($results as $result) {
 					if ($this->config->get($result['code'] . '_status')) {
@@ -136,7 +136,7 @@ class ControllerCheckoutManual extends Controller {
 			
 			$sort_order = array(); 
 			
-			$results = $this->model_setting_extension->getExtensions('total');
+			$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('total');
 			
 			foreach ($results as $key => $value) {
 				$sort_order[$key] = $this->config->get($value['code'] . '_sort_order');
@@ -199,7 +199,7 @@ class ControllerCheckoutManual extends Controller {
 				'address_format' => $address_format
 			);
 							
-			$results = $this->model_setting_extension->getExtensions('payment');
+			$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('payment');
 	
 			foreach ($results as $result) {
 				if ($this->config->get($result['code'] . '_status')) {

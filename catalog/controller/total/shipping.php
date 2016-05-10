@@ -141,14 +141,14 @@ class ControllerTotalShipping extends Controller {
 				
 				$this->load->model('setting/extension');
 				
-				$results = $this->model_setting_extension->getExtensions('shipping');
+				$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('shipping');
 				
 				foreach ($results as $result) {
-					if ($this->config->get($result['code'] . '_status')) {
-						$quote = ShippingMethodDAO::getInstance()->getMethod($result['code'])->getQuote($address_data);
+					if ($this->config->get($result->getCode() . '_status')) {
+						$quote = ShippingMethodDAO::getInstance()->getMethod($result->getCode())->getQuote($address_data);
 			
 						if ($quote) {
-							$quote_data[$result['code']] = array( 
+							$quote_data[$result->getCode()] = array( 
 								'title'      => $quote['title'],
 								'quote'      => $quote['quote'], 
 								'sort_order' => $quote['sort_order'],

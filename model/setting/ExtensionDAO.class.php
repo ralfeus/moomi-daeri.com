@@ -25,8 +25,8 @@ class ExtensionDAO extends DAO {
             $query = $this->getDb()->query("
                 SELECT *
                 FROM extension
-                WHERE `type` = ?
-                ", array("s:$type")
+                WHERE `type` = :type
+                ", [ ":type" => $type]
             );
             foreach ($query->rows as $row) {
                 try {
@@ -37,7 +37,7 @@ class ExtensionDAO extends DAO {
                 } catch (\Exception $exc) {
                     $enabled = boolval($this->config->get($row['code'] . '_status'));
                     if (!$enabledOnly || $enabled) {
-                        $result[] = $extension;
+                        $result[$row['code']] = $row;
                     }
                 }
             }

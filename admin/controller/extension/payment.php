@@ -47,11 +47,11 @@ class ControllerExtensionPayment extends Controller {
 
 		$this->load->model('setting/extension');
 
-		$extensions = $this->model_setting_extension->getInstalled('payment');
+		$extensions = \model\setting\ExtensionDAO::getInstance()->getExtensions('payment');
 		
 		foreach ($extensions as $key => $value) {
-			if (!file_exists(DIR_APPLICATION . 'controller/payment/' . $value . '.php')) {
-				$this->model_setting_extension->uninstall('payment', $value);
+			if (!file_exists(DIR_APPLICATION . 'controller/payment/' . $value['code'] . '.php')) {
+				\model\setting\ExtensionDAO::getInstance()->uninstall('payment', $value['code']);
 				
 				unset($extensions[$key]);
 			}
@@ -63,33 +63,38 @@ class ControllerExtensionPayment extends Controller {
 		
 		if ($files) {
 			foreach ($files as $file) {
-				$extension = basename($file, '.php');
+				$extensionFileName = basename($file, '.php');
 				
-				$this->load->language('payment/' . $extension);
+				$this->load->language('payment/' . $extensionFileName);
 	
-				$action = array();
-				
-				if (!in_array($extension, $extensions)) {
+				$action = array(); $installed = false;
+				foreach ($extensions as $extensionCode => $extension) {
+					if ($extensionCode == $extensionFileName) {
+						$installed = true;
+						break;
+					}
+				}
+				if (!$installed) {
 					$action[] = array(
 						'text' => $this->language->get('text_install'),
-						'href' => $this->url->link('extension/payment/install', 'token=' . $this->session->data['token'] . '&extension=' . $extension, 'SSL')
+						'href' => $this->url->link('extension/payment/install', 'token=' . $this->session->data['token'] . '&extension=' . $extensionFileName, 'SSL')
 					);
 				} else {
 					$action[] = array(
 						'text' => $this->language->get('text_edit'),
-						'href' => $this->url->link('payment/' . $extension . '', 'token=' . $this->session->data['token'], 'SSL')
+						'href' => $this->url->link('payment/' . $extensionFileName . '', 'token=' . $this->session->data['token'], 'SSL')
 					);
 								
 					$action[] = array(
 						'text' => $this->language->get('text_uninstall'),
-						'href' => $this->url->link('extension/payment/uninstall', 'token=' . $this->session->data['token'] . '&extension=' . $extension, 'SSL')
+						'href' => $this->url->link('extension/payment/uninstall', 'token=' . $this->session->data['token'] . '&extension=' . $extensionFileName, 'SSL')
 					);
 				}
 				
-				$text_link = $this->language->get('text_' . $extension);
+				$text_link = $this->language->get('text_' . $extensionFileName);
 				
-				if ($text_link != 'text_' . $extension) {
-					$link = $this->language->get('text_' . $extension);
+				if ($text_link != 'text_' . $extensionFileName) {
+					$link = $this->language->get('text_' . $extensionFileName);
 				} else {
 					$link = '';
 				}
@@ -97,8 +102,8 @@ class ControllerExtensionPayment extends Controller {
 				$this->data['extensions'][] = array(
 					'name'       => $this->language->get('heading_title'),
 					'link'       => $link,
-					'status'     => $this->config->get($extension . '_status') ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
-					'sort_order' => $this->config->get($extension . '_sort_order'),
+					'status'     => $this->config->get($extensionFileName . '_status') ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
+					'sort_order' => $this->config->get($extensionFileName . '_sort_order'),
 					'action'     => $action
 				);
 			}
@@ -121,7 +126,7 @@ class ControllerExtensionPayment extends Controller {
 		} else {
 			$this->load->model('setting/extension');
 		
-			$this->model_setting_extension->install('payment', $this->request->get['extension']);
+			\model\setting\ExtensionDAO::getInstance()->install('payment', $this->request->get['extension']);
 
 			$this->load->model('user/user_group');
 		
@@ -150,7 +155,7 @@ class ControllerExtensionPayment extends Controller {
 			$this->load->model('setting/extension');
 			$this->load->model('setting/setting');
 				
-			$this->model_setting_extension->uninstall('payment', $this->request->get['extension']);
+			\model\setting\ExtensionDAO::getInstance()->uninstall('payment', $this->request->get['extension']);
 		
 			$this->model_setting_setting->deleteSetting($this->request->get['extension']);
 		

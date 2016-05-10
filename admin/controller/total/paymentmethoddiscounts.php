@@ -94,7 +94,7 @@ class ControllerTotalPaymentMethodDiscounts extends Controller {
 		$this->data['tax_classes'] = $this->model_localisation_tax_class->getTaxClasses();
 		
 		$this->load->model('setting/extension');
-		$extensions = $this->model_setting_extension->getInstalled('payment');
+		$extensions = \model\setting\ExtensionDAO::getInstance()->getExtensions('payment');
 		$this->data['extensions'] = array();
 						
 		$files = glob(DIR_APPLICATION . 'controller/payment/*.php');

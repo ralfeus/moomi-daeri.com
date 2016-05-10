@@ -114,7 +114,7 @@ class ModelPaymentMultiPay extends Model {
 
 		$this->load->model('setting/extension');
 
-		$results = $this->model_setting_extension->getExtensions('payment');
+		$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('payment');
 
 		$cart_has_recurring = $this->cart->hasRecurringProducts();
 

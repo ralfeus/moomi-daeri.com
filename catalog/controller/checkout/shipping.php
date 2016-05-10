@@ -51,11 +51,11 @@ class ControllerCheckoutShipping extends Controller {
 					$this->load->model('setting/extension');
 					$this->load->model('localisation/description');
 
-					$results = $this->model_setting_extension->getExtensions('shipping');
+					$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('shipping');
                     $this->log->write(print_r($results, true));
 //print_r($results); die();
 				foreach ($results as $result) {
-			  		$shippingMethod = ShippingMethodDAO::getInstance()->getMethod($result['code']);
+			  		$shippingMethod = ShippingMethodDAO::getInstance()->getMethod($result->getCode());
 			  		if ($shippingMethod->isEnabled()) {
 //						if ($this->config->get($result['code'] . '_status')) {
 //                            $this->log->write("Trying to load shipping/" . $result['code']);
@@ -68,7 +68,7 @@ class ControllerCheckoutShipping extends Controller {
 							//$tempArr = reset($quote['quote']);
 							//$desc = '' . print_r($tempArr[@description], true);
 							//print_r($quote['quote']); die();
-							$quote_data[$result['code']] = array(
+							$quote_data[$result->getCode()] = array(
 								'title'      => $quote['title'],
 								//'description'=> $desc,
 								'quote'      => $quote['quote'],

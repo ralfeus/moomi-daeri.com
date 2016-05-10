@@ -66,7 +66,7 @@ class ControllerCommonSpecialBottom extends Controller {
 
 		$this->load->model('setting/extension');
 
-		$extensions = $this->model_setting_extension->getExtensions('module');
+		$extensions = \model\setting\ExtensionDAO::getInstance()->getExtensions('module');
 
 		foreach ($extensions as $extension) {
 			$modules = $this->config->get($extension['code'] . '_module');

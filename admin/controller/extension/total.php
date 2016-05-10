@@ -47,11 +47,11 @@ class ControllerExtensionTotal extends Controller {
 
 		$this->load->model('setting/extension');
 
-		$extensions = $this->model_setting_extension->getInstalled('total');
+		$extensions = \model\setting\ExtensionDAO::getInstance()->getExtensions('total', true, false);
 		
 		foreach ($extensions as $key => $value) {
-			if (!file_exists(DIR_APPLICATION . 'controller/total/' . $value . '.php')) {
-				$this->model_setting_extension->uninstall('total', $value);
+			if (!file_exists(DIR_APPLICATION . 'controller/total/' . $value['code'] . '.php')) {
+				\model\setting\ExtensionDAO::getInstance()->uninstall('total', $value['code']);
 				
 				unset($extensions[$key]);
 			}
@@ -63,33 +63,40 @@ class ControllerExtensionTotal extends Controller {
 		
 		if ($files) {
 			foreach ($files as $file) {
-				$extension = basename($file, '.php');
+				$extensionFileName = basename($file, '.php');
 				
-				$this->load->language('total/' . $extension);
+				$this->load->language('total/' . $extensionFileName);
 	
 				$action = array();
-				
-				if (!in_array($extension, $extensions)) {
+
+
+				foreach ($extensions as $extensionCode => $extension) {
+					if ($extensionCode == $extensionFileName) {
+						$installed = true;
+						break;
+					}
+				}
+				if (!$installed) {
 					$action[] = array(
 						'text' => $this->language->get('text_install'),
-						'href' => $this->url->link('extension/total/install', 'token=' . $this->session->data['token'] . '&extension=' . $extension, 'SSL')
+						'href' => $this->url->link('extension/total/install', 'token=' . $this->session->data['token'] . '&extension=' . $extensionFileName, 'SSL')
 					);
 				} else {
 					$action[] = array(
 						'text' => $this->language->get('text_edit'),
-						'href' => $this->url->link('total/' . $extension . '', 'token=' . $this->session->data['token'], 'SSL')
+						'href' => $this->url->link('total/' . $extensionFileName . '', 'token=' . $this->session->data['token'], 'SSL')
 					);
 								
 					$action[] = array(
 						'text' => $this->language->get('text_uninstall'),
-						'href' => $this->url->link('extension/total/uninstall', 'token=' . $this->session->data['token'] . '&extension=' . $extension, 'SSL')
+						'href' => $this->url->link('extension/total/uninstall', 'token=' . $this->session->data['token'] . '&extension=' . $extensionFileName, 'SSL')
 					);
 				}
 										
 				$this->data['extensions'][] = array(
 					'name'       => $this->language->get('heading_title'),
-					'status'     => $this->config->get($extension . '_status') ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
-					'sort_order' => $this->config->get($extension . '_sort_order'),
+					'status'     => $this->config->get($extensionFileName . '_status') ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
+					'sort_order' => $this->config->get($extensionFileName . '_sort_order'),
 					'action'     => $action
 				);
 			}
@@ -112,7 +119,7 @@ class ControllerExtensionTotal extends Controller {
 		} else {				
 			$this->load->model('setting/extension');
 		
-			$this->model_setting_extension->install('total', $this->request->get['extension']);
+			\model\setting\ExtensionDAO::getInstance()->install('total', $this->request->get['extension']);
 
 			$this->load->model('user/user_group');
 		
@@ -141,7 +148,7 @@ class ControllerExtensionTotal extends Controller {
 			$this->load->model('setting/extension');
 			$this->load->model('setting/setting');
 		
-			$this->model_setting_extension->uninstall('total', $this->request->get['extension']);
+			\model\setting\ExtensionDAO::getInstance()->uninstall('total', $this->request->get['extension']);
 		
 			$this->model_setting_setting->deleteSetting($this->request->get['extension']);
 		

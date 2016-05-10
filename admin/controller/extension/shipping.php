@@ -50,11 +50,11 @@ class ControllerExtensionShipping extends Controller {
 
 		$this->load->model('setting/extension');
 
-		$extensions = $this->model_setting_extension->getInstalled('shipping');
+		$extensions = \model\setting\ExtensionDAO::getInstance()->getExtensions('shipping');
 		
 		foreach ($extensions as $key => $value) {
-			if (!file_exists(DIR_APPLICATION . 'controller/shipping/' . $value . '.php')) {
-				$this->model_setting_extension->uninstall('shipping', $value);
+			if (!file_exists(DIR_APPLICATION . 'controller/shipping/' . $value->getCode() . '.php')) {
+				\model\setting\ExtensionDAO::getInstance()->uninstall('shipping', $value->getCode());
 				
 				unset($extensions[$key]);
 			}
@@ -67,28 +67,33 @@ class ControllerExtensionShipping extends Controller {
 		
 		if ($files) {
 			foreach ($files as $file) {
-				$extension = basename($file, '.php');
+				$extensionFileName = basename($file, '.php');
     			//$this->load->language('shipping/' . $extension);
 	
-				$action = array();
-				
-				if (!in_array($extension, $extensions)) {
+				$action = array(); $installed = false;
+				foreach ($extensions as $extension) {
+					if ($extension->getCode() == $extensionFileName) {
+						$installed = true;
+						break;
+					}
+				}
+				if (!$installed) {
 					$action[] = array(
 						'text' => $this->language->get('text_install'),
-						'href' => $this->url->link('extension/shipping/install', 'token=' . $this->session->data['token'] . '&extension=' . $extension, 'SSL')
+						'href' => $this->url->link('extension/shipping/install', 'token=' . $this->session->data['token'] . '&extension=' . $extensionFileName, 'SSL')
 					);
 				} else {
 					$action[] = array(
 						'text' => $this->language->get('text_edit'),
-						'href' => $this->url->link('shipping/' . $extension . '', 'token=' . $this->session->data['token'], 'SSL')
+						'href' => $this->url->link('shipping/' . $extensionFileName . '', 'token=' . $this->session->data['token'], 'SSL')
 					);
 								
 					$action[] = array(
 						'text' => $this->language->get('text_uninstall'),
-						'href' => $this->url->link('extension/shipping/uninstall', 'token=' . $this->session->data['token'] . '&extension=' . $extension, 'SSL')
+						'href' => $this->url->link('extension/shipping/uninstall', 'token=' . $this->session->data['token'] . '&extension=' . $extensionFileName, 'SSL')
 					);
 				}
-				$shippingMethod = ShippingMethodDAO::getInstance()->getMethod($extension);
+				$shippingMethod = ShippingMethodDAO::getInstance()->getMethod($extensionFileName);
 				$this->data['extensions'][] = array(
 					'name'       => $shippingMethod->getName(),
 					'status'     => $shippingMethod->isEnabled() ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
@@ -116,7 +121,7 @@ class ControllerExtensionShipping extends Controller {
 		} else {		
 			$this->load->model('setting/extension');
 		
-			$this->model_setting_extension->install('shipping', $this->request->get['extension']);
+			\model\setting\ExtensionDAO::getInstance()->install('shipping', $this->request->get['extension']);
 
 			$this->load->model('user/user_group');
 		
@@ -143,7 +148,7 @@ class ControllerExtensionShipping extends Controller {
 			$this->redirect($this->url->link('extension/shipping', 'token=' . $this->session->data['token'], 'SSL'));
 		} else {		
 			$this->load->model('setting/extension');
-			$this->model_setting_extension->uninstall('shipping', $this->request->get['extension']);
+			\model\setting\ExtensionDAO::getInstance()->uninstall('shipping', $this->request->get['extension']);
 		
 			SettingsDAO::getInstance()->deleteSettings($this->request->get['extension']);
 		

@@ -20,7 +20,7 @@ class ModelSettingExtension extends Model {
 	public function getInstalled($type) {
 		$extension_data = array();
 		
-		$query = $this->getDb()->query("SELECT * FROM extension WHERE `type` = '" . $this->getDb()->escape($type) . "'");
+		$query = $this->getDb()->query("SELECT * FROM extension WHERE `type` = :type", [":type" => $type]);
 		
 		foreach ($query->rows as $result) {
 			$extension_data[] = $result['code'];
@@ -37,4 +37,3 @@ class ModelSettingExtension extends Model {
 		$this->getDb()->query("DELETE FROM extension WHERE `type` = '" . $this->getDb()->escape($type) . "' AND `code` = '" . $this->getDb()->escape($code) . "'");
 	}
 }
-?>

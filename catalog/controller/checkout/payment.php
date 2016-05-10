@@ -44,7 +44,7 @@ class ControllerCheckoutPayment extends Controller {
 			$taxes = $this->cart->getTaxes();
 
 			$this->load->model('setting/extension');
-			$results = $this->model_setting_extension->getExtensions('total');
+			$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('total');
 
 			$sort_order = array();
 			foreach ($results as $key => $value) {
@@ -65,7 +65,7 @@ class ControllerCheckoutPayment extends Controller {
 			$method_data = array();
 
 			$this->load->model('setting/extension');
-			$results = $this->model_setting_extension->getExtensions('payment');
+			$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('payment');
 
 			foreach ($results as $result) {
 				if ($this->config->get($result['code'] . '_status')) {

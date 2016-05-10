@@ -378,7 +378,7 @@ class ControllerCheckoutSimpleCheckout extends Controller {
         
         $sort_order = array(); 
         
-        $results = $this->model_setting_extension->getExtensions('total');
+        $results = \model\setting\ExtensionDAO::getInstance()->getExtensions('total');
         
         foreach ($results as $key => $value) {
             $sort_order[$key] = $this->config->get($value['code'] . '_sort_order');

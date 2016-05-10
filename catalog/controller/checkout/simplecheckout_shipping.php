@@ -74,7 +74,7 @@ class ControllerCheckoutSimpleCheckoutShipping extends Controller {
         
         $this->load->model('setting/extension');
         
-        $results = $this->model_setting_extension->getExtensions('shipping');
+        $results = \model\setting\ExtensionDAO::getInstance()->getExtensions('shipping');
         
         $simple_shipping_titles = $this->config->get('simple_shipping_titles');
         
