@@ -1,7 +1,7 @@
 <?php
 class ControllerCommonSpecialRight extends Controller {
 	public function index() {
-		$this->load->model('design/layout');
+//		$this->load->model('design/layout');
 		$this->load->model('catalog/category');
 		$this->load->model('catalog/product');
 		$this->load->model('catalog/information');
@@ -41,7 +41,7 @@ class ControllerCommonSpecialRight extends Controller {
 		}
 
 		if (!$layout_id) {
-			$layout_id = $this->model_design_layout->getLayout($route);
+			$layout_id = \model\design\LayoutDAO::getInstance()->getLayout($route);
 		}
 
 		if (!$layout_id) {
