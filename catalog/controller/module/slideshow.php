@@ -3,7 +3,7 @@ class ControllerModuleSlideshow extends Controller {
 	protected function index($setting) {
 		static $module = 0;
 		
-		$this->load->model('design/banner');
+//		$this->load->model('design/banner');
 		$this->load->model('tool/image');
 		
 		$this->document->addScript('catalog/view/javascript/jquery/nivo-slider/jquery.nivo.slider.pack.js');

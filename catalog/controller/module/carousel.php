@@ -3,7 +3,7 @@ class ControllerModuleCarousel extends Controller {
 	protected function index($setting) {
 		static $module = 0;
 		
-		$this->load->model('design/banner');
+//		$this->load->model('design/banner');
 		$this->load->model('tool/image');
 		
 		$this->document->addScript('catalog/view/javascript/jquery/jquery.jcarousel.min.js');
