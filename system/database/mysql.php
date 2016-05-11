@@ -21,6 +21,13 @@ final class MySQL implements DBDriver{
 		$this->connect();
   	}
 
+    /**
+     * @return string[]
+     */
+    public function __sleep() {
+        return ['affectedCount', 'database', 'hostName', 'password', 'queriesLog', 'userName'];
+    }
+
     private function connect() {
         $this->connection = new PDO(
             'mysql:host=' . $this->hostName . ';dbname=' . $this->database,

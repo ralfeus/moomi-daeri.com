@@ -41,13 +41,6 @@ class OpenCartBase {
     }
 
     /**
-     * @return string[]
-     */
-    public function __sleep() {
-        return ['config', 'load', 'log', 'registry'];
-    }
-
-    /**
      * @return Cache
      */
     protected function getCache() {
