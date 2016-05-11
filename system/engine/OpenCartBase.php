@@ -41,7 +41,7 @@ class OpenCartBase {
     }
 
     public function __sleep() {
-        return [];
+        return ['log'];
     }
 
     /**
