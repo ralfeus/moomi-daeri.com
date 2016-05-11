@@ -9,7 +9,7 @@ class Pickup extends ShippingMethodBase
 
     public function getMethodData($address)
     {
-        if ($this->config->get('pickup_status'))
+        if ($this->getConfig()->get('pickup_status'))
         {
             $sql = "
                 SELECT gz.geo_zone_id, gz.name, gz.description
@@ -41,7 +41,7 @@ class Pickup extends ShippingMethodBase
     }
 
     function getQuote($address) {
-        $this->load->language('shipping/pickup');
+        $this->getLoader()->language('shipping/pickup');
         $query = $this->getDb()->query("
             SELECT *
             FROM zone_to_geo_zone
@@ -50,12 +50,12 @@ class Pickup extends ShippingMethodBase
               AND country_id = :countryId
               AND zone_id IN (0, :zoneId)
             ", [
-            ':geoZoneId' => $this->config->get('pickup_geo_zone_id'),
+            ':geoZoneId' => $this->getConfig()->get('pickup_geo_zone_id'),
             ':countryId' => $address['country_id'],
             ':zoneId' => $address['zone_id']
         ]);
 
-        if (!$this->config->get('pickup_geo_zone_id')) {
+        if (!$this->getConfig()->get('pickup_geo_zone_id')) {
             $status = true;
         } else {
             $status = boolval($query->num_rows);
@@ -78,7 +78,7 @@ class Pickup extends ShippingMethodBase
                 'code'       => 'pickup',
                 'title'      => $this->language->get('text_title'),
                 'quote'      => $quote_data,
-                'sort_order' => $this->config->get('pickup_sort_order'),
+                'sort_order' => $this->getConfig()->get('pickup_sort_order'),
                 'error'      => false
             );
         }
@@ -87,10 +87,10 @@ class Pickup extends ShippingMethodBase
     }
 
     public function isEnabled() {
-        return $this->config->get('pickup_status');
+        return $this->getConfig()->get('pickup_status');
     }
 
     public function getSortOrder() {
-        return $this->config->get('pickup_sort_order');
+        return $this->getConfig()->get('pickup_sort_order');
     }
 }

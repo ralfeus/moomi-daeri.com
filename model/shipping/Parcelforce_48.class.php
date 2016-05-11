@@ -6,7 +6,7 @@ class Parcelforce_48 extends ShippingMethodBase {
   	}
 
     public function getMethodData($address) {
-        if ($this->config->get('parcelforce_48_status'))
+        if ($this->getConfig()->get('parcelforce_48_status'))
         {
             $query = $this->getDb()->query("
                 SELECT gz.geo_zone_id, gz.name, gz.description
@@ -38,7 +38,7 @@ class Parcelforce_48 extends ShippingMethodBase {
     }
 
     function getQuote($address) {
-        $this->load->language('shipping/parcelforce_48');
+        $this->getLoader()->language('shipping/parcelforce_48');
 
         $query = $this->getDb()->query("
             SELECT *
@@ -48,12 +48,12 @@ class Parcelforce_48 extends ShippingMethodBase {
               AND country_id = :countryId
               AND zone_id IN (0, :zoneId)
             ", [
-            ':geoZoneId' => $this->config->get('parcelforce_48_geo_zone_id'),
+            ':geoZoneId' => $this->getConfig()->get('parcelforce_48_geo_zone_id'),
             ':countryId' => $address['country_id'],
             ':zoneId' => $address['zone_id']
         ]);
 
-        if (!$this->config->get('parcelforce_48_geo_zone_id')) {
+        if (!$this->getConfig()->get('parcelforce_48_geo_zone_id')) {
             $status = true;
         } else {
             $status = boolval($query->num_rows);
@@ -66,7 +66,7 @@ class Parcelforce_48 extends ShippingMethodBase {
             $weight = $this->cart->getWeight();
             $sub_total = $this->cart->getSubTotal();
 
-            $rates = explode(',', $this->config->get('parcelforce_48_rate'));
+            $rates = explode(',', $this->getConfig()->get('parcelforce_48_rate'));
 
             foreach ($rates as $rate) {
                 $data = explode(':', $rate);
@@ -80,7 +80,7 @@ class Parcelforce_48 extends ShippingMethodBase {
                 }
             }
 
-            $rates = explode(',', $this->config->get('parcelforce_48_insurance'));
+            $rates = explode(',', $this->getConfig()->get('parcelforce_48_insurance'));
 
             foreach ($rates as $rate) {
                 $data = explode(':', $rate);
@@ -99,15 +99,15 @@ class Parcelforce_48 extends ShippingMethodBase {
             if ((float)$cost) {
                 $text = $this->language->get('text_description');
 
-                if ($this->config->get('parcelforce_48_display_weight')) {
-                    $text .= ' (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->config->get('config_weight_class_id')) . ')';
+                if ($this->getConfig()->get('parcelforce_48_display_weight')) {
+                    $text .= ' (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->getConfig()->get('config_weight_class_id')) . ')';
                 }
 
-                if ($this->config->get('parcelforce_48_display_insurance') && (float)$insurance) {
+                if ($this->getConfig()->get('parcelforce_48_display_insurance') && (float)$insurance) {
                     $text .= ' (' . $this->language->get('text_insurance') . ' ' . $this->currency->format($insurance) . ')';
                 }
 
-                if ($this->config->get('parcelforce_48_display_time')) {
+                if ($this->getConfig()->get('parcelforce_48_display_time')) {
                     $text .= ' (' . $this->language->get('text_time') . ')';
                 }
 
@@ -115,15 +115,15 @@ class Parcelforce_48 extends ShippingMethodBase {
                     'code'         => 'parcelforce_48.parcelforce_48',
                     'title'        => $text,
                     'cost'         => $cost,
-                    'tax_class_id' => $this->config->get('parcelforce_48_tax_class_id'),
-                    'text'         => $this->currency->format($this->tax->calculate($cost, $this->config->get('parcelforce_48_tax_class_id'), $this->config->get('config_tax')))
+                    'tax_class_id' => $this->getConfig()->get('parcelforce_48_tax_class_id'),
+                    'text'         => $this->currency->format($this->tax->calculate($cost, $this->getConfig()->get('parcelforce_48_tax_class_id'), $this->getConfig()->get('config_tax')))
                 );
 
                 $methodData = array(
                     'code'       => 'parcelforce_48',
                     'title'      => $this->language->get('text_title'),
                     'quote'      => $quote_data,
-                    'sort_order' => $this->config->get('parcelforce_48_sort_order'),
+                    'sort_order' => $this->getConfig()->get('parcelforce_48_sort_order'),
                     'error'      => false
                 );
             }
@@ -133,10 +133,10 @@ class Parcelforce_48 extends ShippingMethodBase {
     }
 
     public function isEnabled() {
-        return $this->config->get('free_status');
+        return $this->getConfig()->get('free_status');
     }
 
     public function getSortOrder() {
-        return $this->config->get('free_sort_order');
+        return $this->getConfig()->get('free_sort_order');
     }
 }

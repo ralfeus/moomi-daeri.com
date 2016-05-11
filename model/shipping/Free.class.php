@@ -8,7 +8,7 @@ class Free extends ShippingMethodBase {
 
     public function getMethodData($address)
     {
-        if ($this->config->get('free_status')) {
+        if ($this->getConfig()->get('free_status')) {
             $sql = "
                 SELECT gz.geo_zone_id, gz.name, gz.description
                 FROM
@@ -38,7 +38,7 @@ class Free extends ShippingMethodBase {
     }
 
     public function getQuote($address) {
-        $this->load->language('shipping/free');
+        $this->getLoader()->language('shipping/free');
 
         $query = $this->getDb()->query("
             SELECT *
@@ -48,18 +48,18 @@ class Free extends ShippingMethodBase {
               AND country_id = :countryId
               AND zone_id IN (0, :zoneId)
             ", [
-            ':geoZoneId' => $this->config->get('free_geo_zone_id'),
+            ':geoZoneId' => $this->getConfig()->get('free_geo_zone_id'),
             ':countryId' => $address['country_id'],
             ':zoneId' => $address['zone_id']
         ]);
 
-        if (!$this->config->get('free_geo_zone_id')) {
+        if (!$this->getConfig()->get('free_geo_zone_id')) {
             $status = true;
         } else {
             $status = boolval($query->num_rows);
         }
 
-        if ($this->cart->getSubTotal() < $this->config->get('free_total')) {
+        if ($this->cart->getSubTotal() < $this->getConfig()->get('free_total')) {
             $status = false;
         }
 
@@ -80,7 +80,7 @@ class Free extends ShippingMethodBase {
                 'code'       => 'free',
                 'title'      => $this->language->get('text_title'),
                 'quote'      => $quote_data,
-                'sort_order' => $this->config->get('free_sort_order'),
+                'sort_order' => $this->getConfig()->get('free_sort_order'),
                 'error'      => false
             );
         }
@@ -89,10 +89,10 @@ class Free extends ShippingMethodBase {
     }
 
     public function isEnabled() {
-        return $this->config->get('free_status');
+        return $this->getConfig()->get('free_status');
     }
 
     public function getSortOrder() {
-        return $this->config->get('free_sort_order');
+        return $this->getConfig()->get('free_sort_order');
     }
 }

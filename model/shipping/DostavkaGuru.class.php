@@ -41,7 +41,7 @@ class DostavkaGuru extends ShippingMethodBase {
                     $this->weight->convert(
                         $orderItem->getWeight(),
                         $orderItem->getWeightClassId(),
-                        $this->config->get('config_weight_class_id')) * $orderItem->getQuantity();
+                        $this->getConfig()->get('config_weight_class_id')) * $orderItem->getQuantity();
             }
         }
         else
@@ -87,7 +87,7 @@ class DostavkaGuru extends ShippingMethodBase {
     }
 
     public function getMethodData($address) {
-        $this->load->language('shipping/dostavkaGuru');
+        $this->getLoader()->language('shipping/dostavkaGuru');
 
         $methodData = array();
         /// Assume the geo zone defined as intermediate exists
@@ -121,7 +121,7 @@ class DostavkaGuru extends ShippingMethodBase {
                     'issuePoint' => $issuePoint,
                     'code'         => 'dostavkaGuru.dostavkaGuru_' . $issuePoint->id,
                     'description'  => $geoZone['description'],
-//						'title'        => $query->row['name'] . '  (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->config->get('config_weight_class_id')) . ')',
+//						'title'        => $query->row['name'] . '  (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->getConfig()->get('config_weight_class_id')) . ')',
                     'shippingMethodName' => $this->getName() . ' ' . $issuePoint->address,
                     'tax_class_id' => SettingsDAO::getInstance()->getSetting('dostavkaGuru', 'dostavkaGuruTaxClassId')
                 );
@@ -158,9 +158,9 @@ class DostavkaGuru extends ShippingMethodBase {
             $textRussiaCost = "<br />" . $this->getLanguage()->get('RUSSIA_DELIVERY_COST') . ": $russiaCost RUR";
             $methodDataEntry['cost'] = $cost;
             $methodDataEntry['text'] = $this->currency->format(
-                $this->tax->calculate($cost, SettingsDAO::getInstance()->getSetting('dostavkaGuru', 'dostavkaGuruTaxClassId'), $this->config->get('config_tax')));
+                $this->tax->calculate($cost, SettingsDAO::getInstance()->getSetting('dostavkaGuru', 'dostavkaGuruTaxClassId'), $this->getConfig()->get('config_tax')));
             $methodDataEntry['title'] = $methodDataEntry['issuePoint']->address . ' ' .
-                $this->weight->format($weight, $this->config->get('config_weight_class_id')) .
+                $this->weight->format($weight, $this->getConfig()->get('config_weight_class_id')) .
                 $textRussiaCost;
         }
         $quoteData = array();
@@ -170,7 +170,7 @@ class DostavkaGuru extends ShippingMethodBase {
                 'code'       => 'dostavkaGuru',
                 'title'      => $this->language->get('text_title'),
                 'quote'      => $methodData,
-                'sort_order' => $this->config->get('dostavkaGuruSortOrder'),
+                'sort_order' => $this->getConfig()->get('dostavkaGuruSortOrder'),
                 'error'      => false
             );
         }
@@ -201,7 +201,7 @@ class DostavkaGuru extends ShippingMethodBase {
     }
 
     public function isEnabled() {
-        return boolval($this->config->get('dostavkaGuruStatus'));
+        return boolval($this->getConfig()->get('dostavkaGuruStatus'));
     }
 
     public function getSortOrder() {

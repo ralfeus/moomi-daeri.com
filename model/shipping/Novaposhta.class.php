@@ -4,7 +4,7 @@ class Novaposhta extends ShippingMethodBase {
   	public function getCost($destination, $orderItems, $ext = array()) {
 //        $this->log->write(print_r($orderItems, true));
         $cost = 0;
-        $rates = explode(',', $this->config->get($destination . '_rate'));
+        $rates = explode(',', $this->getConfig()->get($destination . '_rate'));
         if (empty($ext['weight'])) {
             $totalWeight = 0;
             foreach ($orderItems as $orderItem) {
@@ -12,7 +12,7 @@ class Novaposhta extends ShippingMethodBase {
                     $this->weight->convert(
                         $orderItem->getWeight(),
                         $orderItem->getWeightClassId(),
-                        $this->config->get('config_weight_class_id')) * $orderItem->getQuantity();
+                        $this->getConfig()->get('config_weight_class_id')) * $orderItem->getQuantity();
             }
         }
         else
@@ -67,14 +67,14 @@ class Novaposhta extends ShippingMethodBase {
     }
 
     public function getQuote($address) {
-		$this->load->language('shipping/novaposhta');
+		$this->getLoader()->language('shipping/novaposhta');
 
 		$quote_data = array();
 
 		$query = $this->getDb()->query("SELECT * FROM geo_zone ORDER BY name");
 
 		foreach ($query->rows as $result) {
-			if ($this->config->get('novaposhta_' . $result['geo_zone_id'] . '_status')) {
+			if ($this->getConfig()->get('novaposhta_' . $result['geo_zone_id'] . '_status')) {
 				$query = $this->getDb()->query("SELECT * FROM zone_to_geo_zone WHERE geo_zone_id = '" . (int)$result['geo_zone_id'] . "' AND country_id = '" . (int)$address['country_id'] . "' AND (zone_id = '" . (int)$address['zone_id'] . "' OR zone_id = '0')");
 
 				if ($query->num_rows) {
@@ -90,7 +90,7 @@ class Novaposhta extends ShippingMethodBase {
 				$cost = '';
 				$weight = $this->cart->getWeight(true);
 
-				$rates = explode(',', $this->config->get('novaposhta_' . $result['geo_zone_id'] . '_rate'));
+				$rates = explode(',', $this->getConfig()->get('novaposhta_' . $result['geo_zone_id'] . '_rate'));
 
 				foreach ($rates as $rate) {
 					$data = explode(':', $rate);
@@ -108,10 +108,10 @@ class Novaposhta extends ShippingMethodBase {
 					$quote_data['novaposhta_' . $result['geo_zone_id']] = array(
 						'code'         => 'novaposhta.novaposhta_' . $result['geo_zone_id'],
                         'description'  => $result['description'],
-						'title'        => $result['name'] . '  (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->config->get('config_weight_class_id')) . ')',
+						'title'        => $result['name'] . '  (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->getConfig()->get('config_weight_class_id')) . ')',
 						'cost'         => $cost,
-						'tax_class_id' => $this->config->get('novaposhta_tax_class_id'),
-						'text'         => $this->currency->format($this->tax->calculate($cost, $this->config->get('novaposhta_tax_class_id'), $this->config->get('config_tax')))
+						'tax_class_id' => $this->getConfig()->get('novaposhta_tax_class_id'),
+						'text'         => $this->currency->format($this->tax->calculate($cost, $this->getConfig()->get('novaposhta_tax_class_id'), $this->getConfig()->get('config_tax')))
 					);
 				}
 			}
@@ -124,7 +124,7 @@ class Novaposhta extends ShippingMethodBase {
         		'code'       => 'novaposhta',
         		'title'      => $this->language->get('text_title'),
         		'quote'      => $quote_data,
-				'sort_order' => $this->config->get('novaposhta_sort_order'),
+				'sort_order' => $this->getConfig()->get('novaposhta_sort_order'),
         		'error'      => false
       		);
 		}
@@ -133,10 +133,10 @@ class Novaposhta extends ShippingMethodBase {
   	}
 
 	public function isEnabled() {
-		return $this->config->get('novaposhta_status');
+		return $this->getConfig()->get('novaposhta_status');
 	}
 
 	public function getSortOrder() {
-		return $this->config->get('novaposhta_sort_order');
+		return $this->getConfig()->get('novaposhta_sort_order');
 	}
 }

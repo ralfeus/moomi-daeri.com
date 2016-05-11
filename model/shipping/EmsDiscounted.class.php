@@ -6,7 +6,7 @@ class EmsDiscounted extends Ems {
 //        $this->log->write(print_r($orderItems, true));
         $fullCost = parent::getCost(str_replace('Discounted', '', $destination), $orderItems, $ext);
         $this->log->write($fullCost);
-        $discountedCost = $fullCost * (100 - $this->config->get('emsDiscounted_discountAmount')) / 100;
+        $discountedCost = $fullCost * (100 - $this->getConfig()->get('emsDiscounted_discountAmount')) / 100;
         $this->log->write($discountedCost);
         return $discountedCost;
   	}
@@ -49,18 +49,18 @@ class EmsDiscounted extends Ems {
     public function getQuote($address)
     {
         $quote = parent::getQuote($address);
-        $this->load->language('shipping/emsDiscounted');
+        $this->getLoader()->language('shipping/emsDiscounted');
 //        $this->log->write(print_r($quote, true));
         if (empty($quote['quote']))
             return null;
         $quote['code']       = 'emsDiscounted';
         $quote['title']      = $this->language->get('HEADING_TITLE');
-        $quote['sort_order'] = $this->config->get('emsDiscounted_sortOrder');
+        $quote['sort_order'] = $this->getConfig()->get('emsDiscounted_sortOrder');
         $quote['error']      = false;
         foreach ($quote['quote'] as $key => $value)
         {
             $quote['quote'][$key]['code'] = "emsDiscounted.$key";
-            $quote['quote'][$key]['cost'] *= (100 - $this->config->get('emsDiscounted_discountAmount')) / 100;
+            $quote['quote'][$key]['cost'] *= (100 - $this->getConfig()->get('emsDiscounted_discountAmount')) / 100;
             $quote['quote'][$key]['text'] = $this->currency->format($quote['quote'][$key]['cost']);
             $quote['quote'][$key]['title'] .= " Discounted";
         }
@@ -69,10 +69,10 @@ class EmsDiscounted extends Ems {
     }
 
     public function isEnabled() {
-        return $this->config->get('emsDiscounted_status');
+        return $this->getConfig()->get('emsDiscounted_status');
     }
 
     public function getSortOrder() {
-        return $this->config->get('emsDiscounted_sort_order');
+        return $this->getConfig()->get('emsDiscounted_sort_order');
     }
 }

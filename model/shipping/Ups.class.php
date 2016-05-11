@@ -6,7 +6,7 @@ class Ups extends ShippingMethodBase {
   	public function getCost($destination, $orderItems, $ext = array()) {
 //        $this->log->write(print_r($orderItems, true));
         $cost = 0;
-        $rates = explode(',', $this->config->get($destination . '_rate'));
+        $rates = explode(',', $this->getConfig()->get($destination . '_rate'));
         if (empty($ext['weight'])) {
             $totalWeight = 0;
             foreach ($orderItems as $orderItem) {
@@ -14,7 +14,7 @@ class Ups extends ShippingMethodBase {
                     $this->weight->convert(
                         $orderItem->getWeight(),
                         $orderItem->getWeightClassId(),
-                        $this->config->get('config_weight_class_id')) * $orderItem->getQuantity();
+                        $this->getConfig()->get('config_weight_class_id')) * $orderItem->getQuantity();
             }
         }
         else
@@ -68,7 +68,7 @@ class Ups extends ShippingMethodBase {
     }
 
 	function getQuote($address) {
-		$this->load->language('shipping/ups');
+		$this->getLoader()->language('shipping/ups');
 
 		$query = $this->getDb()->query("
             SELECT *
@@ -78,12 +78,12 @@ class Ups extends ShippingMethodBase {
               AND country_id = :countryId
               AND zone_id IN (0, :zoneId)
             ", [
-			':geoZoneId' => $this->config->get('ups_geo_zone_id'),
+			':geoZoneId' => $this->getConfig()->get('ups_geo_zone_id'),
 			':countryId' => $address['country_id'],
 			':zoneId' => $address['zone_id']
 		]);
 
-		if (!$this->config->get('ups_geo_zone_id')) {
+		if (!$this->getConfig()->get('ups_geo_zone_id')) {
 			$status = true;
 		} else {
 			$status = boolval($query->num_rows);
@@ -92,13 +92,13 @@ class Ups extends ShippingMethodBase {
 		$methodData = array();
 
 		if ($status) {
-			$weight = $this->weight->convert($this->cart->getWeight(), $this->config->get('config_weight_class_id'), $this->config->get('ups_weight_class_id'));
+			$weight = $this->weight->convert($this->cart->getWeight(), $this->getConfig()->get('config_weight_class_id'), $this->getConfig()->get('ups_weight_class_id'));
 
 			$weight = ($weight < 0.1 ? 0.1 : $weight);
 
-			$length = $this->length->convert($this->config->get('ups_length'), $this->config->get('config_length_class_id'), $this->config->get('ups_length_class_id'));
-			$width = $this->length->convert($this->config->get('ups_width'), $this->config->get('config_length_class_id'), $this->config->get('ups_length_class_id'));
-			$height = $this->length->convert($this->config->get('ups_height'), $this->config->get('config_length_class_id'), $this->config->get('ups_length_class_id'));
+			$length = $this->length->convert($this->getConfig()->get('ups_length'), $this->getConfig()->get('config_length_class_id'), $this->getConfig()->get('ups_length_class_id'));
+			$width = $this->length->convert($this->getConfig()->get('ups_width'), $this->getConfig()->get('config_length_class_id'), $this->getConfig()->get('ups_length_class_id'));
+			$height = $this->length->convert($this->getConfig()->get('ups_height'), $this->getConfig()->get('config_length_class_id'), $this->getConfig()->get('ups_length_class_id'));
 
 			$service_code = array(
 				// US Origin
@@ -174,9 +174,9 @@ class Ups extends ShippingMethodBase {
 
 			$xml  = '<?xml version="1.0"?>';
 			$xml .= '<AccessRequest xml:lang="en-US">';
-			$xml .= '	<AccessLicenseNumber>' . $this->config->get('ups_key') . '</AccessLicenseNumber>';
-			$xml .= '	<UserId>' . $this->config->get('ups_username') . '</UserId>';
-			$xml .= '	<Password>' . $this->config->get('ups_password') . '</Password>';
+			$xml .= '	<AccessLicenseNumber>' . $this->getConfig()->get('ups_key') . '</AccessLicenseNumber>';
+			$xml .= '	<UserId>' . $this->getConfig()->get('ups_username') . '</UserId>';
+			$xml .= '	<Password>' . $this->getConfig()->get('ups_password') . '</Password>';
 			$xml .= '</AccessRequest>';
 			$xml .= '<?xml version="1.0"?>';
 			$xml .= '<RatingServiceSelectionRequest xml:lang="en-US">';
@@ -189,12 +189,12 @@ class Ups extends ShippingMethodBase {
 			$xml .= '		<RequestOption>shop</RequestOption>';
 			$xml .= '	</Request>';
 			$xml .= '   <PickupType>';
-			$xml .= '       <Code>' . $this->config->get('ups_pickup') . '</Code>';
+			$xml .= '       <Code>' . $this->getConfig()->get('ups_pickup') . '</Code>';
 			$xml .= '   </PickupType>';
 
-			if ($this->config->get('ups_country') == 'US' && $this->config->get('ups_pickup') == '11') {
+			if ($this->getConfig()->get('ups_country') == 'US' && $this->getConfig()->get('ups_pickup') == '11') {
 				$xml .= '   <CustomerClassification>';
-				$xml .= '       <Code>' . $this->config->get('ups_classification') . '</Code>';
+				$xml .= '       <Code>' . $this->getConfig()->get('ups_classification') . '</Code>';
 				$xml .= '   </CustomerClassification>';
 			}
 
@@ -202,10 +202,10 @@ class Ups extends ShippingMethodBase {
 
 			$xml .= '		<Shipper>';
 			$xml .= '			<Address>';
-			$xml .= '				<City>' . $this->config->get('ups_city') . '</City>';
-			$xml .= '				<StateProvinceCode>'. $this->config->get('ups_state') . '</StateProvinceCode>';
-			$xml .= '				<CountryCode>' . $this->config->get('ups_country') . '</CountryCode>';
-			$xml .= '				<PostalCode>' . $this->config->get('ups_postcode') . '</PostalCode>';
+			$xml .= '				<City>' . $this->getConfig()->get('ups_city') . '</City>';
+			$xml .= '				<StateProvinceCode>'. $this->getConfig()->get('ups_state') . '</StateProvinceCode>';
+			$xml .= '				<CountryCode>' . $this->getConfig()->get('ups_country') . '</CountryCode>';
+			$xml .= '				<PostalCode>' . $this->getConfig()->get('ups_postcode') . '</PostalCode>';
 			$xml .= '			</Address>';
 			$xml .= '		</Shipper>';
 			$xml .= '		<ShipTo>';
@@ -215,7 +215,7 @@ class Ups extends ShippingMethodBase {
 			$xml .= '				<CountryCode>' . $address['iso_code_2'] . '</CountryCode>';
 			$xml .= '				<PostalCode>' . $address['postcode'] . '</PostalCode>';
 
-			if ($this->config->get('ups_quote_type') == 'residential') {
+			if ($this->getConfig()->get('ups_quote_type') == 'residential') {
 				$xml .= '				<ResidentialAddressIndicator />';
 			}
 
@@ -223,21 +223,21 @@ class Ups extends ShippingMethodBase {
 			$xml .= '		</ShipTo>';
 			$xml .= '		<ShipFrom>';
 			$xml .= '			<Address>';
-			$xml .= '				<City>' . $this->config->get('ups_city') . '</City>';
-			$xml .= '				<StateProvinceCode>'. $this->config->get('ups_state') . '</StateProvinceCode>';
-			$xml .= '				<CountryCode>' . $this->config->get('ups_country') . '</CountryCode>';
-			$xml .= '				<PostalCode>' . $this->config->get('ups_postcode') . '</PostalCode>';
+			$xml .= '				<City>' . $this->getConfig()->get('ups_city') . '</City>';
+			$xml .= '				<StateProvinceCode>'. $this->getConfig()->get('ups_state') . '</StateProvinceCode>';
+			$xml .= '				<CountryCode>' . $this->getConfig()->get('ups_country') . '</CountryCode>';
+			$xml .= '				<PostalCode>' . $this->getConfig()->get('ups_postcode') . '</PostalCode>';
 			$xml .= '			</Address>';
 			$xml .= '		</ShipFrom>';
 
 			$xml .= '		<Package>';
 			$xml .= '			<PackagingType>';
-			$xml .= '				<Code>' . $this->config->get('ups_packaging') . '</Code>';
+			$xml .= '				<Code>' . $this->getConfig()->get('ups_packaging') . '</Code>';
 			$xml .= '			</PackagingType>';
 
 			$xml .= '		    <Dimensions>';
 			$xml .= '				<UnitOfMeasurement>';
-			$xml .= '					<Code>' . $this->config->get('ups_length_code') . '</Code>';
+			$xml .= '					<Code>' . $this->getConfig()->get('ups_length_code') . '</Code>';
 			$xml .= '				</UnitOfMeasurement>';
 			$xml .= '				<Length>' . $length . '</Length>';
 			$xml .= '				<Width>' . $width . '</Width>';
@@ -246,12 +246,12 @@ class Ups extends ShippingMethodBase {
 
 			$xml .= '			<PackageWeight>';
 			$xml .= '				<UnitOfMeasurement>';
-			$xml .= '					<Code>' . $this->config->get('ups_weight_code') . '</Code>';
+			$xml .= '					<Code>' . $this->getConfig()->get('ups_weight_code') . '</Code>';
 			$xml .= '				</UnitOfMeasurement>';
 			$xml .= '				<Weight>' . $weight . '</Weight>';
 			$xml .= '			</PackageWeight>';
 
-			if ($this->config->get('ups_insurance')) {
+			if ($this->getConfig()->get('ups_insurance')) {
 				$xml .= '           <PackageServiceOptions>';
 				$xml .= '               <InsuredValue>';
 				$xml .= '                   <CurrencyCode>' . $this->currency->getCode() . '</CurrencyCode>';
@@ -265,7 +265,7 @@ class Ups extends ShippingMethodBase {
 			$xml .= '	</Shipment>';
 			$xml .= '</RatingServiceSelectionRequest>';
 
-			if (!$this->config->get('ups_test')) {
+			if (!$this->getConfig()->get('ups_test')) {
 				$url = 'https://www.ups.com/ups.app/xml/Rate';
 			} else {
 				$url = 'https://wwwcie.ups.com/ups.app/xml/Rate';
@@ -316,13 +316,13 @@ class Ups extends ShippingMethodBase {
 							continue;
 						}
 
-						if ($this->config->get('ups_' . strtolower($this->config->get('ups_origin')) . '_' . $code)) {
+						if ($this->getConfig()->get('ups_' . strtolower($this->getConfig()->get('ups_origin')) . '_' . $code)) {
 							$quote_data[$code] = array(
 								'code'         => 'ups.' . $code,
-								'title'        => $service_code[$this->config->get('ups_origin')][$code],
-								'cost'         => $this->currency->convert($cost, $currency, $this->config->get('config_currency')),
-								'tax_class_id' => $this->config->get('ups_tax_class_id'),
-								'text'         => $this->currency->format($this->tax->calculate($this->currency->convert($cost, $currency, $this->currency->getCode()), $this->config->get('ups_tax_class_id'), $this->config->get('config_tax')))
+								'title'        => $service_code[$this->getConfig()->get('ups_origin')][$code],
+								'cost'         => $this->currency->convert($cost, $currency, $this->getConfig()->get('config_currency')),
+								'tax_class_id' => $this->getConfig()->get('ups_tax_class_id'),
+								'text'         => $this->currency->format($this->tax->calculate($this->currency->convert($cost, $currency, $this->currency->getCode()), $this->getConfig()->get('ups_tax_class_id'), $this->getConfig()->get('config_tax')))
 							);
 						}
 					}
@@ -331,8 +331,8 @@ class Ups extends ShippingMethodBase {
 
 			$title = $this->language->get('text_title');
 
-			if ($this->config->get('ups_display_weight')) {
-				$title .= ' (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->config->get('ups_weight_class_id')) . ')';
+			if ($this->getConfig()->get('ups_display_weight')) {
+				$title .= ' (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->getConfig()->get('ups_weight_class_id')) . ')';
 			}
 
 			function comparecost ($a, $b) {
@@ -344,7 +344,7 @@ class Ups extends ShippingMethodBase {
 				'code'       => 'ups',
 				'title'      => $title,
 				'quote'      => $quote_data,
-				'sort_order' => $this->config->get('ups_sort_order'),
+				'sort_order' => $this->getConfig()->get('ups_sort_order'),
 				'error'      => $error_msg
 			);
 		}
@@ -353,10 +353,10 @@ class Ups extends ShippingMethodBase {
 	}
 
 	public function isEnabled() {
-		return $this->config->get('ups_status');
+		return $this->getConfig()->get('ups_status');
 	}
 
 	public function getSortOrder() {
-		return $this->config->get('ups_sort_order');
+		return $this->getConfig()->get('ups_sort_order');
 	}
 }

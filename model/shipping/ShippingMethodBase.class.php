@@ -33,7 +33,7 @@ abstract class ShippingMethodBase extends ExtensionBase {
     abstract public function getMethodData($address);
 
     protected function getNameByResource($languageResource) {
-        $this->load->language($languageResource);
+        $this->getLoader()->language($languageResource);
         return $this->getLanguage()->get('headingTitle');
     }
 

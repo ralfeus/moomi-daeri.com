@@ -35,7 +35,7 @@ class ShippingMethodDAO extends DAO {
         $result = array();
 
 //        $logging->write(print_r($address, true));
-        $modelSettingExtension = $this->load->model('setting/extension');
+        $modelSettingExtension = $this->getLoader()->model('setting/extension');
         /** @var ShippingMethodBase[] $shippingExtensions */
         $shippingExtensions = ExtensionDAO::getInstance()->getExtensions('shipping', true, true);
         foreach ($shippingExtensions as $shippingExtension) {

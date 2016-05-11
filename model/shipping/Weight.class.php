@@ -4,7 +4,7 @@ class Weight extends ShippingMethodBase {
   	public function getCost($destination, $orderItems, $ext = array())
     {
         $cost = 0;
-        $rates = explode(',', $this->config->get($destination . '_rate'));
+        $rates = explode(',', $this->getConfig()->get($destination . '_rate'));
         if (empty($ext['weight'])) {
             $totalWeight = 0;
             foreach ($orderItems as $orderItem) {
@@ -12,7 +12,7 @@ class Weight extends ShippingMethodBase {
                     $this->weight->convert(
                         $orderItem->getWeight(),
                         $orderItem->getWeightClassId(),
-                        $this->config->get('config_weight_class_id')) * $orderItem->getQuantity();
+                        $this->getConfig()->get('config_weight_class_id')) * $orderItem->getQuantity();
             }
         } else {
             $totalWeight = $ext['weight'];
@@ -63,12 +63,12 @@ class Weight extends ShippingMethodBase {
     }
 
     public function getQuote($address) {
-        $this->load->language('shipping/weight');
+        $this->getLoader()->language('shipping/weight');
         $quote_data = array();
         $query = $this->getDb()->query("SELECT * FROM geo_zone ORDER BY name");
 
         foreach ($query->rows as $result) {
-            if ($this->config->get('weight_' . $result['geo_zone_id'] . '_status')) {
+            if ($this->getConfig()->get('weight_' . $result['geo_zone_id'] . '_status')) {
                 $query = $this->getDb()->query("
                     SELECT *
                     FROM zone_to_geo_zone
@@ -91,7 +91,7 @@ class Weight extends ShippingMethodBase {
                 $cost = '';
                 $weight = $this->cart->getWeight($this->session->data['selectedCartItems']);
 
-                $rates = explode(',', $this->config->get('weight_' . $result['geo_zone_id'] . '_rate'));
+                $rates = explode(',', $this->getConfig()->get('weight_' . $result['geo_zone_id'] . '_rate'));
 
                 foreach ($rates as $rate) {
                     $data = explode(':', $rate);
@@ -108,11 +108,11 @@ class Weight extends ShippingMethodBase {
                 if ((string)$cost != '') {
                     $quote_data['weight_' . $result['geo_zone_id']] = array(
                         'code'         => 'weight.weight_' . $result['geo_zone_id'],
-                        'title'        => $result['name'] . '  (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->config->get('config_weight_class_id')) . ')',
+                        'title'        => $result['name'] . '  (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->getConfig()->get('config_weight_class_id')) . ')',
                         'cost'         => $cost,
                         'description'  => $result['description'],
-                        'tax_class_id' => $this->config->get('weight_tax_class_id'),
-                        'text'         => $this->currency->format($this->tax->calculate($cost, $this->config->get('weight_tax_class_id'), $this->config->get('config_tax')))
+                        'tax_class_id' => $this->getConfig()->get('weight_tax_class_id'),
+                        'text'         => $this->currency->format($this->tax->calculate($cost, $this->getConfig()->get('weight_tax_class_id'), $this->getConfig()->get('config_tax')))
                     );
                 }
             }
@@ -125,7 +125,7 @@ class Weight extends ShippingMethodBase {
                 'code'       => 'weight',
                 'title'      => $this->language->get('text_title'),
                 'quote'      => $quote_data,
-                'sort_order' => $this->config->get('weight_sort_order'),
+                'sort_order' => $this->getConfig()->get('weight_sort_order'),
                 'error'      => false
             );
         }
@@ -134,10 +134,10 @@ class Weight extends ShippingMethodBase {
     }
 
     public function isEnabled() {
-        return $this->config->get('weight_status');
+        return $this->getConfig()->get('weight_status');
     }
 
     public function getSortOrder() {
-        return $this->config->get('weight_sort_order');
+        return $this->getConfig()->get('weight_sort_order');
     }
 }

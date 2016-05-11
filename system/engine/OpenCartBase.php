@@ -11,10 +11,14 @@ require_once(DIR_SYSTEM . 'library/db.php');
 class OpenCartBase {
     /** @var Config */
     protected $config;
+    /** @var Config */
+    protected static $newConfig;
     /** @var DBDriver */
-    protected $db;
+    protected static $db;
     /** @var Loader */
     protected $load;
+    /** @var Loader */
+    protected static $loader;
     /** @var Log */
     protected $log;
     /** @var Registry */
@@ -26,9 +30,11 @@ class OpenCartBase {
             $registry->set('db', DB::getDB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE));
         }
         $this->registry = $registry;
-        $this->config = $this->registry->get('config');
-        $this->db = $this->registry->get('db');
-        $this->load = $this->registry->get('load');
+        if (is_null(static::$newConfig)) { static::$newConfig = $this->registry->get('config'); }
+        $this->config = static::$newConfig;
+        if (is_null(static::$db)) { static::$db = $this->registry->get('db'); }
+        if (is_null(static::$loader)) { static::$loader = $this->registry->get('load'); }
+        $this->load = static::$loader;
         $this->log = $this->registry->get("log");
     }
 
@@ -41,7 +47,15 @@ class OpenCartBase {
     }
 
     public function __sleep() {
-        return ['log'];
+        return array_diff(
+            array_keys(get_object_vars($this)),
+            ['config', 'db', 'load', 'registry']
+        );
+    }
+
+    public function __wakeup() {
+        $this->registry = new Registry();
+        $this->registry->set('db', static::$db);
     }
 
     /**
@@ -49,6 +63,10 @@ class OpenCartBase {
      */
     protected function getCache() {
         return $this->registry->get('cache');
+    }
+
+    protected function getConfig() {
+        return static::$newConfig;
     }
 
     protected function getCurrentCurrency() {
@@ -76,7 +94,7 @@ class OpenCartBase {
      * @return DBDriver
      */
     protected function getDb() {
-        return $this->db;
+        return static::$db;
     }
 
     /**
@@ -84,6 +102,13 @@ class OpenCartBase {
      */
     protected function getLanguage() {
         return $this->registry->get('language');
+    }
+
+    /**
+     * @return Loader
+     */
+    protected function getLoader() {
+        return static::$loader;
     }
 
     /**

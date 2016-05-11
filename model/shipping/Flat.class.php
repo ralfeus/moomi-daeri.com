@@ -3,12 +3,12 @@ namespace  model\shipping;
 class Flat extends ShippingMethodBase {
   	public function getCost($destination, $orderItems, $ext = null)
     {
-        return $this->config->get('flat_cost');
+        return $this->getConfig()->get('flat_cost');
   	}
 
     public function getMethodData($address)
     {
-        if ($this->config->get('flat_status'))
+        if ($this->getConfig()->get('flat_status'))
         {
             $sql = "
                 SELECT gz.geo_zone_id, gz.name, gz.description
@@ -39,7 +39,7 @@ class Flat extends ShippingMethodBase {
     }
 
     public function getQuote($address) {
-        $this->load->language('shipping/flat');
+        $this->getLoader()->language('shipping/flat');
 
         $query = $this->getDb()->query("
 		    SELECT *
@@ -49,12 +49,12 @@ class Flat extends ShippingMethodBase {
 		        AND country_id = :countryId
 		        AND zone_id IN (0, :zoneId)
             ", [
-            ':geoZoneId' => $this->config->get('flat_geo_zone_id'),
+            ':geoZoneId' => $this->getConfig()->get('flat_geo_zone_id'),
             ':countryId' => $address['country_id'],
             ':zoneId' => $address['zone_id']
         ]);
 
-        if (!$this->config->get('flat_geo_zone_id')) {
+        if (!$this->getConfig()->get('flat_geo_zone_id')) {
             $status = true;
         } else {
             $status = boolval($query->num_rows);
@@ -68,16 +68,16 @@ class Flat extends ShippingMethodBase {
             $quote_data['flat'] = array(
                 'code'         => 'flat.flat',
                 'title'        => $this->language->get('text_description'),
-                'cost'         => $this->config->get('flat_cost'),
-                'tax_class_id' => $this->config->get('flat_tax_class_id'),
-                'text'         => $this->currency->format($this->tax->calculate($this->config->get('flat_cost'), $this->config->get('flat_tax_class_id'), $this->config->get('config_tax')))
+                'cost'         => $this->getConfig()->get('flat_cost'),
+                'tax_class_id' => $this->getConfig()->get('flat_tax_class_id'),
+                'text'         => $this->currency->format($this->tax->calculate($this->getConfig()->get('flat_cost'), $this->getConfig()->get('flat_tax_class_id'), $this->getConfig()->get('config_tax')))
             );
 
             $methodData = array(
                 'code'       => 'flat',
                 'title'      => $this->language->get('text_title'),
                 'quote'      => $quote_data,
-                'sort_order' => $this->config->get('flat_sort_order'),
+                'sort_order' => $this->getConfig()->get('flat_sort_order'),
                 'error'      => false
             );
         }
@@ -86,10 +86,10 @@ class Flat extends ShippingMethodBase {
     }
 
     public function isEnabled() {
-        return $this->config->get('flat_status');
+        return $this->getConfig()->get('flat_status');
     }
 
     public function getSortOrder() {
-        return $this->config->get('flat_sort_order');
+        return $this->getConfig()->get('flat_sort_order');
     }
 }

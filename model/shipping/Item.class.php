@@ -6,14 +6,14 @@ class Item extends ShippingMethodBase
     {
         $cost = 0;
         foreach ($orderItems as $orderItem)
-            $cost += $this->config->get('item_cost') * $orderItem->getQuantity();
+            $cost += $this->getConfig()->get('item_cost') * $orderItem->getQuantity();
 
         return $cost;
   	}
 
     public function getMethodData($address)
     {
-        if ($this->config->get('item_status'))
+        if ($this->getConfig()->get('item_status'))
         {
             $sql = "
                 SELECT gz.geo_zone_id, gz.name, gz.description
@@ -45,7 +45,7 @@ class Item extends ShippingMethodBase
     }
 
     public function getQuote($address) {
-        $this->load->language('shipping/item');
+        $this->getLoader()->language('shipping/item');
 
         $query = $this->getDb()->query("
             SELECT *
@@ -55,12 +55,12 @@ class Item extends ShippingMethodBase
                 AND country_id = :countryId
                 AND zone_id IN (0, :zoneId)
             ", [
-            ':geoZoneId' => $this->config->get('item_geo_zone_id'),
+            ':geoZoneId' => $this->getConfig()->get('item_geo_zone_id'),
             ':countryId' => $address['country_id'],
             ':zoneId' => $address['zone_id']
         ]);
 
-        if (!$this->config->get('item_geo_zone_id')) {
+        if (!$this->getConfig()->get('item_geo_zone_id')) {
             $status = true;
         } else {
             $status = boolval($query->num_rows);
@@ -74,16 +74,16 @@ class Item extends ShippingMethodBase
             $quote_data['item'] = array(
                 'code'         => 'item.item',
                 'title'        => $this->language->get('text_description'),
-                'cost'         => $this->config->get('item_cost') * $this->cart->countProducts(),
-                'tax_class_id' => $this->config->get('item_tax_class_id'),
-                'text'         => $this->currency->format($this->tax->calculate($this->config->get('item_cost') * $this->cart->countProducts(), $this->config->get('item_tax_class_id'), $this->config->get('config_tax')))
+                'cost'         => $this->getConfig()->get('item_cost') * $this->cart->countProducts(),
+                'tax_class_id' => $this->getConfig()->get('item_tax_class_id'),
+                'text'         => $this->currency->format($this->tax->calculate($this->getConfig()->get('item_cost') * $this->cart->countProducts(), $this->getConfig()->get('item_tax_class_id'), $this->getConfig()->get('config_tax')))
             );
 
             $methodData = array(
                 'code'       => 'item',
                 'title'      => $this->language->get('text_title'),
                 'quote'      => $quote_data,
-                'sort_order' => $this->config->get('item_sort_order'),
+                'sort_order' => $this->getConfig()->get('item_sort_order'),
                 'error'      => false
             );
         }
@@ -92,10 +92,10 @@ class Item extends ShippingMethodBase
     }
 
     public function isEnabled() {
-        return $this->config->get('item_status');
+        return $this->getConfig()->get('item_status');
     }
 
     public function getSortOrder() {
-        return $this->config->get('item_sort_order');
+        return $this->getConfig()->get('item_sort_order');
     }
 }
