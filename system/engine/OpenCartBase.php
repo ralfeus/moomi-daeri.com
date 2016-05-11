@@ -40,6 +40,10 @@ class OpenCartBase {
         $this->registry->set($key, $value);
     }
 
+    public function __sleep() {
+        return [];
+    }
+
     /**
      * @return Cache
      */
