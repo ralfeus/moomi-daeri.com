@@ -20,29 +20,32 @@ class ExtensionDAO extends DAO {
      * @return ExtensionBase[]
      */
     function getExtensions($type, $installedOnly = true, $enabledOnly = true) {
-        $result = array();
-        if ($installedOnly) {
-            $query = $this->getDb()->query("
+        $rows = $this->getCache()->get('extensions.' . $type . '.' . $installedOnly . '.' . $enabledOnly);
+        if (!$rows) {
+            if ($installedOnly) {
+                $query = $this->getDb()->query("
                 SELECT *
                 FROM extension
                 WHERE `type` = :type
-                ", [ ":type" => $type]
-            );
-            foreach ($query->rows as $row) {
-                try {
-                    $extension = $this->getExtension($row['type'], $row['code']);
-                    if (!$enabledOnly || $extension->isEnabled()) {
-                        $result[] = $extension;
-                    }
-                } catch (\Exception $exc) {
-                    $enabled = boolval($this->config->get($row['code'] . '_status'));
-                    if (!$enabledOnly || $enabled) {
-                        $result[$row['code']] = $row;
+                ", [":type" => $type]
+                );
+                foreach ($query->rows as $row) {
+                    try {
+                        $extension = $this->getExtension($row['type'], $row['code']);
+                        if (!$enabledOnly || $extension->isEnabled()) {
+                            $rows[] = $extension;
+                        }
+                    } catch (\Exception $exc) {
+                        $enabled = boolval($this->config->get($row['code'] . '_status'));
+                        if (!$enabledOnly || $enabled) {
+                            $rows[$row['code']] = $row;
+                        }
                     }
                 }
             }
-            return $result;
+            $this->getCache()->set('extensions.' . $type . '.' . $installedOnly . '.' . $enabledOnly, $rows);
         }
+        return $rows;
     }
 
 	public function install($type, $code) {
