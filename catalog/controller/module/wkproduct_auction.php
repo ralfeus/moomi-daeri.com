@@ -4,6 +4,8 @@
 ################################################################################################
 ?><?php
 
+use model\module\WKProductAuctionDAO;
+
 class ControllerModuleWkproductauction extends Controller {
 	protected function index() {
 		//LOAD LANGUAGE
@@ -41,7 +43,7 @@ class ControllerModuleWkproductauction extends Controller {
 		$this->data['end']='';
 		$this->data['start']='';
 		if(isset($this->request->get['product_id'])){
-		$results = $this->model_module_wkproduct_auction->getAuction($this->request->get['product_id']);
+		$results = WKProductAuctionDAO::getInstance()->getAuction($this->request->get['product_id']);
                }
         
         date_default_timezone_set($this->config->get('wk_auction_timezone_set'));
@@ -79,7 +81,7 @@ class ControllerModuleWkproductauction extends Controller {
 		
 		if(isset($this->data['auction_id'])){
 
-			$bids = $this->model_module_wkproduct_auction->getAuctionbids($this->data['auction_id']);
+			$bids = WKProductAuctionDAO::getInstance()->getAuctionbids($this->data['auction_id']);
 		}
         $this->data['my_bids']=array();
 		foreach ($bids as $bid) {

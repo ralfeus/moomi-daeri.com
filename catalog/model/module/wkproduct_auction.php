@@ -5,9 +5,11 @@
 ################################################################################################
 class ModelModuleWkproductauction extends Model {
 	
-	public function getAuction($product_id) {
+	public function getAuction($productId) {
 			
-		$data = $this->getDb()->query("SELECT * FROM " . DB_PREFIX . "wkauction WHERE product_id = '" . (int)$product_id . "' AND isauction=1");
+		$data = $this->getDb()->query("
+			SELECT * FROM wkauction WHERE product_id = :productId AND isauction = 1
+			", [':productId' => $productId]);
 		
 		return $data->rows;
 	}

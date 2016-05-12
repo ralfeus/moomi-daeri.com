@@ -1,4 +1,6 @@
 <?php
+use model\module\WKProductAuctionDAO;
+
 class ControllerCatalogWkallauctions extends Controller {
 	private $error = array();
 
@@ -29,7 +31,7 @@ class ControllerCatalogWkallauctions extends Controller {
 		$this->load->model('catalog/wkallauctions');
 
 		$this->data['allauctions']=array();
-		$wkauctions=$this->model_catalog_wkallauctions->getAuctions();
+		$wkauctions = WKProductAuctionDAO::getInstance()->getAuctions();
 		
 		foreach($wkauctions as $wkau)
 		{
