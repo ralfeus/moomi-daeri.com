@@ -209,8 +209,3 @@ class DostavkaGuru extends ShippingMethodBase {
     }
 }
 
-class IssuePoint {
-    public $id;
-    public $name;
-    public $address;
-}
