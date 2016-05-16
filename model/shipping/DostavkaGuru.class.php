@@ -137,7 +137,7 @@ class DostavkaGuru extends ShippingMethodBase {
 
     public function getQuote($address) {
         $methodData = $this->getMethodData($address);
-        foreach ($methodData as $methodDataEntry) {
+        foreach ($methodData as $key => $value) {
             $cost = '';
             $weight = $this->cart->getWeight(true);
 
@@ -154,12 +154,12 @@ class DostavkaGuru extends ShippingMethodBase {
                     break;
                 }
             }
-            $russiaCost = $this->getRussiaShippingCost($methodDataEntry['issuePoint'], $weight);
+            $russiaCost = $this->getRussiaShippingCost($value['issuePoint'], $weight);
             $textRussiaCost = "<br />" . $this->getLanguage()->get('RUSSIA_DELIVERY_COST') . ": $russiaCost RUR";
-            $methodDataEntry['cost'] = $cost;
-            $methodDataEntry['text'] = $this->currency->format(
+            $methodData[$key]['cost'] = $cost;
+            $methodData[$key]['text'] = $this->currency->format(
                 $this->tax->calculate($cost, SettingsDAO::getInstance()->getSetting('dostavkaGuru', 'dostavkaGuruTaxClassId'), $this->getConfig()->get('config_tax')));
-            $methodDataEntry['title'] = $methodDataEntry['issuePoint']->address . ' ' .
+            $methodData[$key]['title'] = $value['issuePoint']->address . ' ' .
                 $this->weight->format($weight, $this->getConfig()->get('config_weight_class_id')) .
                 $textRussiaCost;
         }

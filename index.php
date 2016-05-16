@@ -51,6 +51,10 @@ spl_autoload_register(function($class) {
 // Registry
 $registry = new Registry();
 
+// Cache
+$cache = new Cache();
+$registry->set('cache', $cache);
+
 // Loader
 $loader = new Loader($registry);
 $registry->set('load', $loader);
@@ -82,9 +86,13 @@ if ($store_query->num_rows) {
 }
 
 // Settings
-$query = $db->query("SELECT * FROM setting WHERE store_id = '0' OR store_id = '" . (int)$config->get('config_store_id') . "' ORDER BY store_id ASC");
-
-foreach ($query->rows as $setting) {
+$settingsRows = $cache->get('setting.' . $config->get('config_store_id'));
+if (is_null($settingsRows)) {
+	$query = $db->query("SELECT * FROM setting WHERE store_id = '0' OR store_id = '" . (int)$config->get('config_store_id') . "' ORDER BY store_id ASC");
+	$settingsRows = $query->rows;
+	$cache->set('setting.' . $config->get('config_store_id'), $settingsRows);
+}
+foreach ($settingsRows as $setting) {
 	if (!$setting['serialized']) {
 		$config->set($setting['key'], $setting['value']);
 	} else {
@@ -150,21 +158,21 @@ $response->addHeader('Content-Type: text/html; charset=utf-8');
 $response->setCompression($config->get('config_compression'));
 $registry->set('response', $response);
 
-// Cache
-$cache = new Cache();
-$registry->set('cache', $cache);
+
 
 // Session
 $session = new Session();
 $registry->set('session', $session);
 
 // Language Detection
-$languages = array();
-
-$query = $db->query("SELECT * FROM language");
-
-foreach ($query->rows as $result) {
-	$languages[$result['code']] = $result;
+$languages = $cache->get('languages');
+if (is_null($languages)) {
+	$query = $db->query("SELECT * FROM language");
+	$languages = [];
+	foreach ($query->rows as $result) {
+		$languages[$result['code']] = $result;
+	}
+	$cache->set('languages', $languages);
 }
 
 $detect = '';
