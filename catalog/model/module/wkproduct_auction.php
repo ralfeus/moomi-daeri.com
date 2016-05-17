@@ -19,6 +19,7 @@ class ModelModuleWkproductauction extends Model {
 
 		return $data->rows;
 	}
+	
 	public function updateAuctionbids($auction_id) {
 		//LOAD LANGUAGE
 		$this->language->load('module/wkproduct_auction');
