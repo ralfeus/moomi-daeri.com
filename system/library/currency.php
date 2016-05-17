@@ -1,6 +1,5 @@
 <?php
-final class Currency extends OpenCartBase
-{
+final class Currency extends OpenCartBase {
   	private $code;
   	private $currencies = array();
 
@@ -11,7 +10,7 @@ final class Currency extends OpenCartBase
   	public function __construct($registry) {
         parent::__construct($registry);
 		$this->setLanguage($registry->get('language'));
-		$this->request = $registry->get('request');
+		$this->getRegistry()->set('request', $registry->get('request'));
 		$this->setSession($registry->get('session'));
 		
 		$this->currencies = $this->getCache()->get('currencies');
@@ -30,12 +29,12 @@ final class Currency extends OpenCartBase
 			}
 			$this->getCache()->set('currencies', $this->currencies);
 		}
-		if (isset($this->request->get['currency']) && (array_key_exists($this->request->get['currency'], $this->currencies))) {
-			$this->set($this->request->get['currency']);
+		if (isset($registry->get('request')->get['currency']) && (array_key_exists($registry->get('request')->get['currency'], $this->currencies))) {
+			$this->set($registry->get('request')->get['currency']);
     	} elseif ((isset($this->getSession()->data['currency'])) && (array_key_exists($this->getSession()->data['currency'], $this->currencies))) {
       		$this->set($this->getSession()->data['currency']);
-    	} elseif ((isset($this->request->cookie['currency'])) && (array_key_exists($this->request->cookie['currency'], $this->currencies))) {
-      		$this->set($this->request->cookie['currency']);
+    	} elseif ((isset($registry->get('request')->cookie['currency'])) && (array_key_exists($registry->get('request')->cookie['currency'], $this->currencies))) {
+      		$this->set($registry->get('request')->cookie['currency']);
     	} else {
       		$this->set($this->getConfig()->get('config_currency'));
     	}
@@ -49,12 +48,12 @@ final class Currency extends OpenCartBase
     public function set($currency) {
     	$this->code = $currency;
 
-    	if ((!isset($this->session->data['currency'])) || ($this->session->data['currency'] != $currency)) {
-      		$this->session->data['currency'] = $currency;
+    	if ((!isset($this->getSession()->data['currency'])) || ($this->getSession()->data['currency'] != $currency)) {
+      		$this->getSession()->data['currency'] = $currency;
     	}
 
-    	if ((!isset($this->request->cookie['currency'])) || ($this->request->cookie['currency'] != $currency)) {
-	  		setcookie('currency', $currency, time() + 60 * 60 * 24 * 30, '/', $this->request->server['HTTP_HOST']);
+    	if ((!isset($this->getRegistry()->get('request')->cookie['currency'])) || ($this->getRegistry()->get('request')->cookie['currency'] != $currency)) {
+	  		setcookie('currency', $currency, time() + 60 * 60 * 24 * 30, '/', $this->getRegistry()->get('request')->server['HTTP_HOST']);
     	}
   	}
 
@@ -71,9 +70,7 @@ final class Currency extends OpenCartBase
 			$currency = $this->code;
     	}
 
-    	if ($value) {
-      		$value = $value;
-    	} else {
+    	if (!$value) {
       		$value = $this->currencies[$currency]['value'];
     	}
 
@@ -90,7 +87,7 @@ final class Currency extends OpenCartBase
     	}
 
 		if ($format) {
-			$decimal_point = $this->language->get('decimal_point');
+			$decimal_point = $this->getLanguage()->get('decimal_point');
 		} else {
 			$decimal_point = '.';
 		}
@@ -121,11 +118,15 @@ final class Currency extends OpenCartBase
                     (
                         SELECT currency_id, max(date_added) AS last_date_added
                         FROM currency_history AS ch1
-                        WHERE date_added <= '" . $this->db->escape($date) . "'
+                        WHERE date_added <= :dateAdded
                         GROUP BY currency_id
                     ) AS lrm ON lrm.currency_id = ch.currency_id AND lrm.last_date_added = ch.date_added
-                WHERE c.code in ('" . $this->db->escape($from) . "', '" . $this->db->escape($to) . "')
-            ");
+                WHERE c.code in (:source, :destination)
+            ", [
+				':dateAdded' => $date,
+				':source' => $from,
+				':destination' => $to
+			]);
             if ($query->rows[0]['code'] == $from) {
                 $fromValue = $query->rows[0]['rate'];
                 $toValue = $query->rows[1]['rate'];
@@ -219,4 +220,3 @@ final class Currency extends OpenCartBase
     	return isset($this->currencies[$currency]);
   	}
 }
-?>
