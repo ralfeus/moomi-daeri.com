@@ -208,9 +208,10 @@ class ControllerCatalogImport extends Controller {
         parent::initParameters();
         $this->parameters['filterIsActive'] = is_numeric($this->getRequest()->getParam('filterIsActive')) ? $this->getRequest()->getParam('filterIsActive') : null;
         $this->parameters['filterItem'] = $this->getRequest()->getParam('filterItem');
-        $this->parameters['filterLocalProductId'] = is_numeric($this->getRequest()->getParam('filterLocalProductId')) || $this->getRequest()->getParam('filterLocalProductId') == '*'
-            ? $this->getRequest()->getParam('filterLocalProductId')
-            : null;
+        $this->parameters['filterLocalProductId'] =
+            is_numeric($this->getRequest()->getParam('filterLocalProductId')) || in_array($this->getRequest()->getParam('filterLocalProductId'), ['*', 'NULL'])
+                ? $this->getRequest()->getParam('filterLocalProductId')
+                : null;
         $this->parameters['filterSourceSiteClassName'] = $this->getRequest()->getParam('filterSourceSiteClassName', array());
         $this->parameters['page'] = $this->getRequest()->getParam('page', 1);
         $this->parameters['selectedItems'] = $this->getRequest()->getParam('selectedItems', array());
