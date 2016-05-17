@@ -10,18 +10,22 @@ require_once(DIR_SYSTEM . 'engine/registry.php');
 require_once(DIR_SYSTEM . 'library/db.php');
 class OpenCartBase {
     /** @var Config */
+    /** @deprecated */
     protected $config;
     /** @var Config */
     protected static $newConfig;
     /** @var DBDriver */
+    /** @deprecated */
     protected static $db;
     /** @var Loader */
+    /** @deprecated */
     protected $load;
     /** @var Loader */
     protected static $loader;
     /** @var Log */
     protected $log;
     /** @var Registry */
+    /** @deprecated */
     protected $registry;
 
     protected function __construct($registry) {
@@ -105,6 +109,13 @@ class OpenCartBase {
     }
 
     /**
+     * @param Language $value
+     */
+    protected function setLanguage($value) {
+        $this->registry->set('language', $value);
+    }
+
+    /**
      * @return Loader
      */
     protected function getLoader() {
@@ -119,9 +130,23 @@ class OpenCartBase {
     }
 
     /**
+     * @return Registry
+     */
+    protected function getRegistry() {
+        return $this->registry;
+    }
+
+    /**
      * @return Session
      */
     protected function getSession() {
         return $this->registry->get('session');
+    }
+
+    /**
+     * @param Session $value
+     */
+    protected function setSession($value) {
+        $this->registry->set('session', $value);
     }
 }

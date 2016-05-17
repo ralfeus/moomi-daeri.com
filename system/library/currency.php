@@ -3,34 +3,41 @@ final class Currency extends OpenCartBase
 {
   	private $code;
   	private $currencies = array();
-  
+
+	/**
+	 * Currency constructor.
+	 * @param Registry $registry
+	 */
   	public function __construct($registry) {
         parent::__construct($registry);
-		$this->language = $registry->get('language');
+		$this->setLanguage($registry->get('language'));
 		$this->request = $registry->get('request');
-		$this->session = $registry->get('session');
+		$this->setSession($registry->get('session'));
 		
-		$query = $this->db->query("SELECT * FROM currency");
+		$this->currencies = $this->getCache()->get('currencies');
+		if (is_null($this->currencies)) {
+			$query = $this->getDb()->query("SELECT * FROM currency");
 
-    	foreach ($query->rows as $result) {
-      		$this->currencies[$result['code']] = array(
-        		'currency_id'   => $result['currency_id'],
-        		'title'         => $result['title'],
-        		'symbol_left'   => $result['symbol_left'],
-        		'symbol_right'  => $result['symbol_right'],
-        		'decimal_place' => $result['decimal_place'],
-        		'value'         => $result['value']
-      		); 
-    	}
-		
+			foreach ($query->rows as $result) {
+				$this->currencies[$result['code']] = array(
+					'currency_id' => $result['currency_id'],
+					'title' => $result['title'],
+					'symbol_left' => $result['symbol_left'],
+					'symbol_right' => $result['symbol_right'],
+					'decimal_place' => $result['decimal_place'],
+					'value' => $result['value']
+				);
+			}
+			$this->getCache()->set('currencies', $this->currencies);
+		}
 		if (isset($this->request->get['currency']) && (array_key_exists($this->request->get['currency'], $this->currencies))) {
 			$this->set($this->request->get['currency']);
-    	} elseif ((isset($this->session->data['currency'])) && (array_key_exists($this->session->data['currency'], $this->currencies))) {
-      		$this->set($this->session->data['currency']);
+    	} elseif ((isset($this->getSession()->data['currency'])) && (array_key_exists($this->getSession()->data['currency'], $this->currencies))) {
+      		$this->set($this->getSession()->data['currency']);
     	} elseif ((isset($this->request->cookie['currency'])) && (array_key_exists($this->request->cookie['currency'], $this->currencies))) {
       		$this->set($this->request->cookie['currency']);
     	} else {
-      		$this->set($this->config->get('config_currency'));
+      		$this->set($this->getConfig()->get('config_currency'));
     	}
   	}
 
