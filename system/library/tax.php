@@ -3,7 +3,12 @@ final class Tax {
 	private $shipping_address;
 	private $payment_address;
 	private $store_address;
-	
+	private $taxes;
+
+	/**
+	 * Tax constructor.
+	 * @param Registry $registry
+	 */
 	public function __construct($registry) {
 		$this->config = $registry->get('config');
 		$this->customer = $registry->get('customer');
@@ -176,4 +181,3 @@ final class Tax {
 		return isset($this->taxes[$tax_class_id]);
   	}
 }
-?>
