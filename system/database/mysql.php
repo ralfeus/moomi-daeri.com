@@ -43,6 +43,7 @@ final class MySQL implements DBDriver{
                 PDO::ATTR_PERSISTENT => true
             )
         );
+        $this->statements = [];
     }
 
     /**

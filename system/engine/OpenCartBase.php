@@ -73,6 +73,9 @@ class OpenCartBase {
         return static::$newConfig;
     }
 
+    /**
+     * @return Currency
+     */
     protected function getCurrentCurrency() {
         return $this->registry->get('currency');
     }
