@@ -11,7 +11,7 @@ class ExtensionDAO extends DAO {
      */
     function getExtension($type, $code) {
         $className = 'model\\' . $type . '\\' . ucfirst($code);
-        return new $className($this->registry, $code);
+        return new $className($this->getRegistry(), $code);
     }
     /**
      * @param string $type
@@ -36,7 +36,7 @@ class ExtensionDAO extends DAO {
                             $rows[] = $extension;
                         }
                     } catch (\Exception $exc) {
-                        $enabled = boolval($this->config->get($row['code'] . '_status'));
+                        $enabled = boolval($this->getConfig()->get($row['code'] . '_status'));
                         if (!$enabledOnly || $enabled) {
                             $rows[$row['code']] = $row;
                         }
@@ -50,9 +50,11 @@ class ExtensionDAO extends DAO {
 
 	public function install($type, $code) {
 		$this->getDb()->query("INSERT INTO extension SET `type` = '" . $this->getDb()->escape($type) . "', `code` = '" . $this->getDb()->escape($code) . "'");
+        $this->getCache()->deleteAll("/^extensions\\.$type/");
 	}
 	
 	public function uninstall($type, $code) {
 		$this->getDb()->query("DELETE FROM extension WHERE `type` = '" . $this->getDb()->escape($type) . "' AND `code` = '" . $this->getDb()->escape($code) . "'");
+        $this->getCache()->deleteAll("/^extensions\\.$type/");
 	}
 }

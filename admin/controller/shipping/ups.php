@@ -1,13 +1,15 @@
 <?php
+use system\library\MeasureUnitDAO;
+
 class ControllerShippingUPS extends Controller {
 	private $error = array(); 
 	
 	public function index() {
-		$this->load->language('shipping/ups');
+		$this->getLoader()->language('shipping/ups');
 			
 		$this->document->setTitle($this->language->get('heading_title'));
 		
-		$this->load->model('setting/setting');
+		$this->getLoader()->model('setting/setting');
 				
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
 			$this->model_setting_setting->editSetting('ups', $this->request->post);		
@@ -146,25 +148,25 @@ class ControllerShippingUPS extends Controller {
 		if (isset($this->request->post['ups_key'])) {
 			$this->data['ups_key'] = $this->request->post['ups_key'];
 		} else {
-			$this->data['ups_key'] = $this->config->get('ups_key');
+			$this->data['ups_key'] = $this->getConfig()->get('ups_key');
 		}
 
 		if (isset($this->request->post['ups_username'])) {
 			$this->data['ups_username'] = $this->request->post['ups_username'];
 		} else {
-			$this->data['ups_username'] = $this->config->get('ups_username');
+			$this->data['ups_username'] = $this->getConfig()->get('ups_username');
 		}
 		
 		if (isset($this->request->post['ups_password'])) {
 			$this->data['ups_password'] = $this->request->post['ups_password'];
 		} else {
-			$this->data['ups_password'] = $this->config->get('ups_password');
+			$this->data['ups_password'] = $this->getConfig()->get('ups_password');
 		}
 		
 		if (isset($this->request->post['ups_pickup'])) {
 			$this->data['ups_pickup'] = $this->request->post['ups_pickup'];
 		} else {
-			$this->data['ups_pickup'] = $this->config->get('ups_pickup');
+			$this->data['ups_pickup'] = $this->getConfig()->get('ups_pickup');
 		}
 		
 		$this->data['pickups'] = array();
@@ -207,7 +209,7 @@ class ControllerShippingUPS extends Controller {
 		if (isset($this->request->post['ups_packaging'])) {
 			$this->data['ups_packaging'] = $this->request->post['ups_packaging'];
 		} else {
-			$this->data['ups_packaging'] = $this->config->get('ups_packaging');
+			$this->data['ups_packaging'] = $this->getConfig()->get('ups_packaging');
 		}
 					
 		$this->data['packages'] = array();
@@ -250,7 +252,7 @@ class ControllerShippingUPS extends Controller {
 		if (isset($this->request->post['ups_classification'])) {
 			$this->data['ups_classification'] = $this->request->post['ups_classification'];
 		} else {
-			$this->data['ups_classification'] = $this->config->get('ups_classification');
+			$this->data['ups_classification'] = $this->getConfig()->get('ups_classification');
 		}
 						
 		$this->data['classifications'][] = array(
@@ -271,7 +273,7 @@ class ControllerShippingUPS extends Controller {
 		if (isset($this->request->post['ups_origin'])) {
 			$this->data['ups_origin'] = $this->request->post['ups_origin'];
 		} else {
-			$this->data['ups_origin'] = $this->config->get('ups_origin');
+			$this->data['ups_origin'] = $this->getConfig()->get('ups_origin');
 		}			
 				
 		$this->data['origins'] = array();
@@ -309,37 +311,37 @@ class ControllerShippingUPS extends Controller {
 		if (isset($this->request->post['ups_city'])) {
 			$this->data['ups_city'] = $this->request->post['ups_city'];
 		} else {
-			$this->data['ups_city'] = $this->config->get('ups_city');
+			$this->data['ups_city'] = $this->getConfig()->get('ups_city');
 		}
 
 		if (isset($this->request->post['ups_state'])) {
 			$this->data['ups_state'] = $this->request->post['ups_state'];
 		} else {
-			$this->data['ups_state'] = $this->config->get('ups_state');
+			$this->data['ups_state'] = $this->getConfig()->get('ups_state');
 		}
 
 		if (isset($this->request->post['ups_country'])) {
 			$this->data['ups_country'] = $this->request->post['ups_country'];
 		} else {
-			$this->data['ups_country'] = $this->config->get('ups_country');
+			$this->data['ups_country'] = $this->getConfig()->get('ups_country');
 		}
 
 		if (isset($this->request->post['ups_postcode'])) {
 			$this->data['ups_postcode'] = $this->request->post['ups_postcode'];
 		} else {
-			$this->data['ups_postcode'] = $this->config->get('ups_postcode');
+			$this->data['ups_postcode'] = $this->getConfig()->get('ups_postcode');
 		}
 		
 		if (isset($this->request->post['ups_test'])) {
 			$this->data['ups_test'] = $this->request->post['ups_test'];
 		} else {
-			$this->data['ups_test'] = $this->config->get('ups_test');
+			$this->data['ups_test'] = $this->getConfig()->get('ups_test');
 		}		
 
 		if (isset($this->request->post['ups_quote_type'])) {
 			$this->data['ups_quote_type'] = $this->request->post['ups_quote_type'];
 		} else {
-			$this->data['ups_quote_type'] = $this->config->get('ups_quote_type');
+			$this->data['ups_quote_type'] = $this->getConfig()->get('ups_quote_type');
 		}		
 
 		$this->data['quote_types'] = array();
@@ -357,394 +359,394 @@ class ControllerShippingUPS extends Controller {
 		if (isset($this->request->post['ups_us_01'])) {
 			$this->data['ups_us_01'] = $this->request->post['ups_us_01'];
 		} else {
-			$this->data['ups_us_01'] = $this->config->get('ups_us_01');
+			$this->data['ups_us_01'] = $this->getConfig()->get('ups_us_01');
 		}				
 		
 		if (isset($this->request->post['ups_us_02'])) {
 			$this->data['ups_us_02'] = $this->request->post['ups_us_02'];
 		} else {
-			$this->data['ups_us_02'] = $this->config->get('ups_us_02');
+			$this->data['ups_us_02'] = $this->getConfig()->get('ups_us_02');
 		}			
 
 		if (isset($this->request->post['ups_us_03'])) {
 			$this->data['ups_us_03'] = $this->request->post['ups_us_03'];
 		} else {
-			$this->data['ups_us_03'] = $this->config->get('ups_us_03');
+			$this->data['ups_us_03'] = $this->getConfig()->get('ups_us_03');
 		}	
 
 		if (isset($this->request->post['ups_us_07'])) {
 			$this->data['ups_us_07'] = $this->request->post['ups_us_07'];
 		} else {
-			$this->data['ups_us_07'] = $this->config->get('ups_us_07');
+			$this->data['ups_us_07'] = $this->getConfig()->get('ups_us_07');
 		}	
 		
 		if (isset($this->request->post['ups_us_08'])) {
 			$this->data['ups_us_08'] = $this->request->post['ups_us_08'];
 		} else {
-			$this->data['ups_us_08'] = $this->config->get('ups_us_08');
+			$this->data['ups_us_08'] = $this->getConfig()->get('ups_us_08');
 		}	
 		
 		if (isset($this->request->post['ups_us_11'])) {
 			$this->data['ups_us_11'] = $this->request->post['ups_us_11'];
 		} else {
-			$this->data['ups_us_11'] = $this->config->get('ups_us_11');
+			$this->data['ups_us_11'] = $this->getConfig()->get('ups_us_11');
 		}	
 		
 		if (isset($this->request->post['ups_us_12'])) {
 			$this->data['ups_us_12'] = $this->request->post['ups_us_12'];
 		} else {
-			$this->data['ups_us_12'] = $this->config->get('ups_us_12');
+			$this->data['ups_us_12'] = $this->getConfig()->get('ups_us_12');
 		}	
 
 		if (isset($this->request->post['ups_us_13'])) {
 			$this->data['ups_us_13'] = $this->request->post['ups_us_13'];
 		} else {
-			$this->data['ups_us_13'] = $this->config->get('ups_us_13');
+			$this->data['ups_us_13'] = $this->getConfig()->get('ups_us_13');
 		}	
 
 		if (isset($this->request->post['ups_us_14'])) {
 			$this->data['ups_us_14'] = $this->request->post['ups_us_14'];
 		} else {
-			$this->data['ups_us_14'] = $this->config->get('ups_us_14');
+			$this->data['ups_us_14'] = $this->getConfig()->get('ups_us_14');
 		}	
 		
 		if (isset($this->request->post['ups_us_54'])) {
 			$this->data['ups_us_54'] = $this->request->post['ups_us_54'];
 		} else {
-			$this->data['ups_us_54'] = $this->config->get('ups_us_54');
+			$this->data['ups_us_54'] = $this->getConfig()->get('ups_us_54');
 		}
 		
 		if (isset($this->request->post['ups_us_59'])) {
 			$this->data['ups_us_59'] = $this->request->post['ups_us_59'];
 		} else {
-			$this->data['ups_us_59'] = $this->config->get('ups_us_59');
+			$this->data['ups_us_59'] = $this->getConfig()->get('ups_us_59');
 		}	
 		
 		if (isset($this->request->post['ups_us_65'])) {
 			$this->data['ups_us_65'] = $this->request->post['ups_us_65'];
 		} else {
-			$this->data['ups_us_65'] = $this->config->get('ups_us_65');
+			$this->data['ups_us_65'] = $this->getConfig()->get('ups_us_65');
 		}	
 		
 		// Puerto Rico
 		if (isset($this->request->post['ups_pr_01'])) {
 			$this->data['ups_pr_01'] = $this->request->post['ups_pr_01'];
 		} else {
-			$this->data['ups_pr_01'] = $this->config->get('ups_pr_01');
+			$this->data['ups_pr_01'] = $this->getConfig()->get('ups_pr_01');
 		}	
 
 		if (isset($this->request->post['ups_pr_02'])) {
 			$this->data['ups_pr_02'] = $this->request->post['ups_pr_02'];
 		} else {
-			$this->data['ups_pr_02'] = $this->config->get('ups_pr_02');
+			$this->data['ups_pr_02'] = $this->getConfig()->get('ups_pr_02');
 		}	
 		
 		if (isset($this->request->post['ups_pr_03'])) {
 			$this->data['ups_pr_03'] = $this->request->post['ups_pr_03'];
 		} else {
-			$this->data['ups_pr_03'] = $this->config->get('ups_pr_03');
+			$this->data['ups_pr_03'] = $this->getConfig()->get('ups_pr_03');
 		}
 		
 		if (isset($this->request->post['ups_pr_07'])) {
 			$this->data['ups_pr_07'] = $this->request->post['ups_pr_07'];
 		} else {
-			$this->data['ups_pr_07'] = $this->config->get('ups_pr_07');
+			$this->data['ups_pr_07'] = $this->getConfig()->get('ups_pr_07');
 		}
 		
 		if (isset($this->request->post['ups_pr_08'])) {
 			$this->data['ups_pr_08'] = $this->request->post['ups_pr_08'];
 		} else {
-			$this->data['ups_pr_08'] = $this->config->get('ups_pr_08');
+			$this->data['ups_pr_08'] = $this->getConfig()->get('ups_pr_08');
 		}
 		
 		if (isset($this->request->post['ups_pr_14'])) {
 			$this->data['ups_pr_14'] = $this->request->post['ups_pr_14'];
 		} else {
-			$this->data['ups_pr_14'] = $this->config->get('ups_pr_14');
+			$this->data['ups_pr_14'] = $this->getConfig()->get('ups_pr_14');
 		}
 		
 		if (isset($this->request->post['ups_pr_54'])) {
 			$this->data['ups_pr_54'] = $this->request->post['ups_pr_54'];
 		} else {
-			$this->data['ups_pr_54'] = $this->config->get('ups_pr_54');
+			$this->data['ups_pr_54'] = $this->getConfig()->get('ups_pr_54');
 		}
 		
 		if (isset($this->request->post['ups_pr_65'])) {
 			$this->data['ups_pr_65'] = $this->request->post['ups_pr_65'];
 		} else {
-			$this->data['ups_pr_65'] = $this->config->get('ups_pr_65');
+			$this->data['ups_pr_65'] = $this->getConfig()->get('ups_pr_65');
 		}
 
 		// Canada
 		if (isset($this->request->post['ups_ca_01'])) {
 			$this->data['ups_ca_01'] = $this->request->post['ups_ca_01'];
 		} else {
-			$this->data['ups_ca_01'] = $this->config->get('ups_ca_01');
+			$this->data['ups_ca_01'] = $this->getConfig()->get('ups_ca_01');
 		}
 		
 		if (isset($this->request->post['ups_ca_02'])) {
 			$this->data['ups_ca_02'] = $this->request->post['ups_ca_02'];
 		} else {
-			$this->data['ups_ca_02'] = $this->config->get('ups_ca_02');
+			$this->data['ups_ca_02'] = $this->getConfig()->get('ups_ca_02');
 		}
 		
 		if (isset($this->request->post['ups_ca_07'])) {
 			$this->data['ups_ca_07'] = $this->request->post['ups_ca_07'];
 		} else {
-			$this->data['ups_ca_07'] = $this->config->get('ups_ca_07');
+			$this->data['ups_ca_07'] = $this->getConfig()->get('ups_ca_07');
 		}
 		
 		if (isset($this->request->post['ups_ca_08'])) {
 			$this->data['ups_ca_08'] = $this->request->post['ups_ca_08'];
 		} else {
-			$this->data['ups_ca_08'] = $this->config->get('ups_ca_08');
+			$this->data['ups_ca_08'] = $this->getConfig()->get('ups_ca_08');
 		}
 		
 		if (isset($this->request->post['ups_ca_11'])) {
 			$this->data['ups_ca_11'] = $this->request->post['ups_ca_11'];
 		} else {
-			$this->data['ups_ca_11'] = $this->config->get('ups_ca_11');
+			$this->data['ups_ca_11'] = $this->getConfig()->get('ups_ca_11');
 		}
 		
 		if (isset($this->request->post['ups_ca_12'])) {
 			$this->data['ups_ca_12'] = $this->request->post['ups_ca_12'];
 		} else {
-			$this->data['ups_ca_12'] = $this->config->get('ups_ca_12');
+			$this->data['ups_ca_12'] = $this->getConfig()->get('ups_ca_12');
 		}
 		
 		if (isset($this->request->post['ups_ca_13'])) {
 			$this->data['ups_ca_13'] = $this->request->post['ups_ca_13'];
 		} else {
-			$this->data['ups_ca_13'] = $this->config->get('ups_ca_13');
+			$this->data['ups_ca_13'] = $this->getConfig()->get('ups_ca_13');
 		}
 		
 		if (isset($this->request->post['ups_ca_14'])) {
 			$this->data['ups_ca_14'] = $this->request->post['ups_ca_14'];
 		} else {
-			$this->data['ups_ca_14'] = $this->config->get('ups_ca_14');
+			$this->data['ups_ca_14'] = $this->getConfig()->get('ups_ca_14');
 		}
 		
 		if (isset($this->request->post['ups_ca_54'])) {
 			$this->data['ups_ca_54'] = $this->request->post['ups_ca_54'];
 		} else {
-			$this->data['ups_ca_54'] = $this->config->get('ups_ca_54');
+			$this->data['ups_ca_54'] = $this->getConfig()->get('ups_ca_54');
 		}
 		
 		if (isset($this->request->post['ups_ca_65'])) {
 			$this->data['ups_ca_65'] = $this->request->post['ups_ca_65'];
 		} else {
-			$this->data['ups_ca_65'] = $this->config->get('ups_ca_65');
+			$this->data['ups_ca_65'] = $this->getConfig()->get('ups_ca_65');
 		}
 
 		// Mexico
 		if (isset($this->request->post['ups_mx_07'])) {
 			$this->data['ups_mx_07'] = $this->request->post['ups_mx_07'];
 		} else {
-			$this->data['ups_mx_07'] = $this->config->get('ups_mx_07');
+			$this->data['ups_mx_07'] = $this->getConfig()->get('ups_mx_07');
 		}
 		
 		if (isset($this->request->post['ups_mx_08'])) {
 			$this->data['ups_mx_08'] = $this->request->post['ups_mx_08'];
 		} else {
-			$this->data['ups_mx_08'] = $this->config->get('ups_mx_08');
+			$this->data['ups_mx_08'] = $this->getConfig()->get('ups_mx_08');
 		}
 		
 		if (isset($this->request->post['ups_mx_54'])) {
 			$this->data['ups_mx_54'] = $this->request->post['ups_mx_54'];
 		} else {
-			$this->data['ups_mx_54'] = $this->config->get('ups_mx_54');
+			$this->data['ups_mx_54'] = $this->getConfig()->get('ups_mx_54');
 		}
 		
 		if (isset($this->request->post['ups_mx_65'])) {
 			$this->data['ups_mx_65'] = $this->request->post['ups_mx_65'];
 		} else {
-			$this->data['ups_mx_65'] = $this->config->get('ups_mx_65');
+			$this->data['ups_mx_65'] = $this->getConfig()->get('ups_mx_65');
 		}
 
 		// EU
 		if (isset($this->request->post['ups_eu_07'])) {
 			$this->data['ups_eu_07'] = $this->request->post['ups_eu_07'];
 		} else {
-			$this->data['ups_eu_07'] = $this->config->get('ups_eu_07');
+			$this->data['ups_eu_07'] = $this->getConfig()->get('ups_eu_07');
 		}
 		
 		if (isset($this->request->post['ups_eu_08'])) {
 			$this->data['ups_eu_08'] = $this->request->post['ups_eu_08'];
 		} else {
-			$this->data['ups_eu_08'] = $this->config->get('ups_eu_08');
+			$this->data['ups_eu_08'] = $this->getConfig()->get('ups_eu_08');
 		}
 		
 		if (isset($this->request->post['ups_eu_11'])) {
 			$this->data['ups_eu_11'] = $this->request->post['ups_eu_11'];
 		} else {
-			$this->data['ups_eu_11'] = $this->config->get('ups_eu_11');
+			$this->data['ups_eu_11'] = $this->getConfig()->get('ups_eu_11');
 		}
 
 		if (isset($this->request->post['ups_eu_54'])) {
 			$this->data['ups_eu_54'] = $this->request->post['ups_eu_54'];
 		} else {
-			$this->data['ups_eu_54'] = $this->config->get('ups_eu_54');
+			$this->data['ups_eu_54'] = $this->getConfig()->get('ups_eu_54');
 		}
 		
 		if (isset($this->request->post['ups_eu_65'])) {
 			$this->data['ups_eu_65'] = $this->request->post['ups_eu_65'];
 		} else {
-			$this->data['ups_eu_65'] = $this->config->get('ups_eu_65');
+			$this->data['ups_eu_65'] = $this->getConfig()->get('ups_eu_65');
 		}
 		
 		if (isset($this->request->post['ups_eu_82'])) {
 			$this->data['ups_eu_82'] = $this->request->post['ups_eu_82'];
 		} else {
-			$this->data['ups_eu_82'] = $this->config->get('ups_eu_82');
+			$this->data['ups_eu_82'] = $this->getConfig()->get('ups_eu_82');
 		}
 	
 		if (isset($this->request->post['ups_eu_83'])) {
 			$this->data['ups_eu_83'] = $this->request->post['ups_eu_83'];
 		} else {
-			$this->data['ups_eu_83'] = $this->config->get('ups_eu_83');
+			$this->data['ups_eu_83'] = $this->getConfig()->get('ups_eu_83');
 		}
 		
 		if (isset($this->request->post['ups_eu_84'])) {
 			$this->data['ups_eu_84'] = $this->request->post['ups_eu_84'];
 		} else {
-			$this->data['ups_eu_84'] = $this->config->get('ups_eu_84');
+			$this->data['ups_eu_84'] = $this->getConfig()->get('ups_eu_84');
 		}
 		
 		if (isset($this->request->post['ups_eu_85'])) {
 			$this->data['ups_eu_85'] = $this->request->post['ups_eu_85'];
 		} else {
-			$this->data['ups_eu_85'] = $this->config->get('ups_eu_85');
+			$this->data['ups_eu_85'] = $this->getConfig()->get('ups_eu_85');
 		}
 		
 		if (isset($this->request->post['ups_eu_86'])) {
 			$this->data['ups_eu_86'] = $this->request->post['ups_eu_86'];
 		} else {
-			$this->data['ups_eu_86'] = $this->config->get('ups_eu_86');
+			$this->data['ups_eu_86'] = $this->getConfig()->get('ups_eu_86');
 		}
 
 		// Other
 		if (isset($this->request->post['ups_other_07'])) {
 			$this->data['ups_other_07'] = $this->request->post['ups_other_07'];
 		} else {
-			$this->data['ups_other_07'] = $this->config->get('ups_other_07');
+			$this->data['ups_other_07'] = $this->getConfig()->get('ups_other_07');
 		}
 		
 		if (isset($this->request->post['ups_other_08'])) {
 			$this->data['ups_other_08'] = $this->request->post['ups_other_08'];
 		} else {
-			$this->data['ups_other_08'] = $this->config->get('ups_other_08');
+			$this->data['ups_other_08'] = $this->getConfig()->get('ups_other_08');
 		}
 		
 		if (isset($this->request->post['ups_other_11'])) {
 			$this->data['ups_other_11'] = $this->request->post['ups_other_11'];
 		} else {
-			$this->data['ups_other_11'] = $this->config->get('ups_other_11');
+			$this->data['ups_other_11'] = $this->getConfig()->get('ups_other_11');
 		}
 
 		if (isset($this->request->post['ups_other_54'])) {
 			$this->data['ups_other_54'] = $this->request->post['ups_other_54'];
 		} else {
-			$this->data['ups_other_54'] = $this->config->get('ups_other_54');
+			$this->data['ups_other_54'] = $this->getConfig()->get('ups_other_54');
 		}
 
 		if (isset($this->request->post['ups_other_65'])) {
 			$this->data['ups_other_65'] = $this->request->post['ups_other_65'];
 		} else {
-			$this->data['ups_other_65'] = $this->config->get('ups_other_65');
+			$this->data['ups_other_65'] = $this->getConfig()->get('ups_other_65');
 		}
 
 		if (isset($this->request->post['ups_display_weight'])) {
 			$this->data['ups_display_weight'] = $this->request->post['ups_display_weight'];
 		} else {
-			$this->data['ups_display_weight'] = $this->config->get('ups_display_weight');
+			$this->data['ups_display_weight'] = $this->getConfig()->get('ups_display_weight');
 		}	
 		
 		if (isset($this->request->post['ups_insurance'])) {
 			$this->data['ups_insurance'] = $this->request->post['ups_insurance'];
 		} else {
-			$this->data['ups_insurance'] = $this->config->get('ups_insurance');
+			$this->data['ups_insurance'] = $this->getConfig()->get('ups_insurance');
 		}	
 		
 		if (isset($this->request->post['ups_weight_code'])) {
 			$this->data['ups_weight_code'] = $this->request->post['ups_weight_code'];
 		} else {
-			$this->data['ups_weight_code'] = $this->config->get('ups_weight_code');
+			$this->data['ups_weight_code'] = $this->getConfig()->get('ups_weight_code');
 		}
 		
 		if (isset($this->request->post['ups_weight_class_id'])) {
 			$this->data['ups_weight_class_id'] = $this->request->post['ups_weight_class_id'];
 		} else {
-			$this->data['ups_weight_class_id'] = $this->config->get('ups_weight_class_id');
+			$this->data['ups_weight_class_id'] = $this->getConfig()->get('ups_weight_class_id');
 		}
 		
-		$this->load->model('localisation/weight_class');
+		//$this->getLoader()->model('localisation/weight_class');
 		
-		$this->data['weight_classes'] = $this->model_localisation_weight_class->getWeightClasses();
+		$this->data['weight_classes'] = MeasureUnitDAO::getInstance()->getWeightClasses();
 		
 		if (isset($this->request->post['ups_length_code'])) {
 			$this->data['ups_length_code'] = $this->request->post['ups_length_code'];
 		} else {
-			$this->data['ups_length_code'] = $this->config->get('ups_length_code');
+			$this->data['ups_length_code'] = $this->getConfig()->get('ups_length_code');
 		}
 		
 		if (isset($this->request->post['ups_length_class'])) {
 			$this->data['ups_length_class'] = $this->request->post['ups_length_class'];
 		} else {
-			$this->data['ups_length_class'] = $this->config->get('ups_length_class');
+			$this->data['ups_length_class'] = $this->getConfig()->get('ups_length_class');
 		}
 				
-		$this->load->model('localisation/length_class');
+		$this->getLoader()->model('localisation/length_class');
 		
-		$this->data['length_classes'] = $this->model_localisation_length_class->getLengthClasses();
+		$this->data['length_classes'] = MeasureUnitDAO::getInstance()->getLengthClasses();
 						
 		if (isset($this->request->post['ups_length'])) {
 			$this->data['ups_length'] = $this->request->post['ups_length'];
 		} else {
-			$this->data['ups_length'] = $this->config->get('ups_length');
+			$this->data['ups_length'] = $this->getConfig()->get('ups_length');
 		}
 		
 		if (isset($this->request->post['ups_width'])) {
 			$this->data['ups_width'] = $this->request->post['ups_width'];
 		} else {
-			$this->data['ups_width'] = $this->config->get('ups_width');
+			$this->data['ups_width'] = $this->getConfig()->get('ups_width');
 		}		
 		
 		if (isset($this->request->post['ups_height'])) {
 			$this->data['ups_height'] = $this->request->post['ups_height'];
 		} else {
-			$this->data['ups_height'] = $this->config->get('ups_height');
+			$this->data['ups_height'] = $this->getConfig()->get('ups_height');
 		}
 								
 		if (isset($this->request->post['ups_tax_class_id'])) {
 			$this->data['ups_tax_class_id'] = $this->request->post['ups_tax_class_id'];
 		} else {
-			$this->data['ups_tax_class_id'] = $this->config->get('ups_tax_class_id');
+			$this->data['ups_tax_class_id'] = $this->getConfig()->get('ups_tax_class_id');
 		}
 		
-		$this->load->model('localisation/tax_class');
+		$this->getLoader()->model('localisation/tax_class');
 		
 		$this->data['tax_classes'] = $this->model_localisation_tax_class->getTaxClasses();
 		
 		if (isset($this->request->post['ups_geo_zone_id'])) {
 			$this->data['ups_geo_zone_id'] = $this->request->post['ups_geo_zone_id'];
 		} else {
-			$this->data['ups_geo_zone_id'] = $this->config->get('ups_geo_zone_id');
+			$this->data['ups_geo_zone_id'] = $this->getConfig()->get('ups_geo_zone_id');
 		}
 		
-		$this->load->model('localisation/geo_zone');
+		$this->getLoader()->model('localisation/geo_zone');
 		
 		$this->data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
 		
 		if (isset($this->request->post['ups_status'])) {
 			$this->data['ups_status'] = $this->request->post['ups_status'];
 		} else {
-			$this->data['ups_status'] = $this->config->get('ups_status');
+			$this->data['ups_status'] = $this->getConfig()->get('ups_status');
 		}
 
 		if (isset($this->request->post['ups_sort_order'])) {
 			$this->data['ups_sort_order'] = $this->request->post['ups_sort_order'];
 		} else {
-			$this->data['ups_sort_order'] = $this->config->get('ups_sort_order');
+			$this->data['ups_sort_order'] = $this->getConfig()->get('ups_sort_order');
 		}	
 		
 		$this->template = 'shipping/ups.tpl';

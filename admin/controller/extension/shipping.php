@@ -50,7 +50,7 @@ class ControllerExtensionShipping extends Controller {
 
 		$this->load->model('setting/extension');
 
-		$extensions = \model\setting\ExtensionDAO::getInstance()->getExtensions('shipping');
+		$extensions = \model\setting\ExtensionDAO::getInstance()->getExtensions('shipping', true, false);
 		
 		foreach ($extensions as $key => $value) {
 			if (!file_exists(DIR_APPLICATION . 'controller/shipping/' . $value->getCode() . '.php')) {

@@ -1,21 +1,38 @@
 <?php
 final class Weight {
 	private $weights = array();
-	
+
+	/**
+	 * Weight constructor.
+	 * @param Registry $registry
+	 */
 	public function __construct($registry) {
-		$this->db = $registry->get('db');
-		$this->config = $registry->get('config');
+		$db = $registry->get('db');
+		$config = $registry->get('config');
+		/** @var Cache $cache */
+		$cache = $registry->get('cache');
 		
-		$weight_class_query = $this->db->query("SELECT * FROM weight_class wc LEFT JOIN weight_class_description wcd ON (wc.weight_class_id = wcd.weight_class_id) WHERE wcd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
-    	
-		foreach ($weight_class_query->rows as $result) {
-      		$this->weights[$result['weight_class_id']] = array(
-        		'weight_class_id' => $result['weight_class_id'],
-        		'title'           => $result['title'],
-				'unit'            => $result['unit'],
-				'value'           => $result['value']
-      		); 
-    	}
+		$this->weights = $cache->get('weights.' . $config->get('config_language_id'));
+		if (is_null($this->weights)) {
+			$weight_class_query = $db->query("
+			SELECT * 
+			FROM 
+				weight_class AS wc 
+				LEFT JOIN weight_class_description AS wcd ON (wc.weight_class_id = wcd.weight_class_id) 
+			WHERE wcd.language_id = :languageId
+			", [':languageId' => $config->get('config_language_id')]
+			);
+
+			foreach ($weight_class_query->rows as $result) {
+				$this->weights[$result['weight_class_id']] = array(
+					'weight_class_id' => $result['weight_class_id'],
+					'title' => $result['title'],
+					'unit' => $result['unit'],
+					'value' => $result['value']
+				);
+			}
+			$cache->set('weights.' . $config->get('config_language_id'), $this->weights);
+		}
   	}
 	  
   	public function convert($value, $from, $to) {
@@ -49,4 +66,3 @@ final class Weight {
 		}
 	}	
 }
-?>

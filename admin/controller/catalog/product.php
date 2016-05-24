@@ -4,6 +4,7 @@ use model\catalog\ProductDAO;
 use model\catalog\SupplierDAO;
 use model\sale\OrderItemDAO;
 use system\engine\AdminController;
+use system\library\MeasureUnitDAO;
 
 class ControllerCatalogProduct extends AdminController {
 	private $error = array();
@@ -1055,9 +1056,9 @@ class ControllerCatalogProduct extends AdminController {
       		$this->data['weight'] = '';
     	} 
 		
-		$this->load->model('localisation/weight_class');
+		//$this->getLoader()->model('localisation/weight_class');
 		
-		$this->data['weight_classes'] = $this->model_localisation_weight_class->getWeightClasses();
+		$this->data['weight_classes'] = MeasureUnitDAO::getInstance()->getWeightClasses();
     	
 		if (isset($this->request->post['weight_class_id'])) {
       		$this->data['weight_class_id'] = $this->request->post['weight_class_id'];
