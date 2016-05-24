@@ -41,53 +41,53 @@ class MeasureUnitDAO extends DAO {
 
     public function getWeightClasses($data = array()) {
         if ($data) {
-            $sql = "SELECT * FROM weight_class wc LEFT JOIN weight_class_description wcd ON (wc.weight_class_id = wcd.weight_class_id) WHERE wcd.language_id = '" . (int)$this->config->get('config_language_id') . "'";
+            $result = $this->getCache()->get('weight_class.' . md5(serialize($data)));
+            if (is_null($result)) {
+                $sql = "SELECT * FROM weight_class wc LEFT JOIN weight_class_description wcd ON (wc.weight_class_id = wcd.weight_class_id) WHERE wcd.language_id = '" . (int)$this->config->get('config_language_id') . "'";
 
-            $sort_data = array(
-                'title',
-                'unit',
-                'value'
-            );
+                $sort_data = array(
+                    'title',
+                    'unit',
+                    'value'
+                );
 
-            if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
-                $sql .= " ORDER BY " . $data['sort'];
-            } else {
-                $sql .= " ORDER BY title";
-            }
-
-            if (isset($data['order']) && ($data['order'] == 'DESC')) {
-                $sql .= " DESC";
-            } else {
-                $sql .= " ASC";
-            }
-
-            if (isset($data['start']) || isset($data['limit'])) {
-                if ($data['start'] < 0) {
-                    $data['start'] = 0;
+                if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+                    $sql .= " ORDER BY " . $data['sort'];
+                } else {
+                    $sql .= " ORDER BY title";
                 }
 
-                if ($data['limit'] < 1) {
-                    $data['limit'] = 20;
+                if (isset($data['order']) && ($data['order'] == 'DESC')) {
+                    $sql .= " DESC";
+                } else {
+                    $sql .= " ASC";
                 }
 
-                $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+                if (isset($data['start']) || isset($data['limit'])) {
+                    if ($data['start'] < 0) {
+                        $data['start'] = 0;
+                    }
+
+                    if ($data['limit'] < 1) {
+                        $data['limit'] = 20;
+                    }
+
+                    $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+                }
+
+                $result = $this->db->query($sql)->rows;
+                $this->getCache()->set('weight_class.' . md5(serialize($data)), $result);
             }
-
-            $query = $this->db->query($sql);
-
-            return $query->rows;
+            return $result;
         } else {
-            $weight_class_data = $this->cache->get('weight_class.' . (int)$this->config->get('config_language_id'));
-
-            if (!$weight_class_data) {
+            $result = $this->getCache()->get('weight_class.' . (int)$this->getConfig()->get('config_language_id'));
+            if (is_null($result)) {
                 $query = $this->db->query("SELECT * FROM weight_class wc LEFT JOIN weight_class_description wcd ON (wc.weight_class_id = wcd.weight_class_id) WHERE wcd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+                $result = $query->rows;
 
-                $weight_class_data = $query->rows;
-
-                $this->cache->set('weight_class.' . (int)$this->config->get('config_language_id'), $weight_class_data);
+                $this->getCache()->set('weight_class.' . (int)$this->getConfig()->get('config_language_id'), $result);
             }
-
-            return $weight_class_data;
+            return $result;
         }
     }
 

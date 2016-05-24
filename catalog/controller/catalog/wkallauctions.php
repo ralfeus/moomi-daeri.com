@@ -28,7 +28,7 @@ class ControllerCatalogWkallauctions extends Controller {
 		$this->data['entry_empty'] = $this->language->get('entry_empty');
 		
 		
-		$this->load->model('catalog/wkallauctions');
+//		$this->load->model('catalog/wkallauctions');
 
 		$this->data['allauctions']=array();
 		$wkauctions = WKProductAuctionDAO::getInstance()->getAuctions();
@@ -75,4 +75,3 @@ class ControllerCatalogWkallauctions extends Controller {
 		$this->getResponse()->setOutput($this->render());
 	}
 }
-?>
