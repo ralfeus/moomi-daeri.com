@@ -1,22 +1,40 @@
 <?php
 final class Length {
 	private $lengths = array();
-	
-	public function __construct($registry) {
-		$this->db = $registry->get('db');
-		$this->config = $registry->get('config');
 
-		$length_class_query = $this->db->query("SELECT * FROM length_class mc LEFT JOIN length_class_description mcd ON (mc.length_class_id = mcd.length_class_id) WHERE mcd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
-    
-    	foreach ($length_class_query->rows as $result) {
-      		$this->lengths[$result['length_class_id']] = array(
-				'length_class_id' => $result['length_class_id'],
-        		'title'           => $result['title'],
-				'unit'            => $result['unit'],
-				'value'           => $result['value']
-      		);
-    	}
-  	}
+	/**
+	 * Length constructor.
+	 * @param Registry $registry
+	 */
+	public function __construct($registry) {
+		$db = $registry->get('db');
+		$config = $registry->get('config');
+		/** @var Cache $cache */
+		$cache = $registry->get('cache');
+
+		$this->lengths = $cache->get('lengths.' . $config->get('config_language_id'));
+		if (is_null($this->lengths)) {
+
+			$length_class_query = $db->query("
+			SELECT * 
+			FROM 
+				length_class AS lc 
+				LEFT JOIN length_class_description AS lcd ON (lc.length_class_id = lcd.length_class_id) 
+				WHERE lcd.language_id = :languageId
+			", [":languageId" => $config->get('config_language_id')]
+			);
+
+			foreach ($length_class_query->rows as $result) {
+				$this->lengths[$result['length_class_id']] = array(
+					'length_class_id' => $result['length_class_id'],
+					'title' => $result['title'],
+					'unit' => $result['unit'],
+					'value' => $result['value']
+				);
+			}
+			$cache->set('lengths.' . $config->get('config_language_id'), $this->lengths);
+		}
+	}
 	  
   	public function convert($value, $from, $to) {
 		if ($from == $to) {
@@ -46,4 +64,3 @@ final class Length {
 		}
 	}
 }
-?>

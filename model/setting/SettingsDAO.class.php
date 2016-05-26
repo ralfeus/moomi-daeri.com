@@ -43,7 +43,11 @@ class SettingsDAO extends DAO {
     public function getSettings($group, $store_id = 0) {
         $data = array();
 
-        $query = $this->getDb()->query("SELECT * FROM " . DB_PREFIX . "setting WHERE store_id = '" . (int)$store_id . "' AND `group` = '" . $this->db->escape($group) . "'");
+        $query = $this->getDb()->query("
+            SELECT * FROM setting 
+            WHERE store_id = :storeId AND `group` = :group
+            ", [':group' => $group, ':storeId' => $store_id]
+        );
 
         foreach ($query->rows as $result) {
             if (!$result['serialized']) {
@@ -72,17 +76,35 @@ class SettingsDAO extends DAO {
             ':key' => $key,
             ':value' => $value
         ]);
+        $this->getCache()->deleteAll("/^setting\\./");
     }
     public function updateSettings($group, $data, $store_id = 0) {
         $this->deleteSettings($group, $store_id);
 
         foreach ($data as $key => $value) {
-            if (!is_array($value)) {
-                $this->getDb()->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '" . (int)$store_id . "', `group` = '" . $this->db->escape($group) . "', `key` = '" . $this->db->escape($key) . "', `value` = '" . $this->db->escape($value) . "'");
+            if (is_array($value)) {
+                $serialized = 1;
+                $value = serialize($value);
             } else {
-                $this->getDb()->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '" . (int)$store_id . "', `group` = '" . $this->db->escape($group) . "', `key` = '" . $this->db->escape($key) . "', `value` = '" . $this->db->escape(serialize($value)) . "', serialized = '1'");
+                $serialized = 0;
             }
+            $this->getDb()->query("
+                INSERT INTO setting 
+                SET 
+                    store_id = :storeId, 
+                    `group` = :group, 
+                    `key` = :key, 
+                    `value` = :value,
+                    serialized = :serialized
+                ", [
+                ':storeId' => $store_id,
+                ':group' => $group,
+                ':key' => $key,
+                ':value' => $value,
+                ':serialized' => $serialized
+            ]);
         }
+        $this->getCache()->deleteAll("/^setting\\./");
     }
 
     public function deleteSetting($group, $key, $storeId = 0) {
@@ -97,9 +119,17 @@ class SettingsDAO extends DAO {
             ':group' => $group,
             ':key' => $key
         ]);
+        $this->getCache()->deleteAll("/^setting\\./");
     }
 
     public function deleteSettings($group, $store_id = 0) {
-        $this->getDb()->query("DELETE FROM " . DB_PREFIX . "setting WHERE store_id = '" . (int)$store_id . "' AND `group` = '" . $this->db->escape($group) . "'");
+        $this->getDb()->query("
+            DELETE FROM setting 
+            WHERE store_id = :storeId AND `group` = :group
+            ", [
+            ':storeId' => $store_id,
+            ':group' => $group
+        ]);
+        $this->getCache()->deleteAll("/^setting\\./");
     }
 }

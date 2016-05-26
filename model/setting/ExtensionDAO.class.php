@@ -21,7 +21,7 @@ class ExtensionDAO extends DAO {
      */
     function getExtensions($type, $installedOnly = true, $enabledOnly = true) {
         $rows = $this->getCache()->get('extensions.' . $type . '.' . $installedOnly . '.' . $enabledOnly);
-        if (!$rows) {
+        if (is_null($rows)) {
             if ($installedOnly) {
                 $query = $this->getDb()->query("
                 SELECT *
