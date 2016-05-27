@@ -8,7 +8,7 @@ class ControllerCommonHome extends Controller {
 
 	public function index() {
 
-    $this->load->language('common/home');
+    $this->getLoader()->language('common/home');
 	 
 		$this->document->setTitle($this->language->get('heading_title'));
 		
@@ -53,7 +53,7 @@ class ControllerCommonHome extends Controller {
 
 		$this->data['token'] = $this->session->data['token'];
 		
-		$this->load->model('sale/order');
+		$this->getLoader()->model('sale/order');
 
 		$this->data['total_sale'] = $this->currency->format($this->model_sale_order->getTotalSales(), $this->config->get('config_currency'));
 		$this->data['total_sale_year'] = $this->currency->format($this->model_sale_order->getTotalSalesByYear(date('Y')), $this->config->get('config_currency'));
@@ -62,12 +62,12 @@ class ControllerCommonHome extends Controller {
 		$this->data['total_customer'] = CustomerDAO::getInstance()->getTotalCustomers();
 		$this->data['total_customer_approval'] = CustomerDAO::getInstance()->getTotalCustomersAwaitingApproval();
 		
-		$this->load->model('catalog/review');
+		$this->getLoader()->model('catalog/review');
 		
 		$this->data['total_review'] = $this->model_catalog_review->getTotalReviews();
 		$this->data['total_review_approval'] = $this->model_catalog_review->getTotalReviewsAwaitingApproval();
 		
-		$this->load->model('sale/affiliate');
+		$this->getLoader()->model('sale/affiliate');
 		
 		$this->data['total_affiliate'] = $this->model_sale_affiliate->getTotalAffiliates();
 		$this->data['total_affiliate_approval'] = $this->model_sale_affiliate->getTotalAffiliatesAwaitingApproval();
@@ -102,16 +102,16 @@ class ControllerCommonHome extends Controller {
 		}
 
 //		if ($this->config->get('config_currency_auto')) {
-//			$this->load->model('localisation/currency');
+//			$this->getLoader()->model('localisation/currency');
 //		
 //			$this->model_localisation_currency->updateCurrencies();
 //		}
 
-if ($this->user->getUsergroupId() == 1) {
-		$this->template = 'common/home.tpl.php';
-} else {
-		$this->template = 'common/homecont.tpl.php';
-}
+//if ($this->user->getUsergroupId() == 1) {
+//		$this->template = ;
+//} else {
+//		$this->template = 'common/homecont.tpl.php';
+//}
 
 		
 		$this->children = array(
@@ -121,7 +121,7 @@ if ($this->user->getUsergroupId() == 1) {
 
 		$this->getProducts();
 				
-		$this->getResponse()->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render('common/home.tpl.php'));
     
     //// <---- Clear cache button handler:
 $this->data['clear_cache'] = $this->data['home'] = HTTPS_SERVER . 'index.php?route=common/home&clear_cache=true&token=' . $this->session->data['token'];
@@ -143,7 +143,7 @@ if(isset($this->request->get['clear_cache'])){
   }
 	
 	public function chart() {
-		$this->load->language('common/home');
+		$this->getLoader()->language('common/home');
 		
 		$data = array();
 		
@@ -461,7 +461,7 @@ if(isset($this->request->get['clear_cache'])){
 			$filter['filterUserNameId'] = $this->parameters['filterUserNameId'];
 		}
 
-		$this->load->model('catalog/product');
+		$this->getLoader()->model('catalog/product');
 		$results = $this->model_catalog_product->getProducts($filter);
 		$products = array();
 		$product_total = $this->model_catalog_product->getTotalProducts($filter);
