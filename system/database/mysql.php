@@ -74,6 +74,16 @@ final class MySQL implements DBDriver{
             $log = new Log('error.log');
             $log->write($sql);
         }
+        $queryHash = md5($sql . serialize($params));
+        $cache = new Cache();
+
+        /// Try to get data from cache if it's SELECT
+        if (strtoupper(substr($sql, 0, 6)) == 'SELECT') {
+            $result = $cache->get("query.$queryHash");
+            if (!is_null($result)) {
+                return unserialize($result);
+            }
+        }
 
         $attempts = 3; $statement = null; $lastError = new Exception("Unknown error has occurred during query execution");
         while ($attempts--) {
@@ -106,9 +116,11 @@ final class MySQL implements DBDriver{
                         $rowSet->row = isset($rowSet->rows[0]) ? $rowSet->rows[0] : array();
                         $rowSet->num_rows = sizeof($rowSet->rows);
                         $result = $rowSet;
+                        $this->setCache($cache, $sql, $queryHash, $result);
                     } else {
                         $this->affectedCount = $statement->rowCount();
                         $result = $this->affectedCount;
+                        $this->invalidateCache($cache, $sql);
                     }
                     $statement->closeCursor();
                     return $result;
@@ -182,5 +194,60 @@ final class MySQL implements DBDriver{
 
     public function rollbackTransaction() {
         return $this->connection->rollBack();
+    }
+
+    /**
+     * @param Cache $cache
+     * @param string $query
+     * @param string $queryHash
+     * @param StdClass $result
+     * @throws CacheNotInstalledException
+     * @internal param PDOStatement $statement
+     */
+    private function setCache($cache, $query, $queryHash, $result) {
+        $cache->set("query.$queryHash", serialize($result));
+        $matches = [];
+        if (preg_match_all(
+                '/(?<=FROM|JOIN|OJ)[\s\(]+((((?!SELECT\b)`?[\w_]+`?)(\s*\)?,\s*)*)+)/i',
+                $query, $matches/*, PREG_SET_ORDER*/)) {
+            $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
+            foreach ($matches[0] as $tableString) {
+                $tables = explode(',', $tableString);
+//                if (!is_array($tables)) {
+//                    $tables[] = $tables;
+//                }
+                foreach ($tables as $table) {
+                    $cachedQueryHashes[trim($table, " `)\t\n\r\0\x0B")][] = $queryHash;
+                }
+            }
+            $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
+        }
+    }
+
+    /**
+     * @param Cache $cache
+     * @param string $query
+     */
+    private function invalidateCache($cache, $query) {
+        $matches = [];
+        $verb = strtoupper(substr($query, 0, 6));
+        if ($verb == 'DELETE') {
+            $pattern = '/FROM\s+`?([\w_]+)`?/';
+        } else if ($verb == 'INSERT') {
+            $pattern = '/INTO\s+`?([\w_]+)`?/';
+        } else if ($verb == 'UPDATE') {
+            $pattern = '/UPDATE\s+`?([\w_]+)`?/';
+        } else {
+            return;
+        }
+        if (preg_match ($pattern, $query, $matches)) {
+            $table = $matches[1];
+            $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
+            foreach ($cachedQueryHashes[$table] as $queryHash) {
+                $cache->delete("query.$queryHash");
+            }
+            unset($cachedQueryHashes[$table]);
+            $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
+        }
     }
 }
