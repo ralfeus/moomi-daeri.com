@@ -18,7 +18,6 @@ class ControllerLocalisationCurrency extends Controller {
 
 	public function update_currency(){
 		if ($this->getConfig()->get('config_currency_auto')) {
-			$this->getLogger()->write("Update currencies");
 			$this->getLoader()->model('localisation/currency');
 
 			$this->modelLocalisationCurrency->updateCurrencies(true);
