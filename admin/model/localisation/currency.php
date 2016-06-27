@@ -319,17 +319,11 @@ class ModelLocalisationCurrency extends Model {
 						WHERE code = :code
 						", [ ':dateModified' => $date_modified, ':code' => $this->getConfig()->get('config_currency')]
 					);
-
-					$this->getCache()->delete('currency');											
-
 				} else {
 					$this->getLogger()->write('Automatic currency update failed: Unable to parse data feed!');
-					$this->getCache()->delete('currencies');	
-				}				
-				
-			}		
+				}
+			}
 		}
-
 	}
 	
 	public function getTotalCurrencies() {
