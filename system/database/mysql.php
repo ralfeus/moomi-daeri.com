@@ -85,7 +85,7 @@ final class MySQL implements DBDriver{
             }
         }
 
-        $attempts = 5; $statement = null; $lastError = new Exception("Unknown error has occurred during query execution");
+        $attempts = 100; $statement = null; $lastError = new Exception("Unknown error has occurred during query execution");
         while ($attempts--) {
             try {
                 $statement = $this->prepareQuery($sql);
