@@ -2,6 +2,7 @@
 namespace model\catalog;
 
 use model\localization\DescriptionCollection;
+use model\user\UserDAO;
 use system\library\Dimensions;
 use system\library\Mutable;
 use system\library\Weight;
@@ -782,6 +783,10 @@ class Product {
             $this->userId = ProductDAO::getInstance()->getUserId($this->id);
         }
         return $this->userId;
+    }
+
+    public function getUser() {
+        return UserDAO::getInstance()->getUserById($this->getUserId());
     }
 
     /**

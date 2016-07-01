@@ -10,8 +10,8 @@ class ControllerSaleCustomer extends Controller {
     public function __construct($registry)
     {
         parent::__construct($registry);
-        $this->load->language('sale/customer');
-        $this->modelLocalisationCurrency = $this->load->model('localisation/currency');
+        $this->getLoader()->language('sale/customer');
+        $this->modelLocalisationCurrency = $this->getLoader()->model('localisation/currency');
         $this->document->setTitle($this->language->get('heading_title'));
         $this->data['error_warning'] = '';
         $this->data['success'] = '';
@@ -40,8 +40,8 @@ class ControllerSaleCustomer extends Controller {
 
     private function getCreditRequests($customer)
     {
-        $this->load->library('Messaging');
-        $this->load->library('Status');
+        $this->getLoader()->library('Messaging');
+        $this->getLoader()->library('Status');
         $addCreditRequests = Messaging::getSystemMessages(
             array(
                 'systemMessageType' => SYS_MSG_ADD_CREDIT,
@@ -336,7 +336,7 @@ class ControllerSaleCustomer extends Controller {
 		$customer_total = CustomerDAO::getInstance()->getTotalCustomers($data);
 		$results = CustomerDAO::getInstance()->getCustomers($data);
         /** @var ModelSaleOrder $modelSaleOrder */
-        $modelSaleOrder = $this->load->model('sale/order');
+        $modelSaleOrder = $this->getLoader()->model('sale/order');
     	foreach ($results as $result) {
 			$action = array();
 		
@@ -513,8 +513,8 @@ class ControllerSaleCustomer extends Controller {
 		$pagination->url = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&page={page}', 'SSL');
 		$this->data['pagination'] = $pagination->render();
 
-		$this->load->model('sale/customer_group');
-        $this->load->model('setting/store');
+		$this->getLoader()->model('sale/customer_group');
+        $this->getLoader()->model('setting/store');
 
     	$this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
 		$this->data['stores'] = $this->model_setting_store->getStores();
@@ -526,13 +526,12 @@ class ControllerSaleCustomer extends Controller {
     
 //    $this->data = array_merge($this->data, $this->parameters);
 				
-		$this->template = 'sale/customer_list.tpl';
 		$this->children = array(
 			'common/header',
 			'common/footer'
 		);
 				
-		$this->getResponse()->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render('sale/customer_list.tpl'));
   	}
   
   	private function getForm() {
@@ -818,7 +817,7 @@ class ControllerSaleCustomer extends Controller {
       		$this->data['newsletter'] = '';
     	}
 		
-		$this->load->model('sale/customer_group');
+		$this->getLoader()->model('sale/customer_group');
 			
 		$this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
 
@@ -850,7 +849,7 @@ class ControllerSaleCustomer extends Controller {
 			$this->data['confirm'] = '';
 		}
 		
-		$this->load->model('localisation/country');
+		$this->getLoader()->model('localisation/country');
 		
 		$this->data['countries'] = $this->model_localisation_country->getCountries();
 			
@@ -877,13 +876,12 @@ class ControllerSaleCustomer extends Controller {
 			}
 		}		
 		
-		$this->template = 'sale/customer_form.tpl';
 		$this->children = array(
 			'common/header',
 			'common/footer'
 		);
 				
-		$this->getResponse()->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render('sale/customer_form.tpl.php'));
 	}
 			 
   	private function validateForm() {
@@ -949,7 +947,7 @@ class ControllerSaleCustomer extends Controller {
 					$this->error['address_city'][$key] = $this->language->get('error_city');
 				} 
 	
-				$this->load->model('localisation/country');
+				$this->getLoader()->model('localisation/country');
 				
 				$country_info = $this->model_localisation_country->getCountry($value['country_id']);
 						
@@ -1004,7 +1002,7 @@ class ControllerSaleCustomer extends Controller {
 				$this->redirect(HTTP_CATALOG . 'index.php?route=account/login&token=' . $token);
 			}
 		} else {
-			$this->load->language('error/not_found');
+			$this->getLoader()->language('error/not_found');
 			$this->document->setTitle($this->language->get('heading_title'));
 			$this->data['heading_title'] = $this->language->get('heading_title');
 			$this->data['text_not_found'] = $this->language->get('text_not_found');
@@ -1072,7 +1070,7 @@ class ControllerSaleCustomer extends Controller {
 	public function zone() {
 		$output = '<option value="">' . $this->language->get('text_select') . '</option>'; 
 		
-		$this->load->model('localisation/zone');
+		$this->getLoader()->model('localisation/zone');
 		
 		$results = $this->model_localisation_zone->getZonesByCountryId($_REQUEST['country_id']);
 		
@@ -1094,7 +1092,7 @@ class ControllerSaleCustomer extends Controller {
 	}
 	
 	public function transaction() {
-        $this->load->library('Transaction');
+        $this->getLoader()->library('Transaction');
         $customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
         if ($this->request->server['REQUEST_METHOD'] == 'POST') {
             if ($this->user->hasPermission('modify', 'sale/customer')) {
@@ -1123,7 +1121,7 @@ class ControllerSaleCustomer extends Controller {
                 }
                 elseif ($this->request->post['action'] == 'delete')
                 {
-                    $modelSaleTransaction = $this->load->model('sale/transaction');
+                    $modelSaleTransaction = $this->getLoader()->model('sale/transaction');
                     $transaction = $modelSaleTransaction->getTransaction($this->request->post['transactionId']);
                     if ($transaction['invoice_id'] != 0)
                     {
@@ -1162,8 +1160,7 @@ class ControllerSaleCustomer extends Controller {
 
         $this->getTransactions($customer);
         $this->getCreditRequests($customer);
-        $this->template = 'sale/customerTransaction.php';
-        $this->getResponse()->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render('sale/customerTransaction.tpl.php'));
         return;
 
 		if (isset($_REQUEST['page'])) {

@@ -85,6 +85,12 @@ class ProductDAO extends DAO {
         return $this->getDb()->queryScalar("SELECT $columnName FROM product WHERE product_id = ?", array("i:$productId"));
     }
 
+    public function getAuctions($productId) {
+        $data = $this->getDb()->query("SELECT * FROM wkauction WHERE product_id = :productId  GROUP BY id", [ ':productId' => $productId ]);
+
+        return $data->rows;
+    }
+
     public function updateViewed($productId) {
         $this->getDb()->query("
             UPDATE product
@@ -155,76 +161,59 @@ SQL
      * @throws \CacheNotInstalledException
      */
     public function getProductIds($data = []) {
-        if (!is_null($this->getCurrentCustomer()) && $this->getCurrentCustomer()->isLogged()) {
-            $customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
-        } else {
-            $customer_group_id = $this->config->get('config_customer_group_id');
-        }
-
-        $cache = md5(http_build_query($data));
-
-        if (isset($data['nocache'])) {
-            $rows = null;
-        } else {
-            $rows = $this->getCache()->get('product.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$customer_group_id . '.' . $cache);
-        }
-        if (!$rows) {
-            $filter = $this->buildFilter($data);
-            $sql = <<<SQL
-			    SELECT
-			        p.product_id,
-			        (
-			            SELECT AVG(rating) AS total
-			            FROM review r1
-			            WHERE r1.product_id = p.product_id AND r1.status = 1
-			            GROUP BY r1.product_id
-                    ) AS rating
-                FROM
-                    product p
-                    LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
-                    LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
-                    LEFT JOIN product_tag pt ON (p.product_id = pt.product_id)
-                    LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
+        $filter = $this->buildFilter($data);
+        $sql = <<<SQL
+            SELECT
+                p.product_id,
+                (
+                    SELECT AVG(rating) AS total
+                    FROM review r1
+                    WHERE r1.product_id = p.product_id AND r1.status = 1
+                    GROUP BY r1.product_id
+                ) AS rating
+            FROM
+                product p
+                LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
+                LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
+                LEFT JOIN product_tag pt ON (p.product_id = pt.product_id)
+                LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
 SQL
-            ;
-            $sql .= $filter->getFilterString(true) . '
-                GROUP BY p.product_id';
+        ;
+        $sql .= $filter->getFilterString(true) . '
+            GROUP BY p.product_id';
 
-            $sort_data = array(
-                'pd.name',
-                'p.model',
-                'p.quantity',
-                'p.price',
-                'rating',
-                'p.sort_order',
-                'p.date_added'
-            );
+        $sort_data = array(
+            'pd.name',
+            'p.model',
+            'p.quantity',
+            'p.price',
+            'rating',
+            'p.sort_order',
+            'p.date_added'
+        );
 
-            if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
-                if ($data['sort'] == 'pd.name' || $data['sort'] == 'p.model') {
-                    $sql .= " ORDER BY LCASE(" . $data['sort'] . ")";
-                } else {
-                    $sql .= " ORDER BY " . $data['sort'];
-                }
+        if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+            if ($data['sort'] == 'pd.name' || $data['sort'] == 'p.model') {
+                $sql .= " ORDER BY LCASE(" . $data['sort'] . ")";
             } else {
-                $sql .= " ORDER BY p.sort_order";
+                $sql .= " ORDER BY " . $data['sort'];
             }
-
-            if (isset($data['order']) && ($data['order'] == 'DESC')) {
-                $sql .= " DESC";
-            } else {
-                $sql .= " ASC";
-            }
-
-            $sql .= $this->buildLimitString($data['start'], $data['limit']);
-
-            //print_r($sql);exit();
-            $query = $this->getDb()->query($sql, $filter->getParams());
-            $rows = $query->rows;
-            $this->getCache()->set('product.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$customer_group_id . '.' . $cache, $rows);
+        } else {
+            $sql .= " ORDER BY p.sort_order";
         }
+
+        if (isset($data['order']) && ($data['order'] == 'DESC')) {
+            $sql .= " DESC";
+        } else {
+            $sql .= " ASC";
+        }
+
+        $sql .= $this->buildLimitString($data['start'], $data['limit']);
+
+        //print_r($sql);exit();
+        $query = $this->getDb()->query($sql, $filter->getParams());
         $result = [];
-        foreach ($rows as $row) {
+        foreach ($query->rows as $row) {
             $result[$row['product_id']] = $row;
         }
         return $result;
@@ -250,27 +239,25 @@ SQL
      * @throws \CacheNotInstalledException
      */
     public function getProductsCount($data = array()) {
-        /// Cache implementation
-        $dataHash = base64_encode(serialize($data)) . $this->config->get('config_store_id');
-        if (is_null($this->getCache()->get("productsCount.$dataHash"))) {
-//        $this->log->write("Go to DB");
-            $filter = $this->buildFilter($data);
-            $sql = "
-                SELECT COUNT(DISTINCT p.product_id) AS total
-                FROM
-                    product AS p
-                    LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
-                    LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
-                    LEFT JOIN product_tag pt ON (p.product_id = pt.product_id)
-                    LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
-            ";
-            $sql .= $filter->getFilterString(true);
-            $result = $this->getDb()->queryScalar($sql, $filter->getParams());
-            $this->getCache()->set("productsCount.$dataHash", $result);
-        }
-        return $this->getCache()->get("productsCount.$dataHash");
+        $filter = $this->buildFilter($data);
+        $sql = "
+            SELECT COUNT(DISTINCT p.product_id) AS total
+            FROM
+                product AS p
+                LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
+                LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
+                LEFT JOIN product_tag pt ON (p.product_id = pt.product_id)
+                LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
+        ";
+        $sql .= $filter->getFilterString(true);
+        $result = $this->getDb()->queryScalar($sql, $filter->getParams());
+        return $result;
     }
 
+    /**
+     * @param int $productId
+     * @return mixed
+     */
     public function getProductSpecials($productId) {
         $query = "
             SELECT *
