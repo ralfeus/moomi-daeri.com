@@ -65,10 +65,11 @@ final class MySQL implements DBDriver{
      * @param string $sql
      * @param string[] $params
      * @param bool $log
+     * @param bool $invalidateCache
      * @return int|stdClass
-     * @throws Exception
+     * @throws CacheNotInstalledException
      */
-    public function query($sql, $params = array(), $log = false) {
+    public function query($sql, $params = array(), $log = false, $invalidateCache = true) {
         $sql = trim($sql);
         if ($log) {
             $log = new Log('error.log');
@@ -120,7 +121,9 @@ final class MySQL implements DBDriver{
                     } else {
                         $this->affectedCount = $statement->rowCount();
                         $result = $this->affectedCount;
-                        $this->invalidateCache($cache, $sql);
+                        if ($invalidateCache) {
+                            $this->invalidateCache($cache, $sql);
+                        }
                     }
                     $statement->closeCursor();
                     return $result;

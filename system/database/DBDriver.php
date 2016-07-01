@@ -30,9 +30,10 @@ interface DBDriver {
      * @param string $sql
      * @param array $params
      * @param bool $log
+     * @param bool $invalidateCache
      * @return stdClass
      */
-    public function query($sql, $params = array(), $log = false);
+    public function query($sql, $params = array(), $log = false, $invalidateCache = true);
 
     /**
      * @param string $sql
