@@ -65,11 +65,11 @@ final class MySQL implements DBDriver{
      * @param string $sql
      * @param string[] $params
      * @param bool $log
-     * @param bool $invalidateCache
+     * @param bool $noCache
      * @return int|stdClass
      * @throws CacheNotInstalledException
      */
-    public function query($sql, $params = array(), $log = false, $invalidateCache = true) {
+    public function query($sql, $params = array(), $log = false, $noCache = false) {
         $sql = trim($sql);
         if ($log) {
             $log = new Log('error.log');
@@ -117,11 +117,13 @@ final class MySQL implements DBDriver{
                         $rowSet->row = isset($rowSet->rows[0]) ? $rowSet->rows[0] : array();
                         $rowSet->num_rows = sizeof($rowSet->rows);
                         $result = $rowSet;
-                        $this->setCache($cache, $sql, $queryHash, $result);
+                        if (!$noCache) {
+                            $this->setCache($cache, $sql, $queryHash, $result);
+                        }
                     } else {
                         $this->affectedCount = $statement->rowCount();
                         $result = $this->affectedCount;
-                        if ($invalidateCache) {
+                        if (!$noCache) {
                             $this->invalidateCache($cache, $sql);
                         }
                     }
@@ -247,8 +249,7 @@ final class MySQL implements DBDriver{
             $table = $matches[1];
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
             $log = new Log('cache.log');
-            $log->write('Invalidating entries for table: ' . $table);
-            $log->write('Due to query:');
+            $log->write('Invalidating entries for table: "' . $table . '" due to query:');
             $log->write($query);
             foreach ($cachedQueryHashes[$table] as $queryHash) {
 //                $log->write("\t" . $queryHash);
