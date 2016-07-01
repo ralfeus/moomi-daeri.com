@@ -128,10 +128,10 @@ window.onload = function() {
                     </select>
                 </td>
                 <td>
-                    <select name="filterStatus" multiple="true">
+                    <select name="filterEnabled" multiple="true">
                         <option>-- No filter --</option>
-                        <option value="0" <?= $filterStatus === "0" ? "selected" : "" ?>>Disabled</option>
-                        <option value="1" <?= $filterStatus === "1" ? "selected" : "" ?>>Enabled</option>
+                        <option value="0" <?= $filterEnabled === "0" ? "selected" : "" ?>>Disabled</option>
+                        <option value="1" <?= $filterEnabled === "1" ? "selected" : "" ?>>Enabled</option>
                     </select>
                 </td>
                 <td>
@@ -264,7 +264,7 @@ $(document).ready(function() {
                 selectedList: 1
             })
             .multiselectfilter();
-    $('[name=filterStatus]').multiselect({
+    $('[name=filterEnabled]').multiselect({
         multiple: false,
         noneSelectedText: "-- No filter --",
         selectedList: 1

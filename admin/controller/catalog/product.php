@@ -39,7 +39,7 @@ class ControllerCatalogProduct extends AdminController {
 		}
 		if (($this->getRequest()->getMethod() == 'POST')) {
 			foreach ($this->getSession()->data['parameters']['catalog/product'] as $key => $value) {
-				if (empty($this->getRequest()->getParam($key))) {
+				if (empty($this->getRequest()->getParam($key)) && !is_numeric($this->getRequest()->getParam($key))) {
 					unset($this->getSession()->data['parameters']['catalog/product'][$key]);
 				} else {
 					$this->getSession()->data['parameters']['catalog/product'][$key] = $this->getRequest()->getParam($key);
@@ -65,8 +65,8 @@ class ControllerCatalogProduct extends AdminController {
             $this->session->data['parameters']['catalog/product']['filterKoreanName'] = null;
         if (empty($this->session->data['parameters']['catalog/product']['filterUserNameId']) || !is_array($this->session->data['parameters']['catalog/product']['filterUserNameId']))
             $this->session->data['parameters']['catalog/product']['filterUserNameId'] =  array();
-        if (!isset($this->session->data['parameters']['catalog/product']['filterStatus']) || !is_numeric($this->session->data['parameters']['catalog/product']['filterStatus']))
-            $this->session->data['parameters']['catalog/product']['filterStatus'] = null;
+        if (!isset($this->session->data['parameters']['catalog/product']['filterEnabled']) || !is_numeric($this->session->data['parameters']['catalog/product']['filterEnabled']))
+            $this->session->data['parameters']['catalog/product']['filterEnabled'] = null;
         if (empty($this->session->data['parameters']['catalog/product']['filterSupplierId']) || !is_array($this->session->data['parameters']['catalog/product']['filterSupplierId']))
             $this->session->data['parameters']['catalog/product']['filterSupplierId'] = array();
         $this->parameters = $this->session->data['parameters']['catalog/product'];
