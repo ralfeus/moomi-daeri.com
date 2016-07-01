@@ -245,6 +245,8 @@ final class MySQL implements DBDriver{
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
             $log = new Log('cache.log');
             $log->write('Invalidating entries for table: ' . $table);
+            $log->write('Due to query:');
+            $log->write($query);
             foreach ($cachedQueryHashes[$table] as $queryHash) {
                 $log->write("\t" . $queryHash);
                 $cache->delete("query.$queryHash");
