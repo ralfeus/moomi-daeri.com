@@ -108,8 +108,8 @@ class ProductDAO extends DAO {
         $this->getDb()->query("
             UPDATE product
             SET viewed = (viewed + 1)
-            WHERE product_id = ?"
-        , array("i:$productId"), false, true)
+            WHERE product_id = :productId"
+        , [ ':productId' => $productId ], false, true)
         ;
     }
 
