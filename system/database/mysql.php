@@ -248,7 +248,7 @@ final class MySQL implements DBDriver{
             $log->write('Due to query:');
             $log->write($query);
             foreach ($cachedQueryHashes[$table] as $queryHash) {
-                $log->write("\t" . $queryHash);
+//                $log->write("\t" . $queryHash);
                 $cache->delete("query.$queryHash");
             }
             unset($cachedQueryHashes[$table]);
