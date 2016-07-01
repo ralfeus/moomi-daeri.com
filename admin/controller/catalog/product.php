@@ -28,21 +28,25 @@ class ControllerCatalogProduct extends AdminController {
     protected function initParameters() {
         if (empty($this->getSession()->data['parameters']['catalog/product']))
             $this->getSession()->data['parameters']['catalog/product'] = array();
-        if (empty($_REQUEST['resetFilter']) && ($this->getRequest()->getMethod() == 'POST')) {
-            foreach ($_REQUEST as $key => $value) {
-				if (strpos($key, 'filter') == 0) {
-					$this->getSession()->data['parameters']['catalog/product'][$key] = $value;
-				}
-			}
+        if (!empty($_REQUEST['resetFilter'])) {
+//			foreach ($_REQUEST as $key => $value) {
+//				if (strpos($key, 'filter') === 0) {
+//					$this->getSession()->data['parameters']['catalog/product'][$key] = $value;
+//				}
+//			}
+//		} else {
+			$this->session->data['parameters']['catalog/product'] = [];
+		}
+		if (($this->getRequest()->getMethod() == 'POST')) {
 			foreach ($this->getSession()->data['parameters']['catalog/product'] as $key => $value) {
 				if (empty($this->getRequest()->getParam($key))) {
 					unset($this->getSession()->data['parameters']['catalog/product'][$key]);
+				} else {
+					$this->getSession()->data['parameters']['catalog/product'][$key] = $this->getRequest()->getParam($key);
 				}
 			}
         }
-        else {
-			$this->session->data['parameters']['catalog/product'] = array();
-		}
+
         if (empty($this->session->data['parameters']['catalog/product']['filterDateAddedFrom']))
             $this->session->data['parameters']['catalog/product']['filterDateAddedFrom'] = date('Y-01-01');
         if (empty($this->session->data['parameters']['catalog/product']['filterDateAddedTo']))

@@ -1,4 +1,4 @@
-<p><?php echo $text_total; ?><b> <?php echo $total; ?></b>.</p>
+<p><?= $text_total ?><b> <?= $total ?></b>.</p>
 <table class="list">
     <thead>
         <tr>
@@ -30,7 +30,7 @@
         </tr>
     <?php endforeach;
 else: ?>
-    <tr><td class="center" colspan="5"><?php echo $text_empty; ?></td></tr>
+    <tr><td class="center" colspan="5"><?= $text_empty ?></td></tr>
 <?php endif; ?>
     </tbody>
 </table>
@@ -70,7 +70,7 @@ else: ?>
   </tr>
     <?php endforeach;
 else: ?>
-  <tr><td class="center" colspan="8"><?php echo $text_empty; ?></td></tr>
+  <tr><td class="center" colspan="8"><?= $text_empty ?></td></tr>
 <?php endif; ?>
 </tbody>
 </table>

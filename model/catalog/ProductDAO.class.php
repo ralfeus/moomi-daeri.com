@@ -77,6 +77,19 @@ class ProductDAO extends DAO {
             }
             $filter->addChunk("(" . substr($filterString, 4) . ")", $filterParams);
         }
+        if (!empty($data['filterUserNameId']) && is_array($data['filterUserNameId']) && sizeof($data['filterUserNameId'])) {
+            $filter->addChunk($this->buildSimpleFieldFilterEntry('p.user_id', $data['filterUserNameId'], $tmp0, $tmp1));
+//            $iDSet = array();
+//            $filterUserName = array();
+//            foreach ($data['filterUserNameId'] as $usernameId)
+//                if ($usernameId)
+//                    $iDSet[] = $usernameId;
+//                else
+//                    $filterUserName['null'] = "u.user_id IS NULL";
+//            if (sizeof($iDSet))
+//                $filterUserName['ids'] = "u.user_id IN (" . implode(', ', $iDSet) . ")";
+//            $filter .= ($filter ? " AND" : "") . ' (' . implode(' OR ', $filterUserName) . ')';
+        }
 
         return $filter;
     }
