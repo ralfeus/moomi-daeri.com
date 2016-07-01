@@ -109,7 +109,7 @@ class ProductDAO extends DAO {
             UPDATE product
             SET viewed = (viewed + 1)
             WHERE product_id = ?"
-        , array("i:$productId"))
+        , array("i:$productId"), false, true)
         ;
     }
 

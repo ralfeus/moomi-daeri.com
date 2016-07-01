@@ -5,7 +5,7 @@ class ModelCatalogProduct extends Model {
 		    UPDATE product
 		    SET viewed = (viewed + 1)
 		    WHERE product_id = ?
-		    ", array('i:' . $product_id), false, false
+		    ", array('i:' . $product_id), false, true
         );
 	}
 
