@@ -212,6 +212,7 @@ final class MySQL implements DBDriver{
     private function setCache($cache, $query, $queryHash, $result) {
         $cache->set("query.$queryHash", serialize($result));
         $matches = [];
+        $logger = new Log('cache.log');
         if (preg_match_all(
                 '/(?<=FROM|JOIN|OJ)[\s\(]+((((?!SELECT\b)`?[\w_]+`?)(\s*\)?,\s*)*)+)/i',
                 $query, $matches/*, PREG_SET_ORDER*/)) {
@@ -222,7 +223,9 @@ final class MySQL implements DBDriver{
 //                    $tables[] = $tables;
 //                }
                 foreach ($tables as $table) {
-                    $cachedQueryHashes[trim($table, " `)\t\n\r\0\x0B")][] = $queryHash;
+                    $table = trim($table, " `)\t\n\r\0\x0B");
+                    $cachedQueryHashes[$table][] = $queryHash;
+                    $logger->write("Adding 'query.$queryHash' for table '$table'");
                 }
             }
             $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
