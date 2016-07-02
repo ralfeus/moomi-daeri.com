@@ -40,7 +40,7 @@ final class Front {
 		if (file_exists($file)) {
 			require_once($file);
 
-			$controller = new $class($this->registry);
+			$controller = new $class($this->registry, $method);
 			
 			if (is_callable(array($controller, $method))) {
 				$action = call_user_func_array(array($controller, $method), $args);

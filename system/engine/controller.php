@@ -1,7 +1,8 @@
 <?php
 require_once('OpenCartBase.php');
-abstract class Controller extends OpenCartBase
-{
+abstract class Controller extends OpenCartBase {
+    /** @var string */
+    private $action;
     /** @var array */
     protected $children = array();
     /** @var Customer */
@@ -33,9 +34,11 @@ abstract class Controller extends OpenCartBase
 
     /**
      * @param $registry Registry
+     * @param string $action
      */
-    public function __construct($registry) {
+    public function __construct($registry, $action = null) {
 		parent::__construct($registry);
+        $this->action = $action;
         $this->customer = $this->registry->get('customer');
         $this->document = $this->registry->get('document');
         $this->language = $this->registry->get('language');
@@ -49,11 +52,9 @@ abstract class Controller extends OpenCartBase
         $this->load->library('audit');
     }
 
-    protected function buildUrlParameterString($parameters, $paramsToReplace = array())
-    {
+    protected function buildUrlParameterString($parameters, $paramsToReplace = array()) {
         $result = "";
-        foreach ($parameters as $key => $value)
-        {
+        foreach ($parameters as $key => $value) {
             if (array_key_exists($key, $paramsToReplace)) {
                 $value = $paramsToReplace[$key];
             }
@@ -63,6 +64,10 @@ abstract class Controller extends OpenCartBase
 //            $this->log->write($result);
         }
         return substr($result, 1);
+    }
+    
+    protected function getAction() {
+        return $this->action;
     }
 
 	protected function forward($route, $args = array()) {
