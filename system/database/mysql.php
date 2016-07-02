@@ -216,6 +216,8 @@ final class MySQL implements DBDriver{
         if (preg_match_all(
                 '/(?<=FROM|JOIN|OJ)[\s\(]+((((?!SELECT\b)`?[\w_]+`?)(\s*\)?,\s*)*)+)/i',
                 $query, $matches/*, PREG_SET_ORDER*/)) {
+            while ($cache->get('lockCachedQueryHashes'));
+            $cache->set('lockCachedQueryHashes', 1);
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
             foreach ($matches[0] as $tableString) {
                 $tables = explode(',', $tableString);
@@ -229,6 +231,7 @@ final class MySQL implements DBDriver{
                 }
             }
             $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
+            $cache->delete('lockCachedQueryHashes');
         }
     }
 
@@ -250,6 +253,8 @@ final class MySQL implements DBDriver{
         }
         if (preg_match ($pattern, $query, $matches)) {
             $table = $matches[1];
+            while ($cache->get('lockCachedQueryHashes'));
+            $cache->set('lockCachedQueryHashes', 1);
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
             $log = new Log('cache.log');
             $log->write('Invalidating entries for table: "' . $table . '" due to query:');
@@ -257,10 +262,10 @@ final class MySQL implements DBDriver{
             foreach ($cachedQueryHashes[$table] as $queryHash) {
                 $result = $cache->delete("query.$queryHash");
                 $log->write("\tquery.$queryHash: " . ($result ? "deleted" : "wasn't deleted (probably doesn't exist"));
-
             }
             unset($cachedQueryHashes[$table]);
             $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
+            $cache->delete('lockCachedQueryHashes');
         }
     }
 }
