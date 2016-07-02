@@ -89,9 +89,9 @@ class Transaction extends OpenCartBase implements ILibrary {
                 WHERE customer_id = " . $customer['customer_id']
         );
         if (Transaction::$instance->user->isLogged()) {
-            Audit::getInstance(Transaction::$instance->registry)->addAdminEntry(AUDIT_ADMIN_TRANSACTION_ADD, $_REQUEST);
+            Audit::getInstance(Transaction::$instance->getRegistry())->addAdminEntry(Transaction::$instance->user->getId(), AUDIT_ADMIN_TRANSACTION_ADD, $_REQUEST);
         } elseif (Transaction::$instance->customer->isLogged()) {
-            Audit::getInstance(Transaction::$instance->registry)->addUserEntry(AUDIT_ADMIN_TRANSACTION_ADD, $_REQUEST);
+            Audit::getInstance(Transaction::$instance->getRegistry())->addUserEntry(Transaction::$instance->customer->getId(), AUDIT_ADMIN_TRANSACTION_ADD, $_REQUEST);
         }
     }
 

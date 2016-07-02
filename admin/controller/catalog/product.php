@@ -77,7 +77,10 @@ class ControllerCatalogProduct extends AdminController {
     		$data = $this->request->post;
     		$data['user_id'] = $this->user->getId();
             $this->model_catalog_product->addProduct($data);
-	            Audit::getInstance($this->registry)->addAdminEntry(AUDIT_ADMIN_PRODUCT_CREATE, $_REQUEST);
+	            Audit::getInstance($this->getRegistry())->addAdminEntry(
+					$this->getUser()->getId(),
+					AUDIT_ADMIN_PRODUCT_CREATE, $_REQUEST
+				);
 				$this->session->data['success'] = $this->language->get('text_success');
 		  
 				$url = '';
@@ -123,7 +126,8 @@ class ControllerCatalogProduct extends AdminController {
   	public function update() {
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);
-			Audit::getInstance($this->registry)->addAdminEntry(
+			Audit::getInstance($this->getRegistry())->addAdminEntry(
+				$this->getUser()->getId(),
                 AUDIT_ADMIN_PRODUCT_UPDATE,
                 array('route' => $_REQUEST['route'], 'productId' => $_REQUEST['product_id'])
             );
@@ -175,7 +179,8 @@ class ControllerCatalogProduct extends AdminController {
 		if (isset($this->parameters['selectedItems']) && $this->validateDelete()) {
 			foreach ($this->parameters['selectedItems'] as $product_id) {
 				$this->modelCatalogProduct->deleteProduct($product_id);
-                Audit::getInstance($this->registry)->addAdminEntry(
+                Audit::getInstance($this->getRegistry())->addAdminEntry(
+					$this->getUser()->getId(),
                     AUDIT_ADMIN_PRODUCT_DELETE,
                     array('route' => $this->parameters['route'], 'selectedItems' => $this->parameters['selectedItems'])
                 );
@@ -1643,12 +1648,12 @@ class ControllerCatalogProduct extends AdminController {
 
     public function enable() {
         $this->changeStatusProducts(1);
-        Audit::getInstance($this->registry)->addAdminEntry(AUDIT_ADMIN_PRODUCT_ENABLE, $_REQUEST);
+        Audit::getInstance($this->getRegistry())->addAdminEntry($this->getUser()->getId(), AUDIT_ADMIN_PRODUCT_ENABLE, $_REQUEST);
     }
 
     public function disable() {
         $this->changeStatusProducts(0);
-        Audit::getInstance($this->registry)->addAdminEntry(AUDIT_ADMIN_PRODUCT_DISABLE, $_REQUEST);
+        Audit::getInstance($this->getRegistry())->addAdminEntry($this->getUser()->getId(), AUDIT_ADMIN_PRODUCT_DISABLE, $_REQUEST);
     }
 
     private function changeStatusProducts($status) {
