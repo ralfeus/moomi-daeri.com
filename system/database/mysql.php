@@ -216,10 +216,10 @@ final class MySQL implements DBDriver{
         if (preg_match_all(
                 '/(?<=FROM|JOIN|OJ)[\s\(]+((((?!SELECT\b)`?[\w_]+`?)(\s*\)?,\s*)*)+)/i',
                 $query, $matches/*, PREG_SET_ORDER*/)) {
-            $log->write("Waiting for 'cachedQueryHashes' to release");
+            $logger->write("Waiting for 'cachedQueryHashes' to release");
             while ($cache->get('lockCachedQueryHashes'));
             $cache->set('lockCachedQueryHashes', 1);
-            $log->write(">>>>>>>>> 'cachedQueryHashes' is locked");
+            $logger->write(">>>>>>>>> 'cachedQueryHashes' is locked");
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
             foreach ($matches[0] as $tableString) {
                 $tables = explode(',', $tableString);
@@ -233,7 +233,7 @@ final class MySQL implements DBDriver{
                 }
             }
             $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
-            $log->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
+            $logger->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
             $cache->delete('lockCachedQueryHashes');
         }
     }
