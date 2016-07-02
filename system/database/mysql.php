@@ -216,8 +216,10 @@ final class MySQL implements DBDriver{
         if (preg_match_all(
                 '/(?<=FROM|JOIN|OJ)[\s\(]+((((?!SELECT\b)`?[\w_]+`?)(\s*\)?,\s*)*)+)/i',
                 $query, $matches/*, PREG_SET_ORDER*/)) {
+            $log->write("Waiting for 'cachedQueryHashes' to release");
             while ($cache->get('lockCachedQueryHashes'));
             $cache->set('lockCachedQueryHashes', 1);
+            $log->write(">>>>>>>>> 'cachedQueryHashes' is locked");
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
             foreach ($matches[0] as $tableString) {
                 $tables = explode(',', $tableString);
@@ -231,6 +233,7 @@ final class MySQL implements DBDriver{
                 }
             }
             $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
+            $log->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
             $cache->delete('lockCachedQueryHashes');
         }
     }
@@ -240,6 +243,7 @@ final class MySQL implements DBDriver{
      * @param string $query
      */
     private function invalidateCache($cache, $query) {
+        $log = new Log('cache.log');
         $matches = [];
         $verb = strtoupper(substr($query, 0, 6));
         if ($verb == 'DELETE') {
@@ -253,10 +257,11 @@ final class MySQL implements DBDriver{
         }
         if (preg_match ($pattern, $query, $matches)) {
             $table = $matches[1];
+            $log->write("Waiting for 'cachedQueryHashes' to release");
             while ($cache->get('lockCachedQueryHashes'));
             $cache->set('lockCachedQueryHashes', 1);
+            $log->write(">>>>>>>>> 'cachedQueryHashes' is locked");
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
-            $log = new Log('cache.log');
             $log->write('Invalidating entries for table: "' . $table . '" due to query:');
             $log->write($query);
             foreach ($cachedQueryHashes[$table] as $queryHash) {
@@ -265,6 +270,7 @@ final class MySQL implements DBDriver{
             }
             unset($cachedQueryHashes[$table]);
             $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
+            $log->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
             $cache->delete('lockCachedQueryHashes');
         }
     }
