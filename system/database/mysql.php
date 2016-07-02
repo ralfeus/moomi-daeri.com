@@ -217,7 +217,9 @@ final class MySQL implements DBDriver{
                 '/(?<=FROM|JOIN|OJ)[\s\(]+((((?!SELECT\b)`?[\w_]+`?)(\s*\)?,\s*)*)+)/i',
                 $query, $matches/*, PREG_SET_ORDER*/)) {
             $logger->write("Waiting for 'cachedQueryHashes' to release");
-            while ($cache->get('lockCachedQueryHashes'));
+            while ($cache->get('lockCachedQueryHashes')) {
+                sleep(1);
+            }
             $cache->set('lockCachedQueryHashes', 1);
             $logger->write(">>>>>>>>> 'cachedQueryHashes' is locked");
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
@@ -258,7 +260,9 @@ final class MySQL implements DBDriver{
         if (preg_match ($pattern, $query, $matches)) {
             $table = $matches[1];
             $logger->write("Waiting for 'cachedQueryHashes' to release");
-            while ($cache->get('lockCachedQueryHashes'));
+            while ($cache->get('lockCachedQueryHashes')) {
+                sleep(1);
+            }
             $cache->set('lockCachedQueryHashes', 1);
             $logger->write(">>>>>>>>> 'cachedQueryHashes' is locked");
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
