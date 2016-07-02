@@ -16,14 +16,14 @@ class Locker {
      *                  resource on success
      */
     static function lock($name) {
-        $socket = socket_create(AF_UNIX, SOCK_DGRAM, 0);
-        try {
-            $bound = socket_bind($socket, "\x00$name");
-        } catch (ErrorException $e) {
-            socket_close($socket);
-            return null;
-        }
-        return $bound ? $socket : null;
+//        $socket = socket_create(AF_UNIX, SOCK_DGRAM, 0);
+//        try {
+//            $bound = socket_bind($socket, "\x00$name");
+//        } catch (ErrorException $e) {
+//            socket_close($socket);
+//            return null;
+//        }
+//        return $bound ? $socket : null;
     }
 
     /**

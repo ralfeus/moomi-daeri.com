@@ -1,6 +1,4 @@
 <?php
-use system\helper\Locker;
-
 require_once('DBDriver.php');
 final class MySQL implements DBDriver{
     /** @var PDO */
@@ -219,7 +217,8 @@ final class MySQL implements DBDriver{
                 '/(?<=FROM|JOIN|OJ)[\s\(]+((((?!SELECT\b)`?[\w_]+`?)(\s*\)?,\s*)*)+)/i',
                 $query, $matches/*, PREG_SET_ORDER*/)) {
             $logger->write("Waiting for 'cachedQueryHashes' to release");
-            while (!($mutex = Locker::lock('lockCachedQueryHashes')));
+            while ($cache->get('lockCachedQueryHashes'));
+            $cache->set('lockCachedQueryHashes', 1);
             $logger->write(">>>>>>>>> 'cachedQueryHashes' is locked");
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
             foreach ($matches[0] as $tableString) {
@@ -235,7 +234,7 @@ final class MySQL implements DBDriver{
             }
             $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
             $logger->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
-            Locker::unlock($mutex);
+            $cache->delete('lockCachedQueryHashes');
         }
     }
 
@@ -259,7 +258,8 @@ final class MySQL implements DBDriver{
         if (preg_match ($pattern, $query, $matches)) {
             $table = $matches[1];
             $logger->write("Waiting for 'cachedQueryHashes' to release");
-            while (!($mutex = Locker::lock('lockCachedQueryHashes')));
+            while ($cache->get('lockCachedQueryHashes'));
+            $cache->set('lockCachedQueryHashes', 1);
             $logger->write(">>>>>>>>> 'cachedQueryHashes' is locked");
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
             $logger->write('Invalidating entries for table: "' . $table . '" due to query:');
@@ -271,7 +271,7 @@ final class MySQL implements DBDriver{
             unset($cachedQueryHashes[$table]);
             $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
             $logger->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
-            Locker::unlock($mutex);
+            $cache->delete('lockCachedQueryHashes');
         }
     }
 }
