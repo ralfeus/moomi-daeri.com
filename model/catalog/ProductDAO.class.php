@@ -164,7 +164,7 @@ SQL
                 return $query->row;
             }
         } else {
-            return false;
+            throw new \InvalidArgumentException("No product with ID $productId");
         }
     }
 
@@ -240,7 +240,11 @@ SQL
     public function getProducts($data = array(), $shallow = false) {
         $product_data = [];
         foreach ($this->getProductIds($data) as $result) {
-            $product_data[$result['product_id']] = $this->getProduct($result['product_id'], $shallow, true);
+            try {
+                $product_data[$result['product_id']] = $this->getProduct($result['product_id'], $shallow, true);
+            } catch (\InvalidArgumentException $exc) {
+                $this->getLogger()->write($exc->getMessage());
+            }
         }
 
         return $product_data;
