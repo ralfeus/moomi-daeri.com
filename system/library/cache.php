@@ -48,10 +48,15 @@ final class Cache {
             throw new CacheNotInstalledException();
         }
     }
-	
+
+    /**
+     * @param string $key
+     * @return bool
+     * @throws CacheNotInstalledException
+     */
     public function delete($key) {
         if (function_exists('apc_delete')) {
-            apc_delete($key);
+            return apc_delete($key);
         } else {
             throw new CacheNotInstalledException();
         }

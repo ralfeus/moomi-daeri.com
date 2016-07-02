@@ -127,7 +127,7 @@ class ProductDAO extends DAO {
             $product->getDimension(), $product->getImagePath(), $product->getKeyword(), $product->getKoreanName(), 
             $product->getLocation(), $product->getManufacturerId(), $product->getMinimum(), $product->getModel(),
             $product->getOptions(), $product->getPoints(), $product->getPrice(), $product->getQuantity(), $product->getShipping(),
-            $product->getSku(), $product->getSortOrder(), $product->getStatus(), $product->getStockStatusId(), 
+            $product->getSku(), $product->getSortOrder(), 0, $product->getStockStatusId(),
             $product->getStores(), $product->getSubtract(), $product->getSupplier(), $product->getSupplierUrl(),
             $product->getTags(), $product->getUpc(), $product->getUserId(), $product->getViewed(), $product->getWeight(),
             $product->getAttributes(), $product->getDiscounts(), $product->getSpecials(), $product->getDownloads(), 
