@@ -28,14 +28,16 @@ final class Front {
 			$action = $this->execute($action);
 		}
   	}
-    
+
+	/**
+	 * @param Action $action
+	 * @return mixed
+     */
 	private function execute($action) {
 		$file = $action->getFile();
 		$class = $action->getClass();
 		$method = $action->getMethod();
 		$args = $action->getArgs();
-
-		$action = '';
 
 		if (file_exists($file)) {
 			require_once($file);
@@ -46,16 +48,12 @@ final class Front {
 				$action = call_user_func_array(array($controller, $method), $args);
 			} else {
 				$action = $this->error;
-			
 				$this->error = '';
 			}
 		} else {
 			$action = $this->error;
-			
 			$this->error = '';
 		}
-		
 		return $action;
 	}
 }
-?>
