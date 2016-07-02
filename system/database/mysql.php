@@ -75,16 +75,16 @@ final class MySQL implements DBDriver{
             $log = new Log('error.log');
             $log->write($sql);
         }
-        $queryHash = md5($sql . serialize($params));
-        $cache = new Cache();
+//        $queryHash = md5($sql . serialize($params));
+//        $cache = new Cache();
 
         /// Try to get data from cache if it's SELECT
-        if (strtoupper(substr($sql, 0, 6)) == 'SELECT') {
-            $result = $cache->get("query.$queryHash");
-            if (!is_null($result)) {
-                return unserialize($result);
-            }
-        }
+//        if (strtoupper(substr($sql, 0, 6)) == 'SELECT') {
+//            $result = $cache->get("query.$queryHash");
+//            if (!is_null($result)) {
+//                return unserialize($result);
+//            }
+//        }
 
         $attempts = 10; $statement = null; $lastError = new Exception("Unknown error has occurred during query execution");
         while ($attempts--) {
@@ -117,15 +117,15 @@ final class MySQL implements DBDriver{
                         $rowSet->row = isset($rowSet->rows[0]) ? $rowSet->rows[0] : array();
                         $rowSet->num_rows = sizeof($rowSet->rows);
                         $result = $rowSet;
-                        if (!$noCache) {
-                            $this->setCache($cache, $sql, $queryHash, $result);
-                        }
+//                        if (!$noCache) {
+//                            $this->setCache($cache, $sql, $queryHash, $result);
+//                        }
                     } else {
                         $this->affectedCount = $statement->rowCount();
                         $result = $this->affectedCount;
-                        if (!$noCache && $result) {
-                            $this->invalidateCache($cache, $sql);
-                        }
+//                        if (!$noCache && $result) {
+//                            $this->invalidateCache($cache, $sql);
+//                        }
                     }
                     $statement->closeCursor();
                     return $result;

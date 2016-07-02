@@ -197,7 +197,14 @@ SQL
      * @throws \CacheNotInstalledException
      */
     public function getProductIds($data = []) {
+        $cacheKey = 'product.' . md5(serialize($data));
+        $result = $this->getCache()->get($cacheKey);
+        if (!is_null($result)) {
+            return $result;
+        }
         $filter = $this->buildFilter($data);
+
+
         $sql = <<<SQL
             SELECT
                 p.product_id,
@@ -252,6 +259,7 @@ SQL
         foreach ($query->rows as $row) {
             $result[$row['product_id']] = $row;
         }
+        $this->getCache()->set($cacheKey, $result);
         return $result;
     }
 
@@ -279,6 +287,11 @@ SQL
      * @throws \CacheNotInstalledException
      */
     public function getProductsCount($data = array()) {
+        $cacheKey = 'productCount.' . md5(serialize($data));
+        $result = $this->getCache()->get($cacheKey);
+        if (!is_null($result)) {
+            return $result;
+        }
         $filter = $this->buildFilter($data);
         $sql = "
             SELECT COUNT(DISTINCT p.product_id) AS total
@@ -291,6 +304,7 @@ SQL
         ";
         $sql .= $filter->getFilterString(true);
         $result = $this->getDb()->queryScalar($sql, $filter->getParams());
+        $this->getCache()->set($cacheKey, $result);
         return $result;
     }
 
