@@ -1,4 +1,6 @@
 <?php
+use system\helper\Locker;
+
 require_once('DBDriver.php');
 final class MySQL implements DBDriver{
     /** @var PDO */
@@ -217,8 +219,8 @@ final class MySQL implements DBDriver{
                 '/(?<=FROM|JOIN|OJ)[\s\(]+((((?!SELECT\b)`?[\w_]+`?)(\s*\)?,\s*)*)+)/i',
                 $query, $matches/*, PREG_SET_ORDER*/)) {
             $logger->write("Waiting for 'cachedQueryHashes' to release");
-            while ($cache->get('lockCachedQueryHashes'));
-            $cache->set('lockCachedQueryHashes', 1);
+            $mutex = 0;
+            while (!($mutex = Locker::lock('lockCachedQueryHashes')));
             $logger->write(">>>>>>>>> 'cachedQueryHashes' is locked");
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
             foreach ($matches[0] as $tableString) {
@@ -234,7 +236,7 @@ final class MySQL implements DBDriver{
             }
             $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
             $logger->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
-            $cache->delete('lockCachedQueryHashes');
+            Locker::unlock($mutex);
         }
     }
 
@@ -243,7 +245,7 @@ final class MySQL implements DBDriver{
      * @param string $query
      */
     private function invalidateCache($cache, $query) {
-        $log = new Log('cache.log');
+        $logger = new Log('cache.log');
         $matches = [];
         $verb = strtoupper(substr($query, 0, 6));
         if ($verb == 'DELETE') {
@@ -257,21 +259,21 @@ final class MySQL implements DBDriver{
         }
         if (preg_match ($pattern, $query, $matches)) {
             $table = $matches[1];
-            $log->write("Waiting for 'cachedQueryHashes' to release");
-            while ($cache->get('lockCachedQueryHashes'));
-            $cache->set('lockCachedQueryHashes', 1);
-            $log->write(">>>>>>>>> 'cachedQueryHashes' is locked");
+            $logger->write("Waiting for 'cachedQueryHashes' to release");
+            $mutex = 0;
+            while (!($mutex = Locker::lock('lockCachedQueryHashes')));
+            $logger->write(">>>>>>>>> 'cachedQueryHashes' is locked");
             $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
-            $log->write('Invalidating entries for table: "' . $table . '" due to query:');
-            $log->write($query);
+            $logger->write('Invalidating entries for table: "' . $table . '" due to query:');
+            $logger->write($query);
             foreach ($cachedQueryHashes[$table] as $queryHash) {
                 $result = $cache->delete("query.$queryHash");
-                $log->write("\tquery.$queryHash: " . ($result ? "deleted" : "wasn't deleted (probably doesn't exist"));
+                $logger->write("\tquery.$queryHash: " . ($result ? "deleted" : "wasn't deleted (probably doesn't exist"));
             }
             unset($cachedQueryHashes[$table]);
             $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
-            $log->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
-            $cache->delete('lockCachedQueryHashes');
+            $logger->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
+            Locker::unlock($mutex);
         }
     }
 }
