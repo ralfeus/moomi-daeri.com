@@ -12,28 +12,27 @@ class Audit extends OpenCartBase implements ILibrary
     /** @var  Audit */
     private static $instance;
 
-    private function addEntry($userId, $userType, $eventId, $data)
-    {
-        $this->db->query("
+    private function addEntry($userId, $userType, $eventId, $data) {
+        $this->getDb()->query("
             INSERT INTO audit
-            SET
-                data = '" . json_encode($data) . "',
-                date_added = NOW(),
-                event_id = " . (int)$eventId . ",
-                user_id = " . (int)$userId . ",
-                user_ip = '" . $_SERVER['REMOTE_ADDR'] . "',
-                user_type = '" . $this->db->escape($userType) . "'
-        ");
+                (data, date_added, event_id, user_id, user_ip, user_type)
+                VALUES(:data, NOW(), :eventId, :userId, :userIp, :userType)
+            ", [
+            ':data' => json_encode($data),
+            ':eventId' => $eventId,
+            ':userId' => $userId,
+            ':userIp' => $_SERVER['REMOTE_ADDR'],
+            ':userType' => $userType
+            ], false, true
+        );
     }
 
-    public function addAdminEntry($eventId, $data) {
-        $userId = $this->user->isLogged() ? $this->user->getId() : 0;
-        $this->addEntry($userId, 'admin', $eventId, $data);
+    public function addAdminEntry($adminId, $eventId, $data) {
+        $this->addEntry($adminId, 'admin', $eventId, $data);
     }
 
-    public function addUserEntry($eventId, $data)
+    public function addUserEntry($userId, $eventId, $data)
     {
-        $userId = $this->customer->isLogged() ? $this->customer->getId() : 0;
         $this->addEntry($userId, 'user', $eventId, $data);
     }
 

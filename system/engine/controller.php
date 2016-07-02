@@ -156,13 +156,6 @@ abstract class Controller extends OpenCartBase {
         return $this->registry->get('url');
     }
 
-    /**
-     * @return User
-     */
-    protected function getUser() {
-        return $this->registry->get('user');
-    }
-
     protected function initParameters() {
         $_REQUEST = $_COOKIE;
         $_REQUEST = array_merge($_REQUEST, $_GET);

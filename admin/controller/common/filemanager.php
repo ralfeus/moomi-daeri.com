@@ -1,9 +1,9 @@
 <?php
-class ControllerCommonFileManager extends Controller {
-	private $error = array();
-	
+use system\engine\AdminController;
+
+class ControllerCommonFileManager extends AdminController {
 	public function index() {
-		$this->load->language('common/filemanager');
+		$this->getLoader()->language('common/filemanager');
 		
 		$this->data['title'] = $this->language->get('heading_title');
 		
@@ -29,7 +29,7 @@ class ControllerCommonFileManager extends Controller {
         $this->data['textGenerateHtml'] = $this->language->get('GENERATE_HTML');
         $this->data['textGetImageByUrl'] = $this->language->get('GET_BY_URL');
         $this->data['textInvalidURLFormat'] = $this->language->get('ERROR_INVALID_URL_FORMAT');
-        $this->data['urlDownloadImage'] = $this->url->link($this->selfRoute . '/downloadImage', 'token=' . $this->parameters['token'], 'SSL');
+        $this->data['urlDownloadImage'] = $this->getUrl()->link($this->selfRoute . '/downloadImage', 'token=' . $this->parameters['token'], 'SSL');
 
 		$this->data['error_select'] = $this->language->get('error_select');
 		$this->data['error_directory'] = $this->language->get('error_directory');
@@ -50,13 +50,11 @@ class ControllerCommonFileManager extends Controller {
 			$this->data['fckeditor'] = false;
 		}
 		
-		$this->template = 'common/filemanager.tpl';
-		
-		$this->getResponse()->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render('common/filemanager.tpl'));
 	}	
 	
 	public function image() {
-		$this->load->model('tool/image');
+		$this->getLoader()->model('tool/image');
 		
 		if (isset($this->request->get['image'])) {
 			$this->getResponse()->setOutput($this->model_tool_image->resize(html_entity_decode($this->request->get['image'], ENT_QUOTES, 'UTF-8'), 100, 100));
@@ -116,7 +114,7 @@ class ControllerCommonFileManager extends Controller {
     public function files() {
 		$json = array();
 		
-		$this->load->model('tool/image');
+		$this->getLoader()->model('tool/image');
 		
 		if (!empty($this->request->post['directory'])) {
 			$directory = DIR_IMAGE . 'data/' . str_replace('../', '', $this->request->post['directory']);
@@ -193,7 +191,7 @@ class ControllerCommonFileManager extends Controller {
     }
 	
 	public function create() {
-		$this->load->language('common/filemanager');
+		$this->getLoader()->language('common/filemanager');
 				
 		$json = array();
 		
@@ -208,28 +206,27 @@ class ControllerCommonFileManager extends Controller {
 				if (file_exists($directory . '/' . str_replace('../', '', $this->request->post['name']))) {
 					$json['error'] = $this->language->get('error_exists');
 				}
+				if (!$this->getUser()->hasPermission('modify', 'common/filemanager')) {
+					$json['error'] = $this->language->get('error_permission');
+				}
+
+				if (!isset($json['error'])) {
+					mkdir($directory . '/' . str_replace('../', '', $this->request->post['name']), 0777);
+
+					$json['success'] = $this->language->get('text_create');
+				}
 			} else {
 				$json['error'] = $this->language->get('error_name');
 			}
 		} else {
 			$json['error'] = $this->language->get('error_directory');
 		}
-		
-		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
-      		$json['error'] = $this->language->get('error_permission');  
-    	}
-		
-		if (!isset($json['error'])) {	
-			mkdir($directory . '/' . str_replace('../', '', $this->request->post['name']), 0777);
-			
-			$json['success'] = $this->language->get('text_create');
-		}	
-		
+
 		$this->getResponse()->setOutput(json_encode($json));
 	}
 	
 	public function delete() {
-		$this->load->language('common/filemanager');
+		$this->getLoader()->language('common/filemanager');
 		
 		$json = array();
 		
@@ -243,32 +240,33 @@ class ControllerCommonFileManager extends Controller {
 			if ($path == rtrim(DIR_IMAGE . 'data/', '/')) {
 				$json['error'] = $this->language->get('error_delete');
 			}
+			if (!isset($json['error'])) {
+				if (is_file($path)) {
+					unlink($path);
+				} elseif (is_dir($path)) {
+					$this->recursiveDelete($path);
+				}
+
+				$json['success'] = $this->language->get('text_delete');
+			}
 		} else {
 			$json['error'] = $this->language->get('error_select');
 		}
 		
-		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
+		if (!$this->getUser()->hasPermission('modify', 'common/filemanager')) {
       		$json['error'] = $this->language->get('error_permission');  
     	}
 		
-		if (!isset($json['error'])) {
-			if (is_file($path)) {
-				unlink($path);
-			} elseif (is_dir($path)) {
-				$this->recursiveDelete($path);
-			}
-			
-			$json['success'] = $this->language->get('text_delete');
-		}				
+
 		
 		$this->getResponse()->setOutput(json_encode($json));
 	}
 
 	protected function recursiveDelete($directory) {
+		$handle = null;
 		if (is_dir($directory)) {
 			$handle = opendir($directory);
 		}
-		
 		if (!$handle) {
 			return false;
 		}
@@ -291,7 +289,7 @@ class ControllerCommonFileManager extends Controller {
 	}
 
 	public function move() {
-		$this->load->language('common/filemanager');
+		$this->getLoader()->language('common/filemanager');
 		
 		$json = array();
 		
@@ -315,27 +313,28 @@ class ControllerCommonFileManager extends Controller {
 			if (file_exists($to . '/' . basename($from))) {
 				$json['error'] = $this->language->get('error_exists');
 			}
+			if (!$this->getUser()->hasPermission('modify', 'common/filemanager')) {
+				$json['error'] = $this->language->get('error_permission');
+			}
+
+			if (!isset($json['error'])) {
+				rename($from, $to . '/' . basename($from));
+
+				$json['success'] = $this->language->get('text_move');
+			}
 		} else {
 			$json['error'] = $this->language->get('error_directory');
 		}
 		
-		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
-      		$json['error'] = $this->language->get('error_permission');  
-    	}
-		
-		if (!isset($json['error'])) {
-			rename($from, $to . '/' . basename($from));
-			
-			$json['success'] = $this->language->get('text_move');
-		}
+
 		
 		$this->getResponse()->setOutput(json_encode($json));
 	}	
 	
 	public function copy() {
-		$this->load->language('common/filemanager');
+		$this->getLoader()->language('common/filemanager');
 		
-		$json = array();
+		$json = array(); $old_name = null; $new_name = null;
 		
 		if (isset($this->request->post['path']) && isset($this->request->post['name'])) {
 			if ((utf8_strlen($this->request->post['name']) < 3) || (utf8_strlen($this->request->post['name']) > 255)) {
@@ -363,7 +362,7 @@ class ControllerCommonFileManager extends Controller {
 			$json['error'] = $this->language->get('error_select');
 		}
 		
-		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
+		if (!$this->getUser()->hasPermission('modify', 'common/filemanager')) {
       		$json['error'] = $this->language->get('error_permission');  
     	}	
 		
@@ -417,9 +416,9 @@ class ControllerCommonFileManager extends Controller {
 	}
 	
 	public function rename() {
-		$this->load->language('common/filemanager');
+		$this->getLoader()->language('common/filemanager');
 		
-		$json = array();
+		$json = array(); $old_name = null; $new_name = null;
 		
 		if (isset($this->request->post['path']) && isset($this->request->post['name'])) {
 			if ((utf8_strlen($this->request->post['name']) < 3) || (utf8_strlen($this->request->post['name']) > 255)) {
@@ -445,7 +444,7 @@ class ControllerCommonFileManager extends Controller {
 			}			
 		}
 		
-		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
+		if (!$this->getUser()->hasPermission('modify', 'common/filemanager')) {
       		$json['error'] = $this->language->get('error_permission');  
     	}
 		
@@ -459,9 +458,9 @@ class ControllerCommonFileManager extends Controller {
 	}
 	
 	public function upload() {
-		$this->load->language('common/filemanager');
+		$this->getLoader()->language('common/filemanager');
 		
-		$json = array();
+		$json = array(); $directory = null; $filename = null;
 		
 		if (isset($this->request->post['directory'])) {
 			if (isset($this->request->files['image']) && $this->request->files['image']['tmp_name']) {
@@ -516,7 +515,7 @@ class ControllerCommonFileManager extends Controller {
 			$json['error'] = $this->language->get('error_directory');
 		}
 		
-		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
+		if (!$this->getUser()->hasPermission('modify', 'common/filemanager')) {
       		$json['error'] = $this->language->get('error_permission');  
     	}
 		
@@ -543,121 +542,118 @@ class ControllerCommonFileManager extends Controller {
 	//plupload code
 	public function multi() {
 		// HTTP headers for no cache etc
-header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-header("Cache-Control: no-store, no-cache, must-revalidate");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		header("Cache-Control: no-store, no-cache, must-revalidate");
+		header("Cache-Control: post-check=0, pre-check=0", false);
+		header("Pragma: no-cache");
+		
+		// Settings
+		//$targetDir = ini_get("upload_tmp_dir") . DIRECTORY_SEPARATOR . "plupload";
+		
+		//$targetDir = '../image/data/';
+		$targetDir = rtrim(DIR_IMAGE . 'data/' . str_replace('../', '', $this->request->get['directory']), '/');
+		
+		//$cleanupTargetDir = false; // Remove old files
+		//$maxFileAge = 60 * 60; // Temp file age in seconds
+		
+		// 5 minutes execution time
+		@set_time_limit(5 * 60);
+		
+		// Uncomment this one to fake upload time
+		// usleep(5000);
+		
+		// Get parameters
+		$chunk = isset($_REQUEST["chunk"]) ? $_REQUEST["chunk"] : 0;
+		$chunks = isset($_REQUEST["chunks"]) ? $_REQUEST["chunks"] : 0;
+		$fileName = isset($_REQUEST["name"]) ? $_REQUEST["name"] : '';
+		
+		// Clean the fileName for security reasons
+		$fileName = preg_replace('/[^\w\._]+/', '', $fileName);
+		
+		// Make sure the fileName is unique but only if chunking is disabled
+		if ($chunks < 2 && file_exists($targetDir . DIRECTORY_SEPARATOR . $fileName)) {
+			$ext = strrpos($fileName, '.');
+			$fileName_a = substr($fileName, 0, $ext);
+			$fileName_b = substr($fileName, $ext);
+		
+			$count = 1;
+			while (file_exists($targetDir . DIRECTORY_SEPARATOR . $fileName_a . '_' . $count . $fileName_b))
+				$count++;
+		
+			$fileName = $fileName_a . '_' . $count . $fileName_b;
+		}
+		
+		// Create target dir
+		if (!file_exists($targetDir))
+			@mkdir($targetDir);
+		
+		// Remove old temp files
+		/* this doesn't really work by now
+			
+		if (is_dir($targetDir) && ($dir = opendir($targetDir))) {
+			while (($file = readdir($dir)) !== false) {
+				$filePath = $targetDir . DIRECTORY_SEPARATOR . $file;
+		
+				// Remove temp files if they are older than the max age
+				if (preg_match('/\\.tmp$/', $file) && (filemtime($filePath) < time() - $maxFileAge))
+					@unlink($filePath);
+			}
+		
+			closedir($dir);
+		} else
+			die('{"jsonrpc" : "2.0", "error" : {"code": 100, "message": "Failed to open temp directory."}, "id" : "id"}');
+		*/
 
-// Settings
-//$targetDir = ini_get("upload_tmp_dir") . DIRECTORY_SEPARATOR . "plupload";
-
-//$targetDir = '../image/data/';
-$targetDir = rtrim(DIR_IMAGE . 'data/' . str_replace('../', '', $this->request->get['directory']), '/');
-
-//$cleanupTargetDir = false; // Remove old files
-//$maxFileAge = 60 * 60; // Temp file age in seconds
-
-// 5 minutes execution time
-@set_time_limit(5 * 60);
-
-// Uncomment this one to fake upload time
-// usleep(5000);
-
-// Get parameters
-$chunk = isset($_REQUEST["chunk"]) ? $_REQUEST["chunk"] : 0;
-$chunks = isset($_REQUEST["chunks"]) ? $_REQUEST["chunks"] : 0;
-$fileName = isset($_REQUEST["name"]) ? $_REQUEST["name"] : '';
-
-// Clean the fileName for security reasons
-$fileName = preg_replace('/[^\w\._]+/', '', $fileName);
-
-// Make sure the fileName is unique but only if chunking is disabled
-if ($chunks < 2 && file_exists($targetDir . DIRECTORY_SEPARATOR . $fileName)) {
-	$ext = strrpos($fileName, '.');
-	$fileName_a = substr($fileName, 0, $ext);
-	$fileName_b = substr($fileName, $ext);
-
-	$count = 1;
-	while (file_exists($targetDir . DIRECTORY_SEPARATOR . $fileName_a . '_' . $count . $fileName_b))
-		$count++;
-
-	$fileName = $fileName_a . '_' . $count . $fileName_b;
-}
-
-// Create target dir
-if (!file_exists($targetDir))
-	@mkdir($targetDir);
-
-// Remove old temp files
-/* this doesn't really work by now
-	
-if (is_dir($targetDir) && ($dir = opendir($targetDir))) {
-	while (($file = readdir($dir)) !== false) {
-		$filePath = $targetDir . DIRECTORY_SEPARATOR . $file;
-
-		// Remove temp files if they are older than the max age
-		if (preg_match('/\\.tmp$/', $file) && (filemtime($filePath) < time() - $maxFileAge))
-			@unlink($filePath);
-	}
-
-	closedir($dir);
-} else
-	die('{"jsonrpc" : "2.0", "error" : {"code": 100, "message": "Failed to open temp directory."}, "id" : "id"}');
-*/
-
-// Look for the content type header
-if (isset($_SERVER["HTTP_CONTENT_TYPE"]))
-	$contentType = $_SERVER["HTTP_CONTENT_TYPE"];
-
-if (isset($_SERVER["CONTENT_TYPE"]))
-	$contentType = $_SERVER["CONTENT_TYPE"];
-
-// Handle non multipart uploads older WebKit versions didn't support multipart in HTML5
-if (strpos($contentType, "multipart") !== false) {
-	if (isset($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
-		// Open temp file
-		$out = fopen($targetDir . DIRECTORY_SEPARATOR . $fileName, $chunk == 0 ? "wb" : "ab");
-		if ($out) {
-			// Read binary input stream and append it to temp file
-			$in = fopen($_FILES['file']['tmp_name'], "rb");
-
-			if ($in) {
-				while ($buff = fread($in, 4096))
-					fwrite($out, $buff);
+		$contentType = null;
+		// Look for the content type header
+		if (isset($_SERVER["HTTP_CONTENT_TYPE"]))
+			$contentType = $_SERVER["HTTP_CONTENT_TYPE"];
+		
+		if (isset($_SERVER["CONTENT_TYPE"]))
+			$contentType = $_SERVER["CONTENT_TYPE"];
+		
+		// Handle non multipart uploads older WebKit versions didn't support multipart in HTML5
+		if (strpos($contentType, "multipart") !== false) {
+			if (isset($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
+				// Open temp file
+				$out = fopen($targetDir . DIRECTORY_SEPARATOR . $fileName, $chunk == 0 ? "wb" : "ab");
+				if ($out) {
+					// Read binary input stream and append it to temp file
+					$in = fopen($_FILES['file']['tmp_name'], "rb");
+		
+					if ($in) {
+						while ($buff = fread($in, 4096))
+							fwrite($out, $buff);
+					} else
+						die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
+					fclose($in);
+					fclose($out);
+					@unlink($_FILES['file']['tmp_name']);
+				} else
+					die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
 			} else
-				die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
-			fclose($in);
-			fclose($out);
-			@unlink($_FILES['file']['tmp_name']);
-		} else
-			die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
-	} else
-		die('{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}');
-} else {
-	// Open temp file
-	$out = fopen($targetDir . DIRECTORY_SEPARATOR . $fileName, $chunk == 0 ? "wb" : "ab");
-	if ($out) {
-		// Read binary input stream and append it to temp file
-		$in = fopen("php://input", "rb");
-
-		if ($in) {
-			while ($buff = fread($in, 4096))
-				fwrite($out, $buff);
-		} else
-			die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
-
-		fclose($in);
-		fclose($out);
-	} else
-		die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
-}
-
-// Return JSON-RPC response
-die('{"jsonrpc" : "2.0", "result" : null, "id" : "id"}');
-
+				die('{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}');
+		} else {
+			// Open temp file
+			$out = fopen($targetDir . DIRECTORY_SEPARATOR . $fileName, $chunk == 0 ? "wb" : "ab");
+			if ($out) {
+				// Read binary input stream and append it to temp file
+				$in = fopen("php://input", "rb");
 		
-	}	
+				if ($in) {
+					while ($buff = fread($in, 4096))
+						fwrite($out, $buff);
+				} else
+					die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
 		
+				fclose($in);
+				fclose($out);
+			} else
+				die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
+		}
+
+		// Return JSON-RPC response
+		die('{"jsonrpc" : "2.0", "result" : null, "id" : "id"}');
+	}
 } 
-?>

@@ -4,8 +4,9 @@ use model\catalog\SupplierGroupDAO;
 use model\sale\CustomerDAO;
 use model\sale\OrderItem;
 use model\sale\OrderItemDAO;
+use system\engine\AdminController;
 
-class ControllerSaleOrderItems extends Controller {
+class ControllerSaleOrderItems extends AdminController {
 	private $error = array();
 	/** @var \ModelSaleOrder */
 	private $modelSaleOrder;

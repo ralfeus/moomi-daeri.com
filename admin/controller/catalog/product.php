@@ -191,7 +191,7 @@ class ControllerCatalogProduct extends AdminController {
   	public function copy() {
 		if (isset($this->request->post['selected']) && $this->validateCopy()) {
 			foreach ($this->request->post['selected'] as $product_id) {
-				$this->modelCatalogProduct->copyProduct($product_id);
+				ProductDAO::getInstance()->duplicateProduct($product_id);
   		}
 			$this->session->data['success'] = $this->language->get('text_success');
 			

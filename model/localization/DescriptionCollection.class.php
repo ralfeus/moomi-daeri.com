@@ -38,6 +38,7 @@ class DescriptionCollection implements \Iterator {
             throw new \InvalidArgumentException("DescriptionCollection can contain only Description instances");
         }
         $this->descriptions[$description->getLanguageId()] = $description;
+        $this->keys[] = $description->getLanguageId();
     }
 
     /**
@@ -46,13 +47,15 @@ class DescriptionCollection implements \Iterator {
     public function deleteDescription($description) {
         if ($description instanceof Description) {
             foreach ($this->descriptions as $key => $value) {
-                if ($value !== $description) {
+                if ($value === $description) {
                     unset($this->descriptions[$key]);
+                    unset($this->keys[$key]);
                     break;
                 }
             }
         } elseif (is_int($description) && key_exists($description, $this->descriptions)) {
             unset($this->descriptions[$description]);
+            unset($this->keys[$description]);
         } else {
             throw new \InvalidArgumentException("Can't find description by argument '$description'");
         }

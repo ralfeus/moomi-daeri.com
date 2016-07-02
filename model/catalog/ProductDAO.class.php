@@ -114,6 +114,29 @@ class ProductDAO extends DAO {
     }
 
     /**
+     * @param Product|int $product
+     * @return Product
+     */
+    public function duplicateProduct($product) {
+        if (!($product instanceof Product)) {
+            $product = $this->getProduct($product, false, true);
+        }
+        $newProduct = new Product(
+            0, $this->getLanguage()->getId(), $product->getAfcId(), $product->getAffiliateCommission(),
+            $product->getDateAdded(), $product->getDateAvailable(), $product->getDateModified(), $product->getDescription(),
+            $product->getDimension(), $product->getImagePath(), $product->getKeyword(), $product->getKoreanName(), 
+            $product->getLocation(), $product->getManufacturerId(), $product->getMinimum(), $product->getModel(),
+            $product->getOptions(), $product->getPoints(), $product->getPrice(), $product->getQuantity(), $product->getShipping(),
+            $product->getSku(), $product->getSortOrder(), $product->getStatus(), $product->getStockStatusId(), 
+            $product->getStores(), $product->getSubtract(), $product->getSupplier(), $product->getSupplierUrl(),
+            $product->getTags(), $product->getUpc(), $product->getUserId(), $product->getViewed(), $product->getWeight(),
+            $product->getAttributes(), $product->getDiscounts(), $product->getSpecials(), $product->getDownloads(), 
+            $product->getCategories(), $product->getRelated(), $product->getLayouts(), $product->getRewards(),
+            $product->getImageDescription());
+        return $this->saveProduct($newProduct);
+    }
+
+    /**
      * @param int $productId
      * @param bool $shallow Defines whether all product data should be fetched immediately or just stub object created
      * @param bool $object Defines whether object or array should be returned.
@@ -1053,72 +1076,119 @@ SQL
 
     /**
      * @param Product $product
+     * @return Product
      */
     public function saveProduct($product) {
         $this->getDb()->beginTransaction();
         try {
-            $this->getDb()->query("
-		    UPDATE product
-		    SET
-		        model = :model,
-		        sku = :sku,
-		        upc = :upc,
-		        location = :location,
-		        minimum = :minimum,
-		        subtract = :subtract,
-		        stock_status_id = :stockStatusId,
-		        date_available = :dateAvailable,
-		        manufacturer_id = :manufacturerId,
-		        supplier_id = :supplierId,
-		        shipping = :shipping,
-		        price = :price,
-		        points = :points,
-		        weight = :weight,
-		        weight_class_id = :weightClassId,
-		        length = :length,
-		        width = :width,
-		        height = :height,
-		        length_class_id = :lengthClassId,
-		        status = :status,
-		        sort_order = :sortOrder,
-                affiliate_commission = :affiliateCommission,
-                image = :image,
-		        date_modified = NOW(),
-		        korean_name = :koreanName,
-		        supplier_url = :supplierUrl,
-		        image_description = :imageDescription
-            WHERE product_id = :productId
-            ", array(
+            if ($product->getId() == 0) {
+                $this->getDb()->query("
+                    INSERT INTO product
+                    (model, sku, upc, location, quantity, stock_status_id, image, manufacturer_id, supplier_id, shipping,
+                    price, points, tax_class_id, date_available, weight, weight_class_id, length, width, height, 
+                    length_class_id, subtract, minimum, sort_order, status, date_added, date_modified, viewed, user_id,
+                    afc_id, affiliate_commission, korean_name, supplier_url, image_description)
+                    VALUES (
+                        :model, :sku, :upc, :location, :quantity, :stockStatusId, :image, :manufacturerId, :supplierId, 
+                        :shipping, :price, :points, 0, :dateAvailable, :weight, :weightClassId, :length, :width, :height, 
+                        :lengthClassId, :subtract, :minimum, :sortOrder, :status, NOW(), NOW(), 0, :userId, :afcId, 
+                        :affiliateCommission, :koreanName, :supplierUrl, :imageDescription
+                    )
+                    ", [
                     ':model' => $product->getModel(),
                     ':sku' => $product->getSku(),
                     ':upc' => $product->getUpc(),
                     ':location' => $product->getLocation(),
-                    ':minimum' => $product->getMinimum(),
-                    ':subtract' => $product->getSubtract(),
+                    ':quantity' => $product->getQuantity(),
                     ':stockStatusId' => $product->getStockStatusId(),
-                    ':dateAvailable' => $product->getDateAvailable(),
+                    ':image' => $product->getImagePath(),
                     ':manufacturerId' => $product->getManufacturerId(),
                     ':supplierId' => $product->getSupplier()->getId(),
                     ':shipping' => $product->getShipping(),
                     ':price' => $product->getPrice(),
                     ':points' => $product->getPoints(),
+                    ':dateAvailable' => $product->getDateAvailable(),
                     ':weight' => $product->getWeight()->getWeight(),
                     ':weightClassId' => $product->getWeight()->getUnit()->getId(),
                     ':length' => $product->getDimension()->getLength(),
                     ':width' => $product->getDimension()->getWidth(),
                     ':height' => $product->getDimension()->getHeight(),
                     ':lengthClassId' => $product->getDimension()->getUnit()->getId(),
-                    ':status' => $product->getStatus(),
+                    ':subtract' => $product->getSubtract(),
+                    ':minimum' => $product->getMinimum(),
                     ':sortOrder' => $product->getSortOrder(),
+                    ':status' => $product->getStatus(),
+                    ':userId' => $product->getUserId(),
+                    ':afcId' => $product->getAfcId(),
                     ':affiliateCommission' => $product->getAffiliateCommission(),
-                    ':image' => $product->getImagePath(),
-                    ':productId' => $product->getId(),
                     ':koreanName' => $product->getKoreanName(),
                     ':supplierUrl' => $product->getSupplierUrl(),
                     ':imageDescription' => $product->getImageDescription()
-                )
-            );
-
+                ]);
+                $product->setId($this->getDb()->getLastId());
+            } else {
+                $this->getDb()->query("
+                    UPDATE product
+                    SET
+                        model = :model,
+                        sku = :sku,
+                        upc = :upc,
+                        location = :location,
+                        minimum = :minimum,
+                        subtract = :subtract,
+                        stock_status_id = :stockStatusId,
+                        date_available = :dateAvailable,
+                        manufacturer_id = :manufacturerId,
+                        supplier_id = :supplierId,
+                        shipping = :shipping,
+                        price = :price,
+                        points = :points,
+                        weight = :weight,
+                        weight_class_id = :weightClassId,
+                        length = :length,
+                        width = :width,
+                        height = :height,
+                        length_class_id = :lengthClassId,
+                        status = :status,
+                        sort_order = :sortOrder,
+                        affiliate_commission = :affiliateCommission,
+                        image = :image,
+                        date_modified = NOW(),
+                        korean_name = :koreanName,
+                        supplier_url = :supplierUrl,
+                        image_description = :imageDescription
+                    WHERE product_id = :productId
+                    ", array(
+                        ':model' => $product->getModel(),
+                        ':sku' => $product->getSku(),
+                        ':upc' => $product->getUpc(),
+                        ':location' => $product->getLocation(),
+                        ':minimum' => $product->getMinimum(),
+                        ':subtract' => $product->getSubtract(),
+                        ':stockStatusId' => $product->getStockStatusId(),
+                        ':dateAvailable' => $product->getDateAvailable(),
+                        ':manufacturerId' => $product->getManufacturerId(),
+                        ':supplierId' => $product->getSupplier()->getId(),
+                        ':shipping' => $product->getShipping(),
+                        ':price' => $product->getPrice(),
+                        ':points' => $product->getPoints(),
+                        ':weight' => $product->getWeight()->getWeight(),
+                        ':weightClassId' => $product->getWeight()->getUnit()->getId(),
+                        ':length' => $product->getDimension()->getLength(),
+                        ':width' => $product->getDimension()->getWidth(),
+                        ':height' => $product->getDimension()->getHeight(),
+                        ':lengthClassId' => $product->getDimension()->getUnit()->getId(),
+                        ':status' => $product->getStatus(),
+                        ':sortOrder' => $product->getSortOrder(),
+                        ':affiliateCommission' => $product->getAffiliateCommission(),
+                        ':image' => $product->getImagePath(),
+                        ':productId' => $product->getId(),
+                        ':koreanName' => $product->getKoreanName(),
+                        ':supplierUrl' => $product->getSupplierUrl(),
+                        ':imageDescription' => $product->getImageDescription()
+                        )
+                    );
+            }
 
             $this->saveDescription($product);
             $this->saveStores($product);
@@ -1143,6 +1213,7 @@ SQL
             $this->getLogger()->write($e->getTraceAsString());
             $this->getDb()->rollbackTransaction();
         }
+        return $product;
     }
 
     /**
@@ -1170,7 +1241,7 @@ SQL
      */
     private function saveOptions($product) {
         if ($product->isOptionsModified()) {
-            $this->getDb()->query("DELETE FROM product_option WHERE product_id = :productId", [':productId' => $product->getId()]);
+            $productOptionsExisted = boolval($this->getDb()->query("DELETE FROM product_option WHERE product_id = :productId", [':productId' => $product->getId()]));
             $this->getDb()->query("DELETE FROM product_option_value WHERE product_id = :productId", [':productId' => $product->getId()]);
 
             foreach ($product->getOptions() as $productOption) {
@@ -1184,53 +1255,33 @@ SQL
                 if ($params[':optionValue'] instanceof ProductOptionValueCollection) {
                     $params[':optionValue'] = '';
                 }
-                $this->getDb()->query("
-                    INSERT INTO product_option
-                    SET
-                        product_option_id = :productOptionId,
-                        product_id = :productId,
-                        option_id = :optionId,
-                        required = :isRequired,
-                        option_value = :optionValue
-                    ", $params);
+                if ($productOptionsExisted) {
+                    $this->getDb()->query("
+                        INSERT INTO product_option
+                        SET
+                            product_option_id = :productOptionId,
+                            product_id = :productId,
+                            option_id = :optionId,
+                            required = :isRequired,
+                            option_value = :optionValue
+                        ", $params);
+                } else {
+                    unset($params[':productOptionId']);
+                    $this->getDb()->query("
+                        INSERT INTO product_option
+                        SET
+                            product_id = :productId,
+                            option_id = :optionId,
+                            required = :isRequired,
+                            option_value = :optionValue
+                        ", $params);
+                }
                 $productOption->setId($this->getDb()->getLastId());
 
                 //TODO: Should work regardless of type based on values only
 //                if ($productOption->getType() == 'select' || $productOption->getType() == 'radio' ||
 //                    $productOption->getType() == 'checkbox' || $productOption->getType() == 'image') {
-                foreach ($productOption->getValue() as $productOptionValue) {
-                    $this->getDb()->query("
-                        INSERT INTO product_option_value
-                        SET
-                            product_option_value_id = :productOptionValueId,
-                            product_option_id = :productOptionId,
-                            product_id = :productId,
-                            option_id = :optionId,
-                            option_value_id = :optionValueId,
-                            quantity = :quantity,
-                            subtract = :subtract,
-                            price = :price,
-                            price_prefix = :pricePrefix,
-                            points = :points,
-                            points_prefix = :pointsPrefix,
-                            weight = :weight,
-                            weight_prefix = :weightPrefix
-                    ", [
-                        ':productOptionValueId' => $productOptionValue->getId(),
-                        ':productOptionId' => $productOption->getId(),
-                        ':productId' => $product->getId(),
-                        ':optionId' => $productOption->getOption()->getId(),
-                        ':optionValueId' => $productOptionValue->getOptionValue()->getId(),
-                        ':quantity' => $productOptionValue->getQuantity(),
-                        ':subtract' => $productOptionValue->getSubtract(),
-                        ':price' => abs($productOptionValue->getPrice()),
-                        ':pricePrefix' => $productOptionValue->getPrice() < 0 ? '-' : '+',
-                        ':points' => abs($productOptionValue->getPoints()),
-                        ':pointsPrefix' => $productOptionValue->getPoints() < 0 ? '-' : '+',
-                        ':weight' => abs($productOptionValue->getWeight()),
-                        ':weightPrefix' => $productOptionValue->getWeight() < 0 ? '-' : '+'
-                    ]);
-                }
+                $this->saveOptionValues($product, $productOption, $productOptionsExisted);
             }
         }
     }
@@ -1470,5 +1521,67 @@ SQL
 //                $this->getDb()->query("INSERT INTO url_alias SET query = 'product_id=" . (int)$product->getId() . "', keyword = '" . $this->getDb()->escape($data['keyword']) . "'");
 //            }
 //        }
+    }
+
+    /**
+     * @param Product $product
+     * @param ProductOption $productOption
+     * @param bool $productOptionsExisted
+     */
+    private function saveOptionValues($product, $productOption, $productOptionsExisted) {
+        foreach ($productOption->getValue() as $productOptionValue) {
+            $productOptionValueParams = [
+                ':productOptionValueId' => $productOptionValue->getId(),
+                ':productOptionId' => $productOption->getId(),
+                ':productId' => $product->getId(),
+                ':optionId' => $productOption->getOption()->getId(),
+                ':optionValueId' => $productOptionValue->getOptionValue()->getId(),
+                ':quantity' => $productOptionValue->getQuantity(),
+                ':subtract' => $productOptionValue->getSubtract(),
+                ':price' => abs($productOptionValue->getPrice()),
+                ':pricePrefix' => $productOptionValue->getPrice() < 0 ? '-' : '+',
+                ':points' => abs($productOptionValue->getPoints()),
+                ':pointsPrefix' => $productOptionValue->getPoints() < 0 ? '-' : '+',
+                ':weight' => abs($productOptionValue->getWeight()),
+                ':weightPrefix' => $productOptionValue->getWeight() < 0 ? '-' : '+'
+            ];
+            if ($productOptionsExisted) {
+                $this->getDb()->query("
+                    INSERT INTO product_option_value
+                    SET
+                        product_option_value_id = :productOptionValueId,
+                        product_option_id = :productOptionId,
+                        product_id = :productId,
+                        option_id = :optionId,
+                        option_value_id = :optionValueId,
+                        quantity = :quantity,
+                        subtract = :subtract,
+                        price = :price,
+                        price_prefix = :pricePrefix,
+                        points = :points,
+                        points_prefix = :pointsPrefix,
+                        weight = :weight,
+                        weight_prefix = :weightPrefix
+                ", $productOptionValueParams);
+            } else {
+                unset($productOptionValueParams[':productOptionValueId']);
+                $this->getDb()->query("
+                    INSERT INTO product_option_value
+                    SET
+                        product_option_id = :productOptionId,
+                        product_id = :productId,
+                        option_id = :optionId,
+                        option_value_id = :optionValueId,
+                        quantity = :quantity,
+                        subtract = :subtract,
+                        price = :price,
+                        price_prefix = :pricePrefix,
+                        points = :points,
+                        points_prefix = :pointsPrefix,
+                        weight = :weight,
+                        weight_prefix = :weightPrefix
+                ", $productOptionValueParams);
+            }
+        }
     }
 } 

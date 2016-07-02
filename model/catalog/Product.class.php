@@ -1,6 +1,7 @@
 <?php
 namespace model\catalog;
 
+use Exception;
 use model\localization\DescriptionCollection;
 use model\user\UserDAO;
 use system\library\Dimensions;
@@ -66,6 +67,8 @@ class Product {
     private $affiliateCommission;
     private $weight;
 
+    private $saved;
+    
     /**
      * @param $id
      * @param int $afcId
@@ -120,6 +123,7 @@ class Product {
                                 $discounts = null, $specials = null, $downloads = null, $categories = null, $related = null,
                                 $layouts = null, $rewards = null, $imageDescription = null) {
         $this->id = $id;
+        $this->saved = $this->id != 0;
         if (!is_null($afcId)) { $this->afcId = $afcId; }
         if (!is_null($affiliateCommission)) { $this->affiliateCommission = $affiliateCommission; }
         if (!is_null($attributes)) { $this->attributes = new Mutable($attributes); }
@@ -227,7 +231,7 @@ class Product {
      * @return bool
      */
     public function isAttributesModified() {
-        return !is_null($this->attributes) && $this->attributes->isModified();
+        return !$this->saved || !is_null($this->attributes) && $this->attributes->isModified();
     }
 
     /**
@@ -244,7 +248,7 @@ class Product {
      * @return bool
      */
     public function isCategoriesModified() {
-        return !is_null($this->categories) && $this->categories->isModified();
+        return !$this->saved || !is_null($this->categories) && $this->categories->isModified();
     }
 
     /**
@@ -298,7 +302,7 @@ class Product {
      * @return bool
      */
     public function isDescriptionModified() {
-        return !is_null($this->description) && $this->description->isModified();
+        return !$this->saved || !is_null($this->description) && $this->description->isModified();
     }
 
     /**
@@ -332,7 +336,7 @@ class Product {
      * @return bool
      */
     public function isDiscountsModified() {
-        return !is_null($this->discounts) && $this->discounts->isModified();
+        return !$this->saved || !is_null($this->discounts) && $this->discounts->isModified();
     }
 
     /**
@@ -349,7 +353,7 @@ class Product {
      * @return bool
      */
     public function isDownloadsModified() {
-        return !is_null($this->downloads) && $this->downloads->isModified();
+        return !$this->saved || !is_null($this->downloads) && $this->downloads->isModified();
     }
 
     /**
@@ -358,6 +362,17 @@ class Product {
     public function getId() {
         return $this->id;
     }
+
+    /**
+     * @param int $value
+     * @throws Exception
+     */
+    public function setId($value) {
+        if ($this->id != 0) {
+            throw new Exception("Can not change existing product ID");
+        }
+        $this->id = $value;
+}
 
     /**
      * @return string
@@ -397,7 +412,7 @@ class Product {
      * @return bool
      */
     public function isImagesModified() {
-        return !is_null($this->images) && $this->images->isModified();
+        return !$this->saved || !is_null($this->images) && $this->images->isModified();
     }
 
     public function setImages($value) {
@@ -436,7 +451,7 @@ class Product {
      * @return bool
      */
     public function isLayoutsModified() {
-        return !is_null($this->layouts) && $this->layouts->isModified();
+        return !$this->saved || !is_null($this->layouts) && $this->layouts->isModified();
     }
 
     /**
@@ -524,7 +539,7 @@ class Product {
      * @return bool
      */
     public function isOptionsModified() {
-        return !is_null($this->productOptions) && $this->productOptions->isModified();
+        return !$this->saved || !is_null($this->productOptions) && $this->productOptions->isModified();
     }
 
     /**
@@ -583,7 +598,7 @@ class Product {
      * @return bool
      */
     public function isRelatedModified() {
-        return !is_null($this->related) && $this->related->isModified();
+        return !$this->saved || !is_null($this->related) && $this->related->isModified();
     }
 
     /**
@@ -600,7 +615,7 @@ class Product {
      * @return bool
      */
     public function isRewardsModified() {
-        return !is_null($this->rewards) && $this->rewards->isModified();
+        return !$this->saved || !is_null($this->rewards) && $this->rewards->isModified();
     }
 
     /**
@@ -659,7 +674,7 @@ class Product {
      * @return bool
      */
     public function isSpecialsModified() {
-        return !is_null($this->specials) && $this->specials->isModified();
+        return !$this->saved || !is_null($this->specials) && $this->specials->isModified();
     }
 
     /**
@@ -702,7 +717,7 @@ class Product {
     }
 
     public function isStoresModified() {
-        return !is_null($this->stores) && $this->stores->isModified();
+        return !$this->saved || !is_null($this->stores) && $this->stores->isModified();
     }
 
     public function setStores($value) {
@@ -758,7 +773,7 @@ class Product {
      * @return bool
      */
     public function isTagsModified() {
-        return !is_null($this->tags) && $this->tags->isModified();
+        return !$this->saved || !is_null($this->tags) && $this->tags->isModified();
     }
 
     /**
