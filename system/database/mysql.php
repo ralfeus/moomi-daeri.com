@@ -123,7 +123,7 @@ final class MySQL implements DBDriver{
                     } else {
                         $this->affectedCount = $statement->rowCount();
                         $result = $this->affectedCount;
-                        if (!$noCache) {
+                        if (!$noCache && $result) {
                             $this->invalidateCache($cache, $sql);
                         }
                     }
