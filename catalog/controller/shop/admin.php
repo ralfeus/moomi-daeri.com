@@ -5,8 +5,8 @@ class ControllerShopAdmin extends Controller {
 
     public function __construct($registry) {
         parent::__construct($registry);
-        $this->modelShopGeneral = $this->load->model('shop/general');
-        $this->load->language('shop/general');
+        $this->modelShopGeneral = $this->getLoader()->model('shop/general');
+        $this->getLoader()->language('shop/general');
     }
   public function getHolidays() {
     /*$modelData['photoID'] = isset($_POST['photoID']) ? $_POST['photoID'] : '';
@@ -17,7 +17,7 @@ class ControllerShopAdmin extends Controller {
 
     $this->language->load('gallery/general');
 
-    $this->load->model('gallery/photo');
+    $this->getLoader()->model('gallery/photo');
     $result = $this->model_gallery_photo->addVote($modelData);
 
     $response = array();
@@ -40,7 +40,7 @@ class ControllerShopAdmin extends Controller {
 
   public function showPage() {
     $page_id  = isset($this->request->get['page_id']) ? $this->request->get['page_id'] : null;
-    $lang = $this->config->get('config_language_id');
+    $lang = $this->getConfig()->get('config_language_id');
     $result = $this->modelShopGeneral->getPage($page_id, $lang);
 
     $pages = $result['pages'];
@@ -56,19 +56,19 @@ class ControllerShopAdmin extends Controller {
 
     $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
-      'href'      => $this->url->link('common/home'),
+      'href'      => $this->getUrl()->link('common/home'),
       'separator' => false
     );
 
     $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_account'),
-      'href'      => $this->url->link('account/account', '', 'SSL'),
+      'href'      => $this->getUrl()->link('account/account', '', 'SSL'),
       'separator' => $this->language->get('text_separator')
     );
 
     $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_login'),
-      'href'      => $this->url->link('account/login', '', 'SSL'),
+      'href'      => $this->getUrl()->link('account/login', '', 'SSL'),
       'separator' => $this->language->get('text_separator')
     );
 
@@ -85,15 +85,13 @@ class ControllerShopAdmin extends Controller {
     $this->data['children'] = $children;
     $this->data['page_id'] = $page_id;
 
-    $this->template = 'default/template/shop/page.tpl';
-
-    $this->getResponse()->setOutput($this->render());
+    $this->getResponse()->setOutput($this->render('default/template/shop/page.tpl'));
 
     //print_r($result);
   }
 
   public function hasAction() {
-    $actions = $this->getAction();
+    $actions = $this->getPromotion();
     $response['result'] = !empty($actions);
     //$response['group_id'] = print_r($actions, true);
     print(json_encode($response));
@@ -101,9 +99,9 @@ class ControllerShopAdmin extends Controller {
 
   public function showAction ($action = null) {
 
-    $this->load->language('shop/general');
+    $this->getLoader()->language('shop/general');
 
-    $this->data['action'] = isset($action) ? $action : $this->getAction();
+    $this->data['action'] = isset($action) ? $action : $this->getPromotion();
 
     $urls = $this->object2array(json_decode($this->data['action']['jsonUrls']));
     $images = $this->object2array(json_decode($this->data['action']['jsonImages']));
@@ -114,24 +112,27 @@ class ControllerShopAdmin extends Controller {
     $this->data['action_image'] = HTTP_SERVER. "admin/view/image/actions/" . $images[$cur_lang];
     $this->data['action_message'] = $this->language->get('text_action_no_show_more');
 
-    $this->template = 'default/template/shop/action.tpl.php';
-
-    $this->getResponse()->setOutput($this->render());
+    $this->getResponse()->setOutput($this->render('default/template/shop/action.tpl.php'));
   }
 
-  private function getAction() {
+  private function getPromotion() {
     $customer_group_id = $this->customer->getCustomerGroupId();
     $data['customer_group_id'] = empty($customer_group_id) ? 0 : $customer_group_id;
     $data['current_date'] = date("Y-m-d");
 
-    $this->load->model('shop/general');
+    $this->getLoader()->model('shop/general');
     $result = $this->model_shop_general->getAction($data);
 
     return !empty($result) ? $result[0] : null;
   }
 
+  /**
+   * @param $obj
+   * @return array
+     */
   public function object2array($obj) {
     $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
+    $arr = [];
     foreach ($_arr as $key => $val) {
       $val = (is_array($val) || is_object($val)) ? $this->object2array($val) : $val;
       $arr[$key] = $val;
