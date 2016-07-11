@@ -1,5 +1,4 @@
-<?php if (isset($_SERVER['HTTP_USER_AGENT']) && !strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6')) echo '<?xml version="1.0" encoding="UTF-8"?>'. "\n"; ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="<?= $direction ?>" lang="<?= $lang ?>" xml:lang="<?= $lang ?>">
 <head>
 <title><?= $title ?></title>
@@ -41,10 +40,8 @@
 <script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/countdown.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/jquery.countdown.js"></script>
 <script type="text/javascript" src="catalog/view/javascript/wkproduct_auction/jquery.quick.pagination.min.js"></script>
-<!--    <link href="catalog/view/javascript/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" />-->
-    <script src="catalog/view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-<!--    <link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />-->
-    <!--[if IE]>
+<script src="catalog/view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<!--[if IE]>
 <script type="text/javascript" src="catalog/view/javascript/jquery/fancybox/jquery.fancybox-1.3.4-iefix.js"></script>
 <![endif]-->
 <script type="text/javascript" src="catalog/view/javascript/jquery/tabs.js"></script>
@@ -64,6 +61,7 @@
 <script type="text/javascript" src="catalog/view/javascript/common.js"></script>
 
 <link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/ui-lightness/jquery-ui-1.8.23.custom.css" />
+<link rel="stylesheet" type="text/css" href="catalog/view/theme/default/adpacks.css" />
 <?php foreach ($scripts as $script) { ?>
 <script type="text/javascript" src="<?= $script ?>"></script>
 <?php } ?>
@@ -97,7 +95,7 @@ DD_belatedPNG.fix('#logo img');
     })();
     </script>
     <!-- End SiteHeart code -->
-<!-- RedHelper --
+<!-- RedHelper -->
 <script id="rhlpscrtg" type="text/javascript" charset="utf-8" async="async"
         src="https://web.redhelper.ru/service/main.js?c=moomidae">
 </script>
@@ -268,46 +266,6 @@ if (document.all) window.external.addFavorite('http://moomidae.com', 'MooMi-DaeR
 <script>
 document.write('<script src="//sharebutton.net/plugin/sharebutton.php?type=vertical&u=' + encodeURIComponent(document.location.href) + '"></scr' + 'ipt>');
 </script>
-<style type="text/css">
-  .width180 {
-    width: 180px;
-  }
-  .ui-datepicker td.holiday a, .ui-datepicker td.holiday a:hover {
-     background: none #FFEBAF;
-     border: 1px solid #BF5A0C;
-   }
-   .legendRect {
-      width: 10px;
-      height: 10px;
-      border: solid 1px;
-      float: left;
-      margin-right: 5px;
-      margin-left: 10px;
-      margin-top: 3px;
-    }
-    .work {
-      background: none #dfeffc;
-      border: 1px solid #c5dbec;
-    }
-    .free {
-      background: none #FFEBAF;
-      border: 1px solid #BF5A0C;
-    }
-</style>
-
-<!-- AdPacks -->
-<style>
-#adpacks-wrapper{font-family: Arial, Helvetica;width:280px;position: fixed;_position:absolute;bottom: 0;right: 20px;z-index: 9999;background: #eaeaea;padding: 10px;-moz-box-shadow: 0 0 15px #444;-webkit-box-shadow: 0 0 15px #444;box-shadow: 0 0 15px #444;}
-body .adpacks{background:#fff;padding:15px;margin:15px 0 0;border:3px solid #eee;}
-body .one .bsa_it_ad{background:transparent;border:none;font-family:inherit;padding:0;margin:0;}
-body .one .bsa_it_ad .bsa_it_i{display:block;padding:0;float:left;margin:0 10px 0 0;}
-body .one .bsa_it_ad .bsa_it_i img{padding:0;border:none;}
-body .one .bsa_it_ad .bsa_it_t{padding: 0 0 6px 0; font-size: 11px;}
-body .one .bsa_it_p{display:none;}
-body #bsap_aplink,body #bsap_aplink:hover{display:block;font-size:9px;margin: -15px 0 0 0;text-align:right;}
-body .one .bsa_it_ad .bsa_it_d{font-size: 11px;}
-body .one{overflow: hidden}
-</style>
 </head>
 <body>
 
@@ -322,7 +280,7 @@ _tmr.push({id: "2609178", type: "pageView", start: (new Date()).getTime()});
    if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); }
 })(document, window);
 </script><noscript><div style="position:absolute;left:-10000px;">
-<img src="//top-fwz1.mail.ru/counter?id=2609178;js=na" style="border:0;" height="1" width="1" alt="Рейтинг@Mail.ru" />
+<img src="//top-fwz1.mail.ru/counter?id=2609178;js=na" style="border:0;" height="1" width="1" alt="пїЅпїЅпїЅпїЅпїЅпїЅпїЅ@Mail.ru" />
 </div></noscript>
 <!-- //Rating@Mail.ru counter -->
 
@@ -343,11 +301,11 @@ _tmr.push({id: "2609178", type: "pageView", start: (new Date()).getTime()});
       <form id="selectors" action="<?= $action ?>" method="post" enctype="multipart/form-data">
         <table align="center" cellpadding="0" cellspacing="0" border="0">
           <tr valign="middle">
-            <td width="150"">
-              <table>
+            <td width="150">
+              <table><tr><td>
                 <div class="login-header"><?= (!$logged) ? $text_welcome_guest_left :$text_logged_customer_left ?></div>
                 <div class="logout-header"><?= (!$logged) ? $text_welcome_guest_right :$text_logged_customer_right ?></div>
-              </table>
+              </td></tr></table>
             </td>
             <td width="400">
               <div id="search">
@@ -414,11 +372,11 @@ _tmr.push({id: "2609178", type: "pageView", start: (new Date()).getTime()});
               </table>
             </td>
             <td width="150" align="center">
-              <table>
+              <table><tr><td>
                 <div class="contact-header">Contact:<br />
                   <a href="mailto:moomidae@gmail.com">moomidae@gmail.com</a>
                 </div>
-              </table>
+              </td></tr></table>
             </td>
           </tr>
         </table>

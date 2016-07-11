@@ -23,7 +23,7 @@
     <div class="buttons">
       <div class="left"><a onclick="$('#basket').submit();" class="button"><span><?php echo $button_update; ?></span></a></div>
       <div class="right"><a class="button" onclick="checkout()"><span><?php echo $button_checkout; ?></span></a></div>
-      <!--div class="right"><a href="<?= $urlCheckoutSelected ?>" class="button"><span><?php echo $textCheckoutSelected; ?></span></a></div-->
+      <?php /*<div class="right"><a href="<?= $urlCheckoutSelected ?>" class="button"><span><?php echo $textCheckoutSelected; ?></span></a></div>*/ ?>
       <div class="center"><a href="<?php echo $continue; ?>" class="button"><span><?php echo $button_shopping; ?></span></a></div>
     </div>
     <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="basket">

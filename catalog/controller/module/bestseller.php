@@ -7,9 +7,9 @@ class ControllerModuleBestSeller extends Controller {
 				
 		$this->data['button_cart'] = $this->language->get('button_cart');
 		
-		$this->load->model('catalog/product');
+		$this->getLoader()->model('catalog/product');
 		
-		$this->load->model('tool/image');
+		$this->getLoader()->model('tool/image');
 
 		$this->data['products'] = array();
 
@@ -22,19 +22,19 @@ class ControllerModuleBestSeller extends Controller {
 				$image = false;
 			}
 			
-			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-				$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+			if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
+				$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->getConfig()->get('config_tax')));
 			} else {
 				$price = false;
 			}
 					
 			if ((float)$result['special']) {
-				$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+				$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->getConfig()->get('config_tax')));
 			} else {
 				$special = false;
 			}	
 			
-			if ($this->config->get('config_review_status')) {
+			if ($this->getConfig()->get('config_review_status')) {
 				$rating = $result['rating'];
 			} else {
 				$rating = false;
@@ -52,13 +52,12 @@ class ControllerModuleBestSeller extends Controller {
 			);
 		}
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/bestseller.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/module/bestseller.tpl';
+		if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/module/bestseller.tpl.php')) {
+			$template = $this->getConfig()->get('config_template') . '/template/module/bestseller.tpl.php';
 		} else {
-			$this->template = 'default/template/module/bestseller.tpl';
+			$template = 'default/template/module/bestseller.tpl.php';
 		}
 
-		$this->render();
+		$this->render($template);
 	}
 }
-?>

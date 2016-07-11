@@ -358,10 +358,10 @@ class ControllerAccountOrder extends CustomerZoneController {
 
       		$this->data['continue'] = $this->url->link('account/order', '', 'SSL');
 
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/account/order_info.tpl')) {
-				$this->template = $this->config->get('config_template') . '/template/account/order_info.tpl';
+			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/account/order_info.tpl.php')) {
+				$this->template = $this->config->get('config_template') . '/template/account/order_info.tpl.php';
 			} else {
-				$this->template = 'default/template/account/order_info.tpl';
+				$this->template = 'default/template/account/order_info.tpl.php';
 			}
 
 			$this->children = array(
