@@ -3,6 +3,10 @@ use system\library\Filter;
 
 require_once('OpenCartBase.php');
 abstract class Model extends OpenCartBase {
+    public function __construct($registry) {
+        parent::__construct($registry);
+    }
+
     /**
      * @param int $start
      * @param int $limit

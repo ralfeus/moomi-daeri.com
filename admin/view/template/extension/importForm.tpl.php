@@ -70,8 +70,12 @@
                 <td><input type="text" name="regularCustomerPriceRate" value="<?= $importSite->getRegularCustomerPriceRate() ?>"/></td>
             </tr>
             <tr>
-                <td><?= $textWholesaleCustomerPriceRate ?></td>
-                <td><input type="text" name="wholesaleCustomerPriceRate" value="<?= $importSite->getWholesaleCustomerPriceRate() ?>"/></td>
+                <td><label for="wholesaleCustomerPriceRate"><?= $textWholesaleCustomerPriceRate ?></label></td>
+                <td><input type="text" id="wholesaleCustomerPriceRate" name="wholesaleCustomerPriceRate" value="<?= $importSite->getWholesaleCustomerPriceRate() ?>"/></td>
+            </tr>           
+            <tr>
+                <td><label for="defaultItemWeight"><?= $textDefaultItemWeight ?></label></td>
+                <td><input type="text" id="defaultItemWeight" name="defaultItemWeight" value="<?= $importSite->getDefaultItemWeight() ?>"/></td>
             </tr>
             <tr>
                 <td><label for="importMappedCategoriesOnly"><?= $textImportMappedCategoriesOnly ?></label></td>

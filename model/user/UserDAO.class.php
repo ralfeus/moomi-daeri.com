@@ -15,7 +15,7 @@ class UserDAO extends DAO {
      */
     public function getUserById($userId) {
         $query = $this->getDb()->query("SELECT * FROM `user` WHERE user_id = :userId", [ ':userId' => $userId ]);
-
+        if (!isset($query->row['username'])) { $query->row['username'] = ''; }
         return $query->row;
     }
 }

@@ -1,8 +1,11 @@
 <?php
+use model\catalog\CategoryDAO;
 use model\catalog\ManufacturerDAO;
 use model\catalog\ProductDAO;
 use model\catalog\SupplierDAO;
+use model\localization\Description;
 use model\sale\OrderItemDAO;
+use model\setting\StoreDAO;
 use system\engine\AdminController;
 use system\library\MeasureUnitDAO;
 
@@ -10,14 +13,19 @@ class ControllerCatalogProduct extends AdminController {
 	private $error = array();
     /** @var ModelCatalogProduct */
     private $modelCatalogProduct;
+	/** @var ModelToolImage $modelToolImage */
+	private $modelToolImage;
 
-    public function __construct($registry, $action) {
+
+	public function __construct($registry, $action) {
         parent::__construct($registry, $action);
         $this->getLoader()->language('catalog/product');
         $this->document->setTitle($this->language->get('heading_title'));
         $this->data['heading_title'] = $this->language->get('heading_title');
         $this->modelCatalogProduct = $this->getLoader()->model('catalog/product');
-        $this->takeSessionVariables();
+		$this->modelToolImage = $this->getLoader()->model('tool/image');
+
+		$this->takeSessionVariables();
     }
 
   	public function index() {
@@ -374,11 +382,11 @@ class ControllerCatalogProduct extends AdminController {
 			);
 
 			if ($product->getImagePath() && file_exists(DIR_IMAGE . $product->getImagePath())) {
-				$image = $this->model_tool_image->resize($product->getImagePath(), 100, 100);
-				$popImage = $this->model_tool_image->resize($product->getImagePath(), 300, 300);
+				$image = $this->modelToolImage->resize($product->getImagePath(), 100, 100);
+				$popImage = $this->modelToolImage->resize($product->getImagePath(), 300, 300);
 			} else {
-				$image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
-				$popImage = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+				$image = $this->modelToolImage->resize('no_image.jpg', 100, 100);
+				$popImage = $this->modelToolImage->resize('no_image.jpg', 100, 100);
 			}
 
 			$special = false;
@@ -822,16 +830,15 @@ class ControllerCatalogProduct extends AdminController {
 		if (isset($this->request->get['product_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
 			$product_info = $this->model_catalog_product->getProduct($this->request->get['product_id']);
 		}
-		$this->getLoader()->model('localisation/language');
 
-		$this->data['languages'] = $this->model_localisation_language->getLanguages();
+		$this->data['languages'] = $this->getLoader()->model('localisation/language')->getLanguages();
 
 		if (isset($this->request->post['product_description'])) {
 			$this->data['product_description'] = $this->request->post['product_description'];
 		} elseif (isset($this->request->get['product_id'])) {
-			$this->data['product_description'] = $this->model_catalog_product->getProductDescriptions($this->request->get['product_id']);
+			$this->data['product_description'] = ProductDAO::getInstance()->getDescription($this->request->get['product_id']);
 		} else {
-			$this->data['product_description'] = array();
+			$this->data['product_description'] = new Description($this->getLanguage()->getId(), '');
 		}
 
 		if (isset($this->request->post['model'])) {
@@ -882,22 +889,18 @@ class ControllerCatalogProduct extends AdminController {
 			$this->data['image'] = '';
 		}
 
-		$this->getLoader()->model('tool/image');
-
 		if (!empty($product_info) && $product_info['image'] && file_exists(DIR_IMAGE . $product_info['image'])) {
-			$this->data['thumb'] = $this->model_tool_image->resize($product_info['image'], 100, 100);
+			$this->data['thumb'] = $this->modelToolImage->resize($product_info['image'], 100, 100);
 		} else {
-			$this->data['thumb'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+			$this->data['thumb'] = $this->modelToolImage->resize('no_image.jpg', 100, 100);
 		}
 
-		$this->getLoader()->model('setting/store');
-
-		$this->data['stores'] = $this->model_setting_store->getStores();
+		$this->data['stores'] = StoreDAO::getInstance()->getStores();
 
 		if (isset($this->request->post['product_store'])) {
 			$this->data['product_store'] = $this->request->post['product_store'];
 		} elseif (isset($this->request->get['product_id'])) {
-			$this->data['product_store'] = $this->model_catalog_product->getProductStores($this->request->get['product_id']);
+			$this->data['product_store'] = ProductDAO::getInstance()->getStores($this->request->get['product_id']);
 		} else {
 			$this->data['product_store'] = array(0);
 		}
@@ -913,7 +916,7 @@ class ControllerCatalogProduct extends AdminController {
 		if (isset($this->request->post['product_tag'])) {
 			$this->data['product_tag'] = $this->request->post['product_tag'];
 		} elseif (isset($this->request->get['product_id'])) {
-			$this->data['product_tag'] = $this->model_catalog_product->getProductTags($this->request->get['product_id']);
+			$this->data['product_tag'] = ProductDAO::getInstance()->getProductTags($this->request->get['product_id']);
 		} else {
 			$this->data['product_tag'] = array();
 		}
@@ -953,9 +956,7 @@ class ControllerCatalogProduct extends AdminController {
 			$this->data['price'] = '';
 		}
 
-		$this->getLoader()->model('localisation/tax_class');
-
-		$this->data['tax_classes'] = $this->model_localisation_tax_class->getTaxClasses();
+		$this->data['tax_classes'] = $this->getLoader()->model('localisation/tax_class')->getTaxClasses();
 
 		if (isset($this->request->post['tax_class_id'])) {
 			$this->data['tax_class_id'] = $this->request->post['tax_class_id'];
@@ -1005,9 +1006,7 @@ class ControllerCatalogProduct extends AdminController {
 			$this->data['sort_order'] = 1;
 		}
 
-		$this->getLoader()->model('localisation/stock_status');
-
-		$this->data['stock_statuses'] = $this->model_localisation_stock_status->getStockStatuses();
+		$this->data['stock_statuses'] = $this->getLoader()->model('localisation/stock_status')->getStockStatuses();
 
 		if (isset($this->request->post['stock_status_id'])) {
 			$this->data['stock_status_id'] = $this->request->post['stock_status_id'];
@@ -1040,8 +1039,6 @@ class ControllerCatalogProduct extends AdminController {
 		} else {
 			$this->data['weight'] = '';
 		}
-
-		//$this->getLoader()->model('localisation/weight_class');
 
 		$this->data['weight_classes'] = MeasureUnitDAO::getInstance()->getWeightClasses();
 
@@ -1079,7 +1076,7 @@ class ControllerCatalogProduct extends AdminController {
 
 		$this->getLoader()->model('localisation/length_class');
 
-		$this->data['length_classes'] = $this->model_localisation_length_class->getLengthClasses();
+		$this->data['length_classes'] = MeasureUnitDAO::getInstance()->getLengthClasses();
 
 		if (isset($this->request->post['length_class_id'])) {
 			$this->data['length_class_id'] = $this->request->post['length_class_id'];
@@ -1097,60 +1094,58 @@ class ControllerCatalogProduct extends AdminController {
 			$this->data['product_attributes'] = array();
 		}
 
+		$this->data['product_options'] = array();
 		if (isset($this->request->post['product_option'])) {
 			$product_options = $this->request->post['product_option'];
 		} elseif (isset($this->request->get['product_id'])) {
-			$product_options = $this->model_catalog_product->getProductOptions($this->request->get['product_id']);
+			$product_options = ProductDAO::getInstance()->getProductOptions($this->request->get['product_id']);
 		} else {
-			$product_options = array();
+			$product_options = [];
 		}
 
-		$this->data['product_options'] = array();
 
 		foreach ($product_options as $product_option) {
-			if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image') {
+			if ($product_option->getType() == 'select' || $product_option->getType() == 'radio' || $product_option->getType() == 'checkbox' || $product_option->getType() == 'image') {
 				$product_option_value_data = array();
 
-				foreach ($product_option['product_option_value'] as $product_option_value) {
+				foreach ($product_option->getValue() as $product_option_value) {
 					$product_option_value_data[] = array(
-						'product_option_value_id' => $product_option_value['product_option_value_id'],
-						'option_value_id'         => $product_option_value['option_value_id'],
-						'quantity'                => $product_option_value['quantity'],
-						'subtract'                => $product_option_value['subtract'],
-						'price'                   => $product_option_value['price'],
-						'price_prefix'            => $product_option_value['price_prefix'],
-						'points'                  => $product_option_value['points'],
-						'points_prefix'           => $product_option_value['points_prefix'],
-						'weight'                  => $product_option_value['weight'],
-						'weight_prefix'           => $product_option_value['weight_prefix']
+						'product_option_value_id' => $product_option_value->getId(),
+						'option_value_id'         => $product_option_value->getOptionValue()->getId(),
+						'quantity'                => $product_option_value->getQuantity(),
+						'subtract'                => $product_option_value->getSubtract(),
+						'price'                   => $product_option_value->getPrice(),
+						'price_prefix'            => $product_option_value->getPrice() > 0 ? '+' : '-',
+						'points'                  => $product_option_value->getPoints(),
+						'points_prefix'           => $product_option_value->getPoints() > 0 ? '+' : '-',
+						'weight'                  => $product_option_value->getWeight(),
+						'weight_prefix'           => $product_option_value->getWeight() > 0 ? '+' : '-'
 					);
 				}
 
 				$this->data['product_options'][] = array(
-					'product_option_id'    => $product_option['product_option_id'],
-					'option_id'            => $product_option['option_id'],
-					'name'                 => $product_option['name'],
-					'type'                 => $product_option['type'],
+					'product_option_id'    => $product_option->getId(),
+					'option_id'            => $product_option->getOption()->getId(),
+					'name'                 => $product_option->getOption()->getName(),
+					'type'                 => $product_option->getType(),
 					'product_option_value' => $product_option_value_data,
-					'required'             => $product_option['required']
+					'required'             => $product_option->isRequired()
 				);
 			} else {
 				$this->data['product_options'][] = array(
-					'product_option_id' => $product_option['product_option_id'],
-					'option_id'         => $product_option['option_id'],
-					'name'              => $product_option['name'],
-					'type'              => $product_option['type'],
-					'option_value'      => $product_option['option_value'],
-					'required'          => $product_option['required']
+					'product_option_id' => $product_option->getId(),
+					'option_id'         => $product_option->getOption()->getId(),
+					'name'              => $product_option->getOption()->getName(),
+					'type'              => $product_option->getType(),
+					'option_value'      => $product_option->getValue(),
+					'required'          => $product_option->isRequired()
 				);
 			}
 		}
 
 		$this->data['create_option_block'] = $this->getOptionForm();
 
-		$this->getLoader()->model('sale/customer_group');
-
-		$this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
+		$this->data['customer_groups'] = $this->getLoader()->model('sale/customer_group')->getCustomerGroups();
 
 		if (isset($this->request->post['product_discount'])) {
 			$this->data['product_discounts'] = $this->request->post['product_discount'];
@@ -1187,16 +1182,14 @@ class ControllerCatalogProduct extends AdminController {
 
 			$this->data['product_images'][] = array(
 				'image'      => $image,
-				'thumb'      => $this->model_tool_image->resize($image, 100, 100),
+				'thumb'      => $this->modelToolImage->resize($image, 100, 100),
 				'sort_order' => $product_image['sort_order'],
 			);
 		}
 
-		$this->data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+		$this->data['no_image'] = $this->modelToolImage->resize('no_image.jpg', 100, 100);
 
-		$this->getLoader()->model('catalog/download');
-
-		$this->data['downloads'] = $this->model_catalog_download->getDownloads();
+		$this->data['downloads'] = $this->getLoader()->model('catalog/download')->getDownloads();
 
 		if (isset($this->request->post['product_download'])) {
 			$this->data['product_download'] = $this->request->post['product_download'];
@@ -1206,9 +1199,7 @@ class ControllerCatalogProduct extends AdminController {
 			$this->data['product_download'] = array();
 		}
 
-		$this->getLoader()->model('catalog/category');
-
-		$categories = $this->model_catalog_category->getAllCategories();
+		$categories = CategoryDAO::getInstance()->getAllCategories();
 		$this->data['categories'] = $this->getAllCategories($categories);
 
 
@@ -1293,16 +1284,13 @@ class ControllerCatalogProduct extends AdminController {
 			$this->data['product_layout'] = array();
 		}
 
-		$this->getLoader()->model('design/layout');
+		$this->data['layouts'] = $this->getLoader()->model('design/layout')->getLayouts();
 
-		$this->data['layouts'] = $this->model_design_layout->getLayouts();
-
-		$this->template = 'catalog/productForm.tpl.php';
 		$this->children = array(
 			'common/header',
 			'common/footer'
 		);
-		$this->getResponse()->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render('catalog/productForm.tpl.php'));
 	}
 
   	private function getUserNames()
@@ -1411,7 +1399,7 @@ class ControllerCatalogProduct extends AdminController {
                     $this->language->get('DELETION_CONFIRM') . $this->session->data['notifications']['confirm']['text'];
             }
         }
-		if (!$this->session->data['notifications']) {
+		if (empty($this->session->data['notifications'])) {
 	  		return true;
 		} else {
 	  		return false;
@@ -1635,7 +1623,7 @@ class ControllerCatalogProduct extends AdminController {
 	}
 
     private function validateChange() {
-        if (!$this->user->hasPermission('modify', 'catalog/product')) {
+        if (!$this->getUser()->hasPermission('modify', 'catalog/product')) {
             $this->error['warning'] = $this->language->get('error_permission');
         }
 
@@ -1781,9 +1769,7 @@ class ControllerCatalogProduct extends AdminController {
             $this->data['error_option_value'] = array();
         }
 
-    	$this->getLoader()->model('localisation/language');
-
-    	$this->data['languages'] = $this->model_localisation_language->getLanguages();
+    	$this->data['languages'] = $this->getLoader()->model('localisation/language')->getLanguages();
 
     	if(isset($this->request->post['option_description']) && !empty($this->error)) {
             $this->data['option_description'] = $this->request->post['option_description'];
@@ -1809,7 +1795,8 @@ class ControllerCatalogProduct extends AdminController {
             $option_values = array();
         }
 
-    	$this->getLoader()->model('tool/image');
+		/** @var ModelToolImage $modelToolImage */
+    	$modelToolImage = $this->getLoader()->model('tool/image');
 
     	$this->data['option_values'] = array();
 
@@ -1824,26 +1811,21 @@ class ControllerCatalogProduct extends AdminController {
                 'option_value_id'          => $option_value['option_value_id'],
                 'option_value_description' => $option_value['option_value_description'],
                 'image'                    => $image,
-                'thumb'                    => $this->model_tool_image->resize($image, 100, 100),
+                'thumb'                    => $modelToolImage->resize($image, 100, 100),
                 'sort_order'               => $option_value['sort_order']
             );
 	    }
 
     	$this->error = array();
-
-    	$this->data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
-
-    	$this->template = 'catalog/product_option_form.tpl';
-
-    	return $this->render();
+    	$this->data['no_image'] = $modelToolImage->resize('no_image.jpg', 100, 100);
+    	return $this->render('catalog/product_option_form.tpl');
     }
 
     public function createOption() {
-    	$this->getLoader()->model('catalog/option');
     	$this->getLoader()->language('catalog/option');
 
     	if(($this->request->server['REQUEST_METHOD'] == 'POST') && !empty($this->request->post) && $this->validateOptionForm()) {
-            $this->model_catalog_option->addOption($this->request->post);
+            $this->getLoader()->model('catalog/option')->addOption($this->request->post);
 
             $this->session->data['success'] = $this->language->get('text_create_success');
         }
@@ -1854,7 +1836,7 @@ class ControllerCatalogProduct extends AdminController {
     }
 
     private function validateOptionForm() {
-    	if(!$this->user->hasPermission('modify', 'catalog/option')) {
+    	if(!$this->getUser()->hasPermission('modify', 'catalog/option')) {
             $this->error['warning'] = $this->language->get('error_permission');
         }
 
@@ -1897,32 +1879,32 @@ class ControllerCatalogProduct extends AdminController {
     
 	private function getCategoriesParent($parent_id, $product_category) {
 
-	$results = $this->model_catalog_category->getCategoriesParent($parent_id);
+	$categories = CategoryDAO::getInstance()->getCategoriesByParentId($parent_id);
 	$output = '<ul id="tree1">';
 
-	foreach ($results as $result) {
-	$children = $this->model_catalog_category->getCategoriesParent($result['category_id']);
-	if (empty($children)) {
-			  $output .= '<li>';
-	  if (in_array($result['category_id'], $product_category)) {
-	  $output .= '<input type="checkbox" name="product_category[]" value="' . $result['category_id'] . '" checked="checked" />';
-	  } else {
-	  $output .= '<input type="checkbox" name="product_category[]" value="' . $result['category_id'] . '" />';
-	  }
-	  $output .= $result['name'];
-	  $output .= '</li>';
-	} else {
-		  $output .= '<li>';
-	  if (in_array($result['category_id'], $product_category)) {
-	  $output .= '<input type="checkbox" name="product_category[]" value="' . $result['category_id'] . '" checked="checked" />';
-	  } else {
-	  $output .= '<input type="checkbox" name="product_category[]" value="' . $result['category_id'] . '" />';
-	  }
-	  $output .= $result['name'];
-
-	  $output .= $this->getCategoriesParent($result['category_id'], $product_category);
-			  $output .= '</li>';
-	}
+	foreach ($categories as $category) {
+		$children = CategoryDAO::getInstance()->getCategoriesByParentId($category->getId());
+		if (empty($children)) {
+			$output .= '<li>';
+			if (in_array($category->getId(), $product_category)) {
+				$output .= '<input type="checkbox" name="product_category[]" value="' . $category->getId() . '" checked="checked" />';
+			} else {
+				$output .= '<input type="checkbox" name="product_category[]" value="' . $category->getId() . '" />';
+			}
+				$output .= $category->getDescription()->getName();
+				$output .= '</li>';
+		} else {
+		  	$output .= '<li>';
+		  	if (in_array($category->getId(), $product_category)) {
+		  		$output .= '<input type="checkbox" name="product_category[]" value="' . $category->getId() . '" checked="checked" />';
+		  	} else {
+		  		$output .= '<input type="checkbox" name="product_category[]" value="' . $category->getId() . '" />';
+		  	}
+		  	$output .= $category->getDescription()->getName();
+	
+		  	$output .= $this->getCategoriesParent($category->getId(), $product_category);
+		  	$output .= '</li>';
+		}
 	}
 
 	$output .= '</ul>';

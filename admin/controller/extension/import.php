@@ -1,18 +1,19 @@
 <?php
 
+use model\catalog\ImportCategory;
 use model\catalog\ManufacturerDAO;
 use model\catalog\SupplierDAO;
 use model\extension\ImportSourceSite;
 use model\extension\ImportSourceSiteDAO;
-use model\setting\ExtensionDAO;
+use system\engine\AdminController;
 
-class ControllerExtensionImport extends Controller {
+class ControllerExtensionImport extends AdminController {
     /** @var ImportSourceSite $model */
     private $model;
 
     public function __construct($registry) {
         parent::__construct($registry);
-        $this->load->language('extension/import');
+        $this->getLoader()->language('extension/import');
         $this->document->setTitle($this->language->get('heading_title'));
         $this->data['headingTitle'] = $this->language->get('heading_title');
     }
@@ -28,6 +29,7 @@ class ControllerExtensionImport extends Controller {
         $this->data['textCancel'] = $this->language->get("CANCEL");
         $this->data['textClassName'] = $this->language->get("CLASS");
         $this->data['textDefaultCategories'] = $this->language->get("DEFAULT_CATEGORIES");
+        $this->data['textDefaultItemWeight'] = $this->language->get("DEFAULT_ITEM_WEIGHT");
         $this->data['textDefaultManufacturer'] = $this->language->get("DEFAULT_MANUFACTURER");
         $this->data['textDefaultSupplier'] = $this->language->get("DEFAULT_SUPPLIER");
         $this->data['textLocalCategoryId'] = $this->language->get("LOCAL_CATEGORY_ID");
@@ -41,9 +43,8 @@ class ControllerExtensionImport extends Controller {
         $this->data['textStores'] = $this->language->get("STORES");
         $this->data['textWholesaleCustomerPriceRate'] = $this->language->get("PRICE_RATE_WHOLESALE_CUSTOMER");
         $this->data['urlAction'] = $this->selfUrl;
-        $this->data['urlList'] = $this->url->link('extension/import', 'token=' . $this->parameters['token'], 'SSL');
+        $this->data['urlList'] = $this->getUrl()->link('extension/import', 'token=' . $this->parameters['token'], 'SSL');
         $this->setBreadcrumbs();
-        $this->template = 'extension/importForm.tpl.php';
         $this->children = array(
             'common/header',
             'common/footer'
@@ -57,7 +58,7 @@ class ControllerExtensionImport extends Controller {
             $this->editPOST($this->model);
         }
 
-        $this->getResponse()->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render('extension/importForm.tpl.php'));
     }
 
     /**
@@ -107,6 +108,7 @@ class ControllerExtensionImport extends Controller {
                 catch (ReflectionException $e) { continue; }
 
                 $classInstalled = false;
+                $sourceSiteName = '&lt;no&nbsp;name&gt;';
                 foreach ($sourceSites as $sourceSite) {
                     if ($sourceSite->getClassName() == $importClass) {
                         $classInstalled = true;
@@ -122,17 +124,17 @@ class ControllerExtensionImport extends Controller {
                 if (!$classInstalled) {
                     $action[] = array(
                         'text' => $this->language->get('text_install'),
-                        'href' => $this->url->link('extension/import/install', 'token=' . $this->session->data['token'] . "&importClass=$importClass", 'SSL')
+                        'href' => $this->getUrl()->link('extension/import/install', 'token=' . $this->session->data['token'] . "&importClass=$importClass", 'SSL')
                     );
                 } else {
                     $action[] = array(
                         'text' => $this->language->get('text_edit'),
-                        'href' => $this->url->link('extension/import/edit', 'token=' . $this->session->data['token'] . "&importClass=$importClass", 'SSL')
+                        'href' => $this->getUrl()->link('extension/import/edit', 'token=' . $this->session->data['token'] . "&importClass=$importClass", 'SSL')
                     );
 
                     $action[] = array(
                         'text' => $this->language->get('text_uninstall'),
-                        'href' => $this->url->link('extension/import/uninstall', 'token=' . $this->session->data['token'] . "&importClass=$importClass", 'SSL')
+                        'href' => $this->getUrl()->link('extension/import/uninstall', 'token=' . $this->session->data['token'] . "&importClass=$importClass", 'SSL')
                     );
                 }
 
@@ -143,20 +145,19 @@ class ControllerExtensionImport extends Controller {
             }
         }
 
-        $this->template = 'extension/importList.tpl.php';
         $this->children = array(
             'common/header',
             'common/footer'
         );
 
-        $this->getResponse()->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render('extension/importList.tpl.php'));
     }
 
     protected function initModel() {
         if ($this->getRequest()->getMethod() == 'POST') {
             $categories  = [];
             foreach ($this->parameters['category'] as $category) {
-                $categories[] = new \model\catalog\ImportCategory(null, $category['source'], explode(',', $category['local']), null, null);
+                $categories[] = new ImportCategory(null, $category['source'], explode(',', $category['local']), null, null);
             }
             $this->model = new ImportSourceSite(
                 $this->parameters['importClass'],
@@ -168,7 +169,8 @@ class ControllerExtensionImport extends Controller {
                 $this->parameters['siteName'],
                 $this->parameters['regularCustomerPriceRate'],
                 $this->parameters['stores'],
-                $this->parameters['wholesaleCustomerPriceRate']
+                $this->parameters['wholesaleCustomerPriceRate'],
+                $this->parameters['defaultItemWeight']
             );
         } elseif (!is_null($this->parameters['importClass'])) {
             $this->model = ImportSourceSiteDAO::getInstance()->getSourceSite($this->parameters['importClass']);
@@ -185,6 +187,7 @@ class ControllerExtensionImport extends Controller {
         $this->initParametersWithDefaults([
             'category' => [],
             'continue' => 0,
+            'defaultItemWeight' => 0,
             'defaultManufacturerId' => 0,
             'defaultSupplierId' => 0,
             'importClass' => null,
@@ -196,7 +199,7 @@ class ControllerExtensionImport extends Controller {
     }
 
     public function install() {
-        if (!$this->user->hasPermission('modify', 'extension/import')) {
+        if (!$this->getUser()->hasPermission('modify', 'extension/import')) {
             $this->session->data['notifications']['error'] = $this->language->get('error_permission');
         } else {
             $sourceSiteName = "automation\\SourceSite\\" . $this->parameters['importClass'];
@@ -204,15 +207,15 @@ class ControllerExtensionImport extends Controller {
             $sourceSite = $sourceSiteName::createDefaultImportSourceSiteInstance();
             ImportSourceSiteDAO::getInstance()->addSourceSite($sourceSite);
         }
-        $this->redirect($this->url->link('extension/import', 'token=' . $this->parameters['token'], 'SSL'));
+        $this->redirect($this->getUrl()->link('extension/import', 'token=' . $this->parameters['token'], 'SSL'));
     }
 
     public function uninstall() {
-        if (!$this->user->hasPermission('modify', 'extension/import')) {
-            $this->session->data['notifications']['error'] = $this->language->get('error_permission');
+        if (!$this->getUser()->hasPermission('modify', 'extension/import')) {
+            $this->getSession()->data['notifications']['error'] = $this->language->get('error_permission');
         } else {
             ImportSourceSiteDAO::getInstance()->removeSourceSite($this->parameters['importClass']);
         }
-        $this->redirect($this->url->link('extension/import', 'token=' . $this->session->data['token'], 'SSL'));
+        $this->redirect($this->getUrl()->link('extension/import', 'token=' . $this->getSession()->data['token'], 'SSL'));
     }
 }

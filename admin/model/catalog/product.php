@@ -713,67 +713,67 @@ SQL
         return $productData;
 	}
 
-	public function getProducts($data = array()) {
-        if (empty($data))
-            $productData = $this->cache->get('product.' . (int)$this->config->get('config_language_id'));
-        if (empty($productData))
-        {
-            $data['filterLanguageId'] = $this->config->get('config_language_id');
-			$sql = "
-			    SELECT p.*, pd.*, p.supplier_url AS link, u.user_id, u.username AS user_name
-			    FROM
-			        product AS p
-			        LEFT JOIN product_description AS pd ON (p.product_id = pd.product_id)
-			        LEFT JOIN supplier AS s ON p.supplier_id = s.supplier_id
-                    LEFT JOIN manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
-                    LEFT JOIN user AS u ON p.user_id = u.user_id";
-			
-			if (!empty($data['filter_category_id']))
-				$sql .= " LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)";
-
-			$sql .= " WHERE " . $this->buildFilterString($data);
-			$sql .= " GROUP BY p.product_id";
-			$sort_data = array(
-				'p.product_id',
-				'pd.name',
-				'p.model',
-				'p.price',
-				'p.quantity',
-				'p.status',
-				'p.sort_order'
-			);	
-			
-			if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
-				$sql .= " ORDER BY " . $data['sort'];	
-			} else {
-				$sql .= " ORDER BY pd.name";	
-			}
-			
-			if (isset($data['order']) && ($data['order'] == 'DESC')) {
-				$sql .= " DESC";
-			} else {
-				$sql .= " ASC";
-			}
-		
-			if (isset($data['start']) || isset($data['limit'])) {
-				if ($data['start'] < 0) {
-					$data['start'] = 0;
-				}				
-
-				if ($data['limit'] < 1) {
-					$data['limit'] = 20;
-				}	
-			
-				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
-			}	
-//            $this->getLogger()->write($sql);
-			$query = $this->getDb()->query($sql);
-            $productData = $query->rows;
-            if (empty($data))
-                $this->cache->set('product.' . (int)$this->config->get('config_language_id'), $productData);
-        }
-        return $productData;
-	}
+//	public function getProducts($data = array()) {
+//        if (empty($data))
+//            $productData = $this->cache->get('product.' . (int)$this->config->get('config_language_id'));
+//        if (empty($productData))
+//        {
+//            $data['filterLanguageId'] = $this->config->get('config_language_id');
+//			$sql = "
+//			    SELECT p.*, pd.*, p.supplier_url AS link, u.user_id, u.username AS user_name
+//			    FROM
+//			        product AS p
+//			        LEFT JOIN product_description AS pd ON (p.product_id = pd.product_id)
+//			        LEFT JOIN supplier AS s ON p.supplier_id = s.supplier_id
+//                    LEFT JOIN manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
+//                    LEFT JOIN user AS u ON p.user_id = u.user_id";
+//
+//			if (!empty($data['filter_category_id']))
+//				$sql .= " LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)";
+//
+//			$sql .= " WHERE " . $this->buildFilterString($data);
+//			$sql .= " GROUP BY p.product_id";
+//			$sort_data = array(
+//				'p.product_id',
+//				'pd.name',
+//				'p.model',
+//				'p.price',
+//				'p.quantity',
+//				'p.status',
+//				'p.sort_order'
+//			);
+//
+//			if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+//				$sql .= " ORDER BY " . $data['sort'];
+//			} else {
+//				$sql .= " ORDER BY pd.name";
+//			}
+//
+//			if (isset($data['order']) && ($data['order'] == 'DESC')) {
+//				$sql .= " DESC";
+//			} else {
+//				$sql .= " ASC";
+//			}
+//
+//			if (isset($data['start']) || isset($data['limit'])) {
+//				if ($data['start'] < 0) {
+//					$data['start'] = 0;
+//				}
+//
+//				if ($data['limit'] < 1) {
+//					$data['limit'] = 20;
+//				}
+//
+//				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+//			}
+////            $this->getLogger()->write($sql);
+//			$query = $this->getDb()->query($sql);
+//            $productData = $query->rows;
+//            if (empty($data))
+//                $this->cache->set('product.' . (int)$this->config->get('config_language_id'), $productData);
+//        }
+//        return $productData;
+//	}
 	
 	public function getProductsByCategoryId($category_id) {
 		$query = $this->getDb()->query("SELECT * FROM product p LEFT JOIN product_description pd ON (p.product_id = pd.product_id) LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p2c.category_id = '" . (int)$category_id . "' ORDER BY pd.name ASC");

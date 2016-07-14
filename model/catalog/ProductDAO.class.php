@@ -34,10 +34,17 @@ class ProductDAO extends DAO {
             $filter->addChunk("p.date_added > :dateAddedFrom", [":dateAddedFrom" => $data['filterDateAddedFrom']]);
         if (!empty($data['filterDateAddedTo']))
             $filter->addChunk("p.date_added < :dateAddedTo", [":dateAddedTo" => date('Y-m-d', strtotime($data['filterDateAddedTo']) + 86400)]);
-        if (!is_null($data['filterEnabled']))
+        if (!is_null($data['filterEnabled'])) {
             $filter->addChunk("p.status = :enabled", [":enabled" => $data['filterEnabled']]);
+        }
+        if (!empty($data['filterId']) && is_numeric($data['filterId'])) {
+            $filter->addChunk('p.product_id = :productId', [':productId' => $data['filterId']]);
+        }
         if (!empty($data['filterKoreanName'])) {
             $filter->addChunk("p.korean_name LIKE CONCAT('%', :koreanName, '%')", [':koreanName' => $data['filterKoreanName']]);
+        }
+        if (!empty($data['filterLanguageId'])) {
+            $filter->addChunk("pd.language_id = :languageId", [":languageId" => $data['filterLanguageId']]);
         }
         if (!empty($data['filterManufacturerId'])) {
             $filter->addChunk($this->buildSimpleFieldFilterEntry('p.manufacturer_id', $data['filterManufacturerId'], $tmp0, $tmp1));
@@ -1086,6 +1093,31 @@ SQL
         }
 
         return $product_reward_data;
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function getProductUserNames($data = array()) {
+        $filter = $this->buildFilter($data);
+        $sql = "
+            SELECT DISTINCT m.manufacturer_id AS manufacturer_id, p.product_id, m.name AS manufacturer_name, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
+            FROM
+                product AS p
+                LEFT JOIN product_description AS pd ON (p.product_id = pd.product_id)
+                LEFT JOIN supplier AS s ON p.supplier_id = s.supplier_id
+                LEFT JOIN manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
+                LEFT JOIN product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)
+                LEFT JOIN product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
+                JOIN user AS u ON p.user_id = u.user_id
+                LEFT JOIN product_to_category AS p2c ON (p.product_id = p2c.product_id)
+        ";
+        $sql .= $filter->getFilterString(true) .
+                " GROUP BY p.product_id" .
+                $this->buildLimitString($data['start'], $data['limit']);
+
+        return $this->getDb()->query($sql, $filter->getParams())->rows;
     }
 
     /**

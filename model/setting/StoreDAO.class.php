@@ -31,7 +31,7 @@ class StoreDAO extends DAO {
     }
 
     public function getStores() {
-        return $this->getDb()->query("SELECT * FROM store ORDER BY url");
+        return $this->getDb()->query("SELECT * FROM store ORDER BY url")->rows;
     }
 
     public function getTotalStores() {

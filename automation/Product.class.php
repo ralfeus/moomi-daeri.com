@@ -40,7 +40,9 @@ class Product {
         $this->sourceSite = $sourceSite;
         $this->thumbnail = $thumbnail;
         $this->url = $url;
-        $this->weight = $weight;
+        $this->weight = is_null($weight) 
+            ? $sourceSite->getSite()->getDefaultItemWeight()
+            : $weight;
     }
 
     /**

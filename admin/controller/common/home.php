@@ -1,7 +1,9 @@
 <?php
+use model\catalog\ProductDAO;
 use model\sale\CustomerDAO;
+use system\engine\AdminController;
 
-class ControllerCommonHome extends Controller {
+class ControllerCommonHome extends AdminController {
     public function __construct($registry) {
         parent::__construct($registry);
     }
@@ -10,53 +12,53 @@ class ControllerCommonHome extends Controller {
 
     $this->getLoader()->language('common/home');
 	 
-		$this->document->setTitle($this->language->get('heading_title'));
+		$this->document->setTitle($this->getLanguage()->get('heading_title'));
 		
-    $this->data['heading_title'] = $this->language->get('heading_title');
+    $this->data['heading_title'] = $this->getLanguage()->get('heading_title');
 		
-		$this->data['text_overview'] = $this->language->get('text_overview');
-		$this->data['text_statistics'] = $this->language->get('text_statistics');
-		$this->data['text_latest_10_orders'] = $this->language->get('text_latest_10_orders');
-		$this->data['text_total_sale'] = $this->language->get('text_total_sale');
-		$this->data['text_total_sale_year'] = $this->language->get('text_total_sale_year');
-		$this->data['text_total_order'] = $this->language->get('text_total_order');
-		$this->data['text_total_customer'] = $this->language->get('text_total_customer');
-		$this->data['text_total_customer_approval'] = $this->language->get('text_total_customer_approval');
-		$this->data['text_total_review_approval'] = $this->language->get('text_total_review_approval');
-		$this->data['text_total_affiliate'] = $this->language->get('text_total_affiliate');
-		$this->data['text_total_affiliate_approval'] = $this->language->get('text_total_affiliate_approval');
-		$this->data['text_day'] = $this->language->get('text_day');
-		$this->data['text_week'] = $this->language->get('text_week');
-		$this->data['text_month'] = $this->language->get('text_month');
-		$this->data['text_year'] = $this->language->get('text_year');
-		$this->data['text_no_results'] = $this->language->get('text_no_results');
+		$this->data['text_overview'] = $this->getLanguage()->get('text_overview');
+		$this->data['text_statistics'] = $this->getLanguage()->get('text_statistics');
+		$this->data['text_latest_10_orders'] = $this->getLanguage()->get('text_latest_10_orders');
+		$this->data['text_total_sale'] = $this->getLanguage()->get('text_total_sale');
+		$this->data['text_total_sale_year'] = $this->getLanguage()->get('text_total_sale_year');
+		$this->data['text_total_order'] = $this->getLanguage()->get('text_total_order');
+		$this->data['text_total_customer'] = $this->getLanguage()->get('text_total_customer');
+		$this->data['text_total_customer_approval'] = $this->getLanguage()->get('text_total_customer_approval');
+		$this->data['text_total_review_approval'] = $this->getLanguage()->get('text_total_review_approval');
+		$this->data['text_total_affiliate'] = $this->getLanguage()->get('text_total_affiliate');
+		$this->data['text_total_affiliate_approval'] = $this->getLanguage()->get('text_total_affiliate_approval');
+		$this->data['text_day'] = $this->getLanguage()->get('text_day');
+		$this->data['text_week'] = $this->getLanguage()->get('text_week');
+		$this->data['text_month'] = $this->getLanguage()->get('text_month');
+		$this->data['text_year'] = $this->getLanguage()->get('text_year');
+		$this->data['text_no_results'] = $this->getLanguage()->get('text_no_results');
 
-		$this->data['column_order'] = $this->language->get('column_order');
-		$this->data['column_customer'] = $this->language->get('column_customer');
-		$this->data['column_status'] = $this->language->get('column_status');
-		$this->data['column_date_added'] = $this->language->get('column_date_added');
-		$this->data['column_total'] = $this->language->get('column_total');
-		$this->data['column_firstname'] = $this->language->get('column_firstname');
-		$this->data['column_lastname'] = $this->language->get('column_lastname');
-		$this->data['column_action'] = $this->language->get('column_action');
+		$this->data['column_order'] = $this->getLanguage()->get('column_order');
+		$this->data['column_customer'] = $this->getLanguage()->get('column_customer');
+		$this->data['column_status'] = $this->getLanguage()->get('column_status');
+		$this->data['column_date_added'] = $this->getLanguage()->get('column_date_added');
+		$this->data['column_total'] = $this->getLanguage()->get('column_total');
+		$this->data['column_firstname'] = $this->getLanguage()->get('column_firstname');
+		$this->data['column_lastname'] = $this->getLanguage()->get('column_lastname');
+		$this->data['column_action'] = $this->getLanguage()->get('column_action');
 		
-		$this->data['entry_range'] = $this->language->get('entry_range');
+		$this->data['entry_range'] = $this->getLanguage()->get('entry_range');
 		
 										
 		$this->data['breadcrumbs'] = array();
 
    		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('text_home'),
-					'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+       		'text'      => $this->getLanguage()->get('text_home'),
+					'href'      => $this->getUrl()->link('common/home', 'token=' . $this->getSession()->data['token'], 'SSL'),
       		'separator' => false
    		);
 
-		$this->data['token'] = $this->session->data['token'];
+		$this->data['token'] = $this->getSession()->data['token'];
 		
 		$this->getLoader()->model('sale/order');
 
-		$this->data['total_sale'] = $this->currency->format($this->model_sale_order->getTotalSales(), $this->config->get('config_currency'));
-		$this->data['total_sale_year'] = $this->currency->format($this->model_sale_order->getTotalSalesByYear(date('Y')), $this->config->get('config_currency'));
+		$this->data['total_sale'] = $this->getCurrentCurrency()->format($this->model_sale_order->getTotalSales(), $this->config->get('config_currency'));
+		$this->data['total_sale_year'] = $this->getCurrentCurrency()->format($this->model_sale_order->getTotalSalesByYear(date('Y')), $this->config->get('config_currency'));
 		$this->data['total_order'] = $this->model_sale_order->getTotalOrders();
 		
 		$this->data['total_customer'] = CustomerDAO::getInstance()->getTotalCustomers();
@@ -87,16 +89,16 @@ class ControllerCommonHome extends Controller {
 			$action = array();
 			 
 			$action[] = array(
-				'text' => $this->language->get('text_view'),
-				'href' => $this->url->link('sale/order/info', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'], 'SSL')
+				'text' => $this->getLanguage()->get('text_view'),
+				'href' => $this->getUrl()->link('sale/order/info', 'token=' . $this->getSession()->data['token'] . '&order_id=' . $result['order_id'], 'SSL')
 			);
 					
 			$this->data['orders'][] = array(
 				'order_id'   => $result['order_id'],
 				'customer'   => $result['customer'],
 				'status'     => $result['status'],
-				'date_added' => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
-				'total'      => $this->currency->format($result['total'], $result['currency_code'], $result['currency_value']),
+				'date_added' => date($this->getLanguage()->get('date_format_short'), strtotime($result['date_added'])),
+				'total'      => $this->getCurrentCurrency()->format($result['total'], $result['currency_code'], $result['currency_value']),
 				'action'     => $action
 			);
 		}
@@ -107,7 +109,7 @@ class ControllerCommonHome extends Controller {
 //			$this->model_localisation_currency->updateCurrencies();
 //		}
 
-//if ($this->user->getUsergroupId() == 1) {
+//if ($this->getUser()->getUsergroupId() == 1) {
 //		$this->template = ;
 //} else {
 //		$this->template = 'common/homecont.tpl.php';
@@ -124,7 +126,7 @@ class ControllerCommonHome extends Controller {
 		$this->getResponse()->setOutput($this->render('common/home.tpl.php'));
     
     //// <---- Clear cache button handler:
-$this->data['clear_cache'] = $this->data['home'] = HTTPS_SERVER . 'index.php?route=common/home&clear_cache=true&token=' . $this->session->data['token'];
+$this->data['clear_cache'] = $this->data['home'] = HTTPS_SERVER . 'index.php?route=common/home&clear_cache=true&token=' . $this->getSession()->data['token'];
 if(isset($this->request->get['clear_cache'])){
 	
 	// specify an array of what we need to clear:
@@ -151,8 +153,8 @@ if(isset($this->request->get['clear_cache'])){
 		$data['customer'] = array();
 		$data['xaxis'] = array();
 		
-		$data['order']['label'] = $this->language->get('text_order');
-		$data['customer']['label'] = $this->language->get('text_customer');
+		$data['order']['label'] = $this->getLanguage()->get('text_order');
+		$data['customer']['label'] = $this->getLanguage()->get('text_customer');
 		
 		if (isset($this->request->get['range'])) {
 			$range = $this->request->get['range'];
@@ -294,7 +296,7 @@ if(isset($this->request->get['clear_cache'])){
 			'common/reset'
 		);	
 					
-		if (!$this->user->isLogged() && !in_array($route, $ignore)) {
+		if (!$this->getUser()->isLogged() && !in_array($route, $ignore)) {
 			return $this->forward('common/login');
 		}
 		
@@ -315,11 +317,11 @@ if(isset($this->request->get['clear_cache'])){
 			}
 				
 			$ignore = array_merge($ignore, $config_ignore);
-			if (!in_array($route, $ignore) && (!isset($_REQUEST['token']) || !isset($this->session->data['token']) || ($_REQUEST['token'] != $this->session->data['token']))) {
+			if (!in_array($route, $ignore) && (!isset($_REQUEST['token']) || !isset($this->getSession()->data['token']) || ($_REQUEST['token'] != $this->getSession()->data['token']))) {
 				return $this->forward('common/login');
 			}
 		} else {
-			if (!isset($_REQUEST['token']) || !isset($this->session->data['token']) || ($_REQUEST['token'] != $this->session->data['token'])) {
+			if (!isset($_REQUEST['token']) || !isset($this->getSession()->data['token']) || ($_REQUEST['token'] != $this->getSession()->data['token'])) {
 				return $this->forward('common/login');
 			}
 		}
@@ -349,7 +351,7 @@ if(isset($this->request->get['clear_cache'])){
 				'error/permission'		
 			);			
 						
-			if (!in_array($route, $ignore) && !$this->user->hasPermission('access', $route)) {
+			if (!in_array($route, $ignore) && !$this->getUser()->hasPermission('access', $route)) {
 				return $this->forward('error/permission');
 			}
 		}
@@ -462,46 +464,46 @@ if(isset($this->request->get['clear_cache'])){
 		}
 
 		$this->getLoader()->model('catalog/product');
-		$results = $this->model_catalog_product->getProducts($filter);
-		$products = array();
-		$product_total = $this->model_catalog_product->getTotalProducts($filter);
+		$products = ProductDAO::getInstance()->getProducts($filter);
+		$product_total = ProductDAO::getInstance()->getProductsCount($filter);
 
 
-		foreach ($results as $result) {//print_r($results); die();
+		foreach ($products as $product) {//print_r($results); die();
 
 			$action = array();
 			$action[] = array(
-				'text' => $this->language->get('text_edit'),
-				'href' => $this->url->link('catalog/product/update', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id']/* . $url*/, 'SSL')
+				'text' => $this->getLanguage()->get('text_edit'),
+				'href' => $this->getUrl()->link(
+					'catalog/product/update', 
+					'token=' . $this->getSession()->data['token'] . '&product_id=' . $product->getId(), 'SSL')
 			);
 
 			$link = array();
 			$link[] = array(
 				'text' => 'click',
-				'href' => $result['link']
+				'href' => $product->getSupplierUrl()
 			);
 
-			if ($result['image'] && file_exists(DIR_IMAGE . $result['image'])) {
+			if ($product->getImagePath() && file_exists(DIR_IMAGE . $product->getImagePath())) {
 				//$image = $this->model_tool_image->resize($result['image'], 40, 40);
 			} else {
 				//$image = $this->model_tool_image->resize('no_image.jpg', 40, 40);
 			}
 
 			$this->data['products'][] = array(
-				'product_id' => $result['product_id'],
-        'dateAdded' => date('Y-m-d', strtotime($result['date_added'])),
-				'name'       => $result['name'],
-				'model'      => $result['model'],
-				'price'      => $result['price'],
+				'product_id' => $product->getId(),
+        		'dateAdded' => date('Y-m-d', strtotime($product->getDateAdded())),
+				'name'       => $product->getName(),
+				'model'      => $product->getModel(),
+				'price'      => $product->getPrice(),
 				'special'    => null,//$special,
 				'image'      => null, //$image,
-				'user_name'  => $result['user_name'],
-				'status'     => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
-				'selected'   => isset($this->request->post['selected']) && in_array($result['product_id'], $this->request->post['selected']),
+				'user_name'  => $product->getUser()['username'],
+				'status'     => ($product->getStatus() ? $this->getLanguage()->get('text_enabled') : $this->getLanguage()->get('text_disabled')),
+				'selected'   => !is_null($this->getRequest()->getParam('selected')) && in_array($product->getId(), $this->getRequest()->getParam('selected')),
 				'action'     => $action,
 				'link'     	 => $link,
-				'korean_name'=> $result['korean_name'],
-				'manufacturer_page_url' => empty($result['manufacturer_page_url']) ? '' : $result['manufacturer_page_url']
+				'korean_name'=> $product->getKoreanName()
 			);
 		}
 
@@ -509,17 +511,17 @@ if(isset($this->request->get['clear_cache'])){
 
 		$this->data['usernames'] = $this->getUserNames();
 
-		$this->data['button_filter'] = $this->language->get('FILTER');
-    $this->data['textResetFilter'] = $this->language->get('RESET_FILTER');
+		$this->data['button_filter'] = $this->getLanguage()->get('FILTER');
+    	$this->data['textResetFilter'] = $this->getLanguage()->get('RESET_FILTER');
 
 		$pagination = new Pagination();
 		$pagination->total = $product_total;
 		$pagination->page = isset($this->parameters['page']) ? $this->parameters['page'] : 1;
 		//echo ADMIN_LIMIT_PRODUCTS; die();
 		$pagination->limit = ADMIN_LIMIT_PRODUCTS;
-		$pagination->text = $this->language->get('text_pagination');
-    unset($this->parameters['page']);
-		$pagination->url = $this->url->link('common/home', 'page={page}', 'SSL');
+		$pagination->text = $this->getLanguage()->get('text_pagination');
+    	unset($this->parameters['page']);
+		$pagination->url = $this->getUrl()->link('common/home', 'page={page}', 'SSL');
 		$this->data['pagination'] = $pagination->render();
 
 		//return $this->data['products'];
@@ -527,46 +529,46 @@ if(isset($this->request->get['clear_cache'])){
 	}
 
     protected function initParameters() {
-        if (empty($this->session->data['parameters']['catalog/product']))
-            $this->session->data['parameters']['catalog/product'] = array();
+        if (empty($this->getSession()->data['parameters']['catalog/product']))
+            $this->getSession()->data['parameters']['catalog/product'] = array();
         if (empty($_REQUEST['resetFilter'])) {
             foreach ($_REQUEST as $key => $value)
                 if (strpos($key, 'filter') === 0) {
-                    $this->session->data['parameters']['catalog/product'][$key] = $value;
+                    $this->getSession()->data['parameters']['catalog/product'][$key] = $value;
                 }
         }
         else
-            $this->session->data['parameters']['catalog/product'] = array();
+            $this->getSession()->data['parameters']['catalog/product'] = array();
 
 
         $lastMonthStart  = mktime(0, 0, 0, date("m")-1, 1,   date("Y"));
         $lastMonthEnd        = mktime(0, 0, 0, date("m"), 0, date("Y"));
 
-      if (empty($this->session->data['parameters']['common/home']['filterDateAddedFrom']))
-          $this->session->data['parameters']['common/home']['filterDateAddedFrom'] = date("Y-m-d", $lastMonthStart);
-      if (empty($this->session->data['parameters']['common/home']['filterDateAddedTo']))
-          $this->session->data['parameters']['common/home']['filterDateAddedTo'] =  date("Y-m-d", $lastMonthEnd);
-      if (empty($this->session->data['parameters']['catalog/product']['filterManufacturerId']) || !is_array($this->session->data['parameters']['catalog/product']['filterManufacturerId']))
-          $this->session->data['parameters']['catalog/product']['filterManufacturerId'] =  array();
-      if (empty($this->session->data['parameters']['catalog/product']['filterModel']))
-          $this->session->data['parameters']['catalog/product']['filterModel'] = null;
-      if (empty($this->session->data['parameters']['catalog/product']['filterName']))
-          $this->session->data['parameters']['catalog/product']['filterName'] = null;
-      if (!isset($this->session->data['parameters']['catalog/product']['filterPrice']) || !is_numeric($this->session->data['parameters']['catalog/product']['filterPrice']))
-          $this->session->data['parameters']['catalog/product']['filterPrice'] = null;
-      if (!isset($this->session->data['parameters']['catalog/product']['filterKoreanName']))
-          $this->session->data['parameters']['catalog/product']['filterKoreanName'] = null;
-      if (empty($this->session->data['parameters']['catalog/product']['filterUserNameId']) || !is_array($this->session->data['parameters']['catalog/product']['filterUserNameId']))
-          $this->session->data['parameters']['catalog/product']['filterUserNameId'] =  array();
-      if (!isset($this->session->data['parameters']['catalog/product']['filterStatus']) || !is_numeric($this->session->data['parameters']['catalog/product']['filterStatus']))
-          $this->session->data['parameters']['catalog/product']['filterStatus'] = null;
-      if (empty($this->session->data['parameters']['catalog/product']['filterSupplierId']) || !is_array($this->session->data['parameters']['catalog/product']['filterSupplierId']))
-          $this->session->data['parameters']['catalog/product']['filterSupplierId'] = array();
-      $this->parameters = $this->session->data['parameters']['catalog/product'];
+      if (empty($this->getSession()->data['parameters']['common/home']['filterDateAddedFrom']))
+          $this->getSession()->data['parameters']['common/home']['filterDateAddedFrom'] = date("Y-m-d", $lastMonthStart);
+      if (empty($this->getSession()->data['parameters']['common/home']['filterDateAddedTo']))
+          $this->getSession()->data['parameters']['common/home']['filterDateAddedTo'] =  date("Y-m-d", $lastMonthEnd);
+      if (empty($this->getSession()->data['parameters']['catalog/product']['filterManufacturerId']) || !is_array($this->getSession()->data['parameters']['catalog/product']['filterManufacturerId']))
+          $this->getSession()->data['parameters']['catalog/product']['filterManufacturerId'] =  array();
+      if (empty($this->getSession()->data['parameters']['catalog/product']['filterModel']))
+          $this->getSession()->data['parameters']['catalog/product']['filterModel'] = null;
+      if (empty($this->getSession()->data['parameters']['catalog/product']['filterName']))
+          $this->getSession()->data['parameters']['catalog/product']['filterName'] = null;
+      if (!isset($this->getSession()->data['parameters']['catalog/product']['filterPrice']) || !is_numeric($this->getSession()->data['parameters']['catalog/product']['filterPrice']))
+          $this->getSession()->data['parameters']['catalog/product']['filterPrice'] = null;
+      if (!isset($this->getSession()->data['parameters']['catalog/product']['filterKoreanName']))
+          $this->getSession()->data['parameters']['catalog/product']['filterKoreanName'] = null;
+      if (empty($this->getSession()->data['parameters']['catalog/product']['filterUserNameId']) || !is_array($this->getSession()->data['parameters']['catalog/product']['filterUserNameId']))
+          $this->getSession()->data['parameters']['catalog/product']['filterUserNameId'] =  array();
+      if (!isset($this->getSession()->data['parameters']['catalog/product']['filterStatus']) || !is_numeric($this->getSession()->data['parameters']['catalog/product']['filterStatus']))
+          $this->getSession()->data['parameters']['catalog/product']['filterStatus'] = null;
+      if (empty($this->getSession()->data['parameters']['catalog/product']['filterSupplierId']) || !is_array($this->getSession()->data['parameters']['catalog/product']['filterSupplierId']))
+          $this->getSession()->data['parameters']['catalog/product']['filterSupplierId'] = array();
+      $this->parameters = $this->getSession()->data['parameters']['catalog/product'];
       $this->parameters['page'] = empty($_REQUEST['page']) ? 1 : $_REQUEST['page'];
       $this->parameters['sort'] = empty($_REQUEST['sort']) ? null : $_REQUEST['sort'];
-      if (isset($this->session->data['token'])) {
-		  $this->parameters['token'] = $this->session->data['token'];
+      if (isset($this->getSession()->data['token'])) {
+		  $this->parameters['token'] = $this->getSession()->data['token'];
 	  } elseif (isset($_REQUEST['token'])) {
 		  $this->parameters['token'] = $_REQUEST['token'];
 	  } else {
@@ -574,26 +576,22 @@ if(isset($this->request->get['clear_cache'])){
 	  }
   }
 
-  private function getUserNames()
-  {
-      foreach ($this->parameters as $key => $value)
-      {
+  private function getUserNames() {
+	  $data = [];
+      foreach ($this->parameters as $key => $value) {
           if (strpos($key, 'filter') === false)
               continue;
           $data[$key] = $value;
       }
       unset($data['filterUserNameId']);
       $tmpResult = array();
-      $usernames = $this->model_catalog_product->getProductUserNames($data);
+      $userNames = ProductDAO::getInstance()->getProductUserNames($data);
       
-      foreach ($usernames as $username)
-      {
-          if (!in_array($username['user_id'], $tmpResult))
-              $tmpResult[$username['user_id']] = $username['user_name'];
+      foreach ($userNames as $userName) {
+          if (!in_array($userName['user_id'], $tmpResult))
+              $tmpResult[$userName['user_id']] = $userName['user_name'];
       }
       natcasesort($tmpResult);
       return $tmpResult;
   }
-
-
 }

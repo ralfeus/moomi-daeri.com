@@ -1,13 +1,15 @@
 <?php 
 class ControllerCatalogAttribute extends Controller { 
 	private $error = array();
+	/** @var  ModelCatalogAttribute */
+	private $modelCatalogAttribute;
    
   	public function index() {
 		$this->load->language('catalog/attribute');
 	
     	$this->document->setTitle($this->language->get('heading_title'));
 		
-		$this->load->model('catalog/attribute');
+		$this->modelCatalogAttribute = $this->load->model('catalog/attribute');
 		
     	$this->getList();
   	}
@@ -20,7 +22,7 @@ class ControllerCatalogAttribute extends Controller {
 		$this->load->model('catalog/attribute');
 			
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-      		$this->model_catalog_attribute->addAttribute($this->request->post);
+      		$this->modelCatalogAttribute->addAttribute($this->request->post);
 		  	
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -52,7 +54,7 @@ class ControllerCatalogAttribute extends Controller {
 		$this->load->model('catalog/attribute');
 		
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-	  		$this->model_catalog_attribute->editAttribute($this->request->get['attribute_id'], $this->request->post);
+	  		$this->modelCatalogAttribute->editAttribute($this->request->get['attribute_id'], $this->request->post);
 			
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -85,7 +87,7 @@ class ControllerCatalogAttribute extends Controller {
 		
     	if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $attribute_id) {
-				$this->model_catalog_attribute->deleteAttribute($attribute_id);
+				$this->modelCatalogAttribute->deleteAttribute($attribute_id);
 			}
 			      		
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -169,9 +171,9 @@ class ControllerCatalogAttribute extends Controller {
 			'limit' => $this->config->get('config_admin_limit')
 		);
 		
-		$attribute_total = $this->model_catalog_attribute->getTotalAttributes();
+		$attribute_total = $this->modelCatalogAttribute->getTotalAttributes();
 	
-		$results = $this->model_catalog_attribute->getAttributes($data);
+		$results = $this->modelCatalogAttribute->getAttributes($data);
  
     	foreach ($results as $result) {
 			$action = array();
@@ -323,17 +325,15 @@ class ControllerCatalogAttribute extends Controller {
 		$this->data['cancel'] = $this->url->link('catalog/attribute', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
 		if (isset($this->request->get['attribute_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
-			$attribute_info = $this->model_catalog_attribute->getAttribute($this->request->get['attribute_id']);
+			$attribute_info = $this->modelCatalogAttribute->getAttribute($this->request->get['attribute_id']);
 		}
 				
-		$this->load->model('localisation/language');
-		
-		$this->data['languages'] = $this->model_localisation_language->getLanguages();
+		$this->data['languages'] = $this->getLoader()->model('localisation/language')->getLanguages();
 		
 		if (isset($this->request->post['attribute_description'])) {
 			$this->data['attribute_description'] = $this->request->post['attribute_description'];
 		} elseif (isset($this->request->get['attribute_id'])) {
-			$this->data['attribute_description'] = $this->model_catalog_attribute->getAttributeDescriptions($this->request->get['attribute_id']);
+			$this->data['attribute_description'] = $this->modelCatalogAttribute->getAttributeDescriptions($this->request->get['attribute_id']);
 		} else {
 			$this->data['attribute_description'] = array();
 		}
@@ -346,9 +346,7 @@ class ControllerCatalogAttribute extends Controller {
 			$this->data['attribute_group_id'] = '';
 		}
 		
-		$this->load->model('catalog/attribute_group');
-				
-		$this->data['attribute_groups'] = $this->model_catalog_attribute_group->getAttributeGroups();	
+		$this->data['attribute_groups'] = $this->getLoader()->model('catalog/attribute_group')->getAttributeGroups();
 
 		if (isset($this->request->post['sort_order'])) {
 			$this->data['sort_order'] = $this->request->post['sort_order'];
@@ -421,7 +419,7 @@ class ControllerCatalogAttribute extends Controller {
 			
 			$json = array();
 			
-			$results = $this->model_catalog_attribute->getAttributes($data);
+			$results = $this->modelCatalogAttribute->getAttributes($data);
 			
 			foreach ($results as $result) {
 				$json[] = array(

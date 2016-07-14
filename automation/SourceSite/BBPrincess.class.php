@@ -59,9 +59,7 @@ class BBPrincess extends ProductSource {
                     trim($item->findOne('p.name')->text()),
                     $this->getUrl() . "/product/detail.html?product_no=$itemId",
                     $item->findOne('img.thumb')->attr['src'],
-                    $price,
-                    null,
-                    0.25
+                    $price
                 );
             }
             if ($currPage < $pagesNum)

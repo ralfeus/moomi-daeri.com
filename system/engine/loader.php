@@ -1,16 +1,15 @@
 <?php
 require_once("OpenCartBase.php");
-final class Loader extends OpenCartBase
-{
-    //protected $registry;
+final class Loader {// extends OpenCartBase
+    private $registry;
 
 	/**
 	 * Loader constructor.
 	 * @param Registry $registry
      */
 	public function __construct($registry) {
-//        $this->getRegistry() = $registry;
-		parent::__construct($registry);
+        $this->registry = $registry;
+//		parent::__construct($registry);
         $this->log = new Log('Loader.log');
     }
 
@@ -20,18 +19,18 @@ final class Loader extends OpenCartBase
 	 */
 	public function library($library) {
 		$file = DIR_SYSTEM . 'library/' . $library . '.php';
-		
+
 		if (file_exists($file))
         {
             include_once(DIR_SYSTEM . 'library/LibraryClass.php');
 			include_once($file);
 			/** @var ILibrary $library */
-            return $library::getInstance($this->getRegistry());
+            return $library::getInstance($this->registry);
 		}
         else
         {
 			trigger_error('Error: Could not load library ' . $library . '!');
-			exit();					
+			exit();
 		}
 	}
 
@@ -43,8 +42,8 @@ final class Loader extends OpenCartBase
      */
 	public function model($model, $scope = null) {
         $modelName = 'model_' . str_replace('/', '_', $model);
-        if ($this->getRegistry()->has($modelName))
-            return $this->getRegistry()->get($modelName);
+        if ($this->registry->has($modelName))
+            return $this->registry->get($modelName);
         if (!$scope)
 		    $appRoot = DIR_APPLICATION;
         elseif ($scope == 'admin')
@@ -59,8 +58,8 @@ final class Loader extends OpenCartBase
 		if (file_exists($file)) {
 //            $this->log->write("Loading $file");
 			require_once($file);
-			$instance = new $class($this->getRegistry());
-			$this->getRegistry()->set($modelName, $instance);
+			$instance = new $class($this->registry);
+			$this->registry->set($modelName, $instance);
 			return $instance;
         } elseif ($scope != 'global') {
             $this->log->write("Couldn't find file $file . Trying in global scope");
@@ -70,23 +69,23 @@ final class Loader extends OpenCartBase
 			throw new Exception('Error: Could not load model ' . $model . '!');
 		}
 	}
-	 
-	public function database($driver, $hostname, $username, $password, $database, $prefix = NULL, $charset = 'UTF8') {
-		$file  = DIR_SYSTEM . 'database/' . $driver . '.php';
-		$class = 'Database' . preg_replace('/[^a-zA-Z0-9]/', '', $driver);
-		
-		if (file_exists($file)) {
-			include_once($file);
-			
-			$this->getRegistry()->set(str_replace('/', '_', $driver), new $class());
-		} else {
-			trigger_error('Error: Could not load database ' . $driver . '!');
-			exit();				
-		}
-	}
-	
+
+//	public function database($driver, $hostname, $username, $password, $database, $prefix = NULL, $charset = 'UTF8') {
+//		$file  = DIR_SYSTEM . 'database/' . $driver . '.php';
+//		$class = 'Database' . preg_replace('/[^a-zA-Z0-9]/', '', $driver);
+//
+//		if (file_exists($file)) {
+//			include_once($file);
+//
+//			$this->registry->set(str_replace('/', '_', $driver), new $class());
+//		} else {
+//			trigger_error('Error: Could not load database ' . $driver . '!');
+//			exit();
+//		}
+//	}
+
 	public function config($config) {
-		$this->getRegistry()->get('config')->load($config);
+		$this->registry->get('config')->load($config);
 	}
 
 	/**
@@ -94,11 +93,11 @@ final class Loader extends OpenCartBase
 	 * @return Language
 	 */
 	public function language($languageResourceName) {
-		$language = $this->getRegistry()->get('language');
+		$language = $this->registry->get('language');
 		try {
 			$language->load($languageResourceName);
         } catch (Exception $exc) {
-            $language->load($this->getConfig()->get('config_admin_language'));
+            $language->load($this->registry->get('config')->get('config_admin_language'));
         }
 		return $language;
 	}

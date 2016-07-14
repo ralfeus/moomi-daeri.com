@@ -8,7 +8,7 @@
  */
 require_once(DIR_SYSTEM . 'engine/registry.php');
 require_once(DIR_SYSTEM . 'library/db.php');
-class OpenCartBase {
+abstract class OpenCartBase {
     /** @var Config */
     /** @deprecated */
     protected $config;

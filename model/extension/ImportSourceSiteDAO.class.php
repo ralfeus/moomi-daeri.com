@@ -17,8 +17,10 @@ class ImportSourceSiteDAO extends DAO {
         $this->getDb()->query(<<<SQL
             INSERT INTO imported_source_sites
             (class_name, default_category_id, default_manufacturer_id, default_store_id, default_supplier_id, name,
-            regular_customer_price_rate, wholesale_customer_price_rate)
-            VALUES(:className, :defaultCategoryId, :defaultManufacturerId, :defaultStoreId, :defaultSupplierId, :name, :regularCustomerPriceRate, :wholesaleCustomerPriceRate)
+            regular_customer_price_rate, wholesale_customer_price_rate, default_weight)
+            VALUES(
+                :className, :defaultCategoryId, :defaultManufacturerId, :defaultStoreId, :defaultSupplierId, :name, 
+                :regularCustomerPriceRate, :wholesaleCustomerPriceRate, :defaultWeight)
 SQL
             , array(
                 ':className' => $sourceSite->getClassName(),
@@ -26,6 +28,7 @@ SQL
                 ':defaultManufacturerId' => $sourceSite->getDefaultManufacturer()->getId(),
                 ':defaultStoreId' => implode(',', $sourceSite->getStores()),
                 ':defaultSupplierId' => $sourceSite->getDefaultSupplier()->getId(),
+                ':defaultWeight' => $sourceSite->getDefaultItemWeight(),
                 ':name' => $sourceSite->getName(),
                 ':regularCustomerPriceRate' => $sourceSite->getRegularCustomerPriceRate(),
                 ':wholesaleCustomerPriceRate' => $sourceSite->getWholesaleCustomerPriceRate()
@@ -102,6 +105,20 @@ SQL
             ", array(':className' => $className)
         );
         return preg_split('/,/', $query);
+    }
+
+    /**
+     * @param string $className
+     * @return int
+     */
+    public function getDefaultItemWeight($className) {
+        $query = $this->getDb()->queryScalar("
+            SELECT default_weight
+            FROM imported_source_sites
+            WHERE class_name = :className
+            ", array(':className' => $className)
+        );
+        return $query;
     }
 
     /**
@@ -202,7 +219,8 @@ SQL
                 $recordSet->row['name'],
                 $recordSet->row['regular_customer_price_rate'],
                 explode(',', $recordSet->row['default_store_id']),
-                $recordSet->row['wholesale_customer_price_rate']
+                $recordSet->row['wholesale_customer_price_rate'],
+                $recordSet->row['default_weight']
             );
     }
 
@@ -223,7 +241,8 @@ SQL
                 $siteEntry['name'],
                 $siteEntry['regular_customer_price_rate'],
                 preg_split('/,/', $siteEntry['default_store_id']),
-                $siteEntry['wholesale_customer_price_rate']
+                $siteEntry['wholesale_customer_price_rate'],
+                $siteEntry['default_weight']
             );
         }
         return $result;
@@ -291,11 +310,13 @@ SQL
               import_mapped_categories_only = :importMappedCategoriesOnly,
               name = :name,
               regular_customer_price_rate = :regularCustomerPriceRate,
-              wholesale_customer_price_rate = :wholesaleCustomerPriceRate
+              wholesale_customer_price_rate = :wholesaleCustomerPriceRate,
+              default_weight = :defaultItemWeight
             WHERE class_name = :className
 SQL
             , array(
                 ':defaultCategoryId' => implode(',', $sourceSite->getDefaultCategories()),
+                ':defaultItemWeight' => $sourceSite->getDefaultItemWeight(),
                 ':defaultManufacturerId' => $sourceSite->getDefaultManufacturer()->getId(),
                 ':defaultStoreId' => implode(',', $sourceSite->getStores()),
                 ':defaultSupplierId' => $sourceSite->getDefaultSupplier()->getId(),

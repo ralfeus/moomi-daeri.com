@@ -122,9 +122,19 @@ SQL
         if ($shallow) {
             return new Manufacturer($manufacturerId);
         }
-        $query = $this->getDb()->query("SELECT DISTINCT *, (SELECT keyword FROM url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturerId . "') AS keyword FROM manufacturer WHERE manufacturer_id = '" . (int)$manufacturerId . "'");
-
-        return $query->row;
+        $query = $this->getDb()->query("
+            SELECT DISTINCT *, (SELECT keyword FROM url_alias WHERE query = 'manufacturer_id= :manufacturerId') AS keyword 
+            FROM manufacturer 
+            WHERE manufacturer_id = :manufacturerId
+            ", [ ':manufacturerId' => $manufacturerId ]
+        );
+        if ($query->num_rows) {
+            $row = $query->row;
+            return new Manufacturer(
+                $manufacturerId, $row['afc_id'], null, $row['image'], $row['name'], $row['sort_order'], null);
+        } else {
+            return new Manufacturer($manufacturerId);
+        }
     }
 
     /**
