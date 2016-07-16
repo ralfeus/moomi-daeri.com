@@ -615,7 +615,7 @@ function reloadOptionValues(sender) {
             optionId: sender.value
         },
         success: function(json) {
-            if ($.inArray(sender.selectedOptions[0].attributes['content'].value, ['select']) > -1) {
+            if ($.inArray(sender.selectedOptions[0].attributes['content'].value, ['select', 'radio']) > -1) {
                 $('tr#singleValue').fadeOut();
                 $('tr#multiValue').fadeIn();
                 var selectOptions = $('select.optionValue');
