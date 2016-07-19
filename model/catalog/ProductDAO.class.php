@@ -1535,7 +1535,7 @@ SQL
             $this->saveUrlAliases($product);
             $this->saveWKAuction($product->getId());
 
-            $this->getCache()->delete('product');
+            $this->getCache()->deleteAll('/^product/');
             $this->getDb()->commitTransaction();
         } catch (\Exception $e) {
             $this->getLogger()->write($e->getMessage());
