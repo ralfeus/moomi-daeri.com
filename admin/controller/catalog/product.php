@@ -11,8 +11,8 @@ use system\library\MeasureUnitDAO;
 
 class ControllerCatalogProduct extends AdminController {
 	private $error = array();
-    /** @var ModelCatalogProduct */
-    private $modelCatalogProduct;
+//    /** @var ModelCatalogProduct */
+//    private $modelCatalogProduct;
 	/** @var ModelToolImage $modelToolImage */
 	private $modelToolImage;
 
@@ -22,7 +22,7 @@ class ControllerCatalogProduct extends AdminController {
         $this->getLoader()->language('catalog/product');
         $this->document->setTitle($this->language->get('heading_title'));
         $this->data['heading_title'] = $this->language->get('heading_title');
-        $this->modelCatalogProduct = $this->getLoader()->model('catalog/product');
+        $this->getLoader()->model('catalog/product');
 		$this->modelToolImage = $this->getLoader()->model('tool/image');
 
 		$this->takeSessionVariables();
@@ -83,8 +83,8 @@ class ControllerCatalogProduct extends AdminController {
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
             $this->addMemoOption();
     		$data = $this->request->post;
-    		$data['user_id'] = $this->user->getId();
-            $this->model_catalog_product->addProduct($data);
+    		$data['user_id'] = $this->getUser()->getId();
+            ProductDAO::getInstance()->addProduct($data);
 	            Audit::getInstance($this->getRegistry())->addAdminEntry(
 					$this->getUser()->getId(),
 					AUDIT_ADMIN_PRODUCT_CREATE, $_REQUEST
@@ -186,7 +186,7 @@ class ControllerCatalogProduct extends AdminController {
         $urlParams['selectedItems'] = $this->parameters['selectedItems'];
 		if (isset($this->parameters['selectedItems']) && $this->validateDelete()) {
 			foreach ($this->parameters['selectedItems'] as $product_id) {
-				$this->modelCatalogProduct->deleteProduct($product_id);
+				ProductDAO::getInstance()->deleteProduct($product_id);
                 Audit::getInstance($this->getRegistry())->addAdminEntry(
 					$this->getUser()->getId(),
                     AUDIT_ADMIN_PRODUCT_DELETE,
@@ -828,7 +828,7 @@ class ControllerCatalogProduct extends AdminController {
 		$this->data['token'] = $this->session->data['token'];
 
 		if (isset($this->request->get['product_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
-			$product_info = $this->model_catalog_product->getProduct($this->request->get['product_id']);
+			$product_info = ProductDAO::getInstance()->getProduct($this->getRequest()->getParam('product_id'));
 		}
 
 		$this->data['languages'] = $this->getLoader()->model('localisation/language')->getLanguages();
@@ -1089,7 +1089,7 @@ class ControllerCatalogProduct extends AdminController {
 		if (isset($this->request->post['product_attribute'])) {
 			$this->data['product_attributes'] = $this->request->post['product_attribute'];
 		} elseif (isset($this->request->get['product_id'])) {
-			$this->data['product_attributes'] = $this->model_catalog_product->getProductAttributes($this->request->get['product_id']);
+			$this->data['product_attributes'] = ProductDAO::getInstance()->getProductAttributes($this->request->get['product_id']);
 		} else {
 			$this->data['product_attributes'] = array();
 		}
@@ -1150,7 +1150,7 @@ class ControllerCatalogProduct extends AdminController {
 		if (isset($this->request->post['product_discount'])) {
 			$this->data['product_discounts'] = $this->request->post['product_discount'];
 		} elseif (isset($this->request->get['product_id'])) {
-			$this->data['product_discounts'] = $this->model_catalog_product->getProductDiscounts($this->request->get['product_id']);
+			$this->data['product_discounts'] = ProductDAO::getInstance()->getProductDiscounts($this->request->get['product_id']);
 		} else {
 			$this->data['product_discounts'] = array();
 		}
@@ -1158,7 +1158,7 @@ class ControllerCatalogProduct extends AdminController {
 		if (isset($this->request->post['product_special'])) {
 			$this->data['product_specials'] = $this->request->post['product_special'];
 		} elseif (isset($this->request->get['product_id'])) {
-			$this->data['product_specials'] = $this->model_catalog_product->getProductSpecials($this->request->get['product_id']);
+			$this->data['product_specials'] = ProductDAO::getInstance()->getProductSpecials($this->request->get['product_id']);
 		} else {
 			$this->data['product_specials'] = array();
 		}
@@ -1166,7 +1166,7 @@ class ControllerCatalogProduct extends AdminController {
 		if (isset($this->request->post['product_image'])) {
 			$product_images = $this->request->post['product_image'];
 		} elseif (isset($this->request->get['product_id'])) {
-			$product_images = $this->model_catalog_product->getProductImages($this->request->get['product_id']);
+			$product_images = ProductDAO::getInstance()->getProductImages($this->request->get['product_id']);
 		} else {
 			$product_images = array();
 		}
@@ -1194,7 +1194,7 @@ class ControllerCatalogProduct extends AdminController {
 		if (isset($this->request->post['product_download'])) {
 			$this->data['product_download'] = $this->request->post['product_download'];
 		} elseif (isset($this->request->get['product_id'])) {
-			$this->data['product_download'] = $this->model_catalog_product->getProductDownloads($this->request->get['product_id']);
+			$this->data['product_download'] = ProductDAO::getInstance()->getProductDownloads($this->request->get['product_id']);
 		} else {
 			$this->data['product_download'] = array();
 		}
@@ -1293,17 +1293,16 @@ class ControllerCatalogProduct extends AdminController {
 		$this->getResponse()->setOutput($this->render('catalog/productForm.tpl.php'));
 	}
 
-  	private function getUserNames()
-    {
-        foreach ($this->parameters as $key => $value)
-        {
+  	private function getUserNames() {
+        $data = [];
+        foreach ($this->parameters as $key => $value) {
             if (strpos($key, 'filter') === false)
                 continue;
             $data[$key] = $value;
         }
         unset($data['filterUserNameId']);
         $tmpResult = array();
-        $usernames = $this->modelCatalogProduct->getProductUserNames($data);
+        $usernames = ProductDAO::getInstance()->getProductUserNames($data);
         
         foreach ($usernames as $username)
         {
@@ -1314,17 +1313,16 @@ class ControllerCatalogProduct extends AdminController {
         return $tmpResult;
     }
 
-    private function getManufacturers()
-    {
-        foreach ($this->parameters as $key => $value)
-        {
+    private function getManufacturers() {
+        $data = [];
+        foreach ($this->parameters as $key => $value) {
             if (strpos($key, 'filter') === false)
                 continue;
             $data[$key] = $value;
         }
         unset($data['filterManufacturerId']);
         $tmpResult = array();
-        $products = $this->modelCatalogProduct->getProductManufacturers($data);
+        $products = ProductDAO::getInstance()->getProductManufacturers($data);
         foreach ($products as $product)
         {
             if (!in_array($product['manufacturer_id'], $tmpResult))
@@ -1344,7 +1342,7 @@ class ControllerCatalogProduct extends AdminController {
         }
         unset($data['filterSupplierId']);
         $tmpResult = array();
-        $products = $this->modelCatalogProduct->getProductSuppliers($data);
+        $products = ProductDAO::getInstance()->getProductSuppliers($data);
 //        $this->log->write(sizeof($products));
         foreach ($products as $product) {
             if (!in_array($product['supplier_id'], $tmpResult))
