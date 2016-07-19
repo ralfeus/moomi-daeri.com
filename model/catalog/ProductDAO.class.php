@@ -475,7 +475,8 @@ SQL
             'p.price',
             'rating',
             'p.sort_order',
-            'p.date_added'
+            'p.date_added',
+            'p.product_id'
         );
 
         if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
