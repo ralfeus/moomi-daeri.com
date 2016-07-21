@@ -1,5 +1,6 @@
 <?php
 use model\catalog\ManufacturerDAO;
+use model\catalog\ProductDAO;
 
 class ControllerProductManufacturer extends Controller {
     public function __construct($registry) {
@@ -8,10 +9,31 @@ class ControllerProductManufacturer extends Controller {
         $this->document->setTitle($this->language->get('heading_title'));
         $this->data['heading_title'] = $this->language->get('heading_title');
     }
-    
-	public function index() { 
+
+    protected function loadStrings() {
+        $this->data['text_empty'] = $this->language->get('text_empty');
+        $this->data['text_quantity'] = $this->language->get('text_quantity');
+        $this->data['text_manufacturer'] = $this->language->get('text_manufacturer');
+        $this->data['text_model'] = $this->language->get('text_model');
+        $this->data['text_price'] = $this->language->get('text_price');
+        $this->data['text_tax'] = $this->language->get('text_tax');
+        $this->data['text_points'] = $this->language->get('text_points');
+        $this->data['text_compare'] = sprintf($this->language->get('text_compare'), (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0));
+        $this->data['text_display'] = $this->language->get('text_display');
+        $this->data['text_list'] = $this->language->get('text_list');
+        $this->data['text_grid'] = $this->language->get('text_grid');
+        $this->data['text_sort'] = $this->language->get('text_sort');
+        $this->data['text_limit'] = $this->language->get('text_limit');
+
+        $this->data['button_cart'] = $this->language->get('button_cart');
+        $this->data['button_wishlist'] = $this->language->get('button_wishlist');
+        $this->data['button_compare'] = $this->language->get('button_compare');
+        $this->data['button_continue'] = $this->language->get('button_continue');
+    }
+
+    public function index() {
 		
-		$this->load->model('tool/image');		
+		$this->getLoader()->model('tool/image');		
 		$this->data['text_index'] = $this->language->get('text_index');
 		$this->data['text_empty'] = $this->language->get('text_empty');
 		
@@ -21,13 +43,13 @@ class ControllerProductManufacturer extends Controller {
 		
       	$this->data['breadcrumbs'][] = array(
         	'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home'),
+			'href'      => $this->getUrl()->link('common/home'),
         	'separator' => false
       	);
 		
 		$this->data['breadcrumbs'][] = array(
 			'text'      => $this->language->get('text_brand'),
-			'href'      => $this->url->link('product/manufacturer'),
+			'href'      => $this->getUrl()->link('product/manufacturer'),
 			'separator' => $this->language->get('text_separator')
 		);
 		
@@ -48,16 +70,16 @@ class ControllerProductManufacturer extends Controller {
 			
 			$this->data['categories'][$key]['manufacturer'][] = array(
 				'name' => $manufacturer->getName(),
-				'href' => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $manufacturer->getId())
+				'href' => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $manufacturer->getId())
 			);
 		}
 		
-		$this->data['continue'] = $this->url->link('common/home');
+		$this->data['continue'] = $this->getUrl()->link('common/home');
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/product/manufacturer_list.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/product/manufacturer_list.tpl';
+		if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/product/manufacturer_list.tpl')) {
+			$template = $this->getConfig()->get('config_template') . '/template/product/manufacturer_list.tpl';
 		} else {
-			$this->template = 'default/template/product/manufacturer_list.tpl';
+			$template = 'default/template/product/manufacturer_list.tpl';
 		}			
 		
 		$this->children = array(
@@ -69,13 +91,13 @@ class ControllerProductManufacturer extends Controller {
 			'common/header'
 		);
 				
-		$this->getResponse()->setOutput($this->render());
+		$this->getResponse()->setOutput($this->render($template));
   	}
 	
 	public function product() {
-		$this->load->model('catalog/product');
+		$this->getLoader()->model('catalog/product');
 		
-		$this->load->model('tool/image'); 
+		$this->getLoader()->model('tool/image'); 
 		
 		if (isset($this->request->get['manufacturer_id'])) {
 			$manufacturer_id = $this->request->get['manufacturer_id'];
@@ -104,37 +126,23 @@ class ControllerProductManufacturer extends Controller {
 		if (isset($this->request->get['limit'])) {
 			$limit = $this->request->get['limit'];
 		} else {
-			$limit = $this->config->get('config_catalog_limit');
+			$limit = $this->getConfig()->get('config_catalog_limit');
 		}
 
-		$this->data['breadcrumbs'] = array();
-
-   		$this->data['breadcrumbs'][] = array( 
-       		'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home'),
-      		'separator' => false
-   		);
-   		
-		$this->data['breadcrumbs'][] = array( 
-       		'text'      => $this->language->get('text_brand'),
-			'href'      => $this->url->link('product/manufacturer'),
-      		'separator' => $this->language->get('text_separator')
-   		);
-		
 		$manufacturer = ManufacturerDAO::getInstance()->getManufacturer($manufacturer_id);
 	
 		if ($manufacturer) {
-			if (isset($manufacturer['seo_title'])) {
-				$this->document->setTitle($manufacturer['seo_title']);
+			if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())->getSeoTitle())) {
+				$this->document->setTitle($manufacturer->getDescription($this->getLanguage()->getId())->getSeoTitle());
 			} else {
-				$this->document->setTitle($manufacturer['name']);
+				$this->document->setTitle($manufacturer->getName());
 			}
 
-			if (isset($manufacturer['meta_description'])) {
-                $this->document->setDescription($manufacturer['meta_description']);
+			if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())->getMetaDescription())) {
+                $this->document->setDescription($manufacturer->getDescription($this->getLanguage()->getId())->getMetaDescription());
             }
-            if (isset($manufacturer['meta_keyword'])) {
-                $this->document->setKeywords($manufacturer['meta_keyword']);
+            if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())->getMetaKeyword())) {
+                $this->document->setKeywords($manufacturer->getDescription($this->getLanguage()->getId())->getMetaKeyword());
             }
 			$url = '';
 			
@@ -154,40 +162,13 @@ class ControllerProductManufacturer extends Controller {
 				$url .= '&limit=' . $this->request->get['limit'];
 			}
 		   			
-			$this->data['breadcrumbs'][] = array(
-       			'text'      => $manufacturer['name'],
-				'href'      => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url),
-      			'separator' => $this->language->get('text_separator')
-   			);
-
-            if (isset($manufacturer['seo_h1'])) {
-                $this->data['seo_h1'] = $manufacturer['seo_h1'];
+            if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())->getSeoH1())) {
+                $this->data['seo_h1'] = $manufacturer->getDescription($this->getLanguage()->getId())->getSeoH1();
             }
-            if (isset($manufacturer['description'])) {
-                $this->data['description'] = html_entity_decode($manufacturer['description'], ENT_QUOTES, 'UTF-8');
-            }
-			$this->data['heading_title'] = $manufacturer['name'];
+            $this->data['description'] = html_entity_decode($manufacturer->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8');
+			$this->data['heading_title'] = $manufacturer->getName();
 			
-			$this->data['text_empty'] = $this->language->get('text_empty');
-			$this->data['text_quantity'] = $this->language->get('text_quantity');
-			$this->data['text_manufacturer'] = $this->language->get('text_manufacturer');
-			$this->data['text_model'] = $this->language->get('text_model');
-			$this->data['text_price'] = $this->language->get('text_price');
-			$this->data['text_tax'] = $this->language->get('text_tax');
-			$this->data['text_points'] = $this->language->get('text_points');
-			$this->data['text_compare'] = sprintf($this->language->get('text_compare'), (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0));
-			$this->data['text_display'] = $this->language->get('text_display');
-			$this->data['text_list'] = $this->language->get('text_list');
-			$this->data['text_grid'] = $this->language->get('text_grid');			
-			$this->data['text_sort'] = $this->language->get('text_sort');
-			$this->data['text_limit'] = $this->language->get('text_limit');
-			  
-			$this->data['button_cart'] = $this->language->get('button_cart');
-			$this->data['button_wishlist'] = $this->language->get('button_wishlist');
-			$this->data['button_compare'] = $this->language->get('button_compare');
-			$this->data['button_continue'] = $this->language->get('button_continue');
-			
-			$this->data['compare'] = $this->url->link('product/compare');
+			$this->data['compare'] = $this->getUrl()->link('product/compare');
 
       #kabantejay synonymizer start
 			$this->data['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $this->data['description']);
@@ -203,56 +184,58 @@ class ControllerProductManufacturer extends Controller {
 				'limit'                  => $limit
 			);
 					
-			$product_total = $this->model_catalog_product->getTotalProducts($data);
-								
-			$results = $this->model_catalog_product->getProducts($data);
+			$product_total = ProductDAO::getInstance()->getProductsCount($data);
+			$products = ProductDAO::getInstance()->getProducts($data);
 					
-			foreach ($results as $result) {
-				if ($result['image']) {
-					$image = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
+			foreach ($products as $product) {
+				if ($product->getImagePath()) {
+					$image = $this->model_tool_image->resize($product->getImagePath(), $this->getConfig()->get('config_image_product_width'), $this->getConfig()->get('config_image_product_height'));
 				} else {
 					$image = false;
 				}
 				
-				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-					$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+				if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
+//					$price = $this->currency->format($this->tax->calculate($product->getPrice(), $product->getTaxClassId(), $this->getConfig()->get('config_tax')));
+                    $price = $this->getCurrentCurrency()->format($product->getPrice());
 				} else {
 					$price = false;
 				}
 				
-				if ((float)$result['special']) {
-					$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+				if ((float)$product->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId())) {
+//					$special = $this->currency->format($this->tax->calculate($product->getSpecials(), $product->getTaxClassId(), $this->getConfig()->get('config_tax')));
+                    $special = $this->getCurrentCurrency()->format($product->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId()));
 				} else {
 					$special = false;
 				}	
 				
-				if ($this->config->get('config_tax')) {
-					$tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price']);
-				} else {
-					$tax = false;
-				}				
+//				if ($this->getConfig()->get('config_tax')) {
+//					$tax = $this->currency->format((float)$product->getSpecial() ? $product->getSpecial() : $product->getPrice());
+//				} else {
+//					$tax = false;
+//				}
 				
-				if ($this->config->get('config_review_status')) {
-					$rating = (int)$result['rating'];
-				} else {
-					$rating = false;
-				}
-
         #kabantejay synonymizer start
-	 	   	$result['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $result['description']);
+	 	   	$description = preg_replace_callback(
+	 	   	    '/\{  (.*?)  \}/xs',
+                function ($m) {
+	 	   	        $ar = explode("|", $m[1]);
+                    return $ar[array_rand($ar, 1)];
+	 	   	    },
+                $product->getDescription()->getDescription($this->getLanguage()->getId())
+            );
 	   		#kabantejay synonymizer end
 			
 				$this->data['products'][] = array(
-					'product_id'  => $result['product_id'],
+					'product_id'  => $product->getId(),
 					'thumb'       => $image,
-					'name'        => $result['name'],
-					'description' => utf8_truncate(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
+					'name'        => $product->getName(),
+					'description' => utf8_truncate(strip_tags(html_entity_decode($product->getDescription(), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
 					'price'       => $price,
 					'special'     => $special,
-					'tax'         => $tax,
-					'rating'      => $result['rating'],
-					'reviews'     => sprintf($this->language->get('text_reviews'), (int)$result['reviews']),
-					'href'        => $this->url->link('product/product', $url . '&manufacturer_id=' . $result['manufacturer_id'] . '&product_id=' . $result['product_id'])
+//					'tax'         => $tax,
+					'rating'      => $this->getConfig()->get('config_review_status') ? $product->getRating() : false,
+					'reviews'     => sprintf($this->language->get('text_reviews'), $product->getReviewsCount()),
+					'href'        => $this->getUrl()->link('product/product', $url . '&manufacturer_id=' . $product->getManufacturerId() . '&product_id=' . $product->getId())
 				);
 			}
 					
@@ -267,55 +250,55 @@ class ControllerProductManufacturer extends Controller {
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_default'),
 				'value' => 'p.sort_order-ASC',
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.sort_order&order=ASC' . $url)
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.sort_order&order=ASC' . $url)
 			);
 			
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_name_asc'),
 				'value' => 'pd.name-ASC',
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=pd.name&order=ASC' . $url)
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=pd.name&order=ASC' . $url)
 			); 
 	
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_name_desc'),
 				'value' => 'pd.name-DESC',
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=pd.name&order=DESC' . $url)
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=pd.name&order=DESC' . $url)
 			);
 	
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_price_asc'),
 				'value' => 'p.price-ASC',
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.price&order=ASC' . $url)
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.price&order=ASC' . $url)
 			); 
 	
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_price_desc'),
 				'value' => 'p.price-DESC',
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.price&order=DESC' . $url)
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.price&order=DESC' . $url)
 			); 
 			
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_rating_desc'),
 				'value' => 'rating-DESC',
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=rating&order=DESC' . $url)
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=rating&order=DESC' . $url)
 			); 
 			
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_rating_asc'),
 				'value' => 'rating-ASC',
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=rating&order=ASC' . $url)
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=rating&order=ASC' . $url)
 			);
 			
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_model_asc'),
 				'value' => 'p.model-ASC',
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.model&order=ASC' . $url)
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.model&order=ASC' . $url)
 			); 
 	
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_model_desc'),
 				'value' => 'p.model-DESC',
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.model&order=DESC' . $url)
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.model&order=DESC' . $url)
 			);
 	
 			$url = '';
@@ -331,33 +314,33 @@ class ControllerProductManufacturer extends Controller {
 			$this->data['limits'] = array();
 			
 			$this->data['limits'][] = array(
-				'text'  => $this->config->get('config_catalog_limit'),
-				'value' => $this->config->get('config_catalog_limit'),
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&limit=' . $this->config->get('config_catalog_limit'))
+				'text'  => $this->getConfig()->get('config_catalog_limit'),
+				'value' => $this->getConfig()->get('config_catalog_limit'),
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&limit=' . $this->getConfig()->get('config_catalog_limit'))
 			);
 						
 			$this->data['limits'][] = array(
 				'text'  => 25,
 				'value' => 25,
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&limit=25')
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&limit=25')
 			);
 			
 			$this->data['limits'][] = array(
 				'text'  => 50,
 				'value' => 50,
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&limit=50')
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&limit=50')
 			);
 	
 			$this->data['limits'][] = array(
 				'text'  => 75,
 				'value' => 75,
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&limit=75')
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&limit=75')
 			);
 			
 			$this->data['limits'][] = array(
 				'text'  => 100,
 				'value' => 100,
-				'href'  => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&limit=100')
+				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&limit=100')
 			);
 					
 			$url = '';
@@ -373,13 +356,18 @@ class ControllerProductManufacturer extends Controller {
 			if (isset($this->request->get['limit'])) {
 				$url .= '&limit=' . $this->request->get['limit'];
 			}
-					
-			$pagination = new Pagination();
+
+            $this->setBreadcrumbs([
+                'text'      => $this->language->get('text_brand'),
+                'route'      => $this->getUrl()->link('product/manufacturer')
+            ]);
+
+            $pagination = new Pagination();
 			$pagination->total = $product_total;
 			$pagination->page = $page;
 			$pagination->limit = $limit;
 			$pagination->text = $this->language->get('text_pagination');
-			$pagination->url = $this->url->link('product/manufacturer/product','manufacturer_id=' . $this->request->get['manufacturer_id'] .  $url . '&page={page}');
+			$pagination->url = $this->getUrl()->link('product/manufacturer/product','manufacturer_id=' . $this->request->get['manufacturer_id'] .  $url . '&page={page}');
 			
 			$this->data['pagination'] = $pagination->render();
 			
@@ -387,12 +375,12 @@ class ControllerProductManufacturer extends Controller {
 			$this->data['order'] = $order;
 			$this->data['limit'] = $limit;
 			
-			$this->data['continue'] = $this->url->link('common/home');
+			$this->data['continue'] = $this->getUrl()->link('common/home');
 			
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/product/manufacturer_info.tpl')) {
-				$this->template = $this->config->get('config_template') . '/template/product/manufacturer_info.tpl';
+			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/product/manufacturer_info.tpl')) {
+				$template = $this->getConfig()->get('config_template') . '/template/product/manufacturer_info.tpl';
 			} else {
-				$this->template = 'default/template/product/manufacturer_info.tpl';
+				$template = 'default/template/product/manufacturer_info.tpl';
 			}
 			
 			$this->children = array(
@@ -404,7 +392,7 @@ class ControllerProductManufacturer extends Controller {
 				'common/header'
 			);
 					
-			$this->getResponse()->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render($template));
 		} else {
 			$url = '';
 			
@@ -430,7 +418,7 @@ class ControllerProductManufacturer extends Controller {
 						
 			$this->data['breadcrumbs'][] = array(
 				'text'      => $this->language->get('text_error'),
-				'href'      => $this->url->link('product/category', $url),
+				'href'      => $this->getUrl()->link('product/category', $url),
 				'separator' => $this->language->get('text_separator')
 			);
 				
@@ -442,12 +430,12 @@ class ControllerProductManufacturer extends Controller {
 
       		$this->data['button_continue'] = $this->language->get('button_continue');
 
-      		$this->data['continue'] = $this->url->link('common/home');
+      		$this->data['continue'] = $this->getUrl()->link('common/home');
 
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/error/not_found.tpl')) {
-				$this->template = $this->config->get('config_template') . '/template/error/not_found.tpl';
+			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/error/not_found.tpl')) {
+				$template = $this->getConfig()->get('config_template') . '/template/error/not_found.tpl';
 			} else {
-				$this->template = 'default/template/error/not_found.tpl';
+				$template = 'default/template/error/not_found.tpl';
 			}
 			
 			$this->children = array(
@@ -459,8 +447,7 @@ class ControllerProductManufacturer extends Controller {
 				'common/header'
 			);
 					
-			$this->getResponse()->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render($template));
 		}
   	}
 }
-?>

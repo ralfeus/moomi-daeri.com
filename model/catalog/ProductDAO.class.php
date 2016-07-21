@@ -435,6 +435,32 @@ SQL
     }
 
     /**
+     * @param int $productId
+     * @param int $customerGroupId
+     * @return bool|float false returned if no specials are available
+     */
+    public function getProductActiveSpecial($productId, $customerGroupId) {
+        $result = $this->getDb()->queryScalar("
+            SELECT price
+            FROM product_special 
+            WHERE
+                product_id = :productId
+                AND customer_group_id = :customerGroupId
+                AND ((date_start = '0000-00-00' OR date_start < :dateStart)
+                AND (date_end = '0000-00-00' OR date_end > :dateEnd))
+            ORDER BY priority ASC, price ASC
+            LIMIT 1
+            ", [
+                ':productId' => $productId,
+                ':customerGroupId' => $customerGroupId,
+                ':dateStart' => date('Y-m-d H:00:00'),
+                ':dateEnd' => date('Y-m-d H:00:00', strtotime('+1 hour'))
+            ]
+        );
+        return $result;
+    }
+
+    /**
      * @param array $data
      * @return array
      * @throws \CacheNotInstalledException
@@ -505,6 +531,34 @@ SQL
         }
         $this->getCache()->set($cacheKey, $result);
         return $result;
+    }
+
+    /**
+     * @param int $productId
+     * @return bool|float False if there are no reviews
+     */
+    public function getProductRating($productId) {
+        return $this->getDb()->queryScalar("
+            SELECT AVG(rating) AS total
+            FROM review AS r1
+            WHERE r1.product_id = :productId AND r1.status = 1
+            GROUP BY r1.product_id
+            ", [ ':productId' => $productId ]
+        );
+    }
+
+    /**
+     * @param int $productId
+     * @return int
+     */
+    public function getProductReviewsCount($productId) {
+        return $this->getDb()->queryScalar("
+            SELECT COUNT(*) AS total
+            FROM review AS r2
+            WHERE r2.product_id = :productId AND r2.status = 1
+            GROUP BY r2.product_id
+            ", [ ':productId' => $productId ]
+        );
     }
 
     /**

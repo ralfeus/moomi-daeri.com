@@ -2,6 +2,8 @@
 namespace model\catalog;
 
 use model\DAO;
+use model\localization\Description;
+use model\localization\DescriptionCollection;
 
 class ManufacturerDAO extends DAO {
     /**
@@ -88,19 +90,28 @@ class ManufacturerDAO extends DAO {
 
     /**
      * @param int $manufacturerId
-     * @return string[]
+     * @return DescriptionCollection
      */
     public function getDescription($manufacturerId) {
         $recordSet = $this->getDb()->query(<<<SQL
-            SELECT language_id, description
+            SELECT *
             FROM manufacturer_description
-            WHERE manufacturer_id = ?
+            WHERE manufacturer_id = :manufacturerId
 SQL
-            , array("i:$manufacturerId")
+            , [ ':manufacturerId' => $manufacturerId ]
         );
-        $result = array();
+        $result = new DescriptionCollection();
+        $name = $this->getName($manufacturerId);
         foreach ($recordSet->rows as $descriptionEntry) {
-            $result[$descriptionEntry['language_id']] = $descriptionEntry['description'];
+            $result->addDescription(new Description(
+                $descriptionEntry['language_id'],
+                $name,
+                $descriptionEntry['description'],
+                $descriptionEntry['meta_description'],
+                $descriptionEntry['meta_keyword'],
+                $descriptionEntry['seo_title'],
+                $descriptionEntry['seo_h1']
+            ));
         }
         return $result;
     }
@@ -116,7 +127,7 @@ SQL
     /**
      * @param int $manufacturerId
      * @param bool $shallow
-     * @return Manufacturer|array
+     * @return Manufacturer
      */
     public function getManufacturer($manufacturerId, $shallow = false) {
         if ($shallow) {

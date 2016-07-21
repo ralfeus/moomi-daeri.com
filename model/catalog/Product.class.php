@@ -54,6 +54,7 @@ class Product {
     private $tags;
     private $price;
     private $points;
+    private $rating;
     private $dateAvailable;
     private $subtract;
     private $minimum;
@@ -585,6 +586,16 @@ class Product {
     }
 
     /**
+     * @return bool|float False if rating can't be calculated yet
+     */
+    public function getRating() {
+        if (!isset($this->rating)) {
+            $this->rating = ProductDAO::getInstance()->getProductRating($this->id);
+        }
+        return $this->rating;
+    }
+
+    /**
      * @return int[]
      */
     public function getRelated() {
@@ -599,6 +610,16 @@ class Product {
      */
     public function isRelatedModified() {
         return !$this->saved || !is_null($this->related) && $this->related->isModified();
+    }
+
+    /**
+     * @return int
+     */
+    public function getReviewsCount() {
+        if (!isset($this->reviewsCount)) {
+            $this->reviewsCount = ProductDAO::getInstance()->getProductReviewsCount($this->id);
+        }
+        return $this->reviewsCount;
     }
 
     /**
@@ -658,6 +679,10 @@ class Product {
 
     public function setSortOrder($value) {
         $this->sortOrder = $value;
+    }
+
+    public function getSpecialPrice($customerGroupId) {
+        return ProductDAO::getInstance()->getProductActiveSpecial($this->id, $customerGroupId);
     }
 
     /**

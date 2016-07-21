@@ -1,6 +1,8 @@
 <?php
 namespace model\catalog;
 
+use model\localization\Description;
+use model\localization\DescriptionCollection;
 use system\library\Mutable;
 
 class Manufacturer implements \ArrayAccess{
@@ -16,7 +18,7 @@ class Manufacturer implements \ArrayAccess{
                          $sortOrder = null, $stores = null) {
         $this->id = $id;
         if (!is_null($afcId)) { $this->afcId = new Mutable($afcId); }
-        if (!is_null($description)) { $this->description = new Mutable($description); }
+        if (!is_null($description)) { $this->description = $description; }
         if (!is_null($imagePath)) { $this->imagePath = new Mutable($imagePath); }
         if (!is_null($name)) { $this->name = new Mutable($name); }
         if (!is_null($sortOrder)) { $this->sortOrder = new Mutable($sortOrder); }
@@ -41,17 +43,18 @@ class Manufacturer implements \ArrayAccess{
     }
 
     /**
-     * @return string[]
+     * @param int $languageId
+     * @return Description
      */
-    public function getDescription() {
+    public function getDescription($languageId) {
         if (!isset($this->description)) {
-            $this->description = new Mutable(ManufacturerDAO::getInstance()->getDescription($this->id));
+            $this->description = ManufacturerDAO::getInstance()->getDescription($this->id);
         }
-        return $this->description->get();
+        return $this->description->getDescription($languageId);
     }
 
     /**
-     * @param Mutable $description
+     * @param DescriptionCollection $description
      */
     public function setDescription($description) {
         $this->description = $description;

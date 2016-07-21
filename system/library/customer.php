@@ -1,5 +1,7 @@
 <?php
 final class Customer {
+    /** @var Config */
+    private $config;
 	private $customer_id;
 	private $firstname;
 	private $lastname;
@@ -191,8 +193,15 @@ final class Customer {
 		return $this->newsletter;	
   	}
 
-  	public function getCustomerGroupId() {
-		return $this->customer_group_id;	
+    /**
+     * @return int
+     */
+    public function getCustomerGroupId() {
+        if ($this->isLogged()) {
+            return $this->customer_group_id;
+        } else {
+            return $this->config->get('config_customer_group_id');
+        }
   	}
 
 	public function getAffiliateId() {
