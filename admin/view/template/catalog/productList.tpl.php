@@ -101,7 +101,7 @@ window.onload = function() {
                 <?php } else { ?>
                 <a href="<?php echo $sort_supplier; ?>"><?php echo $columnSupplier; ?></a>
                 <?php } ?></td>
-              <td style="width: 1px; text-align: center;"><?= $textDateAdded ?></td>
+              <td style="width: 90px; text-align: center;"><?= $textDateAdded ?></td>
               <td style="text-align: center;" class="left"><?php if ($sort == 'p.product_id') { ?>
                 <a href="<?php echo $sort_id; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_id; ?></a>
                 <?php } else { ?>
@@ -251,31 +251,32 @@ $(document).ready(function() {
 <?php endif; ?>
 <script type="text/javascript"><!--
 $(document).ready(function() {
+    var noFilterText = "--&nbsp;No&nbsp;filter&nbsp;--";
     $('.date').datepicker({dateFormat: 'yy-mm-dd'});
     $('[name="filterUserNameId[]"]')
             .multiselect({
-                noneSelectedText: "-- No filter --",
+                noneSelectedText: noFilterText,
                 selectedList: 1
             })
             .multiselectfilter();
     $('[name="filterManufacturerId[]"]')
             .multiselect({
-                noneSelectedText: "-- No filter --",
+                noneSelectedText: noFilterText,
                 selectedList: 1
             })
             .multiselectfilter();
     $('[name=filterEnabled]').multiselect({
         multiple: false,
-        noneSelectedText: "-- No filter --",
+        noneSelectedText: noFilterText,
         selectedList: 1
     }).multiselectfilter();
     $('[name="filterSupplierId[]"]')
             .multiselect({
-                noneSelectedText: "-- No filter --",
+                noneSelectedText: noFilterText,
                 selectedList: 1
             })
             .multiselectfilter();
-    $('button.ui-multiselect').css('width', '110px');
+    $('button.ui-multiselect').css('width', '120px');
 });
 
 function filter() {

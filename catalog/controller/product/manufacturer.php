@@ -1,57 +1,42 @@
 <?php
 use model\catalog\ManufacturerDAO;
 use model\catalog\ProductDAO;
+use system\helper\ImageService;
 
 class ControllerProductManufacturer extends Controller {
     public function __construct($registry) {
         parent::__construct($registry);
-        $this->language->load('product/manufacturer');
-        $this->document->setTitle($this->language->get('heading_title'));
-        $this->data['heading_title'] = $this->language->get('heading_title');
+        $this->getLanguage()->load('product/manufacturer');
+        $this->document->setTitle($this->getLanguage()->get('heading_title'));
+        $this->data['heading_title'] = $this->getLanguage()->get('heading_title');
     }
 
     protected function loadStrings() {
-        $this->data['text_empty'] = $this->language->get('text_empty');
-        $this->data['text_quantity'] = $this->language->get('text_quantity');
-        $this->data['text_manufacturer'] = $this->language->get('text_manufacturer');
-        $this->data['text_model'] = $this->language->get('text_model');
-        $this->data['text_price'] = $this->language->get('text_price');
-        $this->data['text_tax'] = $this->language->get('text_tax');
-        $this->data['text_points'] = $this->language->get('text_points');
-        $this->data['text_compare'] = sprintf($this->language->get('text_compare'), (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0));
-        $this->data['text_display'] = $this->language->get('text_display');
-        $this->data['text_list'] = $this->language->get('text_list');
-        $this->data['text_grid'] = $this->language->get('text_grid');
-        $this->data['text_sort'] = $this->language->get('text_sort');
-        $this->data['text_limit'] = $this->language->get('text_limit');
+        $this->data['text_empty'] = $this->getLanguage()->get('text_empty');
+        $this->data['text_quantity'] = $this->getLanguage()->get('text_quantity');
+        $this->data['text_manufacturer'] = $this->getLanguage()->get('text_manufacturer');
+        $this->data['text_model'] = $this->getLanguage()->get('text_model');
+        $this->data['text_price'] = $this->getLanguage()->get('text_price');
+        $this->data['text_tax'] = $this->getLanguage()->get('text_tax');
+        $this->data['text_points'] = $this->getLanguage()->get('text_points');
+        $this->data['text_compare'] = sprintf($this->getLanguage()->get('text_compare'), (isset($this->getSession()->data['compare']) ? count($this->getSession()->data['compare']) : 0));
+        $this->data['text_display'] = $this->getLanguage()->get('text_display');
+        $this->data['text_list'] = $this->getLanguage()->get('text_list');
+        $this->data['text_grid'] = $this->getLanguage()->get('text_grid');
+        $this->data['text_sort'] = $this->getLanguage()->get('text_sort');
+        $this->data['text_limit'] = $this->getLanguage()->get('text_limit');
 
-        $this->data['button_cart'] = $this->language->get('button_cart');
-        $this->data['button_wishlist'] = $this->language->get('button_wishlist');
-        $this->data['button_compare'] = $this->language->get('button_compare');
-        $this->data['button_continue'] = $this->language->get('button_continue');
+        $this->data['button_cart'] = $this->getLanguage()->get('button_cart');
+        $this->data['button_wishlist'] = $this->getLanguage()->get('button_wishlist');
+        $this->data['button_compare'] = $this->getLanguage()->get('button_compare');
+        $this->data['button_continue'] = $this->getLanguage()->get('button_continue');
     }
 
     public function index() {
+		$this->data['text_index'] = $this->getLanguage()->get('text_index');
+		$this->data['text_empty'] = $this->getLanguage()->get('text_empty');
 		
-		$this->getLoader()->model('tool/image');		
-		$this->data['text_index'] = $this->language->get('text_index');
-		$this->data['text_empty'] = $this->language->get('text_empty');
-		
-		$this->data['button_continue'] = $this->language->get('button_continue');
-		
-		$this->data['breadcrumbs'] = array();
-		
-      	$this->data['breadcrumbs'][] = array(
-        	'text'      => $this->language->get('text_home'),
-			'href'      => $this->getUrl()->link('common/home'),
-        	'separator' => false
-      	);
-		
-		$this->data['breadcrumbs'][] = array(
-			'text'      => $this->language->get('text_brand'),
-			'href'      => $this->getUrl()->link('product/manufacturer'),
-			'separator' => $this->language->get('text_separator')
-		);
+		$this->data['button_continue'] = $this->getLanguage()->get('button_continue');
 		
 		$this->data['categories'] = array();
 									
@@ -76,13 +61,8 @@ class ControllerProductManufacturer extends Controller {
 		
 		$this->data['continue'] = $this->getUrl()->link('common/home');
 
-		if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/product/manufacturer_list.tpl')) {
-			$template = $this->getConfig()->get('config_template') . '/template/product/manufacturer_list.tpl';
-		} else {
-			$template = 'default/template/product/manufacturer_list.tpl';
-		}			
-		
-		$this->children = array(
+        $this->setBreadcrumbs();
+        $this->children = array(
 			'common/column_left',
 			'common/column_right',
 			'common/content_top',
@@ -90,8 +70,11 @@ class ControllerProductManufacturer extends Controller {
 			'common/footer',
 			'common/header'
 		);
-				
-		$this->getResponse()->setOutput($this->render($template));
+
+        $templatePath = file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/product/manufacturer_list.tpl.php')
+            ? $this->getConfig()->get('config_template')
+            : 'default';
+		$this->getResponse()->setOutput($this->render($templatePath . '/template/product/manufacturer_list.tpl.php'));
   	}
 	
 	public function product() {
@@ -165,13 +148,18 @@ class ControllerProductManufacturer extends Controller {
             if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())->getSeoH1())) {
                 $this->data['seo_h1'] = $manufacturer->getDescription($this->getLanguage()->getId())->getSeoH1();
             }
-            $this->data['description'] = html_entity_decode($manufacturer->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8');
 			$this->data['heading_title'] = $manufacturer->getName();
-			
 			$this->data['compare'] = $this->getUrl()->link('product/compare');
 
-      #kabantejay synonymizer start
-			$this->data['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $this->data['description']);
+            #kabantejay synonymizer start
+			$this->data['description'] = preg_replace_callback(
+			    '/\{  (.*?)  \}/xs', 
+                function ($m) {
+			        $ar = explode("|", $m[1]);
+                    return $ar[array_rand($ar, 1)];
+			    },
+                html_entity_decode($manufacturer->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8')
+            );
 			#kabantejay synonymizer end
 			
 			$this->data['products'] = array();
@@ -189,7 +177,7 @@ class ControllerProductManufacturer extends Controller {
 					
 			foreach ($products as $product) {
 				if ($product->getImagePath()) {
-					$image = $this->model_tool_image->resize($product->getImagePath(), $this->getConfig()->get('config_image_product_width'), $this->getConfig()->get('config_image_product_height'));
+					$image = ImageService::getInstance()->resize($product->getImagePath(), $this->getConfig()->get('config_image_product_width'), $this->getConfig()->get('config_image_product_height'));
 				} else {
 					$image = false;
 				}
@@ -214,16 +202,16 @@ class ControllerProductManufacturer extends Controller {
 //					$tax = false;
 //				}
 				
-        #kabantejay synonymizer start
-	 	   	$description = preg_replace_callback(
-	 	   	    '/\{  (.*?)  \}/xs',
-                function ($m) {
-	 	   	        $ar = explode("|", $m[1]);
-                    return $ar[array_rand($ar, 1)];
-	 	   	    },
-                $product->getDescription()->getDescription($this->getLanguage()->getId())
-            );
-	   		#kabantejay synonymizer end
+//            #kabantejay synonymizer start
+//	 	   	$description = preg_replace_callback(
+//	 	   	    '/\{  (.*?)  \}/xs',
+//                function ($m) {
+//	 	   	        $ar = explode("|", $m[1]);
+//                    return $ar[array_rand($ar, 1)];
+//	 	   	    },
+//                $product->getDescription()->getDescription($this->getLanguage()->getId())
+//            );
+//	   		#kabantejay synonymizer end
 			
 				$this->data['products'][] = array(
 					'product_id'  => $product->getId(),
@@ -234,7 +222,7 @@ class ControllerProductManufacturer extends Controller {
 					'special'     => $special,
 //					'tax'         => $tax,
 					'rating'      => $this->getConfig()->get('config_review_status') ? $product->getRating() : false,
-					'reviews'     => sprintf($this->language->get('text_reviews'), $product->getReviewsCount()),
+					'reviews'     => sprintf($this->getLanguage()->get('text_reviews'), $product->getReviewsCount()),
 					'href'        => $this->getUrl()->link('product/product', $url . '&manufacturer_id=' . $product->getManufacturerId() . '&product_id=' . $product->getId())
 				);
 			}
@@ -248,55 +236,55 @@ class ControllerProductManufacturer extends Controller {
 			$this->data['sorts'] = array();
 			
 			$this->data['sorts'][] = array(
-				'text'  => $this->language->get('text_default'),
+				'text'  => $this->getLanguage()->get('text_default'),
 				'value' => 'p.sort_order-ASC',
 				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.sort_order&order=ASC' . $url)
 			);
 			
 			$this->data['sorts'][] = array(
-				'text'  => $this->language->get('text_name_asc'),
+				'text'  => $this->getLanguage()->get('text_name_asc'),
 				'value' => 'pd.name-ASC',
 				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=pd.name&order=ASC' . $url)
 			); 
 	
 			$this->data['sorts'][] = array(
-				'text'  => $this->language->get('text_name_desc'),
+				'text'  => $this->getLanguage()->get('text_name_desc'),
 				'value' => 'pd.name-DESC',
 				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=pd.name&order=DESC' . $url)
 			);
 	
 			$this->data['sorts'][] = array(
-				'text'  => $this->language->get('text_price_asc'),
+				'text'  => $this->getLanguage()->get('text_price_asc'),
 				'value' => 'p.price-ASC',
 				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.price&order=ASC' . $url)
 			); 
 	
 			$this->data['sorts'][] = array(
-				'text'  => $this->language->get('text_price_desc'),
+				'text'  => $this->getLanguage()->get('text_price_desc'),
 				'value' => 'p.price-DESC',
 				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.price&order=DESC' . $url)
 			); 
 			
 			$this->data['sorts'][] = array(
-				'text'  => $this->language->get('text_rating_desc'),
+				'text'  => $this->getLanguage()->get('text_rating_desc'),
 				'value' => 'rating-DESC',
 				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=rating&order=DESC' . $url)
 			); 
 			
 			$this->data['sorts'][] = array(
-				'text'  => $this->language->get('text_rating_asc'),
+				'text'  => $this->getLanguage()->get('text_rating_asc'),
 				'value' => 'rating-ASC',
 				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=rating&order=ASC' . $url)
 			);
 			
 			$this->data['sorts'][] = array(
-				'text'  => $this->language->get('text_model_asc'),
+				'text'  => $this->getLanguage()->get('text_model_asc'),
 				'value' => 'p.model-ASC',
 				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.model&order=ASC' . $url)
 			); 
 	
 			$this->data['sorts'][] = array(
-				'text'  => $this->language->get('text_model_desc'),
+				'text'  => $this->getLanguage()->get('text_model_desc'),
 				'value' => 'p.model-DESC',
 				'href'  => $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.model&order=DESC' . $url)
 			);
@@ -358,7 +346,7 @@ class ControllerProductManufacturer extends Controller {
 			}
 
             $this->setBreadcrumbs([
-                'text'      => $this->language->get('text_brand'),
+                'text'      => $this->getLanguage()->get('text_brand'),
                 'route'      => $this->getUrl()->link('product/manufacturer')
             ]);
 
@@ -366,7 +354,7 @@ class ControllerProductManufacturer extends Controller {
 			$pagination->total = $product_total;
 			$pagination->page = $page;
 			$pagination->limit = $limit;
-			$pagination->text = $this->language->get('text_pagination');
+			$pagination->text = $this->getLanguage()->get('text_pagination');
 			$pagination->url = $this->getUrl()->link('product/manufacturer/product','manufacturer_id=' . $this->request->get['manufacturer_id'] .  $url . '&page={page}');
 			
 			$this->data['pagination'] = $pagination->render();
@@ -417,18 +405,18 @@ class ControllerProductManufacturer extends Controller {
 			}
 						
 			$this->data['breadcrumbs'][] = array(
-				'text'      => $this->language->get('text_error'),
+				'text'      => $this->getLanguage()->get('text_error'),
 				'href'      => $this->getUrl()->link('product/category', $url),
-				'separator' => $this->language->get('text_separator')
+				'separator' => $this->getLanguage()->get('text_separator')
 			);
 				
-			$this->document->setTitle($this->language->get('text_error'));
+			$this->document->setTitle($this->getLanguage()->get('text_error'));
 
-      		$this->data['heading_title'] = $this->language->get('text_error');
+      		$this->data['heading_title'] = $this->getLanguage()->get('text_error');
 
-      		$this->data['text_error'] = $this->language->get('text_error');
+      		$this->data['text_error'] = $this->getLanguage()->get('text_error');
 
-      		$this->data['button_continue'] = $this->language->get('button_continue');
+      		$this->data['button_continue'] = $this->getLanguage()->get('button_continue');
 
       		$this->data['continue'] = $this->getUrl()->link('common/home');
 

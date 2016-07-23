@@ -24,15 +24,20 @@ class ProductOption {
      * @param Option $parentOption
      * @param bool $required
      * @param int $afcId
+     * @param bool $loadValues Defines whether option values should be loaded from DB or not
      */
-    public function __construct($id, $product, $option, $parentOption, $required, $afcId) {
+    public function __construct($id, $product, $option, $parentOption, $required, $afcId, $loadValues = true) {
         $this->id = $id;
         $this->product = $product;
         $this->option = $option;
         $this->parentOption = $parentOption;
         $this->required = $required;
         $this->afcId = $afcId;
-        $this->value = ProductDAO::getInstance()->getProductOptionValues($this);
+        if ($loadValues) {
+            $this->value = ProductDAO::getInstance()->getProductOptionValues($this);
+        } else if ($this->getOption()->isMultiValueType()) {
+            $this->value = new ProductOptionValueCollection();
+        }
     }
 
     public function getOption() {

@@ -1,5 +1,5 @@
 <?php
-/** @var \model\localization\DescriptionCollection $product_description */
+/** @var \model\catalog\Product $model */
 ?>
 <?= $header ?>
 <div id="content">
@@ -44,17 +44,17 @@
 <form action="<?= $action ?>" method="post" enctype="multipart/form-data" id="form">
        <div id="tab-general">
           <div id="languages" class="htabs">
-            <?php foreach ($languages as $language) { ?>
+<?php foreach ($languages as $language): ?>
             <a href="#language<?= $language['language_id'] ?>"><img src="view/image/flags/<?= $language['image'] ?>" title="<?= $language['name'] ?>" /> <?= $language['name'] ?></a>
-            <?php } ?>
+<?php endforeach; ?>
           </div>
-          <?php foreach ($languages as $language) { ?>
+<?php foreach ($languages as $language): ?>
           <div id="language<?= $language['language_id'] ?>">
             <table class="form">
               <tr>
                 <td><span class="required">*</span> <?= $entry_name ?></td>
-                <td><input type="text" class="language<?= $language['language_id'] ?>" name="product_description[<?= $language['language_id'] ?>][name]" maxlength="255" size="100" value="<?= is_null($product_description->getDescription($language['language_id'])) ? '' : $product_description->getDescription($language['language_id'])->getName() ?>" />
-                  <span style="font: 10px;"><?= $text_last ?></span><span id="summar<?= $language['language_id'] ?>"></span>
+                <td><input type="text" class="language<?= $language['language_id'] ?>" name="product_description[<?= $language['language_id'] ?>][name]" maxlength="255" size="100" value="<?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getName() ?>" />
+                  <span style="font-size: 10px;"><?= $text_last ?></span><span id="summar<?= $language['language_id'] ?>"></span>
 
 
                   <?php if (isset($error_name[$language['language_id']])) { ?>
@@ -63,63 +63,63 @@
               </tr>
               <tr>
                 <td><?= $entry_seo_h1 ?></td>
-                <td><input type="text" name="product_description[<?= $language['language_id'] ?>][seo_h1]" maxlength="255" size="100" value="<?= is_null($product_description->getDescription($language['language_id'])) ? '' : $product_description->getDescription($language['language_id'])->getSeoH1() ?>" /></td>
+                <td><input type="text" name="product_description[<?= $language['language_id'] ?>][seo_h1]" maxlength="255" size="100" value="<?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getSeoH1() ?>" /></td>
               </tr>
               <tr>
                 <td><?= $entry_seo_title ?></td>
-                <td><input type="text" name="product_description[<?= $language['language_id'] ?>][seo_title]" maxlength="255" size="100" value="<?= is_null($product_description->getDescription($language['language_id'])) ? '' : $product_description->getDescription($language['language_id'])->getSeoTitle() ?>" /></td>
+                <td><input type="text" name="product_description[<?= $language['language_id'] ?>][seo_title]" maxlength="255" size="100" value="<?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getSeoTitle() ?>" /></td>
               </tr>
               <tr>
                 <td><?= $entry_meta_keyword ?></td>
-                <td><textarea name="product_description[<?= $language['language_id'] ?>][meta_keyword]" cols="100" rows="2"><?= is_null($product_description->getDescription($language['language_id'])) ? '' : $product_description->getDescription($language['language_id'])->getMetaKeyword()?></textarea></td>
+                <td><textarea name="product_description[<?= $language['language_id'] ?>][meta_keyword]" cols="100" rows="2"><?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getMetaKeyword()?></textarea></td>
               </tr>
               <tr>
                 <td><?= $entry_meta_description ?></td>
-                <td><textarea name="product_description[<?= $language['language_id'] ?>][meta_description]" cols="100" rows="2"><?= is_null($product_description->getDescription($language['language_id'])) ? '' : $product_description->getDescription($language['language_id'])->getMetaDescription() ?></textarea></td>
+                <td><textarea name="product_description[<?= $language['language_id'] ?>][meta_description]" cols="100" rows="2"><?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getMetaDescription() ?></textarea></td>
               </tr>
               <tr>
                 <td><?= $entry_description ?></td>
-                <td><textarea name="product_description[<?= $language['language_id'] ?>][description]" id="description<?= $language['language_id'] ?>"><?= is_null($product_description->getDescription($language['language_id'])) ? '' : $product_description->getDescription($language['language_id'])->getDescription() ?></textarea></td>
+                <td><textarea name="product_description[<?= $language['language_id'] ?>][description]" id="description<?= $language['language_id'] ?>"><?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getDescription() ?></textarea></td>
               </tr>
               <tr>
                 <td><?= $entry_tag ?></td>
-                <td><input type="text" name="product_tag[<?= $language['language_id'] ?>]" value="<?= isset($product_tag[$language['language_id']]) ? $product_tag[$language['language_id']] : '' ?>" size="80" /></td>
+                <td><input type="text" name="product_tag[<?= $language['language_id'] ?>]" value="<?= $model->getTags()[$language['language_id']] ?>" size="80" /></td>
               </tr>
             </table>
           </div>
-          <?php } ?>
+<?php endforeach; ?>
         </div>
          <div id="tab-data">
           <table class="form">
             <tr>
               <td><span class="required">*</span> <?= $entry_model ?></td>
-              <td><input type="text" style="width: 800px;" class="textmodel" name="model" value="<?= $model ?>" />
-                <span style="font: 10px;"><?= $text_last ?></span><span id="summarmodel"></span>
+              <td><input type="text" style="width: 800px;" class="textmodel" name="model" value="<?= $model->getModel() ?>" />
+                <span style="font-size: 10px;"><?= $text_last ?></span><span id="summarmodel"></span>
                 <?php if ($error_model) { ?>
                 <span class="error"><?= $error_model ?></span>
                 <?php } ?></td>
             </tr>
             <tr>
                 <td><?= $textKoreanName ?></td>
-                <td><input type="text" style="width: 800px;" name="koreanName" value="<?= $koreanName ?>" /></td>
+                <td><input type="text" style="width: 800px;" name="koreanName" value="<?= $model->getKoreanName() ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_sku ?></td>
-              <td><input type="text" name="sku" value="<?= $sku ?>" /></td>
+              <td><input type="text" name="sku" value="<?= $model->getSku() ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_upc ?></td>
-              <td><input type="text" name="upc" value="<?= $upc ?>" /></td>
+              <td><input type="text" name="upc" value="<?= $model->getUpc() ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_location ?></td>
-              <td><input type="text" name="location" value="<?= $location ?>" /></td>
+              <td><input type="text" name="location" value="<?= $model->getLocation() ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_price ?></td>
-              <td><input type="text" id="Calculator" name="price" value="<?= $price ?>" /></td>
+              <td><input type="text" id="Calculator" name="price" value="<?= $model->getPrice() ?>" /></td>
             </tr>
-            <tr>
+            <?php /*<tr>
               <td><?= $entry_tax_class ?></td>
               <td><select name="tax_class_id">
                   <option value="0"><?= $text_none ?></option>
@@ -131,19 +131,19 @@
                   <?php } ?>
                   <?php } ?>
                 </select></td>
-            </tr>
+            </tr> */ ?>
             <tr>
               <td><?= $entry_quantity ?></td>
-              <td><input type="text" name="quantity" value="<?= $quantity ?>" size="2" /></td>
+              <td><input type="text" name="quantity" value="<?= $model->getQuantity() ?>" size="2" /></td>
             </tr>
             <tr>
               <td><?= $entry_minimum ?></td>
-              <td><input type="text" name="minimum" value="<?= $minimum ?>" size="2" /></td>
+              <td><input type="text" name="minimum" value="<?= $model->getMinimum() ?>" size="2" /></td>
             </tr>
             <tr>
               <td><?= $entry_subtract ?></td>
               <td><select name="subtract">
-                  <?php if ($subtract) { ?>
+                  <?php if ($model->getSubtract()) { ?>
                   <option value="1" selected="selected"><?= $text_yes ?></option>
                   <option value="0"><?= $text_no ?></option>
                   <?php } else { ?>
@@ -156,7 +156,7 @@
               <td><?= $entry_stock_status ?></td>
               <td><select name="stock_status_id">
                   <?php foreach ($stock_statuses as $stock_status) { ?>
-                  <?php if ($stock_status['stock_status_id'] == $stock_status_id) { ?>
+                  <?php if ($stock_status['stock_status_id'] == $model->getStockStatusId()) { ?>
                   <option value="<?= $stock_status['stock_status_id'] ?>" selected="selected"><?= $stock_status['name'] ?></option>
                   <?php } else { ?>
                   <option value="<?= $stock_status['stock_status_id'] ?>"><?= $stock_status['name'] ?></option>
@@ -166,7 +166,7 @@
             </tr>
             <tr>
               <td><?= $entry_shipping ?></td>
-              <td><?php if ($shipping) { ?>
+              <td><?php if ($model->getShipping()) { ?>
                 <input type="radio" name="shipping" value="1" checked="checked" />
                 <?= $text_yes ?>
                 <input type="radio" name="shipping" value="0" />
@@ -180,13 +180,13 @@
             </tr>
             <tr>
               <td><?= $entry_keyword ?></td>
-              <td><input type="text" name="keyword" value="<?= $keyword ?>" /></td>
+              <td><input type="text" name="keyword" value="<?= $model->getKeyword() ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_image ?></td>
               <td>
                 <div class="image">
-                  <img src="<?= $thumb ?>" alt="" id="thumb" />
+                  <img src="<?= $model->getThumb() ?>" alt="" id="thumb" />
                 </div><br />
                   <a onclick="image_upload('image', 'thumb');"><?= $text_browse ?></a>
                   &nbsp;&nbsp;|&nbsp;&nbsp;
@@ -198,29 +198,29 @@
               <td>
                   <label style="float: left">/image/</label>
                   <div style="overflow: hidden">
-                      <input type="text" name="image" value="<?= $image ?>" id="image" style="width: 100%"/>
+                      <input type="text" name="image" value="<?= $model->getImagePath() ?>" id="image" style="width: 100%"/>
                   </div>
               </td>
             </tr>
             <tr>
                 <td><?= $entry_image_description ?></td>
-                <td><textarea name="image_description" id="image_description"><?= isset($image_description) ? $image_description : '' ?></textarea></td>
+                <td><textarea name="image_description" id="image_description"><?= $model->getImageDescription() ?></textarea></td>
             </tr>
             <tr>
               <td><?= $entry_date_available ?></td>
-              <td><input type="text" name="date_available" value="<?= $date_available ?>" size="12" class="date" /></td>
+              <td><input type="text" name="date_available" value="<?= $model->getDateAvailable() ?>" size="12" class="date" /></td>
             </tr>
             <tr>
               <td><?= $entry_dimension ?></td>
-              <td><input type="text" name="length" value="<?= $length ?>" size="4" />
-                <input type="text" name="width" value="<?= $width ?>" size="4" />
-                <input type="text" name="height" value="<?= $height ?>" size="4" /></td>
+              <td><input type="text" name="length" value="<?= $model->getDimension()->getLength() ?>" size="4" />
+                <input type="text" name="width" value="<?= $model->getDimension()->getWidth() ?>" size="4" />
+                <input type="text" name="height" value="<?= $model->getDimension()->getHeight() ?>" size="4" /></td>
             </tr>
             <tr>
               <td><?= $entry_length ?></td>
               <td><select name="length_class_id">
                   <?php foreach ($length_classes as $length_class) { ?>
-                  <?php if ($length_class['length_class_id'] == $length_class_id) { ?>
+                  <?php if ($length_class['length_class_id'] == $model->getDimension()->getUnit()->getId()) { ?>
                   <option value="<?= $length_class['length_class_id'] ?>" selected="selected"><?= $length_class['title'] ?></option>
                   <?php } else { ?>
                   <option value="<?= $length_class['length_class_id'] ?>"><?= $length_class['title'] ?></option>
@@ -230,13 +230,13 @@
             </tr>
             <tr>
               <td><?= $entry_weight ?></td>
-              <td><input type="text" name="weight" value="<?= $weight ?>" /></td>
+              <td><input type="text" name="weight" value="<?= $model->getWeight()->getWeight() ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_weight_class ?></td>
               <td><select name="weight_class_id">
                   <?php foreach ($weight_classes as $weight_class) { ?>
-                  <?php if ($weight_class['weight_class_id'] == $weight_class_id) { ?>
+                  <?php if ($weight_class['weight_class_id'] == $model->getWeight()->getUnit()->getId()) { ?>
                   <option value="<?= $weight_class['weight_class_id'] ?>" selected="selected"><?= $weight_class['title'] ?></option>
                   <?php } else { ?>
                   <option value="<?= $weight_class['weight_class_id'] ?>"><?= $weight_class['title'] ?></option>
@@ -247,7 +247,7 @@
             <tr>
               <td><?= $entry_status ?></td>
               <td><select name="status">
-                  <?php if ($status) { ?>
+                  <?php if ($model->getStatus()) { ?>
                   <option value="1" selected="selected"><?= $text_enabled ?></option>
                   <option value="0"><?= $text_disabled ?></option>
                   <?php } else { ?>
@@ -258,11 +258,11 @@
             </tr>
             <tr>
               <td><?= $entry_sort_order ?></td>
-              <td><input type="text" name="sort_order" value="<?= $sort_order ?>" size="2" /></td>
+              <td><input type="text" name="sort_order" value="<?= $model->getSortOrder() ?>" size="2" /></td>
             </tr>
             <tr>
               <td><?= $this->language->get('entry_commission') ?></td>
-              <td><input type="text" name="affiliate_commission" value="<?= $affiliate_commission ?>" size="4" /></td>
+              <td><input type="text" name="affiliate_commission" value="<?= $model->getAffiliateCommission() ?>" size="4" /></td>
             </tr>
             <tr>
           </table>
@@ -274,7 +274,7 @@
               <td><select name="manufacturer_id">
                   <option value="0"><?= $text_none ?></option>
                   <?php foreach ($manufacturers as $manufacturer):
-                    $selected = ($manufacturer->getId() == $manufacturer_id) ? " selected" : ""; ?>
+                    $selected = ($manufacturer->getId() == $model->getManufacturerId()) ? " selected" : ""; ?>
                     <option value="<?= $manufacturer->getId() ?>" <?= $selected ?>><?= $manufacturer->getName() ?></option>
                   <?php endforeach; ?>
                 </select></td>
@@ -285,7 +285,7 @@
                     <select name="supplier_id">
                         <option value="0" selected="selected"><?= $text_none ?></option>
 <?php foreach ($suppliers as $supplier):
-    $selected = ($supplier->getId() == $supplier_id) ? "selected" : ""; ?>
+    $selected = ($supplier->getId() == $model->getSupplier()->getId()) ? "selected" : ""; ?>
                         <option value="<?= $supplier->getId() ?>" <?= $selected ?>><?= $supplier->getName() ?></option>
 <?php endforeach; ?>
                     </select>
@@ -293,27 +293,29 @@
             </tr>
             <tr>
                 <td><?= $textSupplierUrl ?></td>
-                <td><input type="text" style="width: 800px;" name="supplierUrl" value="<?= $supplierUrl ?>" /></td>
+                <td><input type="text" style="width: 800px;" name="supplierUrl" value="<?= $model->getSupplierUrl() ?>" /></td>
             </tr>
             <tr>
               <td><?= $entry_main_category ?></td>
-              <td><select name="main_category_id">
-                <option value="0" selected="selected"><?= $text_none ?></option>
-                <?php foreach ($categories as $category) { ?>
-                <?php if ($category['category_id'] == $main_category_id) { ?>
-                <option value="<?= $category['category_id'] ?>" selected="selected"><?= $category['name'] ?></option>
-                <?php } else { ?>
-                <option value="<?= $category['category_id'] ?>"><?= $category['name'] ?></option>
-                <?php } ?>
-                <?php } ?>
-              </select></td>
+              <td>
+                <select name="main_category_id">
+                  <option value="0" selected="selected"><?= $text_none ?></option>
+<?php foreach ($categories as $category): ?>
+                  <option
+                      value="<?= $category['category_id'] ?>"
+                      <?= $model->isMainCategory($category['category_id']) ? 'selected="selected"' : '' ?>>
+                      <?= $category['name'] ?>
+                  </option>
+<?php endforeach; ?>
+                </select>
+              </td>
             </tr>
             <tr>
               <td><?= $entry_store ?></td>
               <td><div class="scrollbox">
                   <?php $class = 'even'; ?>
                   <div class="<?= $class ?>">
-                    <?php if (in_array(0, $product_store)) { ?>
+                    <?php if (in_array(0, $model->getStores())) { ?>
                     <input type="checkbox" name="product_store[]" value="0" checked="checked" />
                     <?= $text_default ?>
                     <?php } else { ?>
@@ -324,7 +326,7 @@
                   <?php foreach ($stores as $store) { ?>
                   <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
                   <div class="<?= $class ?>">
-                    <?php if (in_array($store['store_id'], $product_store)) { ?>
+                    <?php if (in_array($store['store_id'], $model->getStores())) { ?>
                     <input type="checkbox" name="product_store[]" value="<?= $store['store_id'] ?>" checked="checked" />
                     <?= $store['name'] ?>
                     <?php } else { ?>
@@ -354,20 +356,20 @@
             </tr>
             <tr>
               <td><?= $entry_download ?></td>
-              <td><div class="scrollbox">
-                  <?php $class = 'odd'; ?>
-                  <?php foreach ($downloads as $download) { ?>
-                  <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
+              <td>
+                <div class="scrollbox">
+<?php $class = 'odd'; ?>
+<?php foreach ($downloads as $download): ?>
+    <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
                   <div class="<?= $class ?>">
-                    <?php if (in_array($download['download_id'], $product_download)) { ?>
-                    <input type="checkbox" name="product_download[]" value="<?= $download['download_id'] ?>" checked="checked" />
-                    <?= $download['name'] ?>
-                    <?php } else { ?>
-                    <input type="checkbox" name="product_download[]" value="<?= $download['download_id'] ?>" />
-                    <?= $download['name'] ?>
-                    <?php } ?>
+                    <input
+                        type="checkbox"
+                        id="product_download_<?= $download['download_id'] ?>" name="product_download[]"
+                        value="<?= $download['download_id'] ?>"
+                        <?= in_array($download['download_id'], $model->getDownloads()) ? 'checked="checked"' : '' ?> />
+                    <label for="product_download_<?= $download['download_id'] ?>"><?= $download['name'] ?></label>
                   </div>
-                  <?php } ?>
+<?php endforeach; ?>
                 </div></td>
             </tr>
             <tr>
@@ -376,14 +378,16 @@
             </tr>
             <tr>
               <td>&nbsp;</td>
-              <td><div class="scrollbox" id="product-related">
-                  <?php $class = 'odd'; ?>
-                  <?php foreach ($product_related as $product_related) { ?>
-                  <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
-                  <div id="product-related<?= $product_related['product_id'] ?>" class="<?= $class ?>"> <?= $product_related['name'] ?><img src="view/image/delete.png" />
-                    <input type="hidden" name="product_related[]" value="<?= $product_related['product_id'] ?>" />
+              <td>
+                <div class="scrollbox" id="product-related">
+<?php $class = 'odd'; ?>
+<?php foreach ($model->getRelated() as $relatedProduct): ?>
+    <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
+                  <div id="product-related<?= $relatedProduct->getId() ?>" class="<?= $class ?>"> <?= $relatedProduct->getName() ?>
+                    <img src="view/image/delete.png" />
+                    <input type="hidden" name="product_related[]" value="<?= $relatedProduct->getId() ?>" />
                   </div>
-                  <?php } ?>
+<?php endforeach; ?>
                 </div></td>
             </tr>
           </table>
@@ -398,7 +402,7 @@
               </tr>
             </thead>
             <?php $attribute_row = 0; ?>
-            <?php foreach ($product_attributes as $product_attribute) { ?>
+            <?php foreach ($model->getAttributes() as $product_attribute) { ?>
             <tbody id="attribute-row<?= $attribute_row ?>">
               <tr>
                 <td class="left"><input type="text" name="product_attribute[<?= $attribute_row ?>][name]" value="<?= $product_attribute['name'] ?>" />
@@ -423,26 +427,30 @@
         <div id="tab-option">
           <div id="vtab-option" class="vtabs">
             <?php $option_row = 0; ?>
-            <?php foreach ($product_options as $product_option) { ?>
-            <a href="#tab-option-<?= $option_row ?>" id="option-<?= $option_row ?>"><?= $product_option['name'] ?>&nbsp;<img src="view/image/delete.png" alt="" onclick="$('#vtabs a:first').trigger('click'); $('#option-<?= $option_row ?>').remove(); $('#tab-option-<?= $option_row ?>').remove(); return false;" /></a>
+<?php foreach ($model->getOptions() as $productOption): ?>
+            <a href="#tab-option-<?= $option_row ?>" id="option-<?= $option_row ?>">
+                <?= $productOption->getOption()->getName() ?>&nbsp;
+                <img src="view/image/delete.png" alt="" 
+                     onclick="$('#vtabs').$('a:first').trigger('click'); $('#option-<?= $option_row ?>').remove(); $('#tab-option-<?= $option_row ?>').remove(); return false;" />
+            </a>
             <?php $option_row++; ?>
-            <?php } ?>
+<?php endforeach; ?>
             <span id="option-add">
             <input name="option" value="" style="width: 130px;" />
             &nbsp;<img src="view/image/add.png" alt="<?= $button_add_option ?>" title="<?= $button_add_option ?>" /></span></div>
           <?php $option_row = 0; ?>
           <?php $option_value_row = 0; ?>
-          <?php foreach ($product_options as $product_option) { ?>
+<?php foreach ($model->getOptions() as $productOption): ?>
           <div id="tab-option-<?= $option_row ?>" class="vtabs-content">
-            <input type="hidden" name="product_option[<?= $option_row ?>][product_option_id]" value="<?= $product_option['product_option_id'] ?>" />
-            <input type="hidden" name="product_option[<?= $option_row ?>][name]" value="<?= $product_option['name'] ?>" />
-            <input type="hidden" name="product_option[<?= $option_row ?>][option_id]" value="<?= $product_option['option_id'] ?>" />
-            <input type="hidden" name="product_option[<?= $option_row ?>][type]" value="<?= $product_option['type'] ?>" />
+            <input type="hidden" name="product_option[<?= $option_row ?>][product_option_id]" value="<?= $productOption->getId() ?>" />
+            <input type="hidden" name="product_option[<?= $option_row ?>][name]" value="<?= $productOption->getOption()->getName() ?>" />
+            <input type="hidden" name="product_option[<?= $option_row ?>][option_id]" value="<?= $productOption->getOption()->getId() ?>" />
+            <input type="hidden" name="product_option[<?= $option_row ?>][type]" value="<?= $productOption->getType() ?>" />
             <table class="form">
               <tr>
                 <td><?= $entry_required ?></td>
                 <td><select name="product_option[<?= $option_row ?>][required]">
-                    <?php if ($product_option['required']) { ?>
+                    <?php if ($productOption->isRequired()) { ?>
                     <option value="1" selected="selected"><?= $text_yes ?></option>
                     <option value="0"><?= $text_no ?></option>
                     <?php } else { ?>
@@ -451,44 +459,44 @@
                     <?php } ?>
                   </select></td>
               </tr>
-              <?php if ($product_option['type'] == 'text') { ?>
+    <?php if ($productOption->getType() == 'text'): ?>
               <tr>
                 <td><?= $entry_option_value ?></td>
-                <td><input type="text" name="product_option[<?= $option_row ?>][option_value]" value="<?= $product_option['option_value'] ?>" /></td>
+                <td><input type="text" name="product_option[<?= $option_row ?>][option_value]" value="<?= $productOption->getValue() ?>" /></td>
               </tr>
-              <?php } ?>
-              <?php if ($product_option['type'] == 'textarea') { ?>
+    <?php endif; ?>
+    <?php if ($productOption->getType() == 'textarea'): ?>
               <tr>
                 <td><?= $entry_option_value ?></td>
-                <td><textarea name="product_option[<?= $option_row ?>][option_value]" cols="40" rows="5"><?= $product_option['option_value'] ?></textarea></td>
+                <td><textarea name="product_option[<?= $option_row ?>][option_value]" cols="40" rows="5"><?= $productOption->getValue() ?></textarea></td>
               </tr>
-              <?php } ?>
-              <?php if ($product_option['type'] == 'file') { ?>
+    <?php endif; ?>
+    <?php if ($productOption->getType() == 'file'): ?>
               <tr style="display: none;">
                 <td><?= $entry_option_value ?></td>
-                <td><input type="text" name="product_option[<?= $option_row ?>][option_value]" value="<?= $product_option['option_value'] ?>" /></td>
+                <td><input type="text" name="product_option[<?= $option_row ?>][option_value]" value="<?= $productOption->getValue() ?>" /></td>
               </tr>
-              <?php } ?>
-              <?php if ($product_option['type'] == 'date') { ?>
+    <?php endif; ?>
+    <?php if ($productOption->getType() == 'date'): ?>
               <tr>
                 <td><?= $entry_option_value ?></td>
-                <td><input type="text" name="product_option[<?= $option_row ?>][option_value]" value="<?= $product_option['option_value'] ?>" class="date" /></td>
+                <td><input type="text" name="product_option[<?= $option_row ?>][option_value]" value="<?= $productOption->getValue() ?>" class="date" /></td>
               </tr>
-              <?php } ?>
-              <?php if ($product_option['type'] == 'datetime') { ?>
+    <?php endif; ?>
+    <?php if ($productOption->getType() == 'datetime'): ?>
               <tr>
                 <td><?= $entry_option_value ?></td>
-                <td><input type="text" name="product_option[<?= $option_row ?>][option_value]" value="<?= $product_option['option_value'] ?>" class="datetime" /></td>
+                <td><input type="text" name="product_option[<?= $option_row ?>][option_value]" value="<?= $productOption->getValue() ?>" class="datetime" /></td>
               </tr>
-              <?php } ?>
-              <?php if ($product_option['type'] == 'time') { ?>
+    <?php endif; ?>
+    <?php if ($productOption->getType() == 'time'): ?>
               <tr>
                 <td><?= $entry_option_value ?></td>
-                <td><input type="text" name="product_option[<?= $option_row ?>][option_value]" value="<?= $product_option['option_value'] ?>" class="time" /></td>
+                <td><input type="text" name="product_option[<?= $option_row ?>][option_value]" value="<?= $productOption->getValue() ?>" class="time" /></td>
               </tr>
-              <?php } ?>
+    <?php endif; ?>
             </table>
-            <?php if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image') { ?>
+    <?php if ($productOption->getOption()->isMultiValueType()): ?>
             <table id="option-value<?= $option_row ?>" class="list">
               <thead>
                 <tr>
@@ -501,66 +509,48 @@
                   <td></td>
                 </tr>
               </thead>
-              <?php foreach ($product_option['product_option_value'] as $product_option_value) { ?>
+        <?php foreach ($productOption->getValue() as $productOptionValue): ?>
               <tbody id="option-value-row<?= $option_value_row ?>">
                 <tr>
-                  <td class="left"><select name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][option_value_id]">
+                  <td class="left">
+                    <select name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][option_value_id]"></select>
+                    <input type="hidden" name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][product_option_value_id]" value="<?= $productOptionValue->getId() ?>" /></td>
+                  <td class="right"><input type="text" name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][quantity]" value="<?= $productOptionValue->getQuantity() ?>" size="3" /></td>
+                  <td class="left">
+                    <select name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][subtract]">
+            <?php if ($productOptionValue->getSubtract()): ?>
+                    <option value="1" selected="selected"><?= $text_yes ?></option>
+                    <option value="0"><?= $text_no ?></option>
+            <?php else: ?>
+                    <option value="1"><?= $text_yes ?></option>
+                    <option value="0" selected="selected"><?= $text_no ?></option>
+            <?php endif; ?>
                     </select>
-                    <input type="hidden" name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][product_option_value_id]" value="<?= $product_option_value['product_option_value_id'] ?>" /></td>
-                  <td class="right"><input type="text" name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][quantity]" value="<?= $product_option_value['quantity'] ?>" size="3" /></td>
-                  <td class="left"><select name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][subtract]">
-                      <?php if ($product_option_value['subtract']) { ?>
-                      <option value="1" selected="selected"><?= $text_yes ?></option>
-                      <option value="0"><?= $text_no ?></option>
-                      <?php } else { ?>
-                      <option value="1"><?= $text_yes ?></option>
-                      <option value="0" selected="selected"><?= $text_no ?></option>
-                      <?php } ?>
-                    </select></td>
-                  <td class="right"><select name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][price_prefix]">
-                      <?php if ($product_option_value['price_prefix'] == '+') { ?>
-                      <option value="+" selected="selected">+</option>
-                      <?php } else { ?>
-                      <option value="+">+</option>
-                      <?php } ?>
-                      <?php if ($product_option_value['price_prefix'] == '-') { ?>
-                      <option value="-" selected="selected">-</option>
-                      <?php } else { ?>
-                      <option value="-">-</option>
-                      <?php } ?>
+                  </td>
+                  <td class="right">
+                    <select name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][price_prefix]">
+                      <option value="+" <?= $productOptionValue->getPrice() >= 0 ? 'selected="selected"' : '' ?>>+</option>
+                      <option value="+" <?= $productOptionValue->getPrice() < 0 ? 'selected="selected"' : '' ?>>-</option>
                     </select>
-                    <input type="text" name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][price]" value="<?= $product_option_value['price'] ?>" size="5" /></td>
-                  <td class="right"><select name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][points_prefix]">
-                      <?php if ($product_option_value['points_prefix'] == '+') { ?>
-                      <option value="+" selected="selected">+</option>
-                      <?php } else { ?>
-                      <option value="+">+</option>
-                      <?php } ?>
-                      <?php if ($product_option_value['points_prefix'] == '-') { ?>
-                      <option value="-" selected="selected">-</option>
-                      <?php } else { ?>
-                      <option value="-">-</option>
-                      <?php } ?>
+                    <input type="text" name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][price]" value="<?= $productOptionValue->getPrice() ?>" size="5" />
+                  </td>
+                  <td class="right">
+                    <select name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][points_prefix]">
+                      <option value="+" <?= $productOptionValue->getPoints() >= 0 ? 'selected="selected"' : '' ?>>+</option>
+                      <option value="+" <?= $productOptionValue->getPoints() < 0 ? 'selected="selected"' : '' ?>>-</option>
                     </select>
-                    <input type="text" name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][points]" value="<?= $product_option_value['points'] ?>" size="5" /></td>
-                  <td class="right"><select name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][weight_prefix]">
-                      <?php if ($product_option_value['weight_prefix'] == '+') { ?>
-                      <option value="+" selected="selected">+</option>
-                      <?php } else { ?>
-                      <option value="+">+</option>
-                      <?php } ?>
-                      <?php if ($product_option_value['weight_prefix'] == '-') { ?>
-                      <option value="-" selected="selected">-</option>
-                      <?php } else { ?>
-                      <option value="-">-</option>
-                      <?php } ?>
+                    <input type="text" name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][points]" value="<?= $productOptionValue->getPoints() ?>" size="5" /></td>
+                  <td class="right">
+                    <select name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][weight_prefix]">
+                      <option value="+" <?= $productOptionValue->getWeight() >= 0 ? 'selected="selected"' : '' ?>>+</option>
+                      <option value="+" <?= $productOptionValue->getWeight() < 0 ? 'selected="selected"' : '' ?>>-</option>
                     </select>
-                    <input type="text" name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][weight]" value="<?= $product_option_value['weight'] ?>" size="5" /></td>
+                    <input type="text" name="product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][weight]" value="<?= $productOptionValue->getWeight() ?>" size="5" /></td>
                   <td class="left"><a onclick="$('#option-value-row<?= $option_value_row ?>').remove();" class="button"><?= $button_remove ?></a></td>
                 </tr>
               </tbody>
               <?php $option_value_row++; ?>
-              <?php } ?>
+        <?php endforeach; ?>
               <tfoot>
                 <tr>
                   <td colspan="6"></td>
@@ -568,22 +558,23 @@
                 </tr>
               </tfoot>
             </table>
-            <?php } ?>
+    <?php endif; ?>
           </div>
           <?php $option_row++; ?>
-          <?php } ?>
+<?php endforeach; ?>
           <script type="text/javascript"><!--
           <?php $option_row = 0; ?>
           <?php $option_value_row = 0; ?>		  
-		  <?php foreach ($product_options as $product_option) { ?>
-          <?php if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image') { ?>
-		  <?php foreach ($product_option['product_option_value'] as $product_option_value) { ?>
-		  $('select[name=\'product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][option_value_id]\']').load('index.php?route=catalog/product/option&token=<?= $token ?>&option_id=<?= $product_option['option_id'] ?>&option_value_id=<?= $product_option_value['option_value_id'] ?>');
-		  <?php $option_value_row++; ?>
-		  <?php } ?>
-		  <?php } ?>
-		  <?php $option_row++; ?>
-          <?php } ?>
+<?php foreach ($model->getOptions() as $productOption): ?>
+    <?php if ($productOption->getOption()->isMultiValueType()): ?>
+        <?php foreach ($productOption->getValue() as $productOptionValue): ?>
+		  $('select[name=\'product_option[<?= $option_row ?>][product_option_value][<?= $option_value_row ?>][option_value_id]\']')
+              .load('index.php?route=catalog/product/option&token=<?= $token ?>&option_id=<?= $productOption->getOption()->getId() ?>&option_value_id=<?= $productOptionValue->getOptionValue()->getId() ?>');
+            <?php $option_value_row++; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+    <?php $option_row++; ?>
+<?php endforeach; ?>
 		  //--></script> 
         </div>
         <div id="tab-discount">
@@ -600,7 +591,7 @@
               </tr>
             </thead>
             <?php $discount_row = 0; ?>
-            <?php foreach ($product_discounts as $product_discount) { ?>
+            <?php foreach ($model->getDiscounts() as $product_discount) { ?>
             <tbody id="discount-row<?= $discount_row ?>">
               <tr>
                 <td class="left"><select name="product_discount[<?= $discount_row ?>][customer_group_id]">
@@ -643,7 +634,7 @@
               </tr>
             </thead>
             <?php $special_row = 0; ?>
-            <?php foreach ($product_specials as $product_special) { ?>
+            <?php foreach ($model->getSpecials() as $product_special) { ?>
             <tbody id="special-row<?= $special_row ?>">
               <tr>
                 <td class="left"><select name="product_special[<?= $special_row ?>][customer_group_id]">
@@ -711,7 +702,7 @@
           <table class="form">
             <tr>
               <td><?= $entry_points ?></td>
-              <td><input type="text" name="points" value="<?= $points ?>" /></td>
+              <td><input type="text" name="points" value="<?= $model->getPoints() ?>" /></td>
             </tr>
           </table>
           <table class="list">
@@ -721,14 +712,17 @@
                 <td class="right"><?= $entry_reward ?></td>
               </tr>
             </thead>
-            <?php foreach ($customer_groups as $customer_group) { ?>
+<?php foreach ($customer_groups as $customer_group): ?>
             <tbody>
               <tr>
                 <td class="left"><?= $customer_group['name'] ?></td>
-                <td class="right"><input type="text" name="product_reward[<?= $customer_group['customer_group_id'] ?>][points]" value="<?= isset($product_reward[$customer_group['customer_group_id']]) ? $product_reward[$customer_group['customer_group_id']]['points'] : '' ?>" /></td>
+                <td class="right">
+                  <input type="text" name="product_reward[<?= $customer_group['customer_group_id'] ?>][points]"
+                         value="<?= isset($model->getRewards()[$customer_group['customer_group_id']]) ? $model->getRewards()[$customer_group['customer_group_id']]['points'] : '' ?>" />
+                </td>
               </tr>
             </tbody>
-            <?php } ?>
+<?php endforeach; ?>
           </table>
         </div>
 
@@ -783,34 +777,36 @@
               <tr>
                 <td class="left"><?= $text_default ?></td>
                 <td class="left"><select name="product_layout[0][layout_id]">
-                    <option value=""></option>
-                    <?php foreach ($layouts as $layout) { ?>
-                    <?php if (isset($product_layout[0]) && $product_layout[0] == $layout['layout_id']) { ?>
-                    <option value="<?= $layout['layout_id'] ?>" selected="selected"><?= $layout['name'] ?></option>
-                    <?php } else { ?>
-                    <option value="<?= $layout['layout_id'] ?>"><?= $layout['name'] ?></option>
-                    <?php } ?>
-                    <?php } ?>
-                  </select></td>
+                  <option value=""></option>
+<?php foreach ($layouts as $layout): ?>
+                  <option
+                    value="<?= $layout['layout_id'] ?>"
+                    <?= isset($model->getLayouts()[0]) && $model->getLayouts()[0] == $layout['layout_id'] ? 'selected="selected"' : '' ?>>
+                    <?= $layout['name'] ?></option>
+<?php endforeach; ?>
+                  </select>
+                </td>
               </tr>
             </tbody>
-            <?php foreach ($stores as $store) { ?>
+<?php foreach ($stores as $store): ?>
             <tbody>
               <tr>
                 <td class="left"><?= $store['name'] ?></td>
                 <td class="left"><select name="product_layout[<?= $store['store_id'] ?>][layout_id]">
-                    <option value=""></option>
-                    <?php foreach ($layouts as $layout) { ?>
-                    <?php if (isset($product_layout[$store['store_id']]) && $product_layout[$store['store_id']] == $layout['layout_id']) { ?>
-                    <option value="<?= $layout['layout_id'] ?>" selected="selected"><?= $layout['name'] ?></option>
-                    <?php } else { ?>
-                    <option value="<?= $layout['layout_id'] ?>"><?= $layout['name'] ?></option>
-                    <?php } ?>
-                    <?php } ?>
-                  </select></td>
+                  <option value=""></option>
+    <?php foreach ($layouts as $layout): ?>
+                  <option
+                    value="<?= $layout['layout_id'] ?>"
+                    <?= isset($model->getLayouts()[$store['store_id']]) && $model->getLayouts()[$store['store_id']] == $layout['layout_id']
+                      ? 'selected="selected"' : '' ?>>
+                    <?= $layout['name'] ?>
+                  </option>
+    <?php endforeach; ?>
+                  </select>
+                </td>
               </tr>
             </tbody>
-            <?php } ?>
+<?php endforeach; ?>
           </table>
         </div>
         <div id="tab-create-option"><?= $create_option_block ?></div>

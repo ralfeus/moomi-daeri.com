@@ -8,6 +8,7 @@
 
 namespace model\sale;
 
+use model\catalog\ProductCategory;
 use model\catalog\ProductDAO;
 use model\DAO;
 
@@ -120,9 +121,7 @@ class CouponDAO extends DAO{
                 foreach ($this->cart->getProducts($chosenProducts) as $product) {
                     if ($coupon_query->row['applies_to_categories']) {
                         $productCategories = array_map(
-                            function ($item) {
-                                return $item['category_id'];
-                            },
+                            function (ProductCategory $item) { return $item->getCategory()->getId(); },
                             ProductDAO::getInstance()->getCategories($product['product_id'])
                         );
                         if (sizeof(array_intersect($productCategories, $coupon_product_data))) {

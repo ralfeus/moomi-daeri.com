@@ -341,10 +341,19 @@ class ProductDAO extends DAO {
         return $this->getDb()->queryScalar("SELECT $columnName FROM product WHERE product_id = ?", array("i:$productId"));
     }
 
+    /**
+     * @param $productId
+     * @return Auction[]
+     */
     public function getAuctions($productId) {
         $data = $this->getDb()->query("SELECT * FROM wkauction WHERE product_id = :productId  GROUP BY id", [ ':productId' => $productId ]);
-
-        return $data->rows;
+        $result = [];
+        foreach ($data->rows as $row) {
+            $result[] = new Auction(
+                $row['id'], $this->getProduct($row['product_id'], true), $row['name'], $row['isauction'], $row['min'],
+                $row['max'], $row['start_date'], $row['end_date']);
+        }
+        return $result;
     }
 
     public function updateViewed($productId) {
@@ -947,17 +956,21 @@ SQL
         return $query;
     }
 
-    public function getProductImages($product_id) {
+    /**
+     * @param int $productId
+     * @return ProductImage[]
+     */
+    public function getProductImages($productId) {
         $query = $this->getDb()->query("
             SELECT *
             FROM product_image
             WHERE product_id = :productId
             ORDER BY sort_order ASC
-            ", [':productId' => $product_id]
+            ", [':productId' => $productId]
         );
         $result = [];
         foreach ($query->rows as $row) {
-            $result[] = $row['image'];
+            $result[] = new ProductImage($row['image'], $row['sort_order']);
         }
         return $result;
     }
@@ -1026,10 +1039,20 @@ SQL
         }
     }
 
-    public function getCategories($product_id) {
-        $query = $this->getDb()->query("SELECT * FROM product_to_category WHERE product_id = :productId", [ ':productId' => $product_id ]);
-
-        return $query->rows;
+    /**
+     * @param Product $product
+     * @return ProductCategory[]
+     */
+    public function getCategories($product) {
+        $query = $this->getDb()->query("SELECT * FROM product_to_category WHERE product_id = :productId", [ ':productId' => $product ]);
+        $result = [];
+        foreach ($query->rows as $row) {
+            $result[$row['category_id']] = new ProductCategory(
+                CategoryDAO::getInstance()->getCategory($row['category_id'], true),
+                boolval($row['main_category'])
+            );
+        }
+        return $result;
     }
 
     public function getDateAdded($productId) {
@@ -1819,8 +1842,8 @@ SQL
 
                     ", [
                     ':productId' => $product->getId(),
-                    ':categoryId' => $category['category_id'],
-                    ':isMainCategory' => !empty($category['main_category'])
+                    ':categoryId' => $category->getCategory()->getId(),
+                    ':isMainCategory' => $category->isMain()
                 ]);
             }
         }
@@ -1839,7 +1862,7 @@ SQL
                         OR (related_id = :productId AND product_id = :relatedId)
                     ", [
                     ':productId' => $product->getId(),
-                    ':relatedId' => $related
+                    ':relatedId' => $related->getId()
                 ]);
                 $this->getDb()->query(
                     "INSERT INTO product_related VALUES (:productId, :relatedId), (:relatedId, :productId)",

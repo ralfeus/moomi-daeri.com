@@ -14,7 +14,7 @@ class Option {
     /** @var  OptionValueCollection */
     private $values;
 
-    private $singleValueTypes = ['text', 'textarea', 'file'];
+    private $singleValueTypes = ['text', 'textarea', 'file', 'date', 'datetime', 'time'];
     private $multiValueTypes = ['select', 'radio', 'checkbox', 'image'];
 
     /**
