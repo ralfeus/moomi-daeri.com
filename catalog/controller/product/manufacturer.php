@@ -11,6 +11,17 @@ class ControllerProductManufacturer extends Controller {
         $this->data['heading_title'] = $this->getLanguage()->get('heading_title');
     }
 
+    protected function initParameters() {
+        parent::initParameters();
+        $this->initParametersWithDefaults([
+            'manufacturer_id' => 0,
+            'limit' => $this->getConfig()->get('config_catalog_limit'),
+            'order' => 'ASC',
+            'page' => 1,
+            'sort' => 'p.sort_order'
+        ]);
+    }
+
     protected function loadStrings() {
         $this->data['text_empty'] = $this->getLanguage()->get('text_empty');
         $this->data['text_quantity'] = $this->getLanguage()->get('text_quantity');
@@ -78,41 +89,7 @@ class ControllerProductManufacturer extends Controller {
   	}
 	
 	public function product() {
-		$this->getLoader()->model('catalog/product');
-		
-		$this->getLoader()->model('tool/image'); 
-		
-		if (isset($this->request->get['manufacturer_id'])) {
-			$manufacturer_id = $this->request->get['manufacturer_id'];
-		} else {
-			$manufacturer_id = 0;
-		} 
-										
-		if (isset($this->request->get['sort'])) {
-			$sort = $this->request->get['sort'];
-		} else {
-			$sort = 'p.sort_order';
-		} 
-
-		if (isset($this->request->get['order'])) {
-			$order = $this->request->get['order'];
-		} else {
-			$order = 'ASC';
-		} 
-  		
-		if (isset($this->request->get['page'])) {
-			$page = $this->request->get['page'];
-		} else {
-			$page = 1;
-		}
-				
-		if (isset($this->request->get['limit'])) {
-			$limit = $this->request->get['limit'];
-		} else {
-			$limit = $this->getConfig()->get('config_catalog_limit');
-		}
-
-		$manufacturer = ManufacturerDAO::getInstance()->getManufacturer($manufacturer_id);
+		$manufacturer = ManufacturerDAO::getInstance()->getManufacturer($this->parameters['manufacturerId']);
 	
 		if ($manufacturer) {
 			if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())) &&
@@ -134,6 +111,7 @@ class ControllerProductManufacturer extends Controller {
                 !is_null($manufacturer->getDescription($this->getLanguage()->getId())->getSeoH1())) {
                 $this->data['seo_h1'] = $manufacturer->getDescription($this->getLanguage()->getId())->getSeoH1();
             }
+            $this->data = array_merge($this->data, $this->parameters);
 			$this->data['heading_title'] = $manufacturer->getName();
 			$this->data['compare'] = $this->getUrl()->link('product/compare');
 
@@ -173,11 +151,11 @@ class ControllerProductManufacturer extends Controller {
 			$this->data['products'] = array();
 			
 			$data = array(
-				'filter_manufacturer_id' => $manufacturer_id, 
-				'sort'                   => $sort,
-				'order'                  => $order,
-				'start'                  => ($page - 1) * $limit,
-				'limit'                  => $limit
+				'filterManufacturerId' => $this->parameters['manufacturerId'],
+				'sort'                   => $this->parameters['sort'],
+				'order'                  => $this->parameters['order'],
+				'start'                  => ($this->parameters['page'] - 1) * $this->parameters['limit'],
+				'limit'                  => $this->parameters['limit']
 			);
 					
 			$product_total = ProductDAO::getInstance()->getProductsCount($data);
@@ -360,17 +338,12 @@ class ControllerProductManufacturer extends Controller {
 
             $pagination = new Pagination();
 			$pagination->total = $product_total;
-			$pagination->page = $page;
-			$pagination->limit = $limit;
+			$pagination->page = $this->parameters['page'];
+			$pagination->limit = $this->parameters['limit'];
 			$pagination->text = $this->getLanguage()->get('text_pagination');
 			$pagination->url = $this->getUrl()->link('product/manufacturer/product','manufacturer_id=' . $this->request->get['manufacturer_id'] .  $url . '&page={page}');
 			
 			$this->data['pagination'] = $pagination->render();
-			
-			$this->data['sort'] = $sort;
-			$this->data['order'] = $order;
-			$this->data['limit'] = $limit;
-			
 			$this->data['continue'] = $this->getUrl()->link('common/home');
 			
 			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/product/manufacturer_info.tpl')) {
