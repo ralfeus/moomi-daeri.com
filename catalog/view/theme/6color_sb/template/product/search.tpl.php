@@ -28,14 +28,14 @@
               <?php } ?>
             </select></td>
         </tr>
-        <tr>
+        <?php /* <tr>
           <td colspan="2"><?php if ($description) { ?>
             <input type="checkbox" name="description" id="description" checked="checked" />
             <?php } else { ?>
             <input type="checkbox" name="description" id="description" />
             <?php } ?>
             <?php echo $entry_description; ?></td>
-        </tr>
+        </tr> */ ?>
 		<tr>
           <td colspan="2"><?php if ($model) { ?>
             <input type="checkbox" name="model" id="model" checked="checked" />

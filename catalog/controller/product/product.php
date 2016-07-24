@@ -93,14 +93,14 @@ class ControllerProductProduct extends Controller {
 		}
 
 		if (isset($this->request->get['product_id'])) {
-			$product_id = $this->request->get['product_id'];
+			$productId = $this->request->get['product_id'];
 		} else {
-			$product_id = 0;
+			$productId = 0;
 		}
 
 		$this->getLoader()->model('catalog/product');
 
-		$product_info = $this->model_catalog_product->getProduct($product_id);
+		$product_info = ProductDAO::getInstance()->getProduct($productId);
 
 		$this->data['product_info'] = $product_info;
 //print_r($product_info);exit;
@@ -466,7 +466,7 @@ class ControllerProductProduct extends Controller {
 
       		$this->data['breadcrumbs'][] = array(
         		'text'      => $this->language->get('text_error'),
-				'href'      => $this->getUrl()->link('product/product', $url . '&product_id=' . $product_id),
+				'href'      => $this->getUrl()->link('product/product', $url . '&product_id=' . $productId),
         		'separator' => $this->language->get('text_separator')
       		);
 

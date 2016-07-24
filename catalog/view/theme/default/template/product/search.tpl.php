@@ -68,12 +68,12 @@
         <input type="checkbox" name="filter_sub_category" value="1" id="sub_category" />
       <?php } ?>
       <label for="sub_category"><?php echo $text_sub_category; ?></label>
-    <?php if ($filter_description) { ?>
+    <?php /*if ($filter_description) { ?>
       <input type="checkbox" name="filter_description" value="1" id="description" checked="checked" />
     <?php } else { ?>
       <input type="checkbox" name="filter_description" value="1" id="description" />
     <?php } ?>
-    <label for="description"><?php echo $entry_description; ?></label>
+    <label for="description"><?php echo $entry_description; ?></label><?php */ ?>
   </div>
   <h2><?php echo $text_search; ?></h2>
   <?php if ($products) { ?>

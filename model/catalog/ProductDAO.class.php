@@ -55,7 +55,7 @@ class ProductDAO extends DAO {
         if (!empty($data['filterName'])) {
             $words = explode(' ', $data['filterName']); $filterString = ''; $filterParams = [];
             for ($i = 0; $i < sizeof($words); $i++) {
-                $filterString .= " OR pd.name LIKE CONCAT('%', :name$i, '%') OR pd.description LIKE CONCAT('%', :name$i, '%')";
+                $filterString .= " OR pd.name LIKE CONCAT('%', :name$i, '%') OR pd.description LIKE CONCAT('%', :name$i, '%') OR pt.tag LIKE CONCAT('%', :name$i, '%')";
                 $filterParams[":name$i"] = $words[$i];
             }
             $filter->addChunk("(" . substr($filterString, 4) . ")", $filterParams);
