@@ -96,7 +96,7 @@ class ControllerCatalogProduct extends AdminController {
                 $this->getRequest()->getParam('stock_status_id'),
                 $this->getRequest()->getParam('product_store'),
                 $this->getRequest()->getParam('subtract'),
-                new Supplier($this->getRequest()->getParam('manufacturer_id')),
+                new Supplier($this->getRequest()->getParam('supplier_id')),
                 $this->getRequest()->getParam('supplierUrl'),
                 $this->getRequest()->getParam('product_tag'),
                 $this->getRequest()->getParam('upc'),
