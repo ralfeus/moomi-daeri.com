@@ -100,11 +100,11 @@ class ControllerProductProduct extends Controller {
 
 		$this->getLoader()->model('catalog/product');
 
-		$product_info = ProductDAO::getInstance()->getProduct($productId);
+        try {
+            $product_info = ProductDAO::getInstance()->getProduct($productId);
 
-		$this->data['product_info'] = $product_info;
+            $this->data['product_info'] = $product_info;
 //print_r($product_info);exit;
-		if ($product_info) {
 			$url = '';
 
 			if (isset($this->request->get['path'])) {
@@ -437,7 +437,7 @@ class ControllerProductProduct extends Controller {
 			);
 
 			$this->getResponse()->setOutput($this->render());
-		} else {
+		} catch (InvalidArgumentException $exc) {
 			$url = '';
 
 			if (isset($this->request->get['path'])) {
