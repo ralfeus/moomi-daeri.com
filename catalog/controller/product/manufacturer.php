@@ -115,41 +115,45 @@ class ControllerProductManufacturer extends Controller {
 		$manufacturer = ManufacturerDAO::getInstance()->getManufacturer($manufacturer_id);
 	
 		if ($manufacturer) {
-			if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())->getSeoTitle())) {
+			if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())) &&
+                !is_null($manufacturer->getDescription($this->getLanguage()->getId())->getSeoTitle())) {
 				$this->document->setTitle($manufacturer->getDescription($this->getLanguage()->getId())->getSeoTitle());
 			} else {
 				$this->document->setTitle($manufacturer->getName());
 			}
 
-			if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())->getMetaDescription())) {
+			if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())) &&
+                !is_null($manufacturer->getDescription($this->getLanguage()->getId())->getMetaDescription())) {
                 $this->document->setDescription($manufacturer->getDescription($this->getLanguage()->getId())->getMetaDescription());
             }
-            if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())->getMetaKeyword())) {
+            if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())) &&
+                !is_null($manufacturer->getDescription($this->getLanguage()->getId())->getMetaKeyword())) {
                 $this->document->setKeywords($manufacturer->getDescription($this->getLanguage()->getId())->getMetaKeyword());
             }
-			$url = '';
-			
-			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
-			}	
-	
-			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
-			}
-					
-			if (isset($this->request->get['page'])) {
-				$url .= '&page=' . $this->request->get['page'];
-			}	
-			
-			if (isset($this->request->get['limit'])) {
-				$url .= '&limit=' . $this->request->get['limit'];
-			}
-		   			
-            if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())->getSeoH1())) {
+            if (!is_null($manufacturer->getDescription($this->getLanguage()->getId())) &&
+                !is_null($manufacturer->getDescription($this->getLanguage()->getId())->getSeoH1())) {
                 $this->data['seo_h1'] = $manufacturer->getDescription($this->getLanguage()->getId())->getSeoH1();
             }
 			$this->data['heading_title'] = $manufacturer->getName();
 			$this->data['compare'] = $this->getUrl()->link('product/compare');
+
+            $url = '';
+
+            if (isset($this->request->get['sort'])) {
+                $url .= '&sort=' . $this->request->get['sort'];
+            }
+
+            if (isset($this->request->get['order'])) {
+                $url .= '&order=' . $this->request->get['order'];
+            }
+
+            if (isset($this->request->get['page'])) {
+                $url .= '&page=' . $this->request->get['page'];
+            }
+
+            if (isset($this->request->get['limit'])) {
+                $url .= '&limit=' . $this->request->get['limit'];
+            }
 
             #kabantejay synonymizer start
 			$this->data['description'] = preg_replace_callback(
@@ -158,7 +162,11 @@ class ControllerProductManufacturer extends Controller {
 			        $ar = explode("|", $m[1]);
                     return $ar[array_rand($ar, 1)];
 			    },
-                html_entity_decode($manufacturer->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8')
+                html_entity_decode(
+                    !is_null($manufacturer->getDescription($this->getLanguage()->getId()))
+                        ? $manufacturer->getDescription($this->getLanguage()->getId())->getDescription()
+                        : "",
+                    ENT_QUOTES, 'UTF-8')
             );
 			#kabantejay synonymizer end
 			
