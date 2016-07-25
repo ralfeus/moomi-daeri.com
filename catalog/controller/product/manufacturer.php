@@ -332,10 +332,10 @@ class ControllerProductManufacturer extends Controller {
 				$url .= '&limit=' . $this->request->get['limit'];
 			}
 
-            $this->setBreadcrumbs([
+            $this->setBreadcrumbs([[
                 'text'      => $this->getLanguage()->get('text_brand'),
                 'route'      => $this->getUrl()->link('product/manufacturer')
-            ]);
+            ]]);
 
             $pagination = new Pagination();
 			$pagination->total = $product_total;

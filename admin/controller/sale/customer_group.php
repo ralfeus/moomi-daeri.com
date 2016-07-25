@@ -130,7 +130,7 @@ class ControllerSaleCustomerGroup extends Controller {
 		if (isset($this->request->get['page'])) {
 			$url .= '&page=' . $this->request->get['page'];
 		}
-        $this->setBreadcrumbs($url);
+        $this->setBreadcrumbs();
 			
 		$this->data['insert'] = $this->url->link('sale/customer_group/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		$this->data['delete'] = $this->url->link('sale/customer_group/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');	
@@ -272,7 +272,7 @@ class ControllerSaleCustomerGroup extends Controller {
 			$url .= '&page=' . $this->request->get['page'];
 		}
 
-  		$this->setBreadcrumbs($url);
+  		$this->setBreadcrumbs();
 			
 		if (!isset($this->request->get['customer_group_id'])) {
 			$this->data['action'] = $this->url->link('sale/customer_group/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');

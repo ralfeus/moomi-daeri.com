@@ -135,7 +135,7 @@ SQL
                 $query->row['date_added'],
                 $query->row['date_modified'],
                 $query->row['afc_id'],
-                $query->row['affiliateCommission'],
+                $query->row['affiliate_commission'],
                 new Description(
                     $query->row['language_id'],
                     $query->row['name'],

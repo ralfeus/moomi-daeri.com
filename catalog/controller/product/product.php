@@ -70,10 +70,10 @@ class ControllerProductProduct extends Controller {
 				#kabantejay synonymizer end
 				
         		if ($category) {
-        		    $this->setBreadcrumbs([
+        		    $this->setBreadcrumbs([[
         		        'text' => $category->getDescription()->getName(),
                         'route' => 'product/category&path=' . $path
-                    ]);
+                    ]]);
 				}
 			}
 		}
