@@ -203,7 +203,7 @@ class ControllerProductManufacturer extends Controller {
 					'product_id'  => $product->getId(),
 					'thumb'       => $image,
 					'name'        => $product->getName(),
-					'description' => utf8_truncate(strip_tags(html_entity_decode($product->getDescription(), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
+					'description' => utf8_truncate(strip_tags(html_entity_decode($product->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
 					'price'       => $price,
 					'special'     => $special,
 //					'tax'         => $tax,

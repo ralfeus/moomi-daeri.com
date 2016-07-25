@@ -33,6 +33,10 @@ class Product {
     private $koreanName;
     /** @var  Mutable */
     private $layouts;
+    /** @var  Manufacturer */
+    private $manufacturer;
+    /** @var int */
+    /** @deprecated */
     private $manufacturerId;
     private $model;
     private $points;
@@ -614,6 +618,7 @@ class Product {
     }
 
     /**
+     * @deprecated
      * @return int
      */
     public function getManufacturerId() {
@@ -623,8 +628,30 @@ class Product {
         return $this->manufacturerId;
     }
 
+    /**
+     * @deprecated
+     * @param int $value
+     */
     public function setManufacturerId($value) {
         $this->manufacturerId = $value;
+    }
+
+
+    /**
+     * @return Manufacturer
+     */
+    public function getManufacturer() {
+        if (!isset($this->manufacturer)) {
+            $this->manufacturer = ProductDAO::getInstance()->getManufacturer($this->id);
+        }
+        return $this->manufacturer;
+    }
+
+    /**
+     * @param Manufacturer $value
+     */
+    public function setManufacturer($value) {
+        $this->manufacturer = $value;
     }
 
     /**

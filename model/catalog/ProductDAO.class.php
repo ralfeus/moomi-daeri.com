@@ -34,7 +34,7 @@ class ProductDAO extends DAO {
             $filter->addChunk("p.date_added > :dateAddedFrom", [":dateAddedFrom" => $data['filterDateAddedFrom']]);
         if (!empty($data['filterDateAddedTo']))
             $filter->addChunk("p.date_added < :dateAddedTo", [":dateAddedTo" => date('Y-m-d', strtotime($data['filterDateAddedTo']) + 86400)]);
-        if (!is_null($data['filterEnabled'])) {
+        if (isset($data['filterEnabled'])) {
             $filter->addChunk("p.status = :enabled", [":enabled" => $data['filterEnabled']]);
         }
         if (!empty($data['filterId']) && is_numeric($data['filterId'])) {
@@ -1146,6 +1146,14 @@ SQL
 
     public function getLocation($productId) {
         return $this->getSingleValue($productId, 'location');
+    }
+
+    /**
+     * @param int $productId
+     * @return Manufacturer
+     */
+    public function getManufacturer($productId) {
+        return ManufacturerDAO::getInstance()->getManufacturer($this->getSingleValue($productId, 'manufacturer_id'));
     }
 
     public function getManufacturerId($productId) {

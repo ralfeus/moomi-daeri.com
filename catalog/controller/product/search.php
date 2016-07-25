@@ -237,7 +237,7 @@ class ControllerProductSearch extends Controller {
 					'product_id'  => (isset($product) ? $product->getId() : ''),
 					'thumb'       => (isset($product) ? $image : ''),
 					'name'        => (isset($product) ? $product->getName() : ''),
-					'description' => (isset($product) ? utf8_truncate(strip_tags(html_entity_decode($product->getDescription()->getDescription($this->getLanguage()->getId()), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true) : ''),
+					'description' => (isset($product) ? utf8_truncate(strip_tags(html_entity_decode($product->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true) : ''),
 					'price'       => (isset($product) ? $price : ''),
 					'special'     => (isset($product) ? $special : ''),
 //					'tax'         => (isset($product) ? $tax : ''),
@@ -421,7 +421,7 @@ class ControllerProductSearch extends Controller {
             if (is_numeric(stripos(implode(' ', $results[$i]->getTags()), $filter_name))) {
                 $resultsWeights[$i] += SEARCH_WEIGHT_FULL_PHRASE_TAG;
             }
-            if (is_numeric(stripos($results[$i]->getDescription(), $filter_name))) {
+            if (is_numeric(stripos($results[$i]->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), $filter_name))) {
                 $resultsWeights[$i] += SEARCH_WEIGHT_FULL_PHRASE_DESCR;
             }
             foreach ($searchWords as $searchWord) {
@@ -434,7 +434,7 @@ class ControllerProductSearch extends Controller {
                 if (is_numeric(stripos(implode(' ', $results[$i]->getTags()), $searchWord))) {
                     $resultsWeights[$i] += SEARCH_WEIGHT_WORD_TAG;
                 }
-                if (is_numeric(stripos($results[$i]->getDescription(), $searchWord))) {
+                if (is_numeric(stripos($results[$i]->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), $searchWord))) {
                     $resultsWeights[$i] += SEARCH_WEIGHT_WORD_DESCR;
                 }
             }
