@@ -3,12 +3,28 @@ use model\catalog\ProductDAO;
 use system\helper\ImageService;
 
 class ControllerProductSpecial extends Controller {
-	public function index() { 
+    protected function loadStrings() {
+        $this->data['text_empty'] = $this->language->get('text_empty');
+        $this->data['text_quantity'] = $this->language->get('text_quantity');
+        $this->data['text_manufacturer'] = $this->language->get('text_manufacturer');
+        $this->data['text_model'] = $this->language->get('text_model');
+        $this->data['text_price'] = $this->language->get('text_price');
+        $this->data['text_tax'] = $this->language->get('text_tax');
+        $this->data['text_points'] = $this->language->get('text_points');
+        $this->data['text_compare'] = sprintf($this->language->get('text_compare'), (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0));
+        $this->data['text_display'] = $this->language->get('text_display');
+        $this->data['text_list'] = $this->language->get('text_list');
+        $this->data['text_grid'] = $this->language->get('text_grid');
+        $this->data['text_sort'] = $this->language->get('text_sort');
+        $this->data['text_limit'] = $this->language->get('text_limit');
+
+        $this->data['button_cart'] = $this->language->get('button_cart');
+        $this->data['button_wishlist'] = $this->language->get('button_wishlist');
+        $this->data['button_compare'] = $this->language->get('button_compare');
+    }
+
+    public function index() { 
     	$this->language->load('product/special');
-		
-		$this->load->model('catalog/product');
-		
-		$this->load->model('tool/image');
 		
 		if (isset($this->request->get['sort'])) {
 			$sort = $this->request->get['sort'];
@@ -36,14 +52,6 @@ class ControllerProductSpecial extends Controller {
 				    	
 		$this->document->setTitle($this->language->get('heading_title'));
 
-		$this->data['breadcrumbs'] = array();
-
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home'),
-      		'separator' => false
-   		);
-
 		$url = '';
 		
 		if (isset($this->request->get['sort'])) {
@@ -62,34 +70,8 @@ class ControllerProductSpecial extends Controller {
 			$url .= '&limit=' . $this->request->get['limit'];
 		}
 					
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('heading_title'),
-			'href'      => $this->url->link('product/special', $url),
-      		'separator' => $this->language->get('text_separator')
-   		);
-		
     	$this->data['heading_title'] = $this->language->get('heading_title');
-   
-		$this->data['text_empty'] = $this->language->get('text_empty');
-		$this->data['text_quantity'] = $this->language->get('text_quantity');
-		$this->data['text_manufacturer'] = $this->language->get('text_manufacturer');
-		$this->data['text_model'] = $this->language->get('text_model');
-		$this->data['text_price'] = $this->language->get('text_price');
-		$this->data['text_tax'] = $this->language->get('text_tax');
-		$this->data['text_points'] = $this->language->get('text_points');
-		$this->data['text_compare'] = sprintf($this->language->get('text_compare'), (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0));
-		$this->data['text_display'] = $this->language->get('text_display');
-		$this->data['text_list'] = $this->language->get('text_list');
-		$this->data['text_grid'] = $this->language->get('text_grid');		
-		$this->data['text_sort'] = $this->language->get('text_sort');
-		$this->data['text_limit'] = $this->language->get('text_limit');
-
-		$this->data['button_cart'] = $this->language->get('button_cart');	
-		$this->data['button_wishlist'] = $this->language->get('button_wishlist');
-		$this->data['button_compare'] = $this->language->get('button_compare');
-		
-		$this->data['compare'] = $this->url->link('product/compare');
-
+		$this->data['compare'] = $this->getUrl()->link('product/compare');
 		$this->data['products'] = array();
 
 		$data = array(
@@ -141,12 +123,6 @@ class ControllerProductSpecial extends Controller {
 			} else {
 				$tax = false;
 			}				
-			
-			if ($this->getConfig()->get('config_review_status')) {
-				$rating = (int)$product->getRating();
-			} else {
-				$rating = false;
-			}
 						
 			$this->data['products'][] = array(
 				'product_id'  => $product->getId(),
@@ -158,7 +134,7 @@ class ControllerProductSpecial extends Controller {
 				'tax'         => $tax,
 				'rating'      => $product->getRating(),
 				'reviews'     => sprintf($this->language->get('text_reviews'), (int)$product->getReviewsCount()),
-				'href'        => $this->url->link('product/product', $url . '&product_id=' . $product->getId())
+				'href'        => $this->getUrl()->link('product/product', $url . '&product_id=' . $product->getId())
 			);
 		}
 
@@ -173,55 +149,55 @@ class ControllerProductSpecial extends Controller {
 		$this->data['sorts'][] = array(
 			'text'  => $this->language->get('text_default'),
 			'value' => 'p.sort_order-ASC',
-			'href'  => $this->url->link('product/special', 'sort=p.sort_order&order=ASC' . $url)
+			'href'  => $this->getUrl()->link('product/special', 'sort=p.sort_order&order=ASC' . $url)
 		);
 		
 		$this->data['sorts'][] = array(
 			'text'  => $this->language->get('text_name_asc'),
 			'value' => 'pd.name-ASC',
-			'href'  => $this->url->link('product/special', 'sort=pd.name&order=ASC' . $url)
+			'href'  => $this->getUrl()->link('product/special', 'sort=pd.name&order=ASC' . $url)
 		); 
 
 		$this->data['sorts'][] = array(
 			'text'  => $this->language->get('text_name_desc'),
 			'value' => 'pd.name-DESC',
-			'href'  => $this->url->link('product/special', 'sort=pd.name&order=DESC' . $url)
+			'href'  => $this->getUrl()->link('product/special', 'sort=pd.name&order=DESC' . $url)
 		);  
 
 		$this->data['sorts'][] = array(
 			'text'  => $this->language->get('text_price_asc'),
 			'value' => 'ps.price-ASC',
-			'href'  => $this->url->link('product/special', 'sort=ps.price&order=ASC' . $url)
+			'href'  => $this->getUrl()->link('product/special', 'sort=ps.price&order=ASC' . $url)
 		); 
 
 		$this->data['sorts'][] = array(
 			'text'  => $this->language->get('text_price_desc'),
 			'value' => 'special-DESC',
-			'href'  => $this->url->link('product/special', 'sort=special&order=DESC' . $url)
+			'href'  => $this->getUrl()->link('product/special', 'sort=special&order=DESC' . $url)
 		); 
 			
 		$this->data['sorts'][] = array(
 			'text'  => $this->language->get('text_rating_desc'),
 			'value' => 'rating-DESC',
-			'href'  => $this->url->link('product/special', 'sort=rating&order=DESC' . $url)
+			'href'  => $this->getUrl()->link('product/special', 'sort=rating&order=DESC' . $url)
 		); 
 			
 		$this->data['sorts'][] = array(
 			'text'  => $this->language->get('text_rating_asc'),
 			'value' => 'rating-ASC',
-			'href'  => $this->url->link('product/special', 'sort=rating&order=ASC' . $url)
+			'href'  => $this->getUrl()->link('product/special', 'sort=rating&order=ASC' . $url)
 		);
 		
 		$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_model_asc'),
 				'value' => 'p.model-ASC',
-				'href'  => $this->url->link('product/special', 'sort=p.model&order=ASC' . $url)
+				'href'  => $this->getUrl()->link('product/special', 'sort=p.model&order=ASC' . $url)
 		); 
 
 		$this->data['sorts'][] = array(
 			'text'  => $this->language->get('text_model_desc'),
 			'value' => 'p.model-DESC',
-			'href'  => $this->url->link('product/special', 'sort=p.model&order=DESC' . $url)
+			'href'  => $this->getUrl()->link('product/special', 'sort=p.model&order=DESC' . $url)
 		);
 		
 		$url = '';
@@ -239,31 +215,31 @@ class ControllerProductSpecial extends Controller {
 		$this->data['limits'][] = array(
 			'text'  => $this->getConfig()->get('config_catalog_limit'),
 			'value' => $this->getConfig()->get('config_catalog_limit'),
-			'href'  => $this->url->link('product/special', $url . '&limit=' . $this->getConfig()->get('config_catalog_limit'))
+			'href'  => $this->getUrl()->link('product/special', $url . '&limit=' . $this->getConfig()->get('config_catalog_limit'))
 		);
 					
 		$this->data['limits'][] = array(
 			'text'  => 25,
 			'value' => 25,
-			'href'  => $this->url->link('product/special', $url . '&limit=25')
+			'href'  => $this->getUrl()->link('product/special', $url . '&limit=25')
 		);
 		
 		$this->data['limits'][] = array(
 			'text'  => 50,
 			'value' => 50,
-			'href'  => $this->url->link('product/special', $url . '&limit=50')
+			'href'  => $this->getUrl()->link('product/special', $url . '&limit=50')
 		);
 
 		$this->data['limits'][] = array(
 			'text'  => 75,
 			'value' => 75,
-			'href'  => $this->url->link('product/special', $url . '&limit=75')
+			'href'  => $this->getUrl()->link('product/special', $url . '&limit=75')
 		);
 		
 		$this->data['limits'][] = array(
 			'text'  => 100,
 			'value' => 100,
-			'href'  => $this->url->link('product/special', $url . '&limit=100')
+			'href'  => $this->getUrl()->link('product/special', $url . '&limit=100')
 		);
 
 		$url = '';
@@ -285,7 +261,7 @@ class ControllerProductSpecial extends Controller {
 		$pagination->page = $page;
 		$pagination->limit = $limit;
 		$pagination->text = $this->language->get('text_pagination');
-		$pagination->url = $this->url->link('product/special', $url . '&page={page}');
+		$pagination->url = $this->getUrl()->link('product/special', $url . '&page={page}');
 			
 		$this->data['pagination'] = $pagination->render();
 			
@@ -293,6 +269,7 @@ class ControllerProductSpecial extends Controller {
 		$this->data['order'] = $order;
 		$this->data['limit'] = $limit;
 
+        $this->setBreadcrumbs();
 		$this->children = array(
 			'common/column_left',
 			'common/column_right',
@@ -302,10 +279,6 @@ class ControllerProductSpecial extends Controller {
 			'common/header'
 		);
 
-        $templateFile = '/template/product/special.tpl';
-        $templateDir = file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . $templateFile)
-            ? $this->getConfig()->get('config_template')
-            : 'default';
-		$this->getResponse()->setOutput($this->render($templateDir . $templateFile));
+		$this->getResponse()->setOutput($this->render($this->getConfig()->get('config_template') . '/template/product/special.tpl'));
   	}
 }

@@ -202,11 +202,12 @@ abstract class Controller extends OpenCartBase {
             $template = $this->template;
         }
 
+        $tmpTemplate = $template;
 		if (!file_exists(DIR_TEMPLATE . $template)) {
             $template = 'default';
         }
         if (!file_exists(DIR_TEMPLATE . $template)) {
-            throw new Exception('Error: Could not load template ' . DIR_TEMPLATE . $template . '!');
+            throw new Exception('Error: Could not load template ' . DIR_TEMPLATE . $tmpTemplate . '!');
         }
 
         extract($this->data);
