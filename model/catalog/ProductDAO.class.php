@@ -1114,6 +1114,78 @@ SQL
             );
     }
 
+    /**
+     * @param int $customerGroupId
+     * @param string $sort
+     * @param string $order
+     * @param int $start
+     * @param int $limit
+     * @return Product[]
+     */
+    public function getDiscountedProductsByCustomerGroupId($customerGroupId, $sort = 'p.sort_order', $order = 'ASC', $start = 0, $limit = 20) {
+        $sql = "
+            SELECT DISTINCT ps.product_id
+            FROM
+                product_special ps
+                LEFT JOIN product p ON (ps.product_id = p.product_id)
+                LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
+                LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
+            WHERE
+                p.status = '1'
+                AND p.date_available <= :dateAvailable
+                AND p2s.store_id = :storeId
+                AND ps.customer_group_id = :customerGroupId
+                AND ((ps.date_start = '0000-00-00' OR ps.date_start < :dateAvailable)
+                AND (ps.date_end = '0000-00-00' OR ps.date_end > :dateEnd))
+            GROUP BY ps.product_id
+        ";
+
+        $sort_data = array(
+            'pd.name',
+            'p.model',
+            'ps.price',
+            'rating',
+            'p.sort_order'
+        );
+
+        if (in_array($sort, $sort_data)) {
+            if ($sort == 'pd.name' || $sort == 'p.model') {
+                $sql .= " ORDER BY LCASE(" . $sort . ") $order";
+            } else {
+                $sql .= " ORDER BY " . $sort . ' ' . $order;
+            }
+        } else {
+            $sql .= " ORDER BY p.sort_order $order";
+        }
+
+        if (isset($start) || isset($limit)) {
+            if ($start < 0) {
+                $start = 0;
+            }
+
+            if ($limit < 1) {
+                $limit = 20;
+            }
+
+            $sql .= " LIMIT " . (int)$start . "," . (int)$limit;
+        }
+
+        $product_data = array();
+
+        $query = $this->getDb()->query($sql, [
+            ':dateAvailable' => date('Y-m-d H:00:00'),
+            ':dateEnd' => date('Y-m-d H:00:00', strtotime('+1 hour')),
+            ':storeId' => $this->getConfig()->get('config_store_id'),
+            ':customerGroupId' => $customerGroupId
+        ]);
+
+        foreach ($query->rows as $result) {
+            $product_data[$result['product_id']] = $this->getProduct($result['product_id'], false, true);
+        }
+
+        return $product_data;
+    }
+
     public function getImage($productId) {
         return $this->getSingleValue($productId, 'image');
     }

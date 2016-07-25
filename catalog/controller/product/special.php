@@ -1,5 +1,8 @@
-<?php 
-class ControllerProductSpecial extends Controller { 	
+<?php
+use model\catalog\ProductDAO;
+use system\helper\ImageService;
+
+class ControllerProductSpecial extends Controller {
 	public function index() { 
     	$this->language->load('product/special');
 		
@@ -28,7 +31,7 @@ class ControllerProductSpecial extends Controller {
 		if (isset($this->request->get['limit'])) {
 			$limit = $this->request->get['limit'];
 		} else {
-			$limit = $this->config->get('config_catalog_limit');
+			$limit = $this->getConfig()->get('config_catalog_limit');
 		}
 				    	
 		$this->document->setTitle($this->language->get('heading_title'));
@@ -87,10 +90,6 @@ class ControllerProductSpecial extends Controller {
 		
 		$this->data['compare'] = $this->url->link('product/compare');
 
-    #kabantejay synonymizer start
-    $result['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $result['description']);
-    #kabantejay synonymizer end
-		
 		$this->data['products'] = array();
 
 		$data = array(
@@ -99,53 +98,67 @@ class ControllerProductSpecial extends Controller {
 			'start' => ($page - 1) * $limit,
 			'limit' => $limit
 		);
+
+        $customerGroupId = $this->getCurrentCustomer()->isLogged()
+            ? $this->getCurrentCustomer()->getCustomerGroupId()
+            : $this->getConfig()->get('config_customer_group_id');
+
+		$product_total = ProductDAO::getInstance()->getProductsCount($data);
+		$products = ProductDAO::getInstance()->getDiscountedProductsByCustomerGroupId($customerGroupId, $sort, $order, ($page - 1) * $limit, $limit);
 			
-		$product_total = $this->model_catalog_product->getTotalProductSpecials($data);
-			
-		$results = $this->model_catalog_product->getProductSpecials($data);
-			
-		foreach ($results as $result) {
-			if ($result['image']) {
-				$image = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
+		foreach ($products as $product) {
+            #kabantejay synonymizer start
+            $productDescription = preg_replace_callback(
+                '/\{  (.*?)  \}/xs',
+                function ($m) {
+                    $ar = explode("|", $m[1]);
+                    return $ar[array_rand($ar, 1)];
+                },
+                $product->getDescription()->getDescription($this->getLanguage()->getId())->getDescription()
+            );
+            #kabantejay synonymizer end
+
+            if ($product->getImagePath()) {
+				$image = ImageService::getInstance()->resize($product->getImagePath(), $this->getConfig()->get('config_image_product_width'), $this->getConfig()->get('config_image_product_height'));
 			} else {
 				$image = false;
 			}
 			
-			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-				$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+			if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
+				$price = $this->getCurrency()->format($product->getPrice());
 			} else {
 				$price = false;
 			}
 			
-			if ((float)$result['special']) {
-				$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+			if ((float)$product->getSpecialPrice($customerGroupId)) {
+				$special = $this->getCurrency()->format($product->getSpecialPrice($customerGroupId));
 			} else {
 				$special = false;
 			}	
 			
-			if ($this->config->get('config_tax')) {
-				$tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price']);
+			if ($this->getConfig()->get('config_tax')) {
+				$tax = $this->getCurrency()->format((float)$product->getSpecialPrice($customerGroupId) ? $product->getSpecialPrice($customerGroupId) : $product->getPrice());
 			} else {
 				$tax = false;
 			}				
 			
-			if ($this->config->get('config_review_status')) {
-				$rating = (int)$result['rating'];
+			if ($this->getConfig()->get('config_review_status')) {
+				$rating = (int)$product->getRating();
 			} else {
 				$rating = false;
 			}
 						
 			$this->data['products'][] = array(
-				'product_id'  => $result['product_id'],
+				'product_id'  => $product->getId(),
 				'thumb'       => $image,
-				'name'        => $result['name'],
-				'description' => utf8_truncate(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
+				'name'        => $product->getName(),
+				'description' => utf8_truncate(strip_tags(html_entity_decode($productDescription, ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
 				'price'       => $price,
 				'special'     => $special,
 				'tax'         => $tax,
-				'rating'      => $result['rating'],
-				'reviews'     => sprintf($this->language->get('text_reviews'), (int)$result['reviews']),
-				'href'        => $this->url->link('product/product', $url . '&product_id=' . $result['product_id'])
+				'rating'      => $product->getRating(),
+				'reviews'     => sprintf($this->language->get('text_reviews'), (int)$product->getReviewsCount()),
+				'href'        => $this->url->link('product/product', $url . '&product_id=' . $product->getId())
 			);
 		}
 
@@ -224,9 +237,9 @@ class ControllerProductSpecial extends Controller {
 		$this->data['limits'] = array();
 		
 		$this->data['limits'][] = array(
-			'text'  => $this->config->get('config_catalog_limit'),
-			'value' => $this->config->get('config_catalog_limit'),
-			'href'  => $this->url->link('product/special', $url . '&limit=' . $this->config->get('config_catalog_limit'))
+			'text'  => $this->getConfig()->get('config_catalog_limit'),
+			'value' => $this->getConfig()->get('config_catalog_limit'),
+			'href'  => $this->url->link('product/special', $url . '&limit=' . $this->getConfig()->get('config_catalog_limit'))
 		);
 					
 		$this->data['limits'][] = array(
@@ -280,12 +293,6 @@ class ControllerProductSpecial extends Controller {
 		$this->data['order'] = $order;
 		$this->data['limit'] = $limit;
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/product/special.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/product/special.tpl';
-		} else {
-			$this->template = 'default/template/product/special.tpl';
-		}
-		
 		$this->children = array(
 			'common/column_left',
 			'common/column_right',
@@ -294,8 +301,11 @@ class ControllerProductSpecial extends Controller {
 			'common/footer',
 			'common/header'
 		);
-	
-		$this->getResponse()->setOutput($this->render());
+
+        $templateFile = '/template/product/special.tpl';
+        $templateDir = file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . $templateFile)
+            ? $this->getConfig()->get('config_template')
+            : 'default';
+		$this->getResponse()->setOutput($this->render($templateDir . $templateFile));
   	}
 }
-?>

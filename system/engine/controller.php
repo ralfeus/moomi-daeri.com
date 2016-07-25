@@ -195,24 +195,28 @@ abstract class Controller extends OpenCartBase {
      */
 	protected function render($template = null) {
 		foreach ($this->children as $child) {
-			$this->data[basename($child)] = $this->getChild($child);
-		}
+            $this->data[basename($child)] = $this->getChild($child);
+        }
 		$this->loadStrings();
         if (is_null($template)) {
             $template = $this->template;
         }
-		if (file_exists(DIR_TEMPLATE . $template)) {
-			extract($this->data);
+
+		if (!file_exists(DIR_TEMPLATE . $template)) {
+            $template = 'default';
+        }
+        if (!file_exists(DIR_TEMPLATE . $template)) {
+            throw new Exception('Error: Could not load template ' . DIR_TEMPLATE . $template . '!');
+        }
+
+        extract($this->data);
 			
-      		ob_start();
-	  		require(DIR_TEMPLATE . $template);
-	  		$this->output = ob_get_contents();
-      		ob_end_clean();
-      		
-			return $this->output;
-    	} else {
-			throw new Exception('Error: Could not load template ' . DIR_TEMPLATE . $template . '!');
-    	}
+        ob_start();
+        require(DIR_TEMPLATE . $template);
+        $this->output = ob_get_contents();
+        ob_end_clean();
+
+        return $this->output;
 	}
 
     protected function setBreadcrumbs($breadcrumbs = array()) {
