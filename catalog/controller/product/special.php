@@ -90,14 +90,18 @@ class ControllerProductSpecial extends Controller {
 			
 		foreach ($products as $product) {
             #kabantejay synonymizer start
-            $productDescription = preg_replace_callback(
-                '/\{  (.*?)  \}/xs',
-                function ($m) {
-                    $ar = explode("|", $m[1]);
-                    return $ar[array_rand($ar, 1)];
-                },
-                $product->getDescription()->getDescription($this->getLanguage()->getId())->getDescription()
-            );
+            if (is_null($product->getDescription()) || is_null($product->getDescription()->getDescription($this->getLanguage()->getId()))) {
+                $productDescription = '';
+            } else {
+                $productDescription = preg_replace_callback(
+                    '/\{  (.*?)  \}/xs',
+                    function ($m) {
+                        $ar = explode("|", $m[1]);
+                        return $ar[array_rand($ar, 1)];
+                    },
+                    $product->getDescription()->getDescription($this->getLanguage()->getId())->getDescription()
+                );
+            }
             #kabantejay synonymizer end
 
             if ($product->getImagePath()) {

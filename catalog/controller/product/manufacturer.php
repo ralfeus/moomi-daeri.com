@@ -214,7 +214,7 @@ class ControllerProductManufacturer extends Controller {
 //					'tax'         => $tax,
 					'rating'      => $this->getConfig()->get('config_review_status') ? $product->getRating() : false,
 					'reviews'     => sprintf($this->getLanguage()->get('text_reviews'), $product->getReviewsCount()),
-					'href'        => $this->getUrl()->link('product/product', $url . '&manufacturer_id=' . $product->getManufacturerId() . '&product_id=' . $product->getId())
+					'href'        => $this->getUrl()->link('product/product', $url . '&manufacturer_id=' . $product->getManufacturer()->getId() . '&product_id=' . $product->getId())
 				);
 			}
 					
@@ -365,28 +365,6 @@ class ControllerProductManufacturer extends Controller {
                 : 'default';
 			$this->getResponse()->setOutput($this->render($templateDir . $templateFile));
 		} else {
-			$url = '';
-			
-			if (isset($this->request->get['manufacturer_id'])) {
-				$url .= '&manufacturer_id=' . $this->request->get['manufacturer_id'];
-			}
-									
-			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
-			}	
-
-			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
-			}
-				
-			if (isset($this->request->get['page'])) {
-				$url .= '&page=' . $this->request->get['page'];
-			}
-						
-			if (isset($this->request->get['limit'])) {
-				$url .= '&limit=' . $this->request->get['limit'];
-			}
-						
 			$this->document->setTitle($this->getLanguage()->get('text_error'));
             $this->data['heading_title'] = $this->getLanguage()->get('text_error');
       		$this->data['continue'] = $this->getUrl()->link('common/home');
