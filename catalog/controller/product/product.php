@@ -62,13 +62,13 @@ class ControllerProductProduct extends Controller {
 				}
 
 				$category = CategoryDAO::getInstance()->getCategory($path_id);
-        
-				#kabantejay synonymizer start
-				$razdel = $category->getDescription()->getName();
-				#kabantejay synonymizer end
-				
+
         		if ($category) {
-        		    $this->setBreadcrumbs([[
+                    #kabantejay synonymizer start
+                    $razdel = $category->getDescription()->getName();
+                    #kabantejay synonymizer end
+
+                    $this->setBreadcrumbs([[
         		        'text' => $category->getDescription()->getName(),
                         'route' => 'product/category&path=' . $path
                     ]]);
@@ -258,6 +258,9 @@ class ControllerProductProduct extends Controller {
 					$option_value_data = array();
 
 					foreach ($productOption->getValue() as $option_value) {
+					    if (is_null($option_value->getOptionValue())) {
+					        continue;
+                        }
 						if (!$option_value->getSubtract() || ($option_value->getQuantity() > 0)) {
 							$option_value_data[] = array(
 								'product_option_value_id' => $option_value->getId(),
