@@ -208,42 +208,42 @@ class ControllerProductSearch extends Controller {
                 $results = $this->sortByRelevance($results, $filter_name);
             }
 
-			for ($index = $data['start']; ($index < $data['start'] + $limit) && ($index < sizeof($results)); $index++) {
-				if ($results[$index]->getImagePath()) {
-					$image = ImageService::getInstance()->resize($results[$index]->getImagePath(), $this->getConfig()->get('config_image_product_width'), $this->getConfig()->get('config_image_product_height'));
+			foreach ($results as $product) {
+				if ($product->getImagePath()) {
+					$image = ImageService::getInstance()->resize($product->getImagePath(), $this->getConfig()->get('config_image_product_width'), $this->getConfig()->get('config_image_product_height'));
 				} else {
 					$image = false;
 				}
 				
 				if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
-					$price = $this->getCurrency()->format($results[$index]->getPrice());
+					$price = $this->getCurrency()->format($product->getPrice());
 				} else {
 					$price = false;
 				}
 				
-				if ((float)$results[$index]->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId())) {
-					$special = $this->getCurrency()->format($results[$index]->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId()));
+				if ((float)$product->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId())) {
+					$special = $this->getCurrency()->format($product->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId()));
 				} else {
 					$special = false;
 				}	
 //
 //                if ($this->getConfig()->get('config_review_status')) {
-//					$rating = (int)$results[$index]->getRating();
+//					$rating = (int)$product->getRating();
 //				} else {
 //					$rating = false;
 //				}
 			
 				$this->data['products'][] = array(
-					'product_id'  => (isset($results[$index]) ? $results[$index]->getId() : ''),
-					'thumb'       => (isset($results[$index]) ? $image : ''),
-					'name'        => (isset($results[$index]) ? $results[$index]->getName() : ''),
-					'description' => (isset($results[$index]) ? utf8_truncate(strip_tags(html_entity_decode($results[$index]->getDescription()->getDescription($this->getLanguage()->getId()), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true) : ''),
-					'price'       => (isset($results[$index]) ? $price : ''),
-					'special'     => (isset($results[$index]) ? $special : ''),
-//					'tax'         => (isset($results[$index]) ? $tax : ''),
-					'rating'      => (isset($results[$index]) ? $results[$index]->getRating() : ''),
-					'reviews'     => (isset($results[$index]) ? sprintf($this->getLanguage()->get('text_reviews'), (int)$results[$index]->getReviewsCount()) : ''),
-					'href'        => (isset($results[$index]) ? $this->getUrl()->link('product/product', $url . '&product_id=' . $results[$index]->getId()) : '')
+					'product_id'  => (isset($product) ? $product->getId() : ''),
+					'thumb'       => (isset($product) ? $image : ''),
+					'name'        => (isset($product) ? $product->getName() : ''),
+					'description' => (isset($product) ? utf8_truncate(strip_tags(html_entity_decode($product->getDescription()->getDescription($this->getLanguage()->getId()), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true) : ''),
+					'price'       => (isset($product) ? $price : ''),
+					'special'     => (isset($product) ? $special : ''),
+//					'tax'         => (isset($product) ? $tax : ''),
+					'rating'      => (isset($product) ? $product->getRating() : ''),
+					'reviews'     => (isset($product) ? sprintf($this->getLanguage()->get('text_reviews'), (int)$product->getReviewsCount()) : ''),
+					'href'        => (isset($product) ? $this->getUrl()->link('product/product', $url . '&product_id=' . $product->getId()) : '')
 				);
 			}
 					
