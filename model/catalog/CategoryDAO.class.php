@@ -116,10 +116,12 @@ class CategoryDAO extends DAO {
                     FROM url_alias 
                     WHERE query = CONCAT('category_id=', :categoryId)
                 ) AS keyword 
-            FROM category 
-            WHERE category_id = :categoryId
+            FROM 
+                category AS c
+                LEFT JOIN category_description AS cd ON c.category_id = cd.category_id
+            WHERE c.category_id = :categoryId AND cd.language_id = :languageId
 SQL
-            , [':categoryId' => $categoryId]
+            , [':categoryId' => $categoryId, ':languageId' => $this->getLanguage()->getId() ]
         );
         if ($query->rows) {
             return new Category(

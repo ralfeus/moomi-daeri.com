@@ -36,6 +36,7 @@ class ControllerProductManufacturer extends Controller {
         $this->data['text_grid'] = $this->getLanguage()->get('text_grid');
         $this->data['text_sort'] = $this->getLanguage()->get('text_sort');
         $this->data['text_limit'] = $this->getLanguage()->get('text_limit');
+        $this->data['text_error'] = $this->getLanguage()->get('text_error');
 
         $this->data['button_cart'] = $this->getLanguage()->get('button_cart');
         $this->data['button_wishlist'] = $this->getLanguage()->get('button_wishlist');
@@ -346,12 +347,6 @@ class ControllerProductManufacturer extends Controller {
 			$this->data['pagination'] = $pagination->render();
 			$this->data['continue'] = $this->getUrl()->link('common/home');
 			
-			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/product/manufacturer_info.tpl')) {
-				$template = $this->getConfig()->get('config_template') . '/template/product/manufacturer_info.tpl';
-			} else {
-				$template = 'default/template/product/manufacturer_info.tpl';
-			}
-			
 			$this->children = array(
 				'common/column_left',
 				'common/column_right',
@@ -360,8 +355,11 @@ class ControllerProductManufacturer extends Controller {
 				'common/footer',
 				'common/header'
 			);
-					
-			$this->getResponse()->setOutput($this->render($template));
+			$templateFile = '/template/product/manufacturerInfo.tpl.php';
+            $templateDir = file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . $templateFile)
+                ? $this->getConfig()->get('config_template')
+                : 'default';
+			$this->getResponse()->setOutput($this->render($templateDir . $templateFile));
 		} else {
 			$url = '';
 			
@@ -385,28 +383,10 @@ class ControllerProductManufacturer extends Controller {
 				$url .= '&limit=' . $this->request->get['limit'];
 			}
 						
-			$this->data['breadcrumbs'][] = array(
-				'text'      => $this->getLanguage()->get('text_error'),
-				'href'      => $this->getUrl()->link('product/category', $url),
-				'separator' => $this->getLanguage()->get('text_separator')
-			);
-				
 			$this->document->setTitle($this->getLanguage()->get('text_error'));
-
-      		$this->data['heading_title'] = $this->getLanguage()->get('text_error');
-
-      		$this->data['text_error'] = $this->getLanguage()->get('text_error');
-
-      		$this->data['button_continue'] = $this->getLanguage()->get('button_continue');
-
+            $this->data['heading_title'] = $this->getLanguage()->get('text_error');
       		$this->data['continue'] = $this->getUrl()->link('common/home');
-
-			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/error/not_found.tpl')) {
-				$template = $this->getConfig()->get('config_template') . '/template/error/not_found.tpl';
-			} else {
-				$template = 'default/template/error/not_found.tpl';
-			}
-			
+            $this->setBreadcrumbs();
 			$this->children = array(
 				'common/column_left',
 				'common/column_right',
@@ -415,8 +395,11 @@ class ControllerProductManufacturer extends Controller {
 				'common/footer',
 				'common/header'
 			);
-					
-			$this->getResponse()->setOutput($this->render($template));
+            $templateFile = '/template/error/not_found.tpl';
+            $templateDir = file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . $templateFile)
+                ? $this->getConfig()->get('config_template')
+                : 'default';
+            $this->getResponse()->setOutput($this->render($templateDir . $templateFile));
 		}
   	}
 }

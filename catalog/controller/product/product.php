@@ -1,4 +1,5 @@
 <?php
+use model\catalog\CategoryDAO;
 use model\catalog\ManufacturerDAO;
 use model\catalog\ProductDAO;
 use system\helper\ImageService;
@@ -52,16 +53,6 @@ class ControllerProductProduct extends Controller {
     public function index() {
 		$this->language->load('product/product');
 
-		$this->data['breadcrumbs'] = array();
-
-		$this->data['breadcrumbs'][] = array(
-			'text'      => $this->language->get('text_home'),
-			'href'      => $this->getUrl()->link('common/home'),
-			'separator' => false
-		);
-
-		$this->getLoader()->model('catalog/category');
-
 		if (isset($this->request->get['path'])) {
 			$path = '';
 
@@ -72,18 +63,17 @@ class ControllerProductProduct extends Controller {
 					$path .= '_' . $path_id;
 				}
 
-				$category_info = $this->model_catalog_category->getCategory($path_id);
+				$category = CategoryDAO::getInstance()->getCategory($path_id);
         
 				#kabantejay synonymizer start
-				$razdel = isset($category_info['name']) ? $category_info['name'] : '';
+				$razdel = $category->getDescription()->getName();
 				#kabantejay synonymizer end
 				
-        		if ($category_info) {
-					$this->data['breadcrumbs'][] = array(
-						'text'      => $category_info['name'],
-						'href'      => $this->getUrl()->link('product/category', 'path=' . $path),
-						'separator' => $this->language->get('text_separator')
-					);
+        		if ($category) {
+        		    $this->setBreadcrumbs([
+        		        'text' => $category->getDescription()->getName(),
+                        'route' => 'product/category&path=' . $path
+                    ]);
 				}
 			}
 		}
@@ -138,12 +128,10 @@ class ControllerProductProduct extends Controller {
 			$productId = 0;
 		}
 
-		$this->getLoader()->model('catalog/product');
-
         try {
-            $product_info = ProductDAO::getInstance()->getProduct($productId, false, true);
+            $product = ProductDAO::getInstance()->getProduct($productId, false, true);
 
-            $this->data['product_info'] = $product_info;
+            $this->data['product_info'] = $product;
 //print_r($product_info);exit;
 			$url = '';
 
@@ -172,47 +160,47 @@ class ControllerProductProduct extends Controller {
 			}
 
 			$this->data['breadcrumbs'][] = array(
-				'text'      => $product_info->getName(),
+				'text'      => $product->getName(),
 				'href'      => $this->getUrl()->link('product/product', $url . '&product_id=' . $this->request->get['product_id']),
 				'separator' => $this->language->get('text_separator')
 			);
 
-			if ($product_info->getDescription()->getDescription($this->getLanguage()->getId())->getSeoTitle()) {
-				$this->document->setTitle($product_info->getDescription()->getDescription($this->getLanguage()->getId())->getSeoTitle());
+			if ($product->getDescription()->getDescription($this->getLanguage()->getId())->getSeoTitle()) {
+				$this->document->setTitle($product->getDescription()->getDescription($this->getLanguage()->getId())->getSeoTitle());
 			} else {
-				$this->document->setTitle($product_info->getName());
+				$this->document->setTitle($product->getName());
 			}
 
-			$this->document->setDescription($product_info->getDescription()->getDescription($this->getLanguage()->getId())->getMetaDescription());
-			$this->document->setKeywords($product_info->getDescription()->getDescription($this->getLanguage()->getId())->getMetaKeyword());
+			$this->document->setDescription($product->getDescription()->getDescription($this->getLanguage()->getId())->getMetaDescription());
+			$this->document->setKeywords($product->getDescription()->getDescription($this->getLanguage()->getId())->getMetaKeyword());
 			//$this->document->addLink($this->getUrl()->link('product/product', 'product_id=' . $this->request->get['product_id']), 'canonical');
 
-			$this->data['seo_h1'] = $product_info->getDescription()->getDescription($this->getLanguage()->getId())->getSeoH1();
+			$this->data['seo_h1'] = $product->getDescription()->getDescription($this->getLanguage()->getId())->getSeoH1();
 
-			$this->data['heading_title'] = $product_info->getName();
-            $this->data['text_minimum'] = sprintf($this->language->get('text_minimum'), $product_info->getMinimum());
+			$this->data['heading_title'] = $product->getName();
+            $this->data['text_minimum'] = sprintf($this->language->get('text_minimum'), $product->getMinimum());
 
 			$this->getLoader()->model('catalog/review');
 
 			$this->data['tab_review'] = sprintf($this->language->get('tab_review'), $this->model_catalog_review->getTotalReviewsByProductId($this->request->get['product_id']));
 
-			$this->data['product_id'] = $this->request->get['product_id'];
-			$this->data['manufacturer'] = $product_info->getManufacturerId();
-			$this->data['manufacturers'] = $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $product_info->getManufacturerId());
-			$this->data['model'] = $product_info->getModel();
-			$this->data['reward'] = $product_info->getRewards();
-			$this->data['points'] = $product_info->getPoints();
+			$this->data['product_id'] = $product->getId();
+			$this->data['manufacturer'] = $product->getManufacturerId();
+			$this->data['manufacturers'] = $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $product->getManufacturerId());
+			$this->data['model'] = $product->getModel();
+			$this->data['reward'] = $product->getRewards();
+			$this->data['points'] = $product->getPoints();
 
-			if ($product_info->getQuantity() <= 0) {
-				$this->data['stock'] = $product_info->getStockStatusId();
+			if ($product->getQuantity() <= 0) {
+				$this->data['stock'] = $product->getStockStatusId();
 			} elseif ($this->getConfig()->get('config_stock_display')) {
-				$this->data['stock'] = $product_info->getQuantity();
+				$this->data['stock'] = $product->getQuantity();
 			} else {
 				$this->data['stock'] = $this->language->get('text_instock');
 			}
 
-			if ($product_info->getImagePath()) {
-				$this->data['popup'] = ImageService::getInstance()->resize($product_info->getImagePath(), $this->getConfig()->get('config_image_popup_width'), $this->getConfig()->get('config_image_popup_height'));
+			if ($product->getImagePath()) {
+				$this->data['popup'] = ImageService::getInstance()->resize($product->getImagePath(), $this->getConfig()->get('config_image_popup_width'), $this->getConfig()->get('config_image_popup_height'));
 			} else {
 				$this->data['popup'] = '';
 			}
@@ -221,8 +209,8 @@ class ControllerProductProduct extends Controller {
 
             if ($results) {
                 $this->data['thumb'] = ImageService::getInstance()->resize($results[0]->getImagePath(), $this->getConfig()->get('config_image_thumb_width'), $this->getConfig()->get('config_image_thumb_height'));
-            } else if ($product_info->getImagePath()) {
-				$this->data['thumb'] = ImageService::getInstance()->resize($product_info->getImagePath(), $this->getConfig()->get('config_image_thumb_width'), $this->getConfig()->get('config_image_thumb_height'));
+            } else if ($product->getImagePath()) {
+				$this->data['thumb'] = ImageService::getInstance()->resize($product->getImagePath(), $this->getConfig()->get('config_image_thumb_width'), $this->getConfig()->get('config_image_thumb_height'));
 			} else {
 				$this->data['thumb'] = '';
 			}
@@ -237,13 +225,13 @@ class ControllerProductProduct extends Controller {
 			}
 
 			if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
-				$this->data['price'] = $this->getCurrentCurrency()->format($product_info->getPrice());
+				$this->data['price'] = $this->getCurrentCurrency()->format($product->getPrice());
 			} else {
 				$this->data['price'] = false;
 			}
 
-			if ((float)$product_info->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId())) {
-				$this->data['special'] = $this->getCurrentCurrency()->format($product_info->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId()));
+			if ((float)$product->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId())) {
+				$this->data['special'] = $this->getCurrentCurrency()->format($product->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId()));
 			} else {
 				$this->data['special'] = false;
 			}
@@ -254,7 +242,7 @@ class ControllerProductProduct extends Controller {
 //				$this->data['tax'] = false;
 //			}
 
-			$discounts = ProductDAO::getInstance()->getProductDiscounts($product_info->getId());
+			$discounts = ProductDAO::getInstance()->getProductDiscounts($product->getId());
 
 			$this->data['discounts'] = array();
 
@@ -304,46 +292,46 @@ class ControllerProductProduct extends Controller {
 				}
 			}
 
-			if ($product_info->getMinimum()) {
-				$this->data['minimum'] = $product_info->getMinimum();
+			if ($product->getMinimum()) {
+				$this->data['minimum'] = $product->getMinimum();
 			} else {
 				$this->data['minimum'] = 1;
 			}
 
 
-			$date_added = getdate(strtotime($product_info->getDateAdded()));
+			$date_added = getdate(strtotime($product->getDateAdded()));
 			$date_added = mktime(0, 0, 0, $date_added['mon'], $date_added['mday'], $date_added['year']);
 
 			$this->data['review_status'] = $this->getConfig()->get('config_review_status');
-			$this->data['reviews'] = sprintf($this->language->get('text_reviews'), (int)$product_info->getReviewsCount());
-			$this->data['rating'] = (int)$product_info->getRating();
-			$this->data['description'] = html_entity_decode($product_info->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8');
-			$this->data['image_description'] = html_entity_decode($product_info->getImageDescription(), ENT_QUOTES, 'UTF-8');
-			$this->data['attribute_groups'] = $product_info->getAttributes();
+			$this->data['reviews'] = sprintf($this->language->get('text_reviews'), (int)$product->getReviewsCount());
+			$this->data['rating'] = (int)$product->getRating();
+			$this->data['description'] = html_entity_decode($product->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8');
+			$this->data['image_description'] = html_entity_decode($product->getImageDescription(), ENT_QUOTES, 'UTF-8');
+			$this->data['attribute_groups'] = $product->getAttributes();
 			$this->data['hot'] = $date_added + 86400 * $this->getConfig()->get('config_product_hotness_age') > time();
-			$this->data['weight'] = $this->weight->format($product_info->getWeight()->getWeight(), $product_info->getWeight()->getUnit()->getId());
+			$this->data['weight'] = $this->weight->format($product->getWeight()->getWeight(), $product->getWeight()->getUnit()->getId());
 
 
 			$this->data['products'] = array();
 
             #kabantejay synonymizer start
-            if (!is_null($product_info->getManufacturer())) {
+            if (!is_null($product->getManufacturer())) {
                 $brand = '';
             } else {
-                $brand = $product_info->getManufacturer();
+                $brand = $product->getManufacturer();
             }
             if (!isset($razdel)) {
                 $razdel = '';
             }
-            if (!isset($category_info['name'])) {
+            if (!isset($category['name'])) {
                 $syncat = '';
             } else {
-            $syncat = $category_info['name'];
+            $syncat = $category['name'];
             }
-            if (!is_null($product_info->getModel())) {
+            if (!is_null($product->getModel())) {
                 $synmod = '';
             } else {
-                $synmod = $product_info->getModel();
+                $synmod = $product->getModel();
             }
             if ($this->data['special'] == false) {
                 $synprice = $this->data['price'];
@@ -351,7 +339,7 @@ class ControllerProductProduct extends Controller {
                 $synprice = $this->data['special'];
             }
             $syntext=array(
-            array("%H1%",$product_info->getName()),
+            array("%H1%",$product->getName()),
             array("%BRAND%",$brand),
             array("%RAZDEL%",$razdel),
             array("%CATEGORY%",$syncat),
@@ -368,7 +356,7 @@ class ControllerProductProduct extends Controller {
     //			$results = $this->model_catalog_product->getProductRelated($this->request->get['product_id']);
     //        $results = $product_info->getRelated();
 
-            foreach ($product_info->getRelated() as $tag) {
+            foreach ($product->getRelated() as $tag) {
                 if ($tag->getImagePath()) {
                     $image = ImageService::getInstance()->resize($tag->getImagePath(), $this->getConfig()->get('config_image_related_width'), $this->getConfig()->get('config_image_related_height'));
                 } else {
@@ -411,16 +399,16 @@ class ControllerProductProduct extends Controller {
 
 //			$results = $this->model_catalog_product->getProductTags($this->request->get['product_id']);
 
-            foreach ($product_info->getTags() as $tag) {
+            foreach ($product->getTags() as $tag) {
                 $this->data['tags'][] = array(
                     'tag'  => $tag,
                     'href' => $this->getUrl()->link('product/search', 'filter_tag=' . $tag)
                 );
             }
 
-            ProductDAO::getInstance()->updateViewed($product_info->getId());
+            ProductDAO::getInstance()->updateViewed($product->getId());
 
-
+            $this->setBreadcrumbs();
             $this->children = array(
                 'common/header',
                 'common/column_left',
