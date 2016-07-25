@@ -189,22 +189,26 @@ class ControllerProductManufacturer extends Controller {
 //					$tax = false;
 //				}
 				
-//            #kabantejay synonymizer start
-//	 	   	$description = preg_replace_callback(
-//	 	   	    '/\{  (.*?)  \}/xs',
-//                function ($m) {
-//	 	   	        $ar = explode("|", $m[1]);
-//                    return $ar[array_rand($ar, 1)];
-//	 	   	    },
-//                $product->getDescription()->getDescription($this->getLanguage()->getId())
-//            );
-//	   		#kabantejay synonymizer end
+//              #kabantejay synonymizer start
+                if (is_null($product->getDescription())) {
+                    $description = '';
+                } else {
+                    $description = preg_replace_callback(
+                        '/\{  (.*?)  \}/xs',
+                        function ($m) {
+                            $ar = explode("|", $m[1]);
+                            return $ar[array_rand($ar, 1)];
+                        },
+                        $product->getDescription()->getDescription($this->getLanguage()->getId())
+                    );
+                }
+    //	   		#kabantejay synonymizer end
 			
 				$this->data['products'][] = array(
 					'product_id'  => $product->getId(),
 					'thumb'       => $image,
 					'name'        => $product->getName(),
-					'description' => utf8_truncate(strip_tags(html_entity_decode($product->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
+					'description' => utf8_truncate(strip_tags(html_entity_decode($description, ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
 					'price'       => $price,
 					'special'     => $special,
 //					'tax'         => $tax,
