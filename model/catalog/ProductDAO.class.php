@@ -1124,9 +1124,18 @@ SQL
      */
     public function getDiscountedProductsByCustomerGroupId($customerGroupId, $sort = 'p.sort_order', $order = 'ASC', $start = 0, $limit = 20) {
         $sql = "
-            SELECT DISTINCT ps.product_id
+            SELECT DISTINCT 
+                ps.product_id,
+                (
+                    SELECT AVG(rating)
+                    FROM review r1
+                    WHERE
+                        r1.product_id = ps.product_id
+                        AND r1.status = '1'
+                    GROUP BY r1.product_id
+                ) AS rating
             FROM
-                product_special ps
+                product_special AS ps
                 LEFT JOIN product p ON (ps.product_id = p.product_id)
                 LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
                 LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
