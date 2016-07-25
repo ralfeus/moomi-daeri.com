@@ -5,8 +5,6 @@ use model\catalog\ProductDAO;
 use system\helper\ImageService;
 
 class ControllerProductProduct extends Controller {
-	private $error = array();
-
     protected function loadStrings() {
         $this->data['text_select'] = $this->language->get('text_select');
         $this->data['text_manufacturer'] = $this->language->get('text_manufacturer');
@@ -185,8 +183,8 @@ class ControllerProductProduct extends Controller {
 			$this->data['tab_review'] = sprintf($this->language->get('tab_review'), $this->model_catalog_review->getTotalReviewsByProductId($this->request->get['product_id']));
 
 			$this->data['product_id'] = $product->getId();
-			$this->data['manufacturer'] = $product->getManufacturerId();
-			$this->data['manufacturers'] = $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $product->getManufacturerId());
+			$this->data['manufacturer'] = $product->getManufacturer()->getName();
+			$this->data['manufacturers'] = $this->getUrl()->link('product/manufacturer/product', 'manufacturer_id=' . $product->getManufacturer()->getId());
 			$this->data['model'] = $product->getModel();
 			$this->data['reward'] = $product->getRewards();
 			$this->data['points'] = $product->getPoints();
@@ -323,10 +321,10 @@ class ControllerProductProduct extends Controller {
             if (!isset($razdel)) {
                 $razdel = '';
             }
-            if (!isset($category['name'])) {
+            if (!isset($category)) {
                 $syncat = '';
             } else {
-            $syncat = $category['name'];
+                $syncat = $category->getDescription()->getName();
             }
             if (!is_null($product->getModel())) {
                 $synmod = '';
@@ -467,12 +465,6 @@ class ControllerProductProduct extends Controller {
 
       		$this->data['continue'] = $this->getUrl()->link('common/home');
 
-			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/error/not_found.tpl')) {
-				$this->template = $this->getConfig()->get('config_template') . '/template/error/not_found.tpl';
-			} else {
-				$this->template = 'default/template/error/not_found.tpl';
-			}
-
 			$this->children = array(
 				'common/header',
                 'common/column_left',
@@ -482,7 +474,7 @@ class ControllerProductProduct extends Controller {
 				'common/footer'				
 			);
 
-			$this->getResponse()->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render($this->getConfig()->get('config_template') . '/template/error/not_found.tpl'));
     	}
   	}
 
@@ -533,13 +525,7 @@ class ControllerProductProduct extends Controller {
 
 		$this->data['pagination'] = $pagination->render();
 
-		if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/product/review.tpl')) {
-			$this->template = $this->getConfig()->get('config_template') . '/template/product/review.tpl';
-		} else {
-			$this->template = 'default/template/product/review.tpl';
-		}
-
-		$this->getResponse()->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render($this->getConfig()->get('config_template') . '/template/product/review.tpl'));
 	}
 
 	public function write() {
@@ -653,4 +639,3 @@ class ControllerProductProduct extends Controller {
         $this->getResponse()->setOutput(json_encode($json));
     }
 }
-?>
