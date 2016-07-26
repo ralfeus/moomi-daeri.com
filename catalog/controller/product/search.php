@@ -232,18 +232,20 @@ class ControllerProductSearch extends Controller {
 //				} else {
 //					$rating = false;
 //				}
-			
+
 				$this->data['products'][] = array(
-					'product_id'  => (isset($product) ? $product->getId() : ''),
-					'thumb'       => (isset($product) ? $image : ''),
-					'name'        => (isset($product) ? $product->getName() : ''),
-					'description' => (isset($product) ? utf8_truncate(strip_tags(html_entity_decode($product->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true) : ''),
-					'price'       => (isset($product) ? $price : ''),
-					'special'     => (isset($product) ? $special : ''),
+					'product_id'  => $product->getId(),
+					'thumb'       => $image,
+					'name'        => $product->getName(),
+					'description' => !is_null($product->getDescription()->getDescription($this->getLanguage()->getId()))
+                                        ? utf8_truncate(strip_tags(html_entity_decode($product->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true)
+                                        : '',
+					'price'       => $price,
+					'special'     => $special ,
 //					'tax'         => (isset($product) ? $tax : ''),
-					'rating'      => (isset($product) ? $product->getRating() : ''),
-					'reviews'     => (isset($product) ? sprintf($this->getLanguage()->get('text_reviews'), (int)$product->getReviewsCount()) : ''),
-					'href'        => (isset($product) ? $this->getUrl()->link('product/product', $url . '&product_id=' . $product->getId()) : '')
+					'rating'      => $product->getRating(),
+					'reviews'     => sprintf($this->getLanguage()->get('text_reviews'), (int)$product->getReviewsCount()),
+					'href'        => $this->getUrl()->link('product/product', $url . '&product_id=' . $product->getId())
 				);
 			}
 					
