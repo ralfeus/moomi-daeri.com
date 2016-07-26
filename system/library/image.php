@@ -18,21 +18,23 @@ final class Image {
         	);
         	
         	$this->image = $this->create($file);
-            if ($this->image == NULL)
-                throw new Exception("Error: Could not load image '$file'");
     	} else {
-      		exit('Error: Could not load image ' . $file . '!');
+            throw new InvalidArgumentException("Image file '$file' doesn't exist");
     	}
 	}
 
     /**
      * @param \String $image
      * @return resource
+     * @throws Exception
      */
     private function create($image) {
 		$mime = $this->info['mime'];
-
+        $image = trim($image);
         try {
+            if (!file_exists($image)) {
+                throw new InvalidArgumentException("Image file '$image' doesn't exist");
+            }
             if ($mime == 'image/gif') {
                 $image = imagecreatefromgif($image);
             } elseif ($mime == 'image/png') {
@@ -43,10 +45,12 @@ final class Image {
             return $image;
         }
         catch (Exception $exc) {
-            while ($exc != null) {
-                echo $exc->getMessage();
-                $exc = $exc->getPrevious();
+            $logger = new Log('error.log'); $tmpExc = $exc;
+            while ($tmpExc != null) {
+                $logger->write($exc->getMessage());
+                $tmpExc = $tmpExc->getPrevious();
             }
+            throw $exc;
         }
     }
 
@@ -119,6 +123,7 @@ final class Image {
                 $watermark_pos_y = $this->info['height'] - $watermark_height;
                 break;
             case 'bottomright':
+            default:
                 $watermark_pos_x = $this->info['width'] - $watermark_width;
                 $watermark_pos_y = $this->info['height'] - $watermark_height;
                 break;
@@ -148,16 +153,16 @@ final class Image {
 		$this->info['width'] = imagesx($this->image);
 		$this->info['height'] = imagesy($this->image);
     }
-	    
-    private function filter($filter) {
-        imagefilter($this->image, $filter);
-    }
-            
-    private function text($text, $x = 0, $y = 0, $size = 5, $color = '000000') {
-		$rgb = $this->html2rgb($color);
-        
-		imagestring($this->image, $size, $x, $y, $text, imagecolorallocate($this->image, $rgb[0], $rgb[1], $rgb[2]));
-    }
+//
+//    private function filter($filter) {
+//        imagefilter($this->image, $filter);
+//    }
+//
+//    private function text($text, $x = 0, $y = 0, $size = 5, $color = '000000') {
+//		$rgb = $this->html2rgb($color);
+//
+//		imagestring($this->image, $size, $x, $y, $text, imagecolorallocate($this->image, $rgb[0], $rgb[1], $rgb[2]));
+//    }
     
 //    private function merge($file, $x = 0, $y = 0, $opacity = 100) {
 //        $merge = $this->create($file);
