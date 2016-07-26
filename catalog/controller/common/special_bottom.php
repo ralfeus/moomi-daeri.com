@@ -1,10 +1,12 @@
 <?php
+use model\gallery\PhotoDAO;
+
 class ControllerCommonSpecialBottom extends Controller {
 	public function index() {
-//		$this->load->model('design/layout');
-		$this->load->model('catalog/category');
-		$this->load->model('catalog/product');
-		$this->load->model('catalog/information');
+//		$this->getLoader()->model('design/layout');
+		$this->getLoader()->model('catalog/category');
+		$this->getLoader()->model('catalog/product');
+		$this->getLoader()->model('catalog/information');
 
 		
 
@@ -17,7 +19,7 @@ class ControllerCommonSpecialBottom extends Controller {
 		$this->language->load('common/header');
         $this->data['text_auction'] = $this->language->get('text_auction');
 		//print_r($photos);
- if($this->config->get('wk_auction_timezone_set')){
+ if($this->getConfig()->get('wk_auction_timezone_set')){
     $this->data['menuauction'] = $this->url->link('catalog/wkallauctions', '', 'SSL');
 }
 		$this->language->load('shop/general');
@@ -59,17 +61,15 @@ class ControllerCommonSpecialBottom extends Controller {
 		}
 
 		if (!$layout_id) {
-			$layout_id = $this->config->get('config_layout_id');
+			$layout_id = $this->getConfig()->get('config_layout_id');
 		}
 
 		$module_data = array();
 
-		$this->load->model('setting/extension');
-
 		$extensions = \model\setting\ExtensionDAO::getInstance()->getExtensions('module');
 
 		foreach ($extensions as $extension) {
-			$modules = $this->config->get($extension['code'] . '_module');
+			$modules = $this->getConfig()->get($extension['code'] . '_module');
 
 			if ($modules) {
 				foreach ($modules as $module) {
@@ -89,8 +89,8 @@ class ControllerCommonSpecialBottom extends Controller {
 		$sort_order = array();
 
 		foreach ($module_data as $key => $value) {
-    	$sort_order[$key] = $value['sort_order'];
-    }
+            $sort_order[$key] = $value['sort_order'];
+        }
 
 		array_multisort($sort_order, SORT_ASC, $module_data);
 
@@ -104,16 +104,12 @@ class ControllerCommonSpecialBottom extends Controller {
 				$this->data['modules'][] = $module;
 			}
 		}
-
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/special_bottom.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/common/special_bottom.tpl';
-		} else {
-			$this->template = 'default/template/common/special_bottom.tpl';
-		}
+        if ($route == 'information/specaction') {
+            $this->data['photos'] = PhotoDAO::getInstance()->getAllApprovedPhotos();
+        }
 
 		//print_r($module_data); die();
 
-		$this->render();
+		$this->render($this->getConfig()->get('config_template') . '/template/common/special_bottom.tpl');
 	}
 }
-?>

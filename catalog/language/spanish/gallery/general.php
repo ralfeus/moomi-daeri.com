@@ -13,12 +13,10 @@ $_['galery_photo_upload_success'] = 'Gracias! Su foto ha sido enviado al moderad
 $_['galery_comment'] = 'Comentario';
 $_['galery_button_sent_comment'] = 'Voto';
 $_['galery_message_vote_success'] = 'Gracias para votar!';
-
+$_['GALLERY_MESSAGE_VOTE_ERROR'] = "Couldn't vote for this picture";
 
 $_['galery_text_photo_name'] = 'Nombre';
 $_['galery_text_photo_description'] = 'Descripcion';
 
 $_['galery_text_max_photo_size'] = 'El tamano maximal de la foto no tiene que ser mas de 1 MB';
 $_['galery_max_size'] = 'El tamano del archivo excede 1 megabyte';
-
-?>

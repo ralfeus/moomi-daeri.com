@@ -1,16 +1,26 @@
 <?php
+use model\gallery\PhotoDAO;
+
 class ControllerGalleryPhoto extends Controller {
-	public function index() {
-		$this->document->setTitle($this->config->get('config_title'));
-		$this->document->setDescription($this->config->get('config_meta_description'));
+    protected function initParameters() {
+        $this->initParametersWithDefaults([
+            'photoID' => 0,
+            'photoType' => '',
+            'stars' => 0,
+            'comment' => ''
+        ]);
+    }
+    
+    public function __construct(Registry $registry, $action) {
+        parent::__construct($registry, $action);
+        $this->language->load('gallery/general');
+    }
 
-		$this->data['heading_title'] = $this->config->get('config_title');
+    public function index() {
+		$this->document->setTitle($this->getConfig()->get('config_title'));
+		$this->document->setDescription($this->getConfig()->get('config_meta_description'));
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/home.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/common/home.tpl';
-		} else {
-			$this->template = 'default/template/common/home.tpl';
-		}
+		$this->data['heading_title'] = $this->getConfig()->get('config_title');
 
 		$this->children = array(
 			'common/column_left',
@@ -21,26 +31,16 @@ class ControllerGalleryPhoto extends Controller {
 			'common/header'
 		);
 
-    $this->response->setOutput($this->render());
+        $this->response->setOutput($this->render($this->getConfig()->get('config_template') . '/template/common/home.tpl'));
 	}
 
 	public function addPhoto() {
-
-    if (!$this->customer->isLogged()) {
-      $this->session->data['redirect'] = $this->url->link('account/account', '', 'SSL');
-
-      $this->redirect($this->url->link('account/login', '', 'SSL'));
-    }
-
-		$this->language->load('gallery/general');
+        if (!$this->getCurrentCustomer()->isLogged()) {
+            $this->session->data['redirect'] = $this->getUrl()->link('account/account', '', 'SSL');
+            $this->redirect($this->getUrl()->link('account/login', '', 'SSL'));
+        }
 
 		$this->data = $this->getGalleryGeneralData();
-
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/gallery/photo.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/gallery/photo.tpl';
-		} else {
-			$this->template = 'default/template/gallery/photo.tpl';
-		}
 
 		$this->children = array(
 			'common/column_left',
@@ -51,16 +51,16 @@ class ControllerGalleryPhoto extends Controller {
 			'common/header'
 		);
 
-    $this->data['galery_text_max_photo_size'] = $this->language->get('galery_text_max_photo_size');
+        $this->data['galery_text_max_photo_size'] = $this->language->get('galery_text_max_photo_size');
 
-		$this->response->setOutput($this->render());
-  }
+		$this->response->setOutput($this->render($this->getConfig()->get('config_template') . '/template/gallery/photo.tpl'));
+    }
 
-  public function uploadPhoto() {
-    if (!$this->customer->isLogged()) {
-      $this->session->data['redirect'] = $this->url->link('account/account', '', 'SSL');
+    public function uploadPhoto() {
+        if (!$this->customer->isLogged()) {
+        $this->session->data['redirect'] = $this->getUrl()->link('account/account', '', 'SSL');
 
-      $this->redirect($this->url->link('account/login', '', 'SSL'));
+        $this->redirect($this->getUrl()->link('account/login', '', 'SSL'));
     }
 
   	$allowedExtension = array('jpeg', 'jpg', 'png', 'gif');
@@ -96,11 +96,9 @@ class ControllerGalleryPhoto extends Controller {
   		$this->data['galery_photo_post_name'] = $photoName;
   		$this->data['galery_photo_post_description'] = $photoDescription;
 
-  		$this->template = $this->config->get('config_template') . '/template/gallery/photo.tpl';
-
   		unlink($tempFileName);
 
-  		$this->response->setOutput($this->render());
+  		$this->response->setOutput($this->render($this->getConfig()->get('config_template') . '/template/gallery/photo.tpl'));
   	}
   	else {
   		$size = getimagesize($tempFileName);
@@ -160,67 +158,41 @@ class ControllerGalleryPhoto extends Controller {
       		break;
       }
 
-      unlink($tempFileName);
+            unlink($tempFileName);
 
-      $modelData = array();
-      $modelData['name'] = $photoName;
-      $modelData['description'] = $photoDescription;
-      $modelData['path'] = "gallery/" . $uniqFileName;
-      $modelData['date'] = date("Y-m-d H:i:s");
+            $modelData = array();
+            $modelData['name'] = $photoName;
+            $modelData['description'] = $photoDescription;
+            $modelData['path'] = "gallery/" . $uniqFileName;
+            $modelData['date'] = date("Y-m-d H:i:s");
 
-      $this->load->model('gallery/photo');
-      $this->model_gallery_photo->addPhoto($modelData);
+            PhotoDAO::getInstance()->addPhoto($modelData);
 
-      $this->language->load('gallery/general');
+            $this->data = $this->getGalleryGeneralData();
 
-      $this->data = $this->getGalleryGeneralData();
+            $this->children = array(
+                'common/column_left',
+                'common/column_right',
+                'common/content_top',
+                'common/content_bottom',
+                'common/footer',
+                'common/header'
+            );
 
-      if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/gallery/success.tpl')) {
-        $this->template = $this->config->get('config_template') . '/template/gallery/success.tpl';
-      } else {
-        $this->template = 'default/template/gallery/success.tpl';
-      }
-
-      $this->children = array(
-        'common/column_left',
-        'common/column_right',
-        'common/content_top',
-        'common/content_bottom',
-        'common/footer',
-        'common/header'
-      );
-
-      $templateUrl = DIR_TEMPLATE . "default/gallery/success.tpl";
-
-      $this->response->setOutput($this->render($templateUrl));
-
+            $this->response->setOutput($this->render($this->getConfig()->get('config_template') . '/template/gallery/success.tpl'));
+        }
     }
 
-  }
+    public function getGalleryGeneralData() {
+        $data = array();
 
-  public function getGalleryGeneralData() {
-  	$data = array();
+        $this->language->load('gallery/general');
 
-  	$this->language->load('gallery/general');
-
-  	$data['breadcrumbs'] = array();
-		$data['breadcrumbs'][] = array(
-			'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home'),
-			'separator' => false
-		);
-
-		$data['breadcrumbs'][] = array(
+        $this->setBreadcrumbs([
 			'text'      => $this->language->get('breadcrumbs_gallery'),
-			'href'      => $this->url->link('product/gallery'),
-			'separator' => $this->language->get('text_separator')
-		);
+			'route'      => 'product/gallery',
+		]);
 
-		$data['breadcrumbs'][] = array(
-			'text'      => $this->language->get('gallery_add_photo'),
-			'href'      => $this->url->link('gallery/photo/addPhoto'),
-			'separator' => $this->language->get('text_separator')
-		);
 
 		$data['galery_photo_name'] = $this->language->get('galery_photo_name');
 		$data['galery_photo_description'] = $this->language->get('galery_photo_description');
@@ -228,91 +200,82 @@ class ControllerGalleryPhoto extends Controller {
 		$data['galery_photo_name_empty'] = $this->language->get('galery_photo_name_empty');
 		$data['galery_photo_description_to_long'] = $this->language->get('galery_photo_description_to_long');
 		$data['galery_photo_file_empty'] = $this->language->get('galery_photo_file_empty');
-    $data['galery_photo_upload_success'] = $this->language->get('galery_photo_upload_success');
+        $data['galery_photo_upload_success'] = $this->language->get('galery_photo_upload_success');
 
 		return $data;
-  }
-
-  public function showLargePhoto() {
-
-    $photo_id = isset($_GET['photo_id']) ? $_GET['photo_id'] : '';
-    $photo_type = isset($_GET['photo_type']) ? $_GET['photo_type'] : '';
-
-    $this->data['photo_type'] = $photo_type;
-
-    if($photo_type == 'gallery_photo') {
-      $query = "SELECT * FROM gallery_photo WHERE photo_id = '" . $photo_id . "'";
-      $result = $this->db->query($query);
-
-      foreach ($result->rows as $row) {
-        $this->data['image'] = HTTP_IMAGE . $row['path'];
-        $this->data['photo_id'] = $row['photo_id'];
-        $this->data['photo_name'] = isset($row['name']) ? $row['name'] : '';
-        $this->data['photo_description'] = isset($row['description']) ? $row['description'] : '';
-        list($width, $height, $type, $attr) = getimagesize(DIR_IMAGE . $row['path']);
-      }
-    }
-    elseif($photo_type == 'review_image') {
-      $query = "SELECT image_path AS path, review_image_id FROM review_images WHERE review_image_id = '" . $photo_id . "'";
-
-      $result = $this->db->query($query);
-
-      foreach ($result->rows as $row) {
-        $this->data['image'] = HTTP_IMAGE . substr($row['path'], 1);
-        $this->data['photo_id'] = $row['review_image_id'];
-        list($width, $height, $type, $attr) = getimagesize(DIR_IMAGE . substr($row['path'], 1));
-      }
     }
 
-    $this->load->language('gallery/general');
-    $this->data['text_photo_name'] = $this->language->get('galery_text_photo_name');
-    $this->data['text_photo_description'] = $this->language->get('galery_text_photo_description');
+    public function showLargePhoto() {
 
-    if($width >= $height) {
-      $this->data['image_width'] = 640;
-      $this->data['image_height'] = 480;
+        $photo_id = isset($_GET['photo_id']) ? $_GET['photo_id'] : '';
+        $photo_type = isset($_GET['photo_type']) ? $_GET['photo_type'] : '';
+
+        $this->data['photo_type'] = $photo_type;
+
+        if($photo_type == 'gallery_photo') {
+            $query = "SELECT * FROM gallery_photo WHERE photo_id = '" . $photo_id . "'";
+            $result = $this->db->query($query);
+
+            foreach ($result->rows as $row) {
+                $this->data['image'] = HTTP_IMAGE . $row['path'];
+                $this->data['photo_id'] = $row['photo_id'];
+                $this->data['photo_name'] = isset($row['name']) ? $row['name'] : '';
+                $this->data['photo_description'] = isset($row['description']) ? $row['description'] : '';
+                list($width, $height, $type, $attr) = getimagesize(DIR_IMAGE . $row['path']);
+            }
+        } elseif($photo_type == 'review_image') {
+            $query = "SELECT image_path AS path, review_image_id FROM review_images WHERE review_image_id = '" . $photo_id . "'";
+            $result = $this->db->query($query);
+
+            foreach ($result->rows as $row) {
+                $this->data['image'] = HTTP_IMAGE . substr($row['path'], 1);
+                $this->data['photo_id'] = $row['review_image_id'];
+                list($width, $height, $type, $attr) = getimagesize(DIR_IMAGE . substr($row['path'], 1));
+            }
+        }
+
+        $this->load->language('gallery/general');
+        $this->data['text_photo_name'] = $this->language->get('galery_text_photo_name');
+        $this->data['text_photo_description'] = $this->language->get('galery_text_photo_description');
+
+        if ($width >= $height) {
+            $this->data['image_width'] = 640;
+            $this->data['image_height'] = 480;
+        } else {
+            $this->data['image_width'] = 480;
+            $this->data['image_height'] = 640;
+        }
+
+        $this->data['message_vote_success'] = $this->language->get('galery_message_vote_success');
+
+        $this->response->setOutput($this->render('default/template/gallery/iframeVote.tpl'));
     }
-    else {
-      $this->data['image_width'] = 480;
-      $this->data['image_height'] = 640;
+
+    public function addVote() {
+        if (!$this->parameters['photoID']) {
+            $response = [
+                'success' => false,
+                'message' => $this->getLanguage()->get('GALLERY_MESSAGE_VOTE_ERROR')
+            ];
+        } else {
+            $modelData['photoID'] = isset($_POST['photoID']) ? $_POST['photoID'] : '';
+            $modelData['photoType'] = isset($_POST['photoType']) ? $_POST['photoType'] : '';
+            $modelData['stars'] = isset($_POST['stars']) ? $_POST['stars'] : '0';
+            $modelData['comment'] = isset($_POST['comment']) ? $_POST['comment'] : '';
+            $modelData['date'] = date('Y-m-d H:i:s');
+
+
+            $result = PhotoDAO::getInstance()->addVote($modelData);
+
+            $response = array();
+            if ($result) {
+                  $response['success'] = true;
+                  $response['photo_id'] = $_POST['photoID'];
+                  $response['photo_type'] = $_POST['photoType'];
+                  $response['message'] = $this->language->get('galery_message_vote_success');
+            }
+        }
+        print_r(json_encode($response));
+
     }
-
-    $this->template = 'default/template/gallery/iframeVote.tpl';
-    $this->language->load('gallery/general');
-    $this->data['message_vote_success'] = $this->language->get('galery_message_vote_success');
-
-    $this->response->setOutput($this->render());
-    /*else {
-      //Error
-      //.....................
-      //.....................
-      //.....................
-    }*/
-
-  }
-
-  public function addVote() {
-    $modelData['photoID'] = isset($_POST['photoID']) ? $_POST['photoID'] : '';
-    $modelData['photoType'] = isset($_POST['photoType']) ? $_POST['photoType'] : '';
-    $modelData['stars'] = isset($_POST['stars']) ? $_POST['stars'] : '0';
-    $modelData['comment'] = isset($_POST['comment']) ? $_POST['comment'] : '';
-    $modelData['date'] = date('Y-m-d H:i:s');
-
-    $this->language->load('gallery/general');
-
-    $this->load->model('gallery/photo');
-    $result = $this->model_gallery_photo->addVote($modelData);
-
-    $response = array();
-    if($result) {
-      $response['success'] = true;
-      $response['photo_id'] = $_POST['photoID'];
-      $response['photo_type'] = $_POST['photoType'];
-      $response['message'] = $this->language->get('galery_message_vote_success');
-    }
-
-    print_r(json_encode($response));
-
-  }
 }
-?>

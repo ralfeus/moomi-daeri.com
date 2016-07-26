@@ -9,10 +9,7 @@
     <?php } ?>
   </div>
   <div id="carousel" style="margin: 10px 10px 20px;">
-    <?php if($route == 'common/home' || $route == '') {
-      $this->load->model('gallery/photo');
-      $photos = $this->model_gallery_photo->getAllApprovedPhotos();?>
-    
+<?php if (isset($photos)): ?>
       <script type="text/javascript">
         $(document).ready(function() {
           $('#mycarousel').jcarousel({
@@ -23,7 +20,7 @@
             auto: 2,
             wrap: "last",
             itemFallbackDimension: 0,
-            initCallback: resizeItems,
+            initCallback: resizeItems
           });
           jQuery('.nailthumb-container').nailthumb({width:140,height:140});
         });
@@ -33,18 +30,17 @@
         }
       </script>
       <ul id='mycarousel' class='jcarousel-skin-tango' style="width: 140px;">
-        <?php foreach ($photos as $photo) {
-          echo "
-            <li>
-              <div class='nailthumb-container'>
-                <a class='gallerie1' rel='gallerie1' href='".$this->url->link('product/gallery')."' title=''>
-                  <img src='".$photo['path']."' width='140' alt='Gallery' />
+    <?php foreach ($photos as $photo): ?>
+          <li>
+              <div class="nailthumb-container">
+                <a class="gallerie1" rel="gallerie1" href=" <?= $this->url->link('product/gallery') ?>" title="">
+                  <img src="<?= $photo['path'] ?>" width="140" alt="Gallery" />
                 </a>
               </div>
-            </li>";
-        }?>
+          </li>
+    <?php endforeach; ?>
       </ul>
-    <?php } ?>
+<?php endif; ?>
   </div>
   <?php if ($modules) { ?>
     <?php foreach ($modules as $module) { ?>

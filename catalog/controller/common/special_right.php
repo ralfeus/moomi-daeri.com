@@ -1,4 +1,6 @@
 <?php
+use model\gallery\PhotoDAO;
+
 class ControllerCommonSpecialRight extends Controller {
 	public function index() {
 //		$this->load->model('design/layout');
@@ -90,16 +92,9 @@ class ControllerCommonSpecialRight extends Controller {
 				$this->data['modules'][] = $module;
 			}
 		}
-
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/special_right.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/common/special_right.tpl';
-		} else {
-			$this->template = 'default/template/common/special_right.tpl';
-		}
-
-		//print_r($module_data); die();
-
-		$this->render();
+        if ($route == 'common/home' || $route == '') {
+            $this->data['photos'] = PhotoDAO::getInstance()->getAllApprovedPhotos();
+        }
+		$this->render($this->config->get('config_template') . '/template/common/special_right.tpl');
 	}
 }
-?>
