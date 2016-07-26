@@ -90,7 +90,7 @@ class ControllerProductSpecial extends Controller {
 			
 		foreach ($products as $product) {
             #kabantejay synonymizer start
-            if (is_null($product->getDescription()) || is_null($product->getDescription()->getDescription($this->getLanguage()->getId()))) {
+            if (is_null($product->getDescriptions()) || is_null($product->getDescriptions()->getDescription($this->getLanguage()->getId()))) {
                 $productDescription = '';
             } else {
                 $productDescription = preg_replace_callback(
@@ -99,7 +99,7 @@ class ControllerProductSpecial extends Controller {
                         $ar = explode("|", $m[1]);
                         return $ar[array_rand($ar, 1)];
                     },
-                    $product->getDescription()->getDescription($this->getLanguage()->getId())->getDescription()
+                    $product->getDescriptions()->getDescription($this->getLanguage()->getId())->getDescription()
                 );
             }
             #kabantejay synonymizer end

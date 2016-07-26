@@ -35,9 +35,6 @@ class Product {
     private $layouts;
     /** @var  Manufacturer */
     private $manufacturer;
-    /** @var int */
-    /** @deprecated */
-    private $manufacturerId;
     private $model;
     private $points;
     /** @var Mutable */
@@ -151,7 +148,7 @@ class Product {
         if (!is_null($keyword)) { $this->keyword = $keyword; }
         if (!is_null($koreanName)) { $this->koreanName = $koreanName; }
         if (!is_null($location)) { $this->location = $location; }
-        if (!is_null($manufacturerId)) { $this->manufacturerId = $manufacturerId; }
+        if (!is_null($manufacturerId)) { $this->manufacturer = ManufacturerDAO::getInstance()->getManufacturer($manufacturerId); }
         if (!is_null($minimum)) { $this->minimum = $minimum; }
         if (!is_null($model)) { $this->model = $model; }
         if (!is_null($productOptions)) {
@@ -358,9 +355,25 @@ class Product {
     }
 
     /**
+     * @param int $languageId
+     * @return \model\localization\Description
+     * @throws \InvalidArgumentException
+     */
+    public function getDescription($languageId = null) {
+        if (is_null($languageId)) {
+            $languageId = $this->defaultLanguageId;
+        }
+        if (!is_null($this->getDescriptions()->getDescription($languageId))) {
+            return $this->getDescriptions()->getDescription($languageId);
+        } else {
+            throw new \InvalidArgumentException("Couldn't find description for language '$languageId'");
+        }
+    }
+
+    /**
      * @return DescriptionCollection
      */
-    public function getDescription() {
+    public function getDescriptions() {
         if (!isset($this->description)) {
             $this->description = new Mutable(ProductDAO::getInstance()->getDescription($this->id));
         }
@@ -370,14 +383,14 @@ class Product {
     /**
      * @return bool
      */
-    public function isDescriptionModified() {
+    public function isDescriptionsModified() {
         return !$this->saved || !is_null($this->description) && $this->description->isModified();
     }
 
     /**
      * @param DescriptionCollection $value
      */
-    public function setDescription($value) {
+    public function setDescriptions($value) {
         if (!isset($this->description)) {
             $this->description = new Mutable($value);
         } else {
@@ -618,26 +631,6 @@ class Product {
     }
 
     /**
-     * @deprecated
-     * @return int
-     */
-    public function getManufacturerId() {
-        if (!isset($this->manufacturerId)) {
-            $this->manufacturerId = ProductDAO::getInstance()->getManufacturerId($this->id);
-        }
-        return $this->manufacturerId;
-    }
-
-    /**
-     * @deprecated
-     * @param int $value
-     */
-    public function setManufacturerId($value) {
-        $this->manufacturerId = $value;
-    }
-
-
-    /**
      * @return Manufacturer
      */
     public function getManufacturer() {
@@ -690,7 +683,7 @@ class Product {
         if (is_null($languageId)) {
             $languageId = $this->defaultLanguageId;
         }
-        return is_null($this->getDescription()->getDescription($languageId)) ? '' : $this->getDescription()->getDescription($languageId)->getName();
+        return is_null($this->getDescriptions()->getDescription($languageId)) ? '' : $this->getDescriptions()->getDescription($languageId)->getName();
     }
 
     /**

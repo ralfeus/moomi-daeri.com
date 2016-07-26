@@ -190,7 +190,7 @@ class ControllerProductManufacturer extends Controller {
 //				}
 				
 //              #kabantejay synonymizer start
-                if (is_null($product->getDescription())) {
+                if (is_null($product->getDescriptions())) {
                     $description = '';
                 } else {
                     $description = preg_replace_callback(
@@ -199,7 +199,7 @@ class ControllerProductManufacturer extends Controller {
                             $ar = explode("|", $m[1]);
                             return $ar[array_rand($ar, 1)];
                         },
-                        $product->getDescription()->getDescription($this->getLanguage()->getId())
+                        $product->getDescriptions()->getDescription($this->getLanguage()->getId())
                     );
                 }
     //	   		#kabantejay synonymizer end

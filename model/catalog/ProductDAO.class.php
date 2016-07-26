@@ -375,9 +375,9 @@ class ProductDAO extends DAO {
         }
         $newProduct = new Product(
             0, $this->getLanguage()->getId(), $product->getAfcId(), $product->getAffiliateCommission(),
-            $product->getDateAdded(), $product->getDateAvailable(), $product->getDateModified(), $product->getDescription(),
+            $product->getDateAdded(), $product->getDateAvailable(), $product->getDateModified(), $product->getDescriptions(),
             $product->getDimension(), $product->getImagePath(), $product->getKeyword(), $product->getKoreanName(), 
-            $product->getLocation(), $product->getManufacturerId(), $product->getMinimum(), $product->getModel(),
+            $product->getLocation(), $product->getManufacturer()->getId(), $product->getMinimum(), $product->getModel(),
             $product->getOptions(), $product->getPoints(), $product->getPrice(), $product->getQuantity(), $product->getShipping(),
             $product->getSku(), $product->getSortOrder(), 0, $product->getStockStatusId(),
             $product->getStores(), $product->getSubtract(), $product->getSupplier(), $product->getSupplierUrl(),
@@ -1598,7 +1598,7 @@ SQL
                     ':quantity' => $product->getQuantity(),
                     ':stockStatusId' => $product->getStockStatusId(),
                     ':image' => $product->getImagePath(),
-                    ':manufacturerId' => $product->getManufacturerId(),
+                    ':manufacturerId' => $product->getManufacturer()->getId(),
                     ':supplierId' => $product->getSupplier()->getId(),
                     ':shipping' => $product->getShipping(),
                     ':price' => $product->getPrice(),
@@ -1663,7 +1663,7 @@ SQL
                         ':subtract' => $product->getSubtract(),
                         ':stockStatusId' => $product->getStockStatusId(),
                         ':dateAvailable' => $product->getDateAvailable(),
-                        ':manufacturerId' => $product->getManufacturerId(),
+                        ':manufacturerId' => $product->getManufacturer()->getId(),
                         ':supplierId' => $product->getSupplier()->getId(),
                         ':shipping' => $product->getShipping(),
                         ':price' => $product->getPrice(),
@@ -1786,9 +1786,9 @@ SQL
      * @param Product $product
      */
     private function saveDescription($product) {
-        if ($product->isDescriptionModified()) {
+        if ($product->isDescriptionsModified()) {
             $this->getDb()->query("DELETE FROM product_description WHERE product_id = :productId", [':productId' => $product->getId()]);
-            foreach ($product->getDescription() as $description) {
+            foreach ($product->getDescriptions() as $description) {
                 $this->getDb()->query("
                     INSERT INTO product_description
                     SET

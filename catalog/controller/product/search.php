@@ -237,8 +237,8 @@ class ControllerProductSearch extends Controller {
 					'product_id'  => $product->getId(),
 					'thumb'       => $image,
 					'name'        => $product->getName(),
-					'description' => !is_null($product->getDescription()->getDescription($this->getLanguage()->getId()))
-                                        ? utf8_truncate(strip_tags(html_entity_decode($product->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true)
+					'description' => !is_null($product->getDescriptions()->getDescription($this->getLanguage()->getId()))
+                                        ? utf8_truncate(strip_tags(html_entity_decode($product->getDescriptions()->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true)
                                         : '',
 					'price'       => $price,
 					'special'     => $special ,
@@ -423,9 +423,11 @@ class ControllerProductSearch extends Controller {
             if (is_numeric(stripos(implode(' ', $results[$i]->getTags()), $filter_name))) {
                 $resultsWeights[$i] += SEARCH_WEIGHT_FULL_PHRASE_TAG;
             }
-            if (is_numeric(stripos($results[$i]->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), $filter_name))) {
-                $resultsWeights[$i] += SEARCH_WEIGHT_FULL_PHRASE_DESCR;
-            }
+            try {
+                if (is_numeric(stripos($results[$i]->getDescription($this->getLanguage()->getId())->getDescription(), $filter_name))) {
+                    $resultsWeights[$i] += SEARCH_WEIGHT_FULL_PHRASE_DESCR;
+                }
+            } catch (InvalidArgumentException $exc) {}
             foreach ($searchWords as $searchWord) {
                 if (is_numeric(stripos($results[$i]->getModel(), $searchWord))) {
                     $resultsWeights[$i] += SEARCH_WEIGHT_WORD_MODEL;
@@ -436,9 +438,11 @@ class ControllerProductSearch extends Controller {
                 if (is_numeric(stripos(implode(' ', $results[$i]->getTags()), $searchWord))) {
                     $resultsWeights[$i] += SEARCH_WEIGHT_WORD_TAG;
                 }
-                if (is_numeric(stripos($results[$i]->getDescription()->getDescription($this->getLanguage()->getId())->getDescription(), $searchWord))) {
-                    $resultsWeights[$i] += SEARCH_WEIGHT_WORD_DESCR;
-                }
+                try {
+                    if (is_numeric(stripos($results[$i]->getDescription($this->getLanguage()->getId())->getDescription(), $searchWord))) {
+                        $resultsWeights[$i] += SEARCH_WEIGHT_WORD_DESCR;
+                    }
+                } catch (InvalidArgumentException $exc) {}
             }
         }
         array_multisort($resultsWeights, SORT_DESC, $results);

@@ -653,7 +653,7 @@ class ControllerCatalogProduct extends AdminController {
 				'popImage'   => $popImage,
 				'user_name'  => $product->getUser()['username'],
 				'status'     => ($product->getStatus() ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
-				'manufacturer'=> ManufacturerDAO::getInstance()->getManufacturer($product->getManufacturerId())['name'],
+				'manufacturer'=> $product->getManufacturer()->getName(),
 				'supplier'	 => $product->getSupplier()->getName(),
 				'selected'   => isset($this->request->post['selected']) && in_array($product->getId(), $this->request->post['selected']),
 				'action'     => $action,

@@ -53,7 +53,7 @@
             <table class="form">
               <tr>
                 <td><span class="required">*</span> <?= $entry_name ?></td>
-                <td><input type="text" class="language<?= $language['language_id'] ?>" name="product_description[<?= $language['language_id'] ?>][name]" maxlength="255" size="100" value="<?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getName() ?>" />
+                <td><input type="text" class="language<?= $language['language_id'] ?>" name="product_description[<?= $language['language_id'] ?>][name]" maxlength="255" size="100" value="<?= is_null($model->getDescriptions()->getDescription($language['language_id'])) ? '' : $model->getDescriptions()->getDescription($language['language_id'])->getName() ?>" />
                   <span style="font-size: 10px;"><?= $text_last ?></span><span id="summar<?= $language['language_id'] ?>"></span>
 
 
@@ -63,23 +63,23 @@
               </tr>
               <tr>
                 <td><?= $entry_seo_h1 ?></td>
-                <td><input type="text" name="product_description[<?= $language['language_id'] ?>][seo_h1]" maxlength="255" size="100" value="<?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getSeoH1() ?>" /></td>
+                <td><input type="text" name="product_description[<?= $language['language_id'] ?>][seo_h1]" maxlength="255" size="100" value="<?= is_null($model->getDescriptions()->getDescription($language['language_id'])) ? '' : $model->getDescriptions()->getDescription($language['language_id'])->getSeoH1() ?>" /></td>
               </tr>
               <tr>
                 <td><?= $entry_seo_title ?></td>
-                <td><input type="text" name="product_description[<?= $language['language_id'] ?>][seo_title]" maxlength="255" size="100" value="<?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getSeoTitle() ?>" /></td>
+                <td><input type="text" name="product_description[<?= $language['language_id'] ?>][seo_title]" maxlength="255" size="100" value="<?= is_null($model->getDescriptions()->getDescription($language['language_id'])) ? '' : $model->getDescriptions()->getDescription($language['language_id'])->getSeoTitle() ?>" /></td>
               </tr>
               <tr>
                 <td><?= $entry_meta_keyword ?></td>
-                <td><textarea name="product_description[<?= $language['language_id'] ?>][meta_keyword]" cols="100" rows="2"><?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getMetaKeyword()?></textarea></td>
+                <td><textarea name="product_description[<?= $language['language_id'] ?>][meta_keyword]" cols="100" rows="2"><?= is_null($model->getDescriptions()->getDescription($language['language_id'])) ? '' : $model->getDescriptions()->getDescription($language['language_id'])->getMetaKeyword()?></textarea></td>
               </tr>
               <tr>
                 <td><?= $entry_meta_description ?></td>
-                <td><textarea name="product_description[<?= $language['language_id'] ?>][meta_description]" cols="100" rows="2"><?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getMetaDescription() ?></textarea></td>
+                <td><textarea name="product_description[<?= $language['language_id'] ?>][meta_description]" cols="100" rows="2"><?= is_null($model->getDescriptions()->getDescription($language['language_id'])) ? '' : $model->getDescriptions()->getDescription($language['language_id'])->getMetaDescription() ?></textarea></td>
               </tr>
               <tr>
                 <td><?= $entry_description ?></td>
-                <td><textarea name="product_description[<?= $language['language_id'] ?>][description]" id="description<?= $language['language_id'] ?>"><?= is_null($model->getDescription()->getDescription($language['language_id'])) ? '' : $model->getDescription()->getDescription($language['language_id'])->getDescription() ?></textarea></td>
+                <td><textarea name="product_description[<?= $language['language_id'] ?>][description]" id="description<?= $language['language_id'] ?>"><?= is_null($model->getDescriptions()->getDescription($language['language_id'])) ? '' : $model->getDescriptions()->getDescription($language['language_id'])->getDescription() ?></textarea></td>
               </tr>
               <tr>
                 <td><?= $entry_tag ?></td>
@@ -274,7 +274,7 @@
               <td><select name="manufacturer_id">
                   <option value="0"><?= $text_none ?></option>
                   <?php foreach ($manufacturers as $manufacturer):
-                    $selected = ($manufacturer->getId() == $model->getManufacturerId()) ? " selected" : ""; ?>
+                    $selected = ($manufacturer->getId() == $model->getManufacturer()->getId()) ? " selected" : ""; ?>
                     <option value="<?= $manufacturer->getId() ?>" <?= $selected ?>><?= $manufacturer->getName() ?></option>
                   <?php endforeach; ?>
                 </select></td>
