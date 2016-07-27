@@ -163,7 +163,7 @@ class ControllerProductProduct extends Controller {
 				'separator' => $this->language->get('text_separator')
 			);
 
-			if ($product->getDescriptions()->getDescription($this->getLanguage()->getId())->getSeoTitle()) {
+			if ($product->getDescriptions()->getDescription($this->getLanguage()->getId())) {
 				$this->document->setTitle($product->getDescriptions()->getDescription($this->getLanguage()->getId())->getSeoTitle());
 			} else {
 				$this->document->setTitle($product->getName());
