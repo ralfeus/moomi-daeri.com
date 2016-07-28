@@ -128,7 +128,9 @@ class ControllerProductProduct extends Controller {
 
         try {
             $product = ProductDAO::getInstance()->getProduct($productId, false, true);
-
+            $description = is_null($product->getDescription($this->getLanguage()->getId()))
+                ? new \model\localization\Description($this->getLanguage()->getId(), '')
+                : $product->getDescription($this->getLanguage()->getId());
             $this->data['product_info'] = $product;
 //print_r($product_info);exit;
 			$url = '';
@@ -163,17 +165,17 @@ class ControllerProductProduct extends Controller {
 				'separator' => $this->language->get('text_separator')
 			);
 
-			if ($product->getDescriptions()->getDescription($this->getLanguage()->getId())) {
-				$this->document->setTitle($product->getDescriptions()->getDescription($this->getLanguage()->getId())->getSeoTitle());
+			if (!empty($description->getSeoTitle())) {
+				$this->document->setTitle($description->getSeoTitle());
 			} else {
 				$this->document->setTitle($product->getName());
 			}
 
-			$this->document->setDescription($product->getDescriptions()->getDescription($this->getLanguage()->getId())->getMetaDescription());
-			$this->document->setKeywords($product->getDescriptions()->getDescription($this->getLanguage()->getId())->getMetaKeyword());
+			$this->document->setDescription($description->getMetaDescription());
+			$this->document->setKeywords($description->getMetaKeyword());
 			//$this->document->addLink($this->getUrl()->link('product/product', 'product_id=' . $this->request->get['product_id']), 'canonical');
 
-			$this->data['seo_h1'] = $product->getDescriptions()->getDescription($this->getLanguage()->getId())->getSeoH1();
+			$this->data['seo_h1'] = $description->getSeoH1();
 
 			$this->data['heading_title'] = $product->getName();
             $this->data['text_minimum'] = sprintf($this->language->get('text_minimum'), $product->getMinimum());
@@ -306,7 +308,7 @@ class ControllerProductProduct extends Controller {
 			$this->data['review_status'] = $this->getConfig()->get('config_review_status');
 			$this->data['reviews'] = sprintf($this->language->get('text_reviews'), (int)$product->getReviewsCount());
 			$this->data['rating'] = (int)$product->getRating();
-			$this->data['description'] = html_entity_decode($product->getDescriptions()->getDescription($this->getLanguage()->getId())->getDescription(), ENT_QUOTES, 'UTF-8');
+			$this->data['description'] = html_entity_decode($description->getDescription(), ENT_QUOTES, 'UTF-8');
 			$this->data['image_description'] = html_entity_decode($product->getImageDescription(), ENT_QUOTES, 'UTF-8');
 			$this->data['attribute_groups'] = $product->getAttributes();
 			$this->data['hot'] = $date_added + 86400 * $this->getConfig()->get('config_product_hotness_age') > time();
