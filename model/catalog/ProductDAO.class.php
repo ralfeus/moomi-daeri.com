@@ -7,16 +7,19 @@ use model\localization\DescriptionCollection;
 use system\exception\NotImplementedException;
 use system\library\Dimensions;
 use system\library\Filter;
+use system\library\FilterTree;
 use system\library\MeasureUnit;
 use system\library\Weight;
 
 class ProductDAO extends DAO {
+
     /**
      * @param array $data
      * @return Filter
      */
-    private function buildFilter(array $data) {
-        $filter = new Filter(); $tmp0 = $tmp1 = '';
+    private function buildFilter($data) {
+        $filter = new Filter();
+        $tmp0 = $tmp1 = '';
         if (isset($data['selectedItems'])) {
             $filter->addChunk($this->buildSimpleFieldFilterEntry('p.product_id', $data['selectedItems'], $tmp0, $tmp1));
         }
@@ -38,7 +41,7 @@ class ProductDAO extends DAO {
             $filter->addChunk("p.status = :enabled", [":enabled" => $data['filterEnabled']]);
         }
         if (!empty($data['filterId']) && is_numeric($data['filterId'])) {
-            $filter->addChunk('p.product_id = :productId', [':productId' => $data['filterId']]);
+            $filter->addChunk('p.product_id  :productId', [':productId' => $data['filterId']]);
         }
         if (!empty($data['filterKoreanName'])) {
             $filter->addChunk("p.korean_name LIKE CONCAT('%', :koreanName, '%')", [':koreanName' => $data['filterKoreanName']]);
@@ -53,7 +56,9 @@ class ProductDAO extends DAO {
             $filter->addChunk("p.model LIKE CONCAT('%', :model, '%')", [':model' => $data['filterModel']]);
         }
         if (!empty($data['filterName'])) {
-            $words = explode(' ', $data['filterName']); $filterString = ''; $filterParams = [];
+            $words = explode(' ', $data['filterName']);
+            $filterString = '';
+            $filterParams = [];
             for ($i = 0; $i < sizeof($words); $i++) {
                 $filterString .= " OR pd.name LIKE CONCAT('%', :name$i, '%') OR pd.description LIKE CONCAT('%', :name$i, '%') OR pt.tag LIKE CONCAT('%', :name$i, '%')";
                 $filterParams[":name$i"] = $words[$i];
@@ -77,7 +82,9 @@ class ProductDAO extends DAO {
             $filter->addChunk($this->buildSimpleFieldFilterEntry('p.supplier_id', $data['filterSupplierId'], $tmp0, $tmp1));
         }
         if (!empty($data['filterTag'])) {
-            $words = explode(' ', $data['filterTag']); $filterString = ''; $filterParams = [];
+            $words = explode(' ', $data['filterTag']);
+            $filterString = '';
+            $filterParams = [];
             for ($i = 0; $i < sizeof($words); $i++) {
                 $filterString .= " OR pt.tag LIKE CONCAT('%', :tag$i, '%')";
                 $filterParams[":tag$i"] = $words[$i];
@@ -97,7 +104,6 @@ class ProductDAO extends DAO {
 //                $filterUserName['ids'] = "u.user_id IN (" . implode(', ', $iDSet) . ")";
 //            $filter .= ($filter ? " AND" : "") . ' (' . implode(' OR ', $filterUserName) . ')';
         }
-
         return $filter;
     }
 
@@ -606,7 +612,7 @@ SQL
                 product AS p
                 LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
                 LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
-                LEFT JOIN product_tag pt ON (p.product_id = pt.product_id)
+                LEFT JOIN product_tag AS pt ON p.product_id = pt.product_id
                 LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
         ";
         $sql .= $filter->getFilterString(true);
@@ -660,7 +666,8 @@ SQL
                 LEFT JOIN product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)
                 LEFT JOIN product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
                 LEFT JOIN user AS u ON p.user_id = u.user_id
-                LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
+                LEFT JOIN product_to_category AS p2c ON (p.product_id = p2c.product_id)
+                LEFT JOIN product_tag AS pt ON p.product_id = pt.product_id
         ";
         $sql .= $filter->getFilterString(true) .
             " GROUP BY p.product_id" .
@@ -680,17 +687,16 @@ SQL
 			        product p
 			        LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
                 WHERE
-                    p.status = '1' AND p.date_available <= ?
-                    AND p2s.store_id = ?
+                    p.status = '1' AND p.date_available <= :dateAvailable
+                    AND p2s.store_id = :storeId
                 ORDER BY p.date_added DESC
-                LIMIT ?
+                LIMIT :limit
 SQL
-                , array(
-                    's:' . date('Y-m-d H:00:00'),
-                    'i:' . $this->getConfig()->get('config_store_id'),
-                    "i:$limit"
-                )
-            );
+                , [
+                    ':dateAvailable' => date('Y-m-d H:00:00'),
+                    ':storeId' => $this->getConfig()->get('config_store_id'),
+                    ':limit' => $limit
+            ]);
 
             foreach ($query->rows as $result) {
                 $product_data[$result['product_id']] = $this->getProduct($result['product_id']);
@@ -988,6 +994,7 @@ SQL
                 LEFT JOIN product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
                 LEFT JOIN user AS u ON p.user_id = u.user_id
                 LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
+                LEFT JOIN product_tag AS pt ON p.product_id = pt.product_id
         ";
         $sql .= $filter->getFilterString(true) .
             " GROUP BY p.product_id" .
@@ -1562,7 +1569,8 @@ SQL
                 LEFT JOIN product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
                 JOIN user AS u ON p.user_id = u.user_id
                 LEFT JOIN product_to_category AS p2c ON (p.product_id = p2c.product_id)
-        ";
+                LEFT JOIN product_tag AS pt ON p.product_id = pt.product_id
+       ";
         $sql .= $filter->getFilterString(true) .
                 " GROUP BY p.product_id" .
                 $this->buildLimitString($data['start'], $data['limit']);
