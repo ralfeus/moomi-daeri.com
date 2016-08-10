@@ -7,7 +7,6 @@ use model\localization\DescriptionCollection;
 use system\exception\NotImplementedException;
 use system\library\Dimensions;
 use system\library\Filter;
-use system\library\FilterTree;
 use system\library\MeasureUnit;
 use system\library\Weight;
 

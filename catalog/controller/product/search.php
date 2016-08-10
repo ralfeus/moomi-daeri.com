@@ -5,7 +5,37 @@ use model\catalog\ProductDAO;
 use system\helper\ImageService;
 
 class ControllerProductSearch extends Controller {
-	public function index() {
+    protected function loadStrings() {
+        $this->data['heading_title'] = $this->getLanguage()->get('heading_title');
+
+        $this->data['text_empty'] = $this->getLanguage()->get('text_empty');
+        $this->data['text_critea'] = $this->getLanguage()->get('text_critea');
+        $this->data['text_search'] = $this->getLanguage()->get('text_search');
+        $this->data['text_keyword'] = $this->getLanguage()->get('text_keyword');
+        $this->data['text_category'] = $this->getLanguage()->get('text_category');
+        $this->data['text_sub_category'] = $this->getLanguage()->get('text_sub_category');
+        $this->data['text_quantity'] = $this->getLanguage()->get('text_quantity');
+        $this->data['text_manufacturer'] = $this->getLanguage()->get('text_manufacturer');
+        $this->data['text_model'] = $this->getLanguage()->get('text_model');
+        $this->data['text_price'] = $this->getLanguage()->get('text_price');
+        $this->data['text_tax'] = $this->getLanguage()->get('text_tax');
+        $this->data['text_points'] = $this->getLanguage()->get('text_points');
+        $this->data['text_display'] = $this->getLanguage()->get('text_display');
+        $this->data['text_list'] = $this->getLanguage()->get('text_list');
+        $this->data['text_grid'] = $this->getLanguage()->get('text_grid');
+        $this->data['text_sort'] = $this->getLanguage()->get('text_sort');
+        $this->data['text_limit'] = $this->getLanguage()->get('text_limit');
+
+        $this->data['entry_search'] = $this->getLanguage()->get('entry_search');
+        $this->data['entry_description'] = $this->getLanguage()->get('entry_description');
+
+        $this->data['button_search'] = $this->getLanguage()->get('button_search');
+        $this->data['button_cart'] = $this->getLanguage()->get('button_cart');
+        $this->data['button_wishlist'] = $this->getLanguage()->get('button_wishlist');
+        $this->data['button_compare'] = $this->getLanguage()->get('button_compare');
+    }
+
+    public function index() {
 //        $this->log->write(print_r($this->request, true));
     	$this->getLanguage()->load('product/search');
 
@@ -101,41 +131,7 @@ class ControllerProductSearch extends Controller {
 			$url .= '&limit=' . $this->request->get['limit'];
 		}
 						
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->getLanguage()->get('heading_title'),
-			'href'      => $this->getUrl()->link('product/search', $url),
-      		'separator' => $this->getLanguage()->get('text_separator')
-   		);
-		
-    	$this->data['heading_title'] = $this->getLanguage()->get('heading_title');
-		
-		$this->data['text_empty'] = $this->getLanguage()->get('text_empty');
-    	$this->data['text_critea'] = $this->getLanguage()->get('text_critea');
-    	$this->data['text_search'] = $this->getLanguage()->get('text_search');
-		$this->data['text_keyword'] = $this->getLanguage()->get('text_keyword');
-		$this->data['text_category'] = $this->getLanguage()->get('text_category');
-		$this->data['text_sub_category'] = $this->getLanguage()->get('text_sub_category');
-		$this->data['text_quantity'] = $this->getLanguage()->get('text_quantity');
-		$this->data['text_manufacturer'] = $this->getLanguage()->get('text_manufacturer');
-		$this->data['text_model'] = $this->getLanguage()->get('text_model');
-		$this->data['text_price'] = $this->getLanguage()->get('text_price');
-		$this->data['text_tax'] = $this->getLanguage()->get('text_tax');
-		$this->data['text_points'] = $this->getLanguage()->get('text_points');
-		$this->data['text_compare'] = sprintf($this->getLanguage()->get('text_compare'), (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0));
-		$this->data['text_display'] = $this->getLanguage()->get('text_display');
-		$this->data['text_list'] = $this->getLanguage()->get('text_list');
-		$this->data['text_grid'] = $this->getLanguage()->get('text_grid');		
-		$this->data['text_sort'] = $this->getLanguage()->get('text_sort');
-		$this->data['text_limit'] = $this->getLanguage()->get('text_limit');
-		
-		$this->data['entry_search'] = $this->getLanguage()->get('entry_search');
-    	$this->data['entry_description'] = $this->getLanguage()->get('entry_description');
-		  
-    	$this->data['button_search'] = $this->getLanguage()->get('button_search');
-		$this->data['button_cart'] = $this->getLanguage()->get('button_cart');
-		$this->data['button_wishlist'] = $this->getLanguage()->get('button_wishlist');
-		$this->data['button_compare'] = $this->getLanguage()->get('button_compare');
-
+   		$this->data['text_compare'] = sprintf($this->getLanguage()->get('text_compare'), (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0));
 		$this->data['compare'] = $this->getUrl()->link('product/compare');
 		
 		// 3 Level Category Search
@@ -191,6 +187,7 @@ class ControllerProductSearch extends Controller {
 		
 		if (isset($this->request->get['filter_name']) || isset($this->request->get['filter_tag'])) {
 			$data = array(
+			    'filterEnabled' => true,
 				'filterName'         => $filter_name,
 //				'filterTag'          => $filter_tag,
 //				'filterDescription'  => $filter_description,
