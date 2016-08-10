@@ -7,16 +7,22 @@ use model\localization\DescriptionCollection;
 use system\exception\NotImplementedException;
 use system\library\Dimensions;
 use system\library\Filter;
+use system\library\FilterTree;
 use system\library\MeasureUnit;
 use system\library\Weight;
 
 class ProductDAO extends DAO {
 
     /**
-     * @param array $data
+     * @param FilterTree|Filter|array $data
      * @return Filter
      */
-    private function buildFilter($data) {
+    public function buildFilter($data) {
+        if ($data instanceof FilterTree) {
+            return $data->buildFilter([$this, 'buildFilter']);
+        } else if ($data instanceof Filter) {
+            return $data;
+        }
         $filter = new Filter();
         $tmp0 = $tmp1 = '';
         if (isset($data['selectedItems'])) {
@@ -59,7 +65,7 @@ class ProductDAO extends DAO {
             $filterString = '';
             $filterParams = [];
             for ($i = 0; $i < sizeof($words); $i++) {
-                $filterString .= " OR pd.name LIKE CONCAT('%', :name$i, '%') OR pd.description LIKE CONCAT('%', :name$i, '%') OR pt.tag LIKE CONCAT('%', :name$i, '%')";
+                $filterString .= " OR pd.name LIKE CONCAT('%', :name$i, '%') OR pd.description LIKE CONCAT('%', :name$i, '%')";
                 $filterParams[":name$i"] = $words[$i];
             }
             $filter->addChunk("(" . substr($filterString, 4) . ")", $filterParams);
@@ -475,18 +481,20 @@ SQL
     }
 
     /**
-     * @param array $data
-     * @return array
-     * @throws \CacheNotInstalledException
+     * @param Filter|array $filter
+     * @param string $sortColumn
+     * @param string $sortOrder
+     * @param int $start
+     * @param int $limit
+     * @return int[]
      */
-    public function getProductIds($data = []) {
-        $cacheKey = 'product.' . md5(serialize($data));
+    public function getProductIds($filter = null, $sortColumn = null, $sortOrder = 'ASC', $start = null, $limit = null) {
+        $cacheKey = 'product.' . md5(serialize([$filter, $sortColumn, $sortOrder, $start, $limit]));
         $result = $this->getCache()->get($cacheKey);
         if (!is_null($result)) {
             return $result;
         }
-        $filter = $this->buildFilter($data);
-
+        $filter = $this->buildFilter($filter);
 
         $sql = <<<SQL
             SELECT
@@ -505,8 +513,6 @@ SQL
                 LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
 SQL
         ;
-        $sql .= $filter->getFilterString(true) . '
-            GROUP BY p.product_id';
 
         $sort_data = array(
             'pd.name',
@@ -518,24 +524,15 @@ SQL
             'p.date_added',
             'p.product_id'
         );
-
-        if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
-            if ($data['sort'] == 'pd.name' || $data['sort'] == 'p.model') {
-                $sql .= " ORDER BY LCASE(" . $data['sort'] . ")";
-            } else {
-                $sql .= " ORDER BY " . $data['sort'];
-            }
-        } else {
-            $sql .= " ORDER BY p.sort_order";
+        if (!in_array($sortColumn, $sort_data)) {
+            $sortColumn = 'p.sort_order';
         }
+        $sortOrder = $sortOrder != 'DESC' ? 'ASC' : 'DESC';
 
-        if (isset($data['order']) && ($data['order'] == 'DESC')) {
-            $sql .= " DESC";
-        } else {
-            $sql .= " ASC";
-        }
-
-        $sql .= $this->buildLimitString($data['start'], $data['limit']);
+        $sql .= $filter->getFilterString(true) . "
+            GROUP BY p.product_id
+            ORDER BY $sortColumn $sortOrder
+            " . $this->buildLimitString($start, $limit);
 
         //print_r($sql);exit();
         $query = $this->getDb()->query($sql, $filter->getParams());
@@ -576,13 +573,17 @@ SQL
     }
 
     /**
-     * @param array $data
+     * @param FilterTree|array $data
+     * @param string $sortColumn
+     * @param string $sortOrder
+     * @param int $start
+     * @param int $limit
      * @param bool $shallow
      * @return Product[]
      */
-    public function getProducts($data = array(), $shallow = false) {
+    public function getProducts($data = [], $sortColumn = null, $sortOrder = 'ASC', $start = null, $limit = null, $shallow = false) {
         $product_data = [];
-        foreach ($this->getProductIds($data) as $result) {
+        foreach ($this->getProductIds($data, $sortColumn, $sortOrder, $start, $limit) as $result) {
             try {
                 $product_data[$result['product_id']] = $this->getProduct($result['product_id'], $shallow, true);
             } catch (\InvalidArgumentException $exc) {
@@ -594,11 +595,10 @@ SQL
     }
 
     /**
-     * @param array $data
+     * @param FilterTree|array $data
      * @return int
-     * @throws \CacheNotInstalledException
      */
-    public function getProductsCount($data = array()) {
+    public function getProductsCount($data = []) {
         $cacheKey = 'productCount.' . md5(serialize($data));
         $result = $this->getCache()->get($cacheKey);
         if (!is_null($result)) {

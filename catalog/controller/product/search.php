@@ -3,6 +3,7 @@ use model\catalog\CategoryDAO;
 use model\catalog\Product;
 use model\catalog\ProductDAO;
 use system\helper\ImageService;
+use system\library\FilterTree;
 
 class ControllerProductSearch extends Controller {
     protected function loadStrings() {
@@ -186,6 +187,18 @@ class ControllerProductSearch extends Controller {
 		$this->data['products'] = array();
 		
 		if (isset($this->request->get['filter_name']) || isset($this->request->get['filter_tag'])) {
+		    $filter = new FilterTree(
+		        [
+		            'filterEnabled' => true,
+                    'filterCategoryId' => $filter_category_id,
+                    'filterSubCategories' => $filter_sub_category
+                ], 'AND',
+                new FilterTree(['filterName' => $filter_name], 'OR', new FilterTree(
+                    ['filterModel' => $filter_name], 'OR', new FilterTree(
+                        ['filterTag' => $filter_name]
+                    )
+                )), true
+            );
 			$data = array(
 			    'filterEnabled' => true,
 				'filterName'         => $filter_name,
@@ -198,9 +211,9 @@ class ControllerProductSearch extends Controller {
 				'start'               => ($page - 1) * $limit,
 				'limit'               => $limit
 			);
-					
-			$product_total = ProductDAO::getInstance()->getProductsCount($data);
-			$results = ProductDAO::getInstance()->getProducts($data);
+
+			$product_total = ProductDAO::getInstance()->getProductsCount($filter);
+			$results = ProductDAO::getInstance()->getProducts($filter, $sort, $order, ($page - 1) * $limit, $limit);
             if ($sort == null) {
                 $results = $this->sortByRelevance($results, $filter_name);
             }

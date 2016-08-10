@@ -464,7 +464,7 @@ if(isset($this->request->get['clear_cache'])){
 		}
 
 		$this->getLoader()->model('catalog/product');
-		$products = ProductDAO::getInstance()->getProducts($filter);
+		$products = ProductDAO::getInstance()->getProducts($filter, $filter['sort'], $filter['order'], $filter['start'], $filter['limit']);
 		$product_total = ProductDAO::getInstance()->getProductsCount($filter);
 
 

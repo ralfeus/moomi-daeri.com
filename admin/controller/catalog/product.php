@@ -605,7 +605,7 @@ class ControllerCatalogProduct extends AdminController {
 
 		$product_total = ProductDAO::getInstance()->getProductsCount($data);
 
-		$products = ProductDAO::getInstance()->getProducts($data);
+		$products = ProductDAO::getInstance()->getProducts($data, $sort, $order, ($page - 1) * $limit, $limit);
 		$this->data['suppliers'] = $this->getSuppliers();
 		$this->data['usernames'] = $this->getUserNames();
 		$this->data['manufacturers'] = $this->getManufacturers();
@@ -1666,7 +1666,7 @@ class ControllerCatalogProduct extends AdminController {
 			];
 			
 //			$results = $this->model_catalog_product->getProductsEnabled($data);
-			$products = ProductDAO::getInstance()->getProducts($data);
+			$products = ProductDAO::getInstance()->getProducts($data, null, null, 0, $limit);
 			
 			foreach ($products as $product) {
 				$product_options = $this->model_catalog_product->getProductOptions($product->getId());

@@ -160,7 +160,13 @@ class ControllerProductManufacturer extends Controller {
 			);
 					
 			$product_total = ProductDAO::getInstance()->getProductsCount($data);
-			$products = ProductDAO::getInstance()->getProducts($data);
+			$products = ProductDAO::getInstance()->getProducts(
+			    $data,
+                $this->parameters['sort'],
+                $this->parameters['order'],
+                ($this->parameters['page'] - 1) * $this->parameters['limit'],
+                $this->parameters['limit']
+            );
 					
 			foreach ($products as $product) {
 				if ($product->getImagePath()) {

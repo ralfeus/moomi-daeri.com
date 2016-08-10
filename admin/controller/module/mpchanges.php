@@ -48,7 +48,8 @@ class ControllerModuleMpchanges extends Controller {
 //        $this->mpfilter["products"] = $this->model_module_mpchanges->getProducts($data);
 //        $this->mpfilter["total"] = $this->model_module_mpchanges->getTotalProducts($data);
         $this->mpfilter['products'] = [];
-        $productIds = ProductDAO::getInstance()->getProductIds($data); $count = 0;
+        $productIds = ProductDAO::getInstance()->getProductIds($data, null, null, $this->parameters['start'], $this->parameters['limit']);
+        $count = 0;
         foreach ($productIds as $productId => $productPlaceholder) {
             $product = ProductDAO::getInstance()->getProduct($productId, false, true);
             $this->getCache()->set('progress', "Getting product " . $count++ . " of " . sizeof($productIds));

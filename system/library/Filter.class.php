@@ -19,14 +19,15 @@ class Filter {
 
     /**
      * @param string|Filter $filter
-     * @param null $params
+     * @param array $params
+     * @param string $relation
      */
-    public function addChunk($filter, $params = null) {
+    public function addChunk($filter, $params = null, $relation = 'AND') {
         if ($filter instanceof Filter) {
             $this->addChunk($filter->getFilterString(), $filter->getParams());
         } elseif ($filter) {
             if ($this->filterString) {
-                $this->filterString .= ' AND ';
+                $this->filterString .= " $relation ";
             }
             $this->filterString .= $filter;
             if (!is_null($params) && is_array($params)) {
@@ -37,17 +38,19 @@ class Filter {
 
     /**
      * @param bool $complete
+     * @param bool $atomic
      * @return string
      */
-    public function getFilterString($complete = false) {
+    public function getFilterString($complete = false, $atomic = false) {
+        $filterString = $atomic ? '(' . $this->filterString . ')' : $this->filterString;
         if ($complete) {
             if ($this->isFilterSet()) {
-                return "\r\nWHERE " . $this->filterString;
+                return "\r\nWHERE $filterString";
             } else {
                 return '';
             }
         } else {
-            return $this->filterString;
+            return $filterString;
         }
     }
 
