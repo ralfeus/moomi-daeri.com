@@ -319,7 +319,7 @@ class ProductDAO extends DAO {
             $this->getDb()->query("INSERT INTO url_alias SET query = 'product_id=" . (int)$productId . "', keyword = '" . $this->getDb()->escape($data['keyword']) . "'");
         }
 
-        $this->getCache()->delete('product');
+        $this->getCache()->deleteAll('/^product/');
         return $productId;
     }
 

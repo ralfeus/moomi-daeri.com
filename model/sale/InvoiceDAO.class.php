@@ -105,6 +105,7 @@ class InvoiceDAO extends DAO {
         /// Add invoice items
         $invoiceId = $this->getDb()->getLastId();
         $this->addInvoiceItems($invoiceId, $orderItems);
+        $this->getCache()->deleteAll('/^invoice/');
         return $invoiceId;
     }
 
@@ -155,6 +156,7 @@ class InvoiceDAO extends DAO {
     {
         $this->getDb()->query("DELETE FROM invoice_items WHERE invoice_id = " . (int)$invoiceId);
         $this->getDb()->query("DELETE FROM invoices WHERE invoice_id = " . (int)$invoiceId);
+        $this->getCache()->deleteAll('/^invoice/');
     }
 
     /**
@@ -205,6 +207,28 @@ class InvoiceDAO extends DAO {
     }
 
     /**
+     * @param array $filter
+     * @return Customer[]
+     */
+    public function getInvoiceCustomers($filter) {
+        unset($filter['filterCustomerId']);
+        $filter = $this->buildFilter($filter);
+        $query = "
+            SELECT customer_id
+            FROM invoices
+        ";
+        if ($filter->isFilterSet()) {
+            $query .= $filter->getFilterString();
+        }
+        $query .= "GROUP BY customer_id";
+        $result = [];
+        foreach ($this->getDb()->query($query)->rows as $row) {
+            $result[] = CustomerDAO::getInstance()->getCustomer($row['customer_id']);
+        }
+        return $result;
+    }
+
+    /**
      * @param int $invoiceId
      * @return array
      */
@@ -230,13 +254,18 @@ class InvoiceDAO extends DAO {
     }
 
     /**
-     * @param FilterTree|Filter|array $data
+     * @param FilterTree|Filter|array $filter
      * @param int $start
      * @param int $limit
      * @return \int[]
      */
-    public function getInvoiceIds($data, $start = null, $limit = null) {
-        $filter = $this->buildFilter($data);
+    public function getInvoiceIds($filter, $start = null, $limit = null) {
+        $cacheKey = 'invoice.' . md5(serialize([$filter, $start, $limit]));
+        $result = $this->getCache()->get($cacheKey);
+//        if (!is_null($result)) {
+//            return $result;
+//        }
+        $filter = $this->buildFilter($filter);
         $query = '
             SELECT invoice_id
             FROM invoices
@@ -247,12 +276,14 @@ class InvoiceDAO extends DAO {
         $query .= '
             ORDER BY time_modified DESC
         ' . $this->buildLimitString($start, $limit);
-        return array_map(
+        $result = array_map(
             function($row) {
                 return $row['invoice_id'];
             },
             $this->getDb()->query($query)->rows
         );
+        $this->getCache()->set($cacheKey, $result);
+        return $result;
     }
 
     /**
@@ -274,51 +305,35 @@ class InvoiceDAO extends DAO {
         return sizeof($this->getInvoiceIds($data));
     }
 
-    public function setComment($invoiceId, $comment)
-    {
+    public function setComment($invoiceId, $comment) {
         $this->setTextField($invoiceId, 'comment', $comment);
     }
 
-    public function setDiscount($invoiceId, $discount)
-    {
-        $this->getDb()->query("
-            UPDATE invoices
-            SET
-                discount = " . (float)$discount . ",
-                time_modified = NOW()
-            WHERE invoice_id = " . (int)$invoiceId
-        );
+    public function setDiscount($invoiceId, $discount) {
+        $this->setTextField($invoiceId, 'discount', $discount);
     }
 
-    public function setInvoiceStatus($invoiceId, $invoiceStatusId)
-    {
-        $this->getDb()->query("
-            UPDATE invoices
-            SET
-                invoice_status_id = " . (int)$invoiceStatusId . ",
-                time_modified = NOW()
-            WHERE invoice_id = " . (int)$invoiceId
-        );
+    public function setInvoiceStatus($invoiceId, $invoiceStatusId) {
+        $this->setTextField($invoiceId, 'invoice_status_id', $invoiceStatusId);
     }
 
-    public function setPackageNumber($invoiceId, $packageNumber)
-    {
+    public function setPackageNumber($invoiceId, $packageNumber) {
         $this->setTextField($invoiceId, 'package_number', $packageNumber);
     }
 
-    public function setShippingDate($invoiceId, $shippingDate)
-    {
-        $query = "UPDATE invoices SET shipping_date = '" . $shippingDate . "' WHERE invoice_id = " . (int)$invoiceId;
-        $this->getDb()->query($query);
+    public function setShippingDate($invoiceId, $shippingDate) {
+        $this->setTextField($invoiceId, 'shipping_date', $shippingDate);
     }
 
-    private function setTextField($invoiceId, $field, $data)
-    {
+    private function setTextField($invoiceId, $field, $data) {
         $this->getDb()->query("
             UPDATE invoices
-            SET $field = :data
+            SET 
+                $field = :data,
+                time_modified = NOW()
             WHERE invoice_id = :invoiceId
             ", [ ':data' => $data, ':invoiceId' => $invoiceId]
         );
+        $this->getCache()->deleteAll('/^invoice/');
     }
 }

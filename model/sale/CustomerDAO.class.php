@@ -149,9 +149,9 @@ class CustomerDAO extends DAO {
 		    FROM
 		        customer AS c
 		        JOIN customer_group AS cg ON c.customer_group_id = cg.customer_group_id
-		    WHERE customer_id = ?
+		    WHERE customer_id = :customerId
 SQL
-          , array("i:$customerId")
+          , [ ':customerId' => $customerId ]
         );
 	
 		return $query->row;
@@ -182,7 +182,8 @@ SQL
      */
     public function getCustomers($data = array()) {
         $filter = $this->buildFilterString($data);
-		$sql = "
+		$sql = /** @lang text */
+            "
 		    SELECT *, CONCAT(c.firstname, ' ', c.lastname) AS name, cg.name AS customer_group
 		    FROM
 		        customer c
