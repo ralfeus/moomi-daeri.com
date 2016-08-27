@@ -72,8 +72,8 @@ class CustomerDAO extends DAO {
                     $this->currency->convert(
                         $customer['balance'],
                         $customer['base_currency_code'],
-                        $this->config->get('config_currency')),
-                    $this->config->get('config_currency'),
+                        $this->getConfig()->get('config_currency')),
+                    $this->getConfig()->get('config_currency'),
                     $data['baseCurrency']),
                 $this->currency->getDecimalPlace($data['baseCurrency']));
         }
@@ -121,15 +121,17 @@ class CustomerDAO extends DAO {
 				}
 			}
 		}
-	}
+        $this->getCache()->delete('customer' . $customer_id);
+    }
 
 	public function editToken($customer_id, $token) {
-		$this->db->query("
+		$this->getDb()->query("
 		    UPDATE customer
-		    SET token = '" . $this->db->escape($token) . "'
+		    SET token = '" . $this->getDb()->escape($token) . "'
 		    WHERE customer_id = '" . (int)$customer_id . "'
         ");
-	}
+        $this->getCache()->delete('customer' . $customer_id);
+    }
 	
 	public function deleteCustomer($customer_id) {
 		$this->getDb()->query("DELETE FROM customer WHERE customer_id = '" . (int)$customer_id . "'");
@@ -137,6 +139,7 @@ class CustomerDAO extends DAO {
 		$this->getDb()->query("DELETE FROM customer_transaction WHERE customer_id = '" . (int)$customer_id . "'");
 		$this->getDb()->query("DELETE FROM customer_ip WHERE customer_id = '" . (int)$customer_id . "'");
 		$this->getDb()->query("DELETE FROM address WHERE customer_id = '" . (int)$customer_id . "'");
+        $this->getCache()->delete('customer' . $customer_id);
 	}
 
     /**
@@ -144,6 +147,11 @@ class CustomerDAO extends DAO {
      * @return array
      */
     public function getCustomer($customerId) {
+        $cacheKey = 'customer.' . $customerId;
+        $result = $this->getCache()->get($cacheKey);
+        if (!is_null($result)) {
+            return $result;
+        }
 		$query = $this->getDb()->query(<<<SQL
 		    SELECT DISTINCT *
 		    FROM
@@ -153,7 +161,8 @@ class CustomerDAO extends DAO {
 SQL
           , [ ':customerId' => $customerId ]
         );
-	
+
+        $this->getCache()->set($cacheKey, $query->row);
 		return $query->row;
 	}
 
@@ -246,32 +255,33 @@ SQL
 				$store_name = $store_info['name'];
 				$store_url = $store_info['url'] . 'index.php?route=account/login';
 			} else {
-				$store_name = $this->config->get('config_name');
+				$store_name = $this->getConfig()->get('config_name');
 				$store_url = HTTP_CATALOG . 'index.php?route=account/login';
 			}
 	
-			$message  = sprintf($this->language->get('text_approve_welcome'), $store_name) . "\n\n";
-			$message .= $this->language->get('text_approve_login') . "\n";
+			$message  = sprintf($this->getLanguage()->get('text_approve_welcome'), $store_name) . "\n\n";
+			$message .= $this->getLanguage()->get('text_approve_login') . "\n";
 			$message .= $store_url . "\n\n";
-			$message .= $this->language->get('text_approve_services') . "\n\n";
-			$message .= $this->language->get('text_approve_thanks') . "\n";
+			$message .= $this->getLanguage()->get('text_approve_services') . "\n\n";
+			$message .= $this->getLanguage()->get('text_approve_thanks') . "\n";
 			$message .= $store_name;
 	
 			$mail = new Mail();
-			$mail->protocol = $this->config->get('config_mail_protocol');
-			$mail->parameter = $this->config->get('config_mail_parameter');
-			$mail->hostname = $this->config->get('config_smtp_host');
-			$mail->username = $this->config->get('config_smtp_username');
-			$mail->password = $this->config->get('config_smtp_password');
-			$mail->port = $this->config->get('config_smtp_port');
-			$mail->timeout = $this->config->get('config_smtp_timeout');							
+			$mail->protocol = $this->getConfig()->get('config_mail_protocol');
+			$mail->parameter = $this->getConfig()->get('config_mail_parameter');
+			$mail->hostname = $this->getConfig()->get('config_smtp_host');
+			$mail->username = $this->getConfig()->get('config_smtp_username');
+			$mail->password = $this->getConfig()->get('config_smtp_password');
+			$mail->port = $this->getConfig()->get('config_smtp_port');
+			$mail->timeout = $this->getConfig()->get('config_smtp_timeout');							
 			$mail->setTo($customer_info['email']);
-			$mail->setFrom($this->config->get('config_email'));
+			$mail->setFrom($this->getConfig()->get('config_email'));
 			$mail->setSender($store_name);
-			$mail->setSubject(sprintf($this->language->get('text_approve_subject'), $store_name));
+			$mail->setSubject(sprintf($this->getLanguage()->get('text_approve_subject'), $store_name));
 			$mail->setText(html_entity_decode($message, ENT_QUOTES, 'UTF-8'));
 			$mail->send();
-		}		
+            $this->getCache()->delete('customer' . $customer_id);
+		}
 	}
 		
 	public function getCustomersByNewsletter() {
@@ -457,7 +467,7 @@ SQL
                 WHERE customer_id = " . (int)$customerId
             );
 
-			$this->language->load('mail/customer');
+			$this->getLanguage()->load('mail/customer');
 			
 			if ($customer_info['store_id']) {
 				$this->load->model('setting/store');
@@ -467,29 +477,30 @@ SQL
 				if ($store_info) {
 					$store_name = $store_info['store_name'];
 				} else {
-					$store_name = $this->config->get('config_name');
+					$store_name = $this->getConfig()->get('config_name');
 				}	
 			} else {
-				$store_name = $this->config->get('config_name');
+				$store_name = $this->getConfig()->get('config_name');
 			}	
 						
-			$message  = sprintf($this->language->get('text_transaction_received'), $this->currency->format($amount, $this->config->get('config_currency'))) . "\n\n";
-			$message .= sprintf($this->language->get('text_transaction_total'), $this->currency->format($this->getTransactionTotal($customerId)));
+			$message  = sprintf($this->getLanguage()->get('text_transaction_received'), $this->currency->format($amount, $this->getConfig()->get('config_currency'))) . "\n\n";
+			$message .= sprintf($this->getLanguage()->get('text_transaction_total'), $this->currency->format($this->getTransactionTotal($customerId)));
 								
 			$mail = new Mail();
-			$mail->protocol = $this->config->get('config_mail_protocol');
-			$mail->parameter = $this->config->get('config_mail_parameter');
-			$mail->hostname = $this->config->get('config_smtp_host');
-			$mail->username = $this->config->get('config_smtp_username');
-			$mail->password = $this->config->get('config_smtp_password');
-			$mail->port = $this->config->get('config_smtp_port');
-			$mail->timeout = $this->config->get('config_smtp_timeout');
+			$mail->protocol = $this->getConfig()->get('config_mail_protocol');
+			$mail->parameter = $this->getConfig()->get('config_mail_parameter');
+			$mail->hostname = $this->getConfig()->get('config_smtp_host');
+			$mail->username = $this->getConfig()->get('config_smtp_username');
+			$mail->password = $this->getConfig()->get('config_smtp_password');
+			$mail->port = $this->getConfig()->get('config_smtp_port');
+			$mail->timeout = $this->getConfig()->get('config_smtp_timeout');
 			$mail->setTo($customer_info['email']);
-			$mail->setFrom($this->config->get('config_email'));
+			$mail->setFrom($this->getConfig()->get('config_email'));
 			$mail->setSender($store_name);
-			$mail->setSubject(sprintf($this->language->get('text_transaction_subject'), $this->config->get('config_name')));
+			$mail->setSubject(sprintf($this->getLanguage()->get('text_transaction_subject'), $this->getConfig()->get('config_name')));
 			$mail->setText($message);
 			$mail->send();
+            $this->getCache()->delete('customer' . $customerId);
 		}
 	}
 	
@@ -535,7 +546,7 @@ SQL
 		if ($customer_info) { 
 			$this->getDb()->query("INSERT INTO customer_reward SET customer_id = '" . (int)$customer_id . "', order_id = '" . (int)$order_id . "', points = '" . $points . "', description = '" . $this->getDb()->escape($description) . "', date_added = NOW()");
 
-			$this->language->load('mail/customer');
+			$this->getLanguage()->load('mail/customer');
 			
 			if ($order_id) {
 				$this->load->model('sale/order');
@@ -545,27 +556,27 @@ SQL
 				if ($order_info) {
 					$store_name = $order_info['store_name'];
 				} else {
-					$store_name = $this->config->get('config_name');
+					$store_name = $this->getConfig()->get('config_name');
 				}	
 			} else {
-				$store_name = $this->config->get('config_name');
+				$store_name = $this->getConfig()->get('config_name');
 			}		
 				
-			$message  = sprintf($this->language->get('text_reward_received'), $points) . "\n\n";
-			$message .= sprintf($this->language->get('text_reward_total'), $this->getRewardTotal($customer_id));
+			$message  = sprintf($this->getLanguage()->get('text_reward_received'), $points) . "\n\n";
+			$message .= sprintf($this->getLanguage()->get('text_reward_total'), $this->getRewardTotal($customer_id));
 				
 			$mail = new Mail();
-			$mail->protocol = $this->config->get('config_mail_protocol');
-			$mail->parameter = $this->config->get('config_mail_parameter');
-			$mail->hostname = $this->config->get('config_smtp_host');
-			$mail->username = $this->config->get('config_smtp_username');
-			$mail->password = $this->config->get('config_smtp_password');
-			$mail->port = $this->config->get('config_smtp_port');
-			$mail->timeout = $this->config->get('config_smtp_timeout');
+			$mail->protocol = $this->getConfig()->get('config_mail_protocol');
+			$mail->parameter = $this->getConfig()->get('config_mail_parameter');
+			$mail->hostname = $this->getConfig()->get('config_smtp_host');
+			$mail->username = $this->getConfig()->get('config_smtp_username');
+			$mail->password = $this->getConfig()->get('config_smtp_password');
+			$mail->port = $this->getConfig()->get('config_smtp_port');
+			$mail->timeout = $this->getConfig()->get('config_smtp_timeout');
 			$mail->setTo($customer_info['email']);
-			$mail->setFrom($this->config->get('config_email'));
+			$mail->setFrom($this->getConfig()->get('config_email'));
 			$mail->setSender($store_name);
-			$mail->setSubject(sprintf($this->language->get('text_reward_subject'), $store_name));
+			$mail->setSubject(sprintf($this->getLanguage()->get('text_reward_subject'), $store_name));
 			$mail->setText($message);
 			$mail->send();
 		}
@@ -618,6 +629,6 @@ SQL
             SET purge_cart = 1
             WHERE customer_id = " . (int)$customerId
         );
+        $this->getCache()->delete('customer' . $customerId);
     }
 }
-?>
