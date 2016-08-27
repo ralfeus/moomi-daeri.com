@@ -3,6 +3,8 @@ namespace model\sale;
 
 use model\DAO;
 use model\shipping\ShippingMethodDAO;
+use system\library\Filter;
+use system\library\FilterTree;
 
 class InvoiceDAO extends DAO {
     /**
@@ -14,11 +16,10 @@ class InvoiceDAO extends DAO {
      * @param string $comment
      * @param string $shippingDate
      * @return int
-     * @throws \Exception
      */
-    public function addInvoice($orderId, $orderItems, $shippingMethod = null, $weight = 0, $discount = 0, $comment = "", $shippingDate = '') {
+    public function addInvoice($orderId, $orderItems, $shippingMethod = null, $weight = 0.0, $discount = 0.0, $comment = "", $shippingDate = '') {
         /** @var \ModelSaleOrder $orderModel */
-        $orderModel = $this->load->model('sale/order');
+        $orderModel = $this->getLoader()->model('sale/order');
         /// Get customer and shipping data from the primary order
         $order = $orderModel->getOrder($orderId);
         $customer = CustomerDAO::getInstance()->getCustomer($order['customer_id']);
@@ -28,7 +29,7 @@ class InvoiceDAO extends DAO {
         foreach ($orderItems as $orderItem) {
             /// If weight isn't defined by administrator it's calculated
             if (!$weight)
-                $tmpWeight += $this->weight->format($orderItem->getWeight(), $this->config->get('config_weight_class_id')) * $orderItem->getQuantity();
+                $tmpWeight += $this->weight->format($orderItem->getWeight(), $this->getConfig()->get('config_weight_class_id')) * $orderItem->getQuantity();
             $itemCost = $orderItem->getPrice() * $orderItem->getQuantity() + $orderItem->getShippingCost();
             $tmpSubtotal += $itemCost;
             $subtotalCustomerCurrency += $orderItem->getTotal(true);
@@ -64,7 +65,7 @@ class InvoiceDAO extends DAO {
         $total = $subtotal + $shippingCost - $discount;
         $totalCustomerCurrency = $subtotalCustomerCurrency + $this->getCurrency()->convert(
             $shippingCost - $discount,
-            $this->config->get('config_currency'),
+            $this->getConfig()->get('config_currency'),
             $customer['base_currency_code']
         );
 
@@ -112,11 +113,12 @@ class InvoiceDAO extends DAO {
      * @param OrderItem[] $orderItems
      */
     private function addInvoiceItems($invoiceId, $orderItems) {
-        $query = "
+        $query = /** @lang text */
+            '
             INSERT INTO invoice_items
             (invoice_id, order_item_id)
             VALUES
-        ";
+        ';
 
         foreach ($orderItems as $orderItem)
             $query .= "($invoiceId, " . $orderItem->getId() . "),\n";
@@ -125,22 +127,34 @@ class InvoiceDAO extends DAO {
         $this->getDb()->query(substr($query, 0, strlen($query) - 2));
     }
 
-    private function buildFilterString($data) {
-        $filter = "";
-        if (!empty($data['filterCustomerId']))
-            $filter .= ($filter ? " AND" : "") . " i.customer_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
-        if (!empty($data['filterInvoiceId']))
-        $filter .= ($filter ? " AND" : "") . " i.invoice_id IN (" . implode(', ', $data['filterInvoiceId']) . ")";
-        if (!empty($data['filterInvoiceStatusId']))
-            $filter .= ($filter ? " AND" : "") . " i.invoice_status_id IN (" . implode(', ', $data['filterInvoiceStatusId']) . ")";
-
+    /**
+     * @param FilterTree|Filter|array $data
+     * @return Filter
+     */
+    public function buildFilter($data) {
+        if ($data instanceof FilterTree) {
+            return $data->buildFilter([$this, 'buildFilter']);
+        } else if ($data instanceof Filter) {
+            return $data;
+        }
+        $filter = new Filter();
+        $tmp0 = $tmp1 = '';
+        if (isset($data['filterCustomerId'])) {
+            $filter->addChunk($this->buildSimpleFieldFilterEntry('i.customer_id', $data['filterCustomerId'], $tmp0, $tmp1));
+        }
+        if (isset($data['filterInvoiceId'])) {
+            $filter->addChunk($this->buildSimpleFieldFilterEntry('i.invoice_id', $data['filterInvoiceId'], $tmp0, $tmp1));
+        }
+        if (isset($data['filterInvoiceStatusId'])) {
+            $filter->addChunk($this->buildSimpleFieldFilterEntry('i.invoice_status_id', $data['filterInvoiceStatusId'], $tmp0, $tmp1));
+        }
         return $filter;
     }
 
     public function deleteInvoice($invoiceId)
     {
-        $this->db->query("DELETE FROM invoice_items WHERE invoice_id = " . (int)$invoiceId);
-        $this->db->query("DELETE FROM invoices WHERE invoice_id = " . (int)$invoiceId);
+        $this->getDb()->query("DELETE FROM invoice_items WHERE invoice_id = " . (int)$invoiceId);
+        $this->getDb()->query("DELETE FROM invoices WHERE invoice_id = " . (int)$invoiceId);
     }
 
     /**
@@ -150,7 +164,7 @@ class InvoiceDAO extends DAO {
     public function getInvoice($invoiceId) {
         $query = $this->getDb()->query("SELECT * FROM invoices WHERE invoice_id = " . (int)$invoiceId);
         if ($query->num_rows)
-            return new \model\sale\Invoice($this->registry,
+            return new Invoice($this->getRegistry(),
                 $query->row['comment'], $query->row['currency_code'], $query->row['customer_id'], $query->row['discount'], $query->row['invoice_id'],
                 $query->row['invoice_status_id'], $query->row['package_number'], $query->row['shipping_address_id'], $query->row['shipping_cost'],
                 $query->row['shipping_date'], $query->row['shipping_method'], $query->row['subtotal'], $query->row['time_modified'], $query->row['total'],
@@ -173,7 +187,7 @@ class InvoiceDAO extends DAO {
      */
     public function getInvoicesByOrderItem($orderItemId)
     {
-        $query = $this->db->query("
+        $query = $this->getDb()->query("
             SELECT invoice_id
             FROM invoice_items
             WHERE order_item_id = " . (int)$orderItemId
@@ -182,6 +196,7 @@ class InvoiceDAO extends DAO {
         if (!$query->num_rows)
             return array();
         else {
+            $data['filterInvoiceId'] = [];
             foreach ($query->rows as $row)
                 $data['filterInvoiceId'][] = $row['invoice_id'];
 //            $this->log->write(print_r($this->buildFilter($data), true));
@@ -215,32 +230,48 @@ class InvoiceDAO extends DAO {
     }
 
     /**
+     * @param FilterTree|Filter|array $data
+     * @param int $start
+     * @param int $limit
+     * @return \int[]
+     */
+    public function getInvoiceIds($data, $start = null, $limit = null) {
+        $filter = $this->buildFilter($data);
+        $query = '
+            SELECT invoice_id
+            FROM invoices
+        ';
+        if ($filter->isFilterSet()) {
+            $query .= $filter->getFilterString();
+        }
+        $query .= '
+            ORDER BY time_modified DESC
+        ' . $this->buildLimitString($start, $limit);
+        return array_map(
+            function($row) {
+                return $row['invoice_id'];
+            },
+            $this->getDb()->query($query)->rows
+        );
+    }
+
+    /**
      * @param array $data
      * @param string $orderBy
-     * @return \model\sale\Invoice[]
+     * @param int $start
+     * @param int $limit
+     * @return Invoice[]
      */
-    public function getInvoices($data, $orderBy = 'time_modified DESC') {
-        $filter = $this->buildFilterString($data);
-        $query = $this->getDb()->query("
-            SELECT *
-            FROM
-                invoices AS i
-                JOIN customer AS c ON i.customer_id = c.customer_id
-            " . ($filter ? "WHERE $filter" : "") . "
-            ORDER BY " . $this->getDb()->escape($orderBy)
-        );
-        if ($query->num_rows) {
-            $result = array();
-            foreach ($query->rows as $row) {
-                $result[] = new \model\sale\Invoice($this->registry,
-                    $row['comment'], $row['currency_code'], $row['customer_id'], $row['discount'], $row['invoice_id'],
-                    $row['invoice_status_id'], $row['package_number'], $row['shipping_address_id'], $row['shipping_cost'],
-                    $row['shipping_date'], $row['shipping_method'], $row['subtotal'], $row['time_modified'], $row['total'],
-                    $row['total_customer_currency'], $row['weight']);
-            }
-            return $result;
-        } else
-            return array();
+    public function getInvoices($data, $orderBy = 'time_modified DESC', $start = null, $limit = null) {
+        $result = [];
+        foreach ($this->getInvoiceIds($data, $start, $limit) as $id) {
+            $result[] = $this->getInvoice($id);
+        }
+        return $result;
+    }
+
+    public function getInvoicesCount($data) {
+        return sizeof($this->getInvoiceIds($data));
     }
 
     public function setComment($invoiceId, $comment)
@@ -250,7 +281,7 @@ class InvoiceDAO extends DAO {
 
     public function setDiscount($invoiceId, $discount)
     {
-        $this->db->query("
+        $this->getDb()->query("
             UPDATE invoices
             SET
                 discount = " . (float)$discount . ",
@@ -261,7 +292,7 @@ class InvoiceDAO extends DAO {
 
     public function setInvoiceStatus($invoiceId, $invoiceStatusId)
     {
-        $this->db->query("
+        $this->getDb()->query("
             UPDATE invoices
             SET
                 invoice_status_id = " . (int)$invoiceStatusId . ",
@@ -278,16 +309,16 @@ class InvoiceDAO extends DAO {
     public function setShippingDate($invoiceId, $shippingDate)
     {
         $query = "UPDATE invoices SET shipping_date = '" . $shippingDate . "' WHERE invoice_id = " . (int)$invoiceId;
-        $this->db->query($query);
+        $this->getDb()->query($query);
     }
 
     private function setTextField($invoiceId, $field, $data)
     {
-        $this->db->query("
+        $this->getDb()->query("
             UPDATE invoices
-            SET
-                $field = '" . $this->db->escape($data) . "'
-            WHERE invoice_id = " . (int)$invoiceId
+            SET $field = :data
+            WHERE invoice_id = :invoiceId
+            ", [ ':data' => $data, ':invoiceId' => $invoiceId]
         );
     }
 }

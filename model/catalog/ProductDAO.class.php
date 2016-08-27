@@ -46,7 +46,7 @@ class ProductDAO extends DAO {
             $filter->addChunk("p.status = :enabled", [":enabled" => $data['filterEnabled']]);
         }
         if (!empty($data['filterId']) && is_numeric($data['filterId'])) {
-            $filter->addChunk('p.product_id  :productId', [':productId' => $data['filterId']]);
+            $filter->addChunk('p.product_id = :productId', [':productId' => $data['filterId']]);
         }
         if (!empty($data['filterKoreanName'])) {
             $filter->addChunk("p.korean_name LIKE CONCAT('%', :koreanName, '%')", [':koreanName' => $data['filterKoreanName']]);

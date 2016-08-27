@@ -20,11 +20,11 @@ class ControllerSaleInvoice extends Controller {
 
     public function __construct($registry) {
         parent::__construct($registry);
-        $this->load->language('sale/invoice');
-        $this->load->library("Transaction");
-        $this->modelReferenceAddress = $this->load->model('reference/address');
-        $this->modelSaleOrder = $this->load->model('sale/order');
-        $this->load->model('tool/image');
+        $this->getLoader()->language('sale/invoice');
+        $this->getLoader()->library("Transaction");
+        $this->modelReferenceAddress = $this->getLoader()->model('reference/address');
+        $this->modelSaleOrder = $this->getLoader()->model('sale/order');
+        $this->getLoader()->model('tool/image');
 
         $this->data['notifications'] = array();
         $this->document->setTitle($this->language->get('headingTitle'));
@@ -47,6 +47,23 @@ class ControllerSaleInvoice extends Controller {
                     return false;
         }
         return true;
+    }
+
+    protected function loadStrings() {
+        $this->data['textAction'] = $this->language->get('textAction');
+        $this->data['textCustomer'] = $this->language->get('textCustomer');
+        $this->data['textInvoiceId'] = $this->language->get('textInvoiceId');
+        $this->data['textFilter'] = $this->language->get('FILTER');
+        $this->data['textShippingCost'] = $this->language->get('textShippingCost');
+        $this->data['textShippingMethod'] = $this->language->get('textShippingMethod');
+        $this->data['textStatus'] = $this->language->get('STATUS');
+        $this->data['textInvoceDate'] = $this->language->get('textInvoceDate');
+        $this->data['textPackage'] = $this->language->get('textPackage');
+        $this->data['textShippingDate'] = $this->language->get('textShippingDate');
+        $this->data['textSubtotal'] = $this->language->get('textSubtotal');
+        $this->data['textTotal'] = $this->language->get('textTotal');
+        $this->data['textTotalCustomerCurrency'] = $this->language->get('TOTAL_CUSTOMER_CURRENCY');
+        $this->data['textWeight'] = $this->language->get('textWeight');
     }
 
     public function create() {
@@ -123,32 +140,16 @@ class ControllerSaleInvoice extends Controller {
     }
 
     private function getData() {
-        /// Initialize interface values
-        $this->data['textAction'] = $this->language->get('textAction');
-        $this->data['textCustomer'] = $this->language->get('textCustomer');
-        $this->data['textInvoiceId'] = $this->language->get('textInvoiceId');
-        $this->data['textFilter'] = $this->language->get('FILTER');
-        $this->data['textShippingCost'] = $this->language->get('textShippingCost');
-        $this->data['textShippingMethod'] = $this->language->get('textShippingMethod');
-        $this->data['textStatus'] = $this->language->get('STATUS');
-        $this->data['textInvoceDate'] = $this->language->get('textInvoceDate');
-        $this->data['textPackage'] = $this->language->get('textPackage');
-        $this->data['textShippingDate'] = $this->language->get('textShippingDate');
-        $this->data['textSubtotal'] = $this->language->get('textSubtotal');
-        $this->data['textTotal'] = $this->language->get('textTotal');
-        $this->data['textTotalCustomerCurrency'] = $this->language->get('TOTAL_CUSTOMER_CURRENCY');
-        $this->data['textWeight'] = $this->language->get('textWeight');
-
         $this->data['customers'] = $this->getCustomers();
         $data = $this->parameters;
 
-        foreach (InvoiceDAO::getInstance()->getInvoices($data) as $invoice) {
+        foreach (InvoiceDAO::getInstance()->getInvoices($data, null, ($this->parameters['page'] - 1) * $this->parameters['limit'], $this->parameters['limit']) as $invoice) {
             $action = array();
             $action[] = array(
                 'text' => $this->getLanguage()->get('VIEW'),
                 'href' => $this->url->link('sale/invoice/showForm', 'invoiceId=' . $invoice->getId() . '&token=' . $this->session->data['token'], 'SSL')
             );
-            if (!$this->load->model('sale/transaction')->getTransactionByInvoiceId($invoice->getId()))
+            if (!$this->getLoader()->model('sale/transaction')->getTransactionByInvoiceId($invoice->getId()))
                 $action[] = array(
                     'text' => $this->getLanguage()->get('DELETE'),
                     'href' => $this->url->link('sale/invoice/delete', 'invoiceId=' . $invoice->getId() . '&token=' . $this->session->data['token'], 'SSL')
@@ -174,7 +175,7 @@ class ControllerSaleInvoice extends Controller {
                 'shippingCost' => $this->getCurrency()->format($invoice->getShippingCost(), $this->getConfig()->get('config_currency')),
                 'shippingMethod' => ShippingMethodDAO::getInstance()->getMethod(explode('.', $invoice->getShippingMethod())[0])->
                     getName(),
-                'status' => $this->load->model('localisation/invoice')->getInvoiceStatus($invoice->getStatusId()),
+                'status' => $this->getLoader()->model('localisation/invoice')->getInvoiceStatus($invoice->getStatusId()),
                 'subtotal' => $this->getCurrency()->format($invoice->getSubtotal(), $this->getConfig()->get('config_currency')),
                 'total' => $this->getCurrency()->format($invoice->getTotal(), $this->getConfig()->get('config_currency')),
                 'totalCustomerCurrency' => $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1),
@@ -247,7 +248,7 @@ class ControllerSaleInvoice extends Controller {
     }
 
     private function handleCredit($invoiceId) {
-//        $modelTransaction = $this->load->model('sale/transaction');
+//        $modelTransaction = $this->getLoader()->model('sale/transaction');
         $invoice = InvoiceDAO::getInstance()->getInvoice($invoiceId);
 //        $customer = CustomerDAO::getInstance()->getCustomer($invoice['customer_id']);
         $temp = $invoice->getCustomer();
@@ -272,11 +273,11 @@ class ControllerSaleInvoice extends Controller {
                 InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_PAID);
             }
         }
-        $this->load->model('tool/communication')->sendMessage(
+        $this->getLoader()->model('tool/communication')->sendMessage(
             $temp['customer_id'],
             sprintf(
                 $this->getLanguage()->get('INVOICE_STATUS_NOTIFICATION'),
-                $this->load->model('localisation/invoice')->getInvoiceStatus($invoiceId),
+                $this->getLoader()->model('localisation/invoice')->getInvoiceStatus($invoiceId),
                 $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1),
                 $this->getCurrency()->format(
                     CustomerDAO::getInstance()->getCustomerBalance($temp['customer_id']),
@@ -291,31 +292,38 @@ class ControllerSaleInvoice extends Controller {
     {
         $this->getData();
         $this->setBreadcrumbs();
-        $this->template = 'sale/invoiceList.tpl';
+
+        $pagination = new Pagination();
+        $pagination->total = InvoiceDAO::getInstance()->getInvoicesCount($this->parameters);
+        $pagination->page = $this->parameters['page'];
+        $pagination->limit = $this->getConfig()->get('config_admin_limit');
+        $pagination->text = $this->language->get('text_pagination');
+        //        unset($this->parameters['page']);
+        $pagination->url = $this->getUrl()->link('sale/invoice', 'token=' . $this->getSession()->data['token'] . '&page={page}', 'SSL');
+        $this->data['pagination'] = $pagination->render();
+
         $this->children = array(
             'common/header',
             'common/footer'
         );
-        $this->getResponse()->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render('sale/invoiceList.tpl.php'));
     }
 
     protected function initParameters() {
-        global $_REQUEST;
-        $this->parameters['data'] = empty($_REQUEST['data']) ? null : $_REQUEST['data'];
-        $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
-        $this->parameters['invoiceId'] = empty($_REQUEST['invoiceId']) ? null : $_REQUEST['invoiceId'];
-        $this->parameters['method'] = empty($_REQUEST['method']) ? null : $_REQUEST['method'];
-        $this->parameters['orderItemId'] = empty($_REQUEST['orderItemId']) || !is_array($_REQUEST['orderItemId']) ? array() : $_REQUEST['orderItemId'];
-        $this->parameters['param'] = empty($_REQUEST['param']) ? null : $_REQUEST['param'];
-        $this->parameters['selectedItems'] = $this->getRequest()->getParam('selectedItems', array());
-        $this->parameters['shippingMethod'] = empty($_REQUEST['shippingMethod']) ? null : $_REQUEST['shippingMethod'];
-        $this->parameters['token'] = $this->session->data['token'];
-        $this->parameters['weight'] = empty($_REQUEST['weight']) ? null : $_REQUEST['weight'];
-    }
-
-    public function printInvoice()
-    {
-
+        $this->initParametersWithDefaults([
+            'data' => null,
+            'filterCustomerId' => [],
+            'invoiceId' => null,
+            'limit' => $this->getConfig()->get('config_admin_limit'),
+            'method' => null,
+            'orderItemId' => [],
+            'page' => 1,
+            'param' => null,
+            'selectedItems' => [[], function($v) {return is_array($v);}],
+            'shippingMethod' => null,
+            'weight' => null
+        ]);
+        $this->parameters['token'] = $this->getSession()->data['token'];
     }
 
     public function saveDiscount()
@@ -532,7 +540,7 @@ class ControllerSaleInvoice extends Controller {
                 }
         }
         $add = $this->modelReferenceAddress->getAddress($invoice->getShippingAddressId());
-        $this->load->model('sale/order');
+        $this->getLoader()->model('sale/order');
         $order_info = $this->model_sale_order->getOrderByShippingAddressId($invoice->getShippingAddressId());
         /// Set invoice data
 //        $customer = CustomerDAO::getInstance()->getCustomer($invoice['customer_id']);
@@ -605,7 +613,7 @@ class ControllerSaleInvoice extends Controller {
 
     private function validateDeletion($invoiceId)
     {
-        $relatedTransaction = $this->load->model('sale/transaction')->getTransactionByInvoiceId($invoiceId);
+        $relatedTransaction = $this->getLoader()->model('sale/transaction')->getTransactionByInvoiceId($invoiceId);
         if ($relatedTransaction)
             $this->data['notifications']['error'] = sprintf(
                 $this->language->get('ERROR_RELATED_TRANSACTION_EXISTS'), $relatedTransaction['customer_transaction_id'], $invoiceId);
