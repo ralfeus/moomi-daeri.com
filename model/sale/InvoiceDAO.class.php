@@ -208,7 +208,7 @@ class InvoiceDAO extends DAO {
 
     /**
      * @param array $filter
-     * @return Customer[]
+     * @return array[]
      */
     public function getInvoiceCustomers($filter) {
         unset($filter['filterCustomerId']);

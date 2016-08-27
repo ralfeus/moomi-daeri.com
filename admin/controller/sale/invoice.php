@@ -118,10 +118,10 @@ class ControllerSaleInvoice extends Controller {
 
     private function getCustomers() {
         foreach (InvoiceDAO::getInstance()->getInvoiceCustomers($this->parameters) as $customer) {
-            $tmpResult[$customer->getId()] =
-                $customer->getLastName() . " " .
-                $customer->getFirstName() . ' / ' .
-                $customer->getNickName();
+            $tmpResult[$customer['customer_id']] =
+                $customer['lastname'] . " " .
+                $customer['firstname'] . ' / ' .
+                $customer['nickname'];
         }
         natcasesort($tmpResult);
         return $tmpResult;
