@@ -262,9 +262,9 @@ class InvoiceDAO extends DAO {
     public function getInvoiceIds($filter, $start = null, $limit = null) {
         $cacheKey = 'invoice.' . md5(serialize([$filter, $start, $limit]));
         $result = $this->getCache()->get($cacheKey);
-//        if (!is_null($result)) {
-//            return $result;
-//        }
+        if (!is_null($result)) {
+            return $result;
+        }
         $filter = $this->buildFilter($filter);
         $query = '
             SELECT invoice_id
