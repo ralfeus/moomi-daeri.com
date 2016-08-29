@@ -215,14 +215,14 @@ class InvoiceDAO extends DAO {
         $filter = $this->buildFilter($filter);
         $query = "
             SELECT customer_id
-            FROM invoices
+            FROM invoices AS i
         ";
         if ($filter->isFilterSet()) {
-            $query .= $filter->getFilterString();
+            $query .= $filter->getFilterString(true);
         }
         $query .= "GROUP BY customer_id";
         $result = [];
-        foreach ($this->getDb()->query($query)->rows as $row) {
+        foreach ($this->getDb()->query($query, $filter->getParams())->rows as $row) {
             $result[] = CustomerDAO::getInstance()->getCustomer($row['customer_id']);
         }
         return $result;
@@ -233,11 +233,12 @@ class InvoiceDAO extends DAO {
      * @return array
      */
     public function getInvoiceItems($invoiceId) {
-        $query = $this->getDb()->query("SELECT * FROM invoice_items WHERE invoice_id = " . (int)$invoiceId);
-        if ($query->num_rows)
+        $query = $this->getDb()->query("SELECT * FROM invoice_items WHERE invoice_id = :invoiceId", [':invoiceId' => $invoiceId]);
+        if ($query->num_rows) {
             return $query->rows;
-        else
+        } else {
             return array();
+        }
     }
 
     /**
@@ -245,12 +246,12 @@ class InvoiceDAO extends DAO {
      * @return int
      */
     public function getInvoiceItemsCount($invoiceId) {
-        $query = $this->getDb()->query("
+        return $this->getDb()->queryScalar("
             SELECT COUNT(*) as total
             FROM invoice_items
-            WHERE invoice_id = " . (int)$invoiceId
+            WHERE invoice_id = :invoiceId
+            ", [ ':invoiceId' => $invoiceId ]
         );
-        return (int)$query->row['total'];
     }
 
     /**
@@ -268,10 +269,10 @@ class InvoiceDAO extends DAO {
         $filter = $this->buildFilter($filter);
         $query = '
             SELECT invoice_id
-            FROM invoices
+            FROM invoices AS i
         ';
         if ($filter->isFilterSet()) {
-            $query .= $filter->getFilterString();
+            $query .= $filter->getFilterString(true);
         }
         $query .= '
             ORDER BY time_modified DESC
@@ -280,7 +281,7 @@ class InvoiceDAO extends DAO {
             function($row) {
                 return $row['invoice_id'];
             },
-            $this->getDb()->query($query)->rows
+            $this->getDb()->query($query, $filter->getParams())->rows
         );
         $this->getCache()->set($cacheKey, $result);
         return $result;
