@@ -11,7 +11,7 @@ class Transaction extends OpenCartBase implements ILibrary {
 
     protected function __construct($registry) {
         parent::__construct($registry);
-        $this->modelTransaction = $this->load->model('sale/transaction', 'admin');
+        $this->modelTransaction = $this->getLoader()->model('sale/transaction', 'admin');
     }
 
     public static function addCredit($customerId, $amount, $currency, $registry, $description = "")
@@ -65,29 +65,30 @@ class Transaction extends OpenCartBase implements ILibrary {
         }
 
         /// Now need to convert transaction amount to customer base currency
-        $currency = Transaction::$instance->registry->get('currency');
+        $currency = Transaction::$instance->getRegistry()->get('currency');
         $amountInCustomerCurrency = (float)$currency->convert($amount, $currency_code, $customer['base_currency_code']);
         $newCustomerBalance = $customer['balance'] - $amountInCustomerCurrency;
-        Transaction::$instance->db->query("
+        Transaction::$instance->getDb()->query("
             INSERT INTO customer_transaction
             SET
                 customer_id = " . (int)$customer['customer_id'] . ",
                 invoice_id = " . (int)$invoiceId . ",
-                description = '" . Transaction::$instance->db->escape($description) . "',
+                description = '" . Transaction::$instance->getDb()->escape($description) . "',
                 amount = $amountInCustomerCurrency,
                 currency_code = '" . $customer['base_currency_code'] . "',
                 date_added = NOW(),
                 balance = $newCustomerBalance,
-                balance_currency = '" . Transaction::$instance->db->escape($customer['base_currency_code']) . "'
+                balance_currency = '" . Transaction::$instance->getDb()->escape($customer['base_currency_code']) . "'
         ");
-        $transactionId = Transaction::$instance->db->getLastId();
+        //$transactionId = Transaction::$instance->getDb()->getLastId();
         /// Update customer's balance
-        Transaction::$instance->db->query("
+        Transaction::$instance->getDb()->query("
                 UPDATE customer
                 SET
                     balance = $newCustomerBalance
                 WHERE customer_id = " . $customer['customer_id']
         );
+        Transaction::$instance->getCache()->delete('customer.' . $customer['customer_id']);
         if (Transaction::$instance->user->isLogged()) {
             Audit::getInstance(Transaction::$instance->getRegistry())->addAdminEntry(Transaction::$instance->user->getId(), AUDIT_ADMIN_TRANSACTION_ADD, $_REQUEST);
         } elseif (Transaction::$instance->customer->isLogged()) {

@@ -1,6 +1,7 @@
 <?php
 namespace model\sale;
 
+use Mail;
 use model\DAO;
 
 class CustomerDAO extends DAO {
@@ -68,14 +69,14 @@ class CustomerDAO extends DAO {
         $customer = $this->getCustomer($customer_id);
         if ($customer['base_currency_code'] != $data['baseCurrency']) {
             $balance = round(
-                $this->currency->convert(
-                    $this->currency->convert(
+                $this->getCurrentCurrency()->convert(
+                    $this->getCurrentCurrency()->convert(
                         $customer['balance'],
                         $customer['base_currency_code'],
                         $this->getConfig()->get('config_currency')),
                     $this->getConfig()->get('config_currency'),
                     $data['baseCurrency']),
-                $this->currency->getDecimalPlace($data['baseCurrency']));
+                $this->getCurrentCurrency()->getDecimalPlace($data['baseCurrency']));
         }
         else
             $balance = $customer['balance'];
@@ -245,9 +246,9 @@ SQL
 		if ($customer_info) {
 			$this->getDb()->query("UPDATE customer SET approved = '1' WHERE customer_id = '" . (int)$customer_id . "'");
 
-			$this->load->language('mail/customer');
+			$this->getLoader()->language('mail/customer');
 			
-			$this->load->model('setting/store');
+			$this->getLoader()->model('setting/store');
 						
 			$store_info = $this->model_setting_store->getStore($customer_info['store_id']);
 			
@@ -356,7 +357,9 @@ SQL
 				'address_format' => $address_format,
 				'default'		 => ($default_query->row['address_id'] == $address_query->row['address_id']) ? true : false
 			);
-		}
+		} else {
+		    throw new \InvalidArgumentException("There is no address with such ID");
+        }
 	}
 		
 	public function getAddresses($customer_id) {
@@ -445,73 +448,73 @@ SQL
 		return $query->row['total'];
 	}
 			
-	public function addTransaction($customerId, $description = '', $amount = '', $order_id = 0) {
-		$customer_info = $this->getCustomer($customerId);
-		
-		if ($customer_info) {
-            /// Add transaction
-			$this->getDb()->query("
-			    INSERT INTO customer_transaction
-			    SET
-			        customer_id = '" . (int)$customerId . "',
-			        order_id = '" . (int)$order_id . "',
-			        description = '" . $this->getDb()->escape($description) . "',
-			        amount = '" . (float)$amount . "',
-			        date_added = NOW()"
-            );
-            /// Update customer's balance
-            $this->getDb()->query("
-                UPDATE customer
-                SET
-                    balance = balance - " . (float)$amount . "
-                WHERE customer_id = " . (int)$customerId
-            );
-
-			$this->getLanguage()->load('mail/customer');
-			
-			if ($customer_info['store_id']) {
-				$this->load->model('setting/store');
-		
-				$store_info = $this->model_setting_store->getStore($customer_info['store_id']);
-				
-				if ($store_info) {
-					$store_name = $store_info['store_name'];
-				} else {
-					$store_name = $this->getConfig()->get('config_name');
-				}	
-			} else {
-				$store_name = $this->getConfig()->get('config_name');
-			}	
-						
-			$message  = sprintf($this->getLanguage()->get('text_transaction_received'), $this->currency->format($amount, $this->getConfig()->get('config_currency'))) . "\n\n";
-			$message .= sprintf($this->getLanguage()->get('text_transaction_total'), $this->currency->format($this->getTransactionTotal($customerId)));
-								
-			$mail = new Mail();
-			$mail->protocol = $this->getConfig()->get('config_mail_protocol');
-			$mail->parameter = $this->getConfig()->get('config_mail_parameter');
-			$mail->hostname = $this->getConfig()->get('config_smtp_host');
-			$mail->username = $this->getConfig()->get('config_smtp_username');
-			$mail->password = $this->getConfig()->get('config_smtp_password');
-			$mail->port = $this->getConfig()->get('config_smtp_port');
-			$mail->timeout = $this->getConfig()->get('config_smtp_timeout');
-			$mail->setTo($customer_info['email']);
-			$mail->setFrom($this->getConfig()->get('config_email'));
-			$mail->setSender($store_name);
-			$mail->setSubject(sprintf($this->getLanguage()->get('text_transaction_subject'), $this->getConfig()->get('config_name')));
-			$mail->setText($message);
-			$mail->send();
-            $this->getCache()->delete('customer' . $customerId);
-		}
-	}
+//	public function addTransaction($customerId, $description = '', $amount = '', $order_id = 0) {
+//		$customer_info = $this->getCustomer($customerId);
+//
+//		if ($customer_info) {
+//            /// Add transaction
+//			$this->getDb()->query("
+//			    INSERT INTO customer_transaction
+//			    SET
+//			        customer_id = '" . (int)$customerId . "',
+//			        order_id = '" . (int)$order_id . "',
+//			        description = '" . $this->getDb()->escape($description) . "',
+//			        amount = '" . (float)$amount . "',
+//			        date_added = NOW()"
+//            );
+//            /// Update customer's balance
+//            $this->getDb()->query("
+//                UPDATE customer
+//                SET
+//                    balance = balance - " . (float)$amount . "
+//                WHERE customer_id = " . (int)$customerId
+//            );
+//
+//			$this->getLanguage()->load('mail/customer');
+//
+//			if ($customer_info['store_id']) {
+//				$this->getLoader()->model('setting/store');
+//
+//				$store_info = $this->model_setting_store->getStore($customer_info['store_id']);
+//
+//				if ($store_info) {
+//					$store_name = $store_info['store_name'];
+//				} else {
+//					$store_name = $this->getConfig()->get('config_name');
+//				}
+//			} else {
+//				$store_name = $this->getConfig()->get('config_name');
+//			}
+//
+//			$message  = sprintf($this->getLanguage()->get('text_transaction_received'), $this->getCurrentCurrency()->format($amount, $this->getConfig()->get('config_currency'))) . "\n\n";
+//			$message .= sprintf($this->getLanguage()->get('text_transaction_total'), $this->getCurrentCurrency()->format($this->getTransactionTotal($customerId)));
+//
+//			$mail = new Mail();
+//			$mail->protocol = $this->getConfig()->get('config_mail_protocol');
+//			$mail->parameter = $this->getConfig()->get('config_mail_parameter');
+//			$mail->hostname = $this->getConfig()->get('config_smtp_host');
+//			$mail->username = $this->getConfig()->get('config_smtp_username');
+//			$mail->password = $this->getConfig()->get('config_smtp_password');
+//			$mail->port = $this->getConfig()->get('config_smtp_port');
+//			$mail->timeout = $this->getConfig()->get('config_smtp_timeout');
+//			$mail->setTo($customer_info['email']);
+//			$mail->setFrom($this->getConfig()->get('config_email'));
+//			$mail->setSender($store_name);
+//			$mail->setSubject(sprintf($this->getLanguage()->get('text_transaction_subject'), $this->getConfig()->get('config_name')));
+//			$mail->setText($message);
+//			$mail->send();
+//            $this->getCache()->delete('customer' . $customerId);
+//		}
+//	}
 	
-	public function deleteTransaction($order_id)
-    {
-        /// Delete transaction
-		$this->getDb()->query("
-		    DELETE FROM customer_transaction
-		    WHERE order_id = " . (int)$order_id
-        );
-	}
+//	public function deleteTransaction($order_id)
+//    {
+//        /// Delete transaction
+//		$this->getDb()->query("
+//		    DELETE FROM customer_transaction
+//		    WHERE order_id = " . (int)$order_id
+//        );
+//	}
 	
 	public function getTransactions($customer_id, $start = 0, $limit = 10) {
 		$query = $this->getDb()->query("
@@ -549,7 +552,7 @@ SQL
 			$this->getLanguage()->load('mail/customer');
 			
 			if ($order_id) {
-				$this->load->model('sale/order');
+				$this->getLoader()->model('sale/order');
 		
 				$order_info = $this->model_sale_order->getOrder($order_id);
 				

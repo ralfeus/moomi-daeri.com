@@ -14,24 +14,25 @@ class ModelSaleTransaction extends Model
     {
 //        $this->log->write("Adding transaction");
 //        $this->log->write($description);
-        $this->db->query("
+        $this->getDb()->query("
             INSERT INTO customer_transaction
             SET
                 customer_id = " . (int)$customerId . ",
                 invoice_id = " . (int)$invoiceId . ",
-                description = '" . $this->db->escape($description) . "',
+                description = '" . $this->getDb()->escape($description) . "',
                 amount = " . (float)$amount . ",
-                currency_code = '" . $this->db->escape($currency_code) . "',
+                currency_code = '" . $this->getDb()->escape($currency_code) . "',
                 date_added = NOW()
         ");
-        $transactionId = $this->db->getLastId();
+//        $transactionId = $this->getDb()->getLastId();
         /// Update customer's balance
-        $this->db->query("
+        $this->getDb()->query("
                 UPDATE customer
                 SET
                     balance = balance - " . (float)$amount . "
                 WHERE customer_id = " . (int)$customerId
         );
+        $this->getCache()->delete('customer.' . $customerId);
     }
 
     /**
@@ -40,7 +41,7 @@ class ModelSaleTransaction extends Model
     public function deleteTransaction($transactionId) {
         $transaction = $this->getTransaction($transactionId);
         $customer = CustomerDAO::getInstance()->getCustomer($transaction['customer_id']);
-        $amountToReturn = $this->currency->convert($transaction['amount'], $transaction['currency_code'], $customer['base_currency_code']);
+        $amountToReturn = $this->getCurrentCurrency()->convert($transaction['amount'], $transaction['currency_code'], $customer['base_currency_code']);
         $this->getDb()->query("
             DELETE FROM customer_transaction
             WHERE customer_transaction_id = " . (int)$transactionId
@@ -50,10 +51,12 @@ class ModelSaleTransaction extends Model
             SET balance = balance + $amountToReturn
             WHERE customer_id = " . $transaction['customer_id']
         );
+
+        $this->getCache()->delete('customer.' . $transaction['customer_id']);
     }
 
     public function getTransaction($transactionId) {
-        $query = $this->db->query("
+        $query = $this->getDb()->query("
             SELECT *
             FROM customer_transaction
             WHERE customer_transaction_id = " . (int)$transactionId
@@ -67,7 +70,7 @@ class ModelSaleTransaction extends Model
 
     public function getTransactionByInvoiceId($invoiceId)
     {
-        $query = $this->db->query("
+        $query = $this->getDb()->query("
             SELECT *
             FROM customer_transaction
             WHERE invoice_id = " . (int)$invoiceId
@@ -81,7 +84,7 @@ class ModelSaleTransaction extends Model
 
     public function getTransactions($customerId)
     {
-        $query = $this->db->query("
+        $query = $this->getDb()->query("
             SELECT *
             FROM customer_transaction
             WHERE customer_id = " . (int)$customerId
