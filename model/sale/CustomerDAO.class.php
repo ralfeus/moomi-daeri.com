@@ -24,11 +24,27 @@ class CustomerDAO extends DAO {
       	
       	if (isset($data['address'])) {		
       		foreach ($data['address'] as $address) {	
-      			$this->getDb()->query("INSERT INTO address SET customer_id = '" . (int)$customer_id . "', firstname = '" . $this->getDb()->escape($address['firstname']) . "', lastname = '" . $this->getDb()->escape($address['lastname']) . "', company = '" . $this->getDb()->escape($address['company']) . "', address_1 = '" . $this->getDb()->escape($address['address_1']) . "', address_2 = '" . $this->getDb()->escape($address['address_2']) . "', city = '" . $this->getDb()->escape($address['city']) . "', postcode = '" . $this->getDb()->escape($address['postcode']) . "', country_id = '" . (int)$address['country_id'] . "', zone_id = '" . (int)$address['zone_id'] . "'");
+      			$this->getDb()->query("
+                    INSERT INTO address 
+                        (customer_id, firstname, lastname, company, address_1, address_2, city, postcode, country_id, zone_id)
+                         VALUES (:customerId, :firstName, :lastName, :company, :address1, :address2, :city, :postcode, :countryId, :zoneId)
+                    ", [
+                        ':customerId' => $customer_id,
+                        ':firstName' => $address['firstname'],
+                        ':lastName' => $address['lastname'],
+                        ':company' => $address['company'],
+                        ':address1' => $address['address_1'],
+                        ':address2' => $address['address_2'],
+                        ':city' => $address['city'],
+                        ':postcode' => $address['postcode'],
+                        ':countryId' => $address['country_id'],
+                        ':zoneId' => $address['zone_id']
+
+                ]);
 				if (isset($address['default'])) {
 					$address_id = $this->getDb()->getLastId();
 					
-					$this->getDb()->query("UPDATE customer SET address_id = '" . $address_id . "' WHERE customer_id = '" . (int)$customer_id . "'");
+					$this->getDb()->query("UPDATE customer SET address_id = :addressId WHERE customer_id = :customerId", [':addressId' => $address_id, ':customerId' => $customer_id]);
 				}
 			}
 		}
@@ -84,18 +100,33 @@ class CustomerDAO extends DAO {
         $this->getDb()->query("
 		    UPDATE customer
 		    SET
-		        firstname = '" . $this->getDb()->escape($data['firstname']) . "',
-		        lastname = '" . $this->getDb()->escape($data['lastname']) . "',
-		        nickname = '" . $this->getDb()->escape($data['nickname']) . "',
-		        email = '" . $this->getDb()->escape($data['email']) . "',
-		        telephone = '" . $this->getDb()->escape($data['telephone']) . "',
-		        fax = '" . $this->getDb()->escape($data['fax']) . "',
-		        newsletter = '" . (int)$data['newsletter'] . "',
-		        customer_group_id = '" . (int)$data['customer_group_id'] . "',
-		        status = '" . (int)$data['status'] . "',
-		        base_currency_code = '" . $this->getDb()->escape($data['baseCurrency']) . "',
-		        balance = $balance
-            WHERE customer_id = '" . (int)$customer_id . "'");
+		        firstname = :firstName,
+		        lastname = :lastName,
+		        nickname = :nickname,
+		        email = :email,
+		        telephone = :phone,
+		        fax = :fax,
+		        newsletter = :newsletter,
+		        customer_group_id = :customerGroupId,
+		        status = :status,
+		        base_currency_code = :baseCurrencyCode,
+		        balance = :balance
+            WHERE customer_id = :customerId
+            ", [
+                ':firstName' => $data['firstname'],
+                ':lastName' => $data['lastname'],
+                ':nickname' => $data['nickname'],
+                ':email' => $data['email'],
+                ':phone' => $data['telephone'],
+                ':fax' => $data['fax'],
+                ':newsletter' => $data['newsletter'],
+                ':customerGroupId' => $data['customer_group_id'],
+                ':status' => $data['status'],
+                ':baseCurrencyCode' => $data['baseCurrency'],
+                ':balance' => $balance,
+                ':customerId' => $customer_id
+            ]
+        );
 
       	if ($data['password']) {
         	$this->getDb()->query("UPDATE customer SET password = '" . $this->getDb()->escape(md5($data['password'])) . "' WHERE customer_id = '" . (int)$customer_id . "'");
@@ -122,7 +153,7 @@ class CustomerDAO extends DAO {
 				}
 			}
 		}
-        $this->getCache()->delete('customer' . $customer_id);
+        $this->getCache()->delete('customer.' . $customer_id);
     }
 
 	public function editToken($customer_id, $token) {
@@ -131,7 +162,7 @@ class CustomerDAO extends DAO {
 		    SET token = '" . $this->getDb()->escape($token) . "'
 		    WHERE customer_id = '" . (int)$customer_id . "'
         ");
-        $this->getCache()->delete('customer' . $customer_id);
+        $this->getCache()->delete('customer.' . $customer_id);
     }
 	
 	public function deleteCustomer($customer_id) {
@@ -140,7 +171,7 @@ class CustomerDAO extends DAO {
 		$this->getDb()->query("DELETE FROM customer_transaction WHERE customer_id = '" . (int)$customer_id . "'");
 		$this->getDb()->query("DELETE FROM customer_ip WHERE customer_id = '" . (int)$customer_id . "'");
 		$this->getDb()->query("DELETE FROM address WHERE customer_id = '" . (int)$customer_id . "'");
-        $this->getCache()->delete('customer' . $customer_id);
+        $this->getCache()->delete('customer.' . $customer_id);
 	}
 
     /**
@@ -281,7 +312,7 @@ SQL
 			$mail->setSubject(sprintf($this->getLanguage()->get('text_approve_subject'), $store_name));
 			$mail->setText(html_entity_decode($message, ENT_QUOTES, 'UTF-8'));
 			$mail->send();
-            $this->getCache()->delete('customer' . $customer_id);
+            $this->getCache()->delete('customer.' . $customer_id);
 		}
 	}
 		
@@ -632,6 +663,6 @@ SQL
             SET purge_cart = 1
             WHERE customer_id = " . (int)$customerId
         );
-        $this->getCache()->delete('customer' . $customerId);
+        $this->getCache()->delete('customer.' . $customerId);
     }
 }

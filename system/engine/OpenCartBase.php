@@ -69,6 +69,9 @@ abstract class OpenCartBase {
         return $this->registry->get('cache');
     }
 
+    /**
+     * @return Config
+     */
     protected function getConfig() {
         return static::$newConfig;
     }
