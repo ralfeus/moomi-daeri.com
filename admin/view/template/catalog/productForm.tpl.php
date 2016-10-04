@@ -431,7 +431,7 @@
             <a href="#tab-option-<?= $option_row ?>" id="option-<?= $option_row ?>">
                 <?= $productOption->getOption()->getName() ?>&nbsp;
                 <img src="view/image/delete.png" alt="" 
-                     onclick="$('#vtabs').$('a:first').trigger('click'); $('#option-<?= $option_row ?>').remove(); $('#tab-option-<?= $option_row ?>').remove(); return false;" />
+                     onclick="$('#vtabs').find('a:first').trigger('click'); $('#option-<?= $option_row ?>').remove(); $('#tab-option-<?= $option_row ?>').remove(); return false;" />
             </a>
             <?php $option_row++; ?>
 <?php endforeach; ?>
