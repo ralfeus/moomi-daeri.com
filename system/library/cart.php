@@ -2,27 +2,31 @@
 final class Cart extends OpenCartBase {
     private $suppliers = array();
 
+    /**
+     * Cart constructor.
+     * @param Registry $registry
+     */
     public function __construct($registry) {
         parent::__construct($registry);
-		$this->config = $registry->get('config');
-		$this->customer = $registry->get('customer');
-		$this->session = $registry->get('session');
+		//$this->config = $registry->get('config');
+		//$this->customer = $registry->get('customer');
+		//$this->session = $registry->get('session');
 		$this->tax = $registry->get('tax');
 		$this->weight = $registry->get('weight');
 
-		if (!isset($this->session->data['cart']) || !is_array($this->session->data['cart'])) {
-      		$this->session->data['cart'] = array();
+		if (!isset($this->getSession()->data['cart']) || !is_array($this->getSession()->data['cart'])) {
+      		$this->getSession()->data['cart'] = array();
     	}
-        if (!isset($this->session->data['selectedCartItems']))
-            $this->session->data['selectedCartItems'] = null;
+        if (!isset($this->getSession()->data['selectedCartItems']))
+            $this->getSession()->data['selectedCartItems'] = null;
 	}
 	      
   	public function getProducts($chosenOnes = false) {
-//        $this->log->write(print_r($this->session->data['cart'], true));
+//        $this->log->write(print_r($this->getSession()->data['cart'], true));
 		$product_data = array();
 		
-    	foreach ($this->session->data['cart'] as $key => $cartItem) {
-            if ($chosenOnes && is_array($this->session->data['selectedCartItems']) && !in_array($key, $this->session->data['selectedCartItems']))
+    	foreach ($this->getSession()->data['cart'] as $key => $cartItem) {
+            if ($chosenOnes && is_array($this->getSession()->data['selectedCartItems']) && !in_array($key, $this->getSession()->data['selectedCartItems']))
                 continue;
       		$product = explode(':', $key);
       		$product_id = $product[0];
@@ -41,10 +45,14 @@ final class Cart extends OpenCartBase {
       		        product p
       		        LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
                 WHERE
-                    p.product_id = '" . (int)$product_id . "'
-                    AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'
-                    AND p.date_available <= '" . date('Y-m-d H:00:00') . "' AND p.status = '1'
-            ");
+                    p.product_id = :productId
+                    AND pd.language_id = :languageId
+                    AND p.date_available <= :dateAvailable AND p.status = 1
+                ", [
+                    ':productId' => $product_id,
+                    ':languageId' => $this->getConfig()->get('config_language_id'),
+                    ':dateAvailable' => date('Y-m-d H:00:00')
+            ]);
       	  	
 			if ($product_query->num_rows) {
       			$option_price = 0;
@@ -63,7 +71,7 @@ final class Cart extends OpenCartBase {
                         WHERE
                             po.product_option_id = '" . (int)$product_option_id . "'
                             AND po.product_id = '" . (int)$product_id . "'
-                            AND od.language_id = '" . (int)$this->config->get('config_language_id') . "'
+                            AND od.language_id = '" . (int)$this->getConfig()->get('config_language_id') . "'
                     ");
 
 					if ($option_query->num_rows) {
@@ -77,7 +85,7 @@ final class Cart extends OpenCartBase {
                                 WHERE
                                     pov.product_option_value_id = '" . (int)$option_value . "'
                                     AND pov.product_option_id = '" . (int)$product_option_id . "'
-                                    AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "'
+                                    AND ovd.language_id = '" . (int)$this->getConfig()->get('config_language_id') . "'
                             ");
 							//$this->log->write(print_r($option_value_query, true));
 							if ($option_value_query->num_rows) {
@@ -123,7 +131,7 @@ final class Cart extends OpenCartBase {
 							}
 						} elseif ($option_query->row['type'] == 'checkbox' && is_array($option_value)) {
 							foreach ($option_value as $product_option_value_id) {
-								$option_value_query = $this->getDb()->query("SELECT pov.option_value_id, ovd.name, pov.quantity, pov.subtract, pov.price, pov.price_prefix, pov.points, pov.points_prefix, pov.weight, pov.weight_prefix FROM product_option_value pov LEFT JOIN option_value ov ON (pov.option_value_id = ov.option_value_id) LEFT JOIN option_value_description ovd ON (ov.option_value_id = ovd.option_value_id) WHERE pov.product_option_value_id = '" . (int)$product_option_value_id . "' AND pov.product_option_id = '" . (int)$product_option_id . "' AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+								$option_value_query = $this->getDb()->query("SELECT pov.option_value_id, ovd.name, pov.quantity, pov.subtract, pov.price, pov.price_prefix, pov.points, pov.points_prefix, pov.weight, pov.weight_prefix FROM product_option_value pov LEFT JOIN option_value ov ON (pov.option_value_id = ov.option_value_id) LEFT JOIN option_value_description ovd ON (ov.option_value_id = ovd.option_value_id) WHERE pov.product_option_value_id = '" . (int)$product_option_value_id . "' AND pov.product_option_id = '" . (int)$product_option_id . "' AND ovd.language_id = '" . (int)$this->getConfig()->get('config_language_id') . "'");
 								
 								if ($option_value_query->num_rows) {
 									if ($option_value_query->row['price_prefix'] == '+') {
@@ -189,10 +197,10 @@ final class Cart extends OpenCartBase {
 					}
       			} 
 			
-				if ($this->customer->isLogged()) {
-					$customer_group_id = $this->customer->getCustomerGroupId();
+				if ($this->getCurrentCustomer()->isLogged()) {
+					$customer_group_id = $this->getCurrentCustomer()->getCustomerGroupId();
 				} else {
-					$customer_group_id = $this->config->get('config_customer_group_id');
+					$customer_group_id = $this->getConfig()->get('config_customer_group_id');
 				}
 				
 				$price = !empty($cartItem->price) ? $cartItem->price : $product_query->row['price'];
@@ -200,7 +208,7 @@ final class Cart extends OpenCartBase {
 				// Product Discounts
 				$discount_quantity = 0;
 				
-				foreach ($this->session->data['cart'] as $key_2 => $cartItem2) {
+				foreach ($this->getSession()->data['cart'] as $key_2 => $cartItem2) {
 					$product_2 = explode(':', $key_2);
 					
 					if ($product_2[0] == $product_id) {
@@ -253,7 +261,7 @@ final class Cart extends OpenCartBase {
 				// Downloads		
 				$download_data = array();     		
 				
-				$download_query = $this->getDb()->query("SELECT * FROM product_to_download p2d LEFT JOIN download d ON (p2d.download_id = d.download_id) LEFT JOIN download_description dd ON (d.download_id = dd.download_id) WHERE p2d.product_id = '" . (int)$product_id . "' AND dd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+				$download_query = $this->getDb()->query("SELECT * FROM product_to_download p2d LEFT JOIN download d ON (p2d.download_id = d.download_id) LEFT JOIN download_description dd ON (d.download_id = dd.download_id) WHERE p2d.product_id = '" . (int)$product_id . "' AND dd.language_id = '" . (int)$this->getConfig()->get('config_language_id') . "'");
 			
 				foreach ($download_query->rows as $download) {
         			$download_data[] = array(
@@ -309,44 +317,48 @@ final class Cart extends OpenCartBase {
       		$key = (int)$product_id . ':' . base64_encode(serialize($options));
 
 		if ((int)$qty && ((int)$qty > 0))
-    		if (empty($this->session->data['cart'][$key]))
+    		if (empty($this->getSession()->data['cart'][$key]))
             {
-                $this->session->data['cart'][$key] = new stdClass();
-                $this->session->data['cart'][$key]->price = $this->currency->convert(
-                    (double)$price, $this->customer->getBaseCurrency()->getCode(), $this->config->get('config_currency'));
-      			$this->session->data['cart'][$key]->quantity = (int)$qty;
-//                $this->session->data['cart'][$key]->selected = true;
+                $this->getSession()->data['cart'][$key] = new stdClass();
+                $this->getSession()->data['cart'][$key]->price = $this->getCurrentCurrency()->convert(
+                    (double)$price, $this->getCurrentCustomer()->getBaseCurrency()->getCode(), $this->getConfig()->get('config_currency'));
+      			$this->getSession()->data['cart'][$key]->quantity = (int)$qty;
+//                $this->getSession()->data['cart'][$key]->selected = true;
             }
     		else
-      			$this->session->data['cart'][$key]->quantity += (int)$qty;
-//        $this->log->write(print_r($this->session->data['cart'], true));
+      			$this->getSession()->data['cart'][$key]->quantity += (int)$qty;
+//        $this->log->write(print_r($this->getSession()->data['cart'], true));
   	}
 
   	public function update($key, $qty) {
     	if ((int)$qty && ((int)$qty > 0)) {
-      		$this->session->data['cart'][$key]->quantity = (int)$qty;
+    	    if (is_object($this->getSession()->data['cart'][$key])) {
+                $this->getSession()->data['cart'][$key]->quantity = (int)$qty;
+            } else {
+                $this->getSession()->data['cart'][$key] = (int)$qty;
+            }
     	} else {
 	  		$this->remove($key);
 		}
   	}
 
   	public function remove($key) {
-		if (isset($this->session->data['cart'][$key])) {
-     		unset($this->session->data['cart'][$key]);
+		if (isset($this->getSession()->data['cart'][$key])) {
+     		unset($this->getSession()->data['cart'][$key]);
   		}
 	}
 	
   	public function clear($chosenOnes = false) {
-        if (!$chosenOnes || !is_array($this->session->data['selectedCartItems']))
-		    $this->session->data['cart'] = array();
+        if (!$chosenOnes || !is_array($this->getSession()->data['selectedCartItems']))
+		    $this->getSession()->data['cart'] = array();
         else
         {
             $newCart = array();
-            foreach ($this->session->data['cart'] as $key => $cartItem)
-                if (!in_array($key, $this->session->data['selectedCartItems']))
+            foreach ($this->getSession()->data['cart'] as $key => $cartItem)
+                if (!in_array($key, $this->getSession()->data['selectedCartItems']))
                     $newCart[$key] = $cartItem;
-            $this->session->data['cart'] = $newCart;
-            $this->session->data['selectedCartItems'] = null;
+            $this->getSession()->data['cart'] = $newCart;
+            $this->getSession()->data['selectedCartItems'] = null;
         }
   	}
 	
@@ -355,7 +367,7 @@ final class Cart extends OpenCartBase {
 	
     	foreach ($this->getProducts($chosenOnes) as $product) {
 			if ($product['shipping']) {
-      			$weight += $this->weight->convert($product['weight'], $product['weight_class_id'], $this->config->get('config_weight_class_id'));
+      			$weight += $this->weight->convert($product['weight'], $product['weight_class_id'], $this->getConfig()->get('config_weight_class_id'));
 			}
 		}
 	
@@ -396,7 +408,7 @@ final class Cart extends OpenCartBase {
 		$total = 0;
 		
 		foreach ($this->getProducts($chosenOnes) as $product) {
-			$total += $this->tax->calculate($product['total'], $product['tax_class_id'], $this->config->get('config_tax'));
+			$total += $this->tax->calculate($product['total'], $product['tax_class_id'], $this->getConfig()->get('config_tax'));
 		}
 
 		return $total;
@@ -425,7 +437,7 @@ final class Cart extends OpenCartBase {
 	}
 	  
   	public function hasProducts() {
-    	return count($this->session->data['cart']);
+    	return count($this->getSession()->data['cart']);
   	}
   
   	public function hasStock() {
@@ -468,4 +480,3 @@ final class Cart extends OpenCartBase {
 		return $download;
 	}
 }
-?>
