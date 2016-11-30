@@ -27,13 +27,18 @@ final class Cache {
      * @throws CacheNotInstalledException
      */
     public function get($key) {
+        $logger = new Log("cache.log");
         if (function_exists('apc_exists')) {
+            $logger->write("Trying to get '$key'");
             if (apc_exists($key)) {
+                $logger->write("\tFound '$key'");
                 return unserialize(apc_fetch($key));
             } else {
+                $logger->write("\tCouldn't find '$key'");
                 return null; //TODO: Check why it was removed
             }
         } else {
+            $logger->write("No cache function");
             throw new CacheNotInstalledException();
         }
 //        else {
