@@ -3,8 +3,10 @@ use SebastianBergmann\Exporter\Exception;
 
 final class Cache {
 	private $expire = 7200;
+    private $logger;
 
   	public function __construct() {
+        $this->logger = new Log("cache.log");
 //		$files = glob(DIR_CACHE . 'cache.*');
 //
 //		if ($files) {
@@ -27,18 +29,17 @@ final class Cache {
      * @throws CacheNotInstalledException
      */
     public function get($key) {
-        $logger = new Log("cache.log");
         if (function_exists('apc_exists')) {
-            $logger->write("Trying to get '$key'");
+            $this->logger->write("Trying to get '$key'");
             if (apc_exists($key)) {
-                $logger->write("\tFound '$key'");
+                $this->logger->write("\tFound '$key'");
                 return unserialize(apc_fetch($key));
             } else {
-                $logger->write("\tCouldn't find '$key'");
+                $this->logger->write("\tCouldn't find '$key'");
                 return null; //TODO: Check why it was removed
             }
         } else {
-            $logger->write("No cache function");
+            $this->logger->write("No cache function");
             throw new CacheNotInstalledException();
         }
 //        else {
@@ -48,6 +49,7 @@ final class Cache {
 
     public function set($key, $value) {
         if (function_exists('apc_store')) {
+            $this->logger->write("Setting '$key'");
             apc_store($key, serialize($value), $this->expire);
         } else {
             throw new CacheNotInstalledException();
