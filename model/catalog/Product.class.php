@@ -881,11 +881,12 @@ class Product {
     }
 
     /**
+     * @param bool $active
      * @return array
      */
-    public function getSpecials() {
+    public function getSpecials($active = false) {
         if (!isset($this->specials)) {
-            $this->specials = new Mutable(ProductDAO::getInstance()->getProductSpecials($this->id));
+            $this->specials = new Mutable(ProductDAO::getInstance()->getProductSpecials($this->id, $active));
         }
         return $this->specials->get();
     }

@@ -47,50 +47,51 @@ class ControllerModuleLatest extends Controller {
             $data['filter_manufacturer_id'] = $manufacturer_id;           
         }
 
-		$results = $this->model_catalog_product->getProducts($data);
+		$results = \model\catalog\ProductDAO::getInstance()->getProducts($data);
 
 		foreach ($results as $result) {
-			if ($result['image']) {
-				$image = $this->model_tool_image->resize($result['image'], $setting['image_width'], $setting['image_height']);
+			if ($result->getImagePath()) {
+				$image = \system\helper\ImageService::getInstance()->resize($result->getImagePath(), $setting['image_width'], $setting['image_height']);
 			} else {
 				$image = false;
 			}
 
-			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-				$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+			if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
+				$price = $this->getCurrency()->format($this->tax->calculate($result->getPrice(), 0, $this->getConfig()->get('config_tax')));
 			} else {
 				$price = false;
 			}
 
-			if ((float)$result['special']) {
-				$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+			$specials = $result->getSpecials(true);
+			if (!empty($specials)) {
+				$special = $this->getCurrency()->format($this->tax->calculate($specials[0], 0, $this->getConfig()->get('config_tax')));
 			} else {
 				$special = false;
 			}
 
-			if ($this->config->get('config_review_status')) {
-				$rating = $result['rating'];
+			if ($this->getConfig()->get('config_review_status')) {
+				$rating = \model\catalog\ProductDAO::getInstance()->getProductRating($result->getId());
 			} else {
 				$rating = false;
 			}
 
-            $date_added = getdate(strtotime($result['date_added']));
+            $date_added = getdate(strtotime($result->getDateAdded()));
             $date_added = mktime(0, 0, 0, $date_added['mon'], $date_added['mday'], $date_added['year']);
 
       #kabantejay synonymizer start
-			$result['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $result['description']);
+//			$result['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $result['description']);
 			#kabantejay synonymizer end
 
 			$this->data['products'][] = array(
-				'product_id' => $result['product_id'],
+				'product_id' => $result->getId(),
 				'thumb'   	 => $image,
-				'name'    	 => $result['name'],
+				'name'    	 => $result->getName(),
 				'price'   	 => $price,
 				'special' 	 => $special,
 				'rating'     => $rating,
-				'reviews'    => sprintf($this->language->get('text_reviews'), (int)$result['reviews']),
-				'href'    	 => $this->url->link('product/product', 'product_id=' . $result['product_id']),
-                'hot'           => $date_added + 86400 * $this->config->get('config_product_hotness_age') > time()
+				'reviews'    => sprintf($this->language->get('text_reviews'), $result->getReviewsCount()),
+				'href'    	 => $this->url->link('product/product', 'product_id=' . $result->getId()),
+                'hot'           => $date_added + 86400 * $this->getConfig()->get('config_product_hotness_age') > time()
 			);
 		}
     $listCategoryId = array();
@@ -112,8 +113,8 @@ class ControllerModuleLatest extends Controller {
 				}
     }
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/latest.tpl.php')) {
-			$this->template = $this->config->get('config_template') . '/template/module/latest.tpl.php';
+		if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/module/latest.tpl.php')) {
+			$this->template = $this->getConfig()->get('config_template') . '/template/module/latest.tpl.php';
 		} else {
 			$this->template = 'default/template/module/latest.tpl.php';
 		}

@@ -498,13 +498,7 @@ SQL
 
         $sql = <<<SQL
             SELECT
-                p.product_id,
-                (
-                    SELECT AVG(rating) AS total
-                    FROM review r1
-                    WHERE r1.product_id = p.product_id AND r1.status = 1
-                    GROUP BY r1.product_id
-                ) AS rating
+                p.product_id
             FROM
                 product p
                 LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
@@ -622,13 +616,18 @@ SQL
 
     /**
      * @param int $productId
+     * @param bool $active
      * @return mixed
      */
-    public function getProductSpecials($productId) {
+    public function getProductSpecials($productId, $active = false) {
         $query = "
             SELECT *
             FROM product_special AS p
-            WHERE product_id = :productId
+            WHERE 
+                product_id = :productId " .
+                ($active ? " 
+                    AND ((p.date_start = '0000-00-00' OR p.date_start < NOW())
+                    AND (p.date_end = '0000-00-00' OR p.date_end > DATE_ADD(NOW(), INTERVAL 1 HOUR))" : "") . "
             ORDER BY priority, price
     ";
 //		$this->log->write($query);

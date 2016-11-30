@@ -417,11 +417,15 @@ class OrderItem {
 
     /**
      * @return Currency
+     * @throws \Exception
      */
     public function getCurrency() {
         if (!isset($this->currency)) {
-	    $temp = $this->getCustomer();
+	        $temp = $this->getCustomer();
             $this->currency = CurrencyDAO::getInstance()->getCurrency($temp['base_currency_code']);
+            if (is_null($this->currency)) {
+                throw new \Exception("The customer [" . $temp['nickname'] . "] has no base currency set");
+            }
         }
         return $this->currency;
     }
