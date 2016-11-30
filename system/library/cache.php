@@ -30,16 +30,16 @@ final class Cache {
      */
     public function get($key) {
         if (function_exists('apc_exists')) {
-            $this->logger->write("Trying to get '$key'");
+//            $this->logger->write("Trying to get '$key'");
             if (apc_exists($key)) {
-                $this->logger->write("\tFound '$key'");
+//                $this->logger->write("\tFound '$key'");
                 return unserialize(apc_fetch($key));
             } else {
-                $this->logger->write("\tCouldn't find '$key'");
+//                $this->logger->write("\tCouldn't find '$key'");
                 return null; //TODO: Check why it was removed
             }
         } else {
-            $this->logger->write("No cache function");
+//            $this->logger->write("No cache function");
             throw new CacheNotInstalledException();
         }
 //        else {
@@ -49,7 +49,7 @@ final class Cache {
 
     public function set($key, $value) {
         if (function_exists('apc_store')) {
-            $this->logger->write("Setting '$key'");
+//            $this->logger->write("Setting '$key'");
             apc_store($key, serialize($value), $this->expire);
         } else {
             throw new CacheNotInstalledException();
