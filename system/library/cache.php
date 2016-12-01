@@ -48,8 +48,10 @@ final class Cache {
 ////        }
         $cacheFile = $this->destination . '/cache.' . $key;
         if (file_exists($cacheFile)) {
+            $this->logger->write("Found '$key'");
             return unserialize(file_get_contents($cacheFile));
         } else {
+            $this->logger->write("Didn't find '$key'");
             return null;
         }
     }
