@@ -30,7 +30,7 @@ class ControllerModuleLatest extends Controller {
 			'start' => ($page - 1) * $setting['limit'],
 			'limit' => $setting['limit'],
 			'filter_category_id' => $setting['category_ids'],
-      'nocache'   => 1
+            'nocache'   => 1
 		);
 
         if ((isset($this->request->get['route'])) AND ($this->request->get['route'] == 'product/category'))
