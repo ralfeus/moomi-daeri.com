@@ -46,7 +46,7 @@ final class Cache {
 ////        else {
 ////            return null;
 ////        }
-        $cacheFile = $this->destination . '/cache.' . str_replace('/', '\\/', $key);
+        $cacheFile = $this->destination . '/cache.' . str_replace('/', '__', $key);
         if (file_exists($cacheFile)) {
             $this->logger->write("Found '$key'");
             return unserialize(file_get_contents($cacheFile));
@@ -63,7 +63,7 @@ final class Cache {
 //        } else {
 //            throw new CacheNotInstalledException();
 //        }
-        $cacheFile = $this->destination . '/cache.' . str_replace('/', '\\/', $key);
+        $cacheFile = $this->destination . '/cache.' . str_replace('/', '__', $key);
         file_put_contents($cacheFile, serialize($value));
     }
 
@@ -78,7 +78,7 @@ final class Cache {
 //        } else {
 //            throw new CacheNotInstalledException();
 //        }
-        $cacheFile = $this->destination . '/cache.' . str_replace('/', '\\/', $key);
+        $cacheFile = $this->destination . '/cache.' . str_replace('/', '__', $key);
         if (file_exists($cacheFile)) {
             unlink($cacheFile);
         }
@@ -94,7 +94,7 @@ final class Cache {
 //            throw new CacheNotInstalledException();
 //        }
         foreach (glob($this->destination . '/cache.*') as $cacheFile) {
-            if (preg_match(str_replace('/', '\\/', $keyPattern), $cacheFile)) {
+            if (preg_match(str_replace('/', '__', $keyPattern), $cacheFile)) {
                 unlink($cacheFile);
             }
         }
