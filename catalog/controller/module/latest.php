@@ -47,7 +47,7 @@ class ControllerModuleLatest extends Controller {
             $data['filter_manufacturer_id'] = $manufacturer_id;           
         }
 
-		$results = []; //\model\catalog\ProductDAO::getInstance()->getProducts($data);
+		$results = \model\catalog\ProductDAO::getInstance()->getProducts($data);
 
 		foreach ($results as $result) {
 			if ($result->getImagePath()) {
