@@ -497,8 +497,8 @@ SQL
         $filter = $this->buildFilter($filter);
 
         $sql = <<<SQL
-            SELECT
-                p.product_id
+            SELECT DISTINCT ]
+            p.product_id
             FROM
                 product p
                 LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
@@ -524,7 +524,7 @@ SQL
         $sortOrder = $sortOrder != 'DESC' ? 'ASC' : 'DESC';
 
         $sql .= $filter->getFilterString(true) . "
-            GROUP BY p.product_id
+            --GROUP BY p.product_id
             ORDER BY $sortColumn $sortOrder
             " . $this->buildLimitString($start, $limit);
 
