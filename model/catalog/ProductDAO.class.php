@@ -524,7 +524,6 @@ SQL
         $sortOrder = $sortOrder != 'DESC' ? 'ASC' : 'DESC';
 
         $sql .= $filter->getFilterString(true) . "
-            --GROUP BY p.product_id
             ORDER BY $sortColumn $sortOrder
             " . $this->buildLimitString($start, $limit);
 
