@@ -48,6 +48,7 @@ class ControllerModuleLatest extends Controller {
         }
 
 		$results = []; //\model\catalog\ProductDAO::getInstance()->getProducts($data, $data['sort'], $data['order'], $data['start'], $data['limit'], true);
+        $this->getLogger()->write(var_dump($data, true));
 
 		foreach ($results as $result) {
 			if ($result->getImagePath()) {
