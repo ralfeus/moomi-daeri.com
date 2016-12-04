@@ -618,7 +618,7 @@ SQL
      * @return mixed
      */
     public function getProductSpecials($productId, $active = false) {
-        $query = "
+       $query = "
             SELECT *
             FROM product_special AS p
             WHERE 
@@ -651,8 +651,11 @@ SQL
      * @return array
      */
     public function getProductSuppliers($data = array()) {
-        $filter = $this->buildFilter($data);
-        $sql = "
+        $key = "product.suppliers." . md5(serialize($data));
+        $result = $this->getCache()->get($key);
+        if (is_null($result)) {
+            $filter = $this->buildFilter($data);
+            $sql = "
             SELECT DISTINCT s.supplier_id AS supplier_id, s.name AS supplier_name, p.product_id, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
             FROM
                 product AS p
@@ -665,12 +668,14 @@ SQL
                 LEFT JOIN product_to_category AS p2c ON (p.product_id = p2c.product_id)
                 LEFT JOIN product_tag AS pt ON p.product_id = pt.product_id
         ";
-        $sql .= $filter->getFilterString(true) .
-            " GROUP BY p.product_id" .
-            $this->buildLimitString($data['start'], $data['limit']);
+            $sql .= $filter->getFilterString(true) .
+                " GROUP BY p.product_id" .
+                $this->buildLimitString($data['start'], $data['limit']);
 
-        return $this->getDb()->query($sql, $filter->getParams())->rows;
-
+            $result = $this->getDb()->query($sql, $filter->getParams())->rows;
+            $this->getCache()->set($key, $result);
+        }
+        return $result;
     }
 
     public function getLatestProducts($limit) {
@@ -978,8 +983,11 @@ SQL
     }
 
     public function getProductManufacturers($data = array()) {
-        $filter = $this->buildFilter($data);
-        $sql = "
+        $key = "product.manufacturers." . md5(serialize($data));
+        $result = $this->getCache()->get($key);
+        if (is_null($result)) {
+            $filter = $this->buildFilter($data);
+            $sql = "
             SELECT DISTINCT m.manufacturer_id AS manufacturer_id, p.product_id, m.name AS manufacturer_name, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
             FROM
                 product AS p
@@ -992,11 +1000,14 @@ SQL
                 LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
                 LEFT JOIN product_tag AS pt ON p.product_id = pt.product_id
         ";
-        $sql .= $filter->getFilterString(true) .
-            " GROUP BY p.product_id" .
-            $this->buildLimitString($data['start'], $data['limit']);
+            $sql .= $filter->getFilterString(true) .
+                " GROUP BY p.product_id" .
+                $this->buildLimitString($data['start'], $data['limit']);
 
-        return $this->getDb()->query($sql, $filter->getParams())->rows;
+            $result = $this->getDb()->query($sql, $filter->getParams())->rows;
+            $this->getCache()->set($key, $result);
+        }
+        return $result;
     }
 
     public function getProductRelated($product_id) {

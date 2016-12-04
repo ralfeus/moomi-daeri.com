@@ -93,8 +93,9 @@ final class Cache {
 //        } else {
 //            throw new CacheNotInstalledException();
 //        }
+        $cacheKey = str_replace('\/', '__', $keyPattern);
         foreach (glob($this->destination . '/cache.*') as $cacheFile) {
-            if (preg_match(str_replace('/', '__', $keyPattern), $cacheFile)) {
+            if (preg_match($cacheKey, substr($cacheFile, strlen($this->destination) + 7))) {
                 unlink($cacheFile);
             }
         }
