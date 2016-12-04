@@ -103,17 +103,23 @@ class OrderItemDAO extends DAO {
      * @return int
      */
     private function fetchOrderItemsCount($filter = null) {
-        if (is_null($filter)) {
-            $filter = new Filter();
-        }
-        $query = "
-			SELECT COUNT(*) as total
+        $key = "orderItem." . md5(serialize($filter));
+        $result = $this->getCache()->get($key);
+        if (is_null($result)) {
+            if (is_null($filter)) {
+                $filter = new Filter();
+            }
+            $query = "
+			SELECT COUNT(*) AS total
 			FROM
 				" . $this->orderItemsFromQuery . "
-			" . ($filter->isFilterSet() ? "WHERE " . $filter->getFilterString(): "");
-        $order_item_query = $this->getDb()->query($query, $filter->getParams());
+			" . ($filter->isFilterSet() ? "WHERE " . $filter->getFilterString() : "");
+            $order_item_query = $this->getDb()->query($query, $filter->getParams());
 
-        return $order_item_query->row['total'];
+            $result = $order_item_query->row['total'];
+            $this->getCache()->set($key, $result);
+        }
+        return $result;
     }
 
     /**
