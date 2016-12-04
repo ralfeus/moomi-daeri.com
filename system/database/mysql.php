@@ -12,8 +12,10 @@ final class MySQL implements DBDriver{
     private $password;
     private $database;
     private $affectedCount;
+    private $logger;
 	
 	public function __construct($hostname, $username, $password, $database) {
+	    $this->logger = new Log('sql.log');
         $this->hostName = $hostname;
         $this->userName = $username;
         $this->password = $password;
@@ -30,17 +32,18 @@ final class MySQL implements DBDriver{
 
     private function connect() {
         $this->connection = new PDO(
-            'mysql:host=' . $this->hostName . ';dbname=' . $this->database,
+            'mysql:host=' . $this->hostName . ';dbname=' . $this->database . ';charset=utf8',
             $this->userName,
             $this->password,
             array(
-                PDO::MYSQL_ATTR_INIT_COMMAND => "
-                    SET NAMES utf8;
-                    SET CHARACTER SET utf8;
-                    SET CHARACTER_SET_CONNECTION=utf8;
-                    SET SQL_MODE = ''
-                ",
-                PDO::ATTR_PERSISTENT => true
+//                PDO::MYSQL_ATTR_INIT_COMMAND => "
+//                    SET NAMES utf8;
+//                    SET CHARACTER SET utf8;
+//                    SET CHARACTER_SET_CONNECTION=utf8;
+//                    SET SQL_MODE = ''
+//                "
+                PDO::ATTR_PERSISTENT => true,
+//                PDO::MYSQL_ATTR_USE_BUFFERED_QUERY
             )
         );
         $this->statements = [];
@@ -72,8 +75,7 @@ final class MySQL implements DBDriver{
     public function query($sql, $params = array(), $log = false, $noCache = false) {
         $sql = trim($sql);
         if ($log) {
-            $log = new Log('error.log');
-            $log->write($sql);
+            $this->logger->write($sql);
         }
 //        $queryHash = md5($sql . serialize($params));
 //        $cache = new Cache();
@@ -135,16 +137,14 @@ final class MySQL implements DBDriver{
                 }
             } catch (PDOException $exc) {
                 $lastError = $exc;
-                error_log($exc->getMessage());
-                error_log($exc->getTraceAsString());
+                $this->logger->write($exc->getMessage());
+                $this->logger->write($exc->getTraceAsString());
                 $this->reconnect();
             }
         }
-        if (!$log) {
-            $log = new Log('error.log');
-        }
-        $log->write($sql);
-        $log->write(print_r($params, true));
+
+        $this->logger->write($sql);
+        $this->logger->write(print_r($params, true));
         throw $lastError;
     }
 

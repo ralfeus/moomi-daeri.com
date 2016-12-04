@@ -47,7 +47,7 @@ class ControllerModuleLatest extends Controller {
             $data['filter_manufacturer_id'] = $manufacturer_id;           
         }
 
-		$results = []; //\model\catalog\ProductDAO::getInstance()->getProducts($data, $data['sort'], $data['order'], $data['start'], $data['limit'], true);
+		$results = \model\catalog\ProductDAO::getInstance()->getProducts($data, $data['sort'], $data['order'], $data['start'], $data['limit'], true);
         //$this->getLogger()->write(print_r($data, true));
 
 		foreach ($results as $result) {
@@ -65,7 +65,7 @@ class ControllerModuleLatest extends Controller {
 
 			$specials = $result->getSpecials(true);
 			if (!empty($specials)) {
-				$special = $this->getCurrency()->format($this->tax->calculate($specials[0], 0, $this->getConfig()->get('config_tax')));
+				$special = $this->getCurrency()->format($specials[0]['price']);
 			} else {
 				$special = false;
 			}

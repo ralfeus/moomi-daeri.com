@@ -625,7 +625,7 @@ SQL
                 product_id = :productId " .
                 ($active ? " 
                     AND ((p.date_start = '0000-00-00' OR p.date_start < NOW())
-                    AND (p.date_end = '0000-00-00' OR p.date_end > DATE_ADD(NOW(), INTERVAL 1 HOUR))" : "") . "
+                    AND (p.date_end = '0000-00-00' OR p.date_end > DATE_ADD(NOW(), INTERVAL 1 HOUR)))" : "") . "
             ORDER BY priority, price
     ";
 //		$this->log->write($query);
