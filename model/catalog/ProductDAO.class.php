@@ -618,18 +618,24 @@ SQL
      * @return mixed
      */
     public function getProductSpecials($productId, $active = false) {
-       $query = "
-            SELECT *
-            FROM product_special AS p
-            WHERE 
-                product_id = :productId " .
-                ($active ? " 
-                    AND ((p.date_start = '0000-00-00' OR p.date_start < NOW())
-                    AND (p.date_end = '0000-00-00' OR p.date_end > DATE_ADD(NOW(), INTERVAL 1 HOUR)))" : "") . "
-            ORDER BY priority, price
-    ";
+        $cacheKey = "product.specials." . $productId . $active;
+        $result = $this->getCache()->get($cacheKey);
+        if (is_null($result)) {
+            $query = "
+                SELECT *
+                FROM product_special AS p
+                WHERE 
+                    product_id = :productId " .
+                    ($active ? " 
+                        AND ((p.date_start = '0000-00-00' OR p.date_start < NOW())
+                        AND (p.date_end = '0000-00-00' OR p.date_end > DATE_ADD(NOW(), INTERVAL 1 HOUR)))" : "") . "
+                ORDER BY priority, price
+            ";
 //		$this->log->write($query);
-        return $this->getDb()->query($query, [':productId' => $productId])->rows;
+            $result =  $this->getDb()->query($query, [':productId' => $productId])->rows;
+            $this->getCache()->set($cacheKey, $result);
+        }
+        return $result;
     }
 
     /**
@@ -1086,24 +1092,29 @@ SQL
      * @return DescriptionCollection
      */
     public function getDescription($productId) {
-        $query = $this->getDb()->query(<<<SQL
-            SELECT *
-            FROM product_description
-            WHERE product_id = :productId
+        $cacheKey = "product.description." . $productId;
+        $result = $this->getCache()->get($cacheKey);
+        if (is_null($result)) {
+            $query = $this->getDb()->query(<<<SQL
+                SELECT *
+                FROM product_description
+                WHERE product_id = :productId
 SQL
-            , [':productId' => $productId]
-        );
-        $result = new DescriptionCollection();
-        foreach ($query->rows as $row) {
-            $result->addDescription(new Description(
-                $row['language_id'],
-                $row['name'],
-                $row['description'],
-                $row['meta_description'],
-                $row['meta_keyword'],
-                $row['seo_title'],
-                $row['seo_h1']
-            ));
+                , [':productId' => $productId]
+            );
+            $result = new DescriptionCollection();
+            foreach ($query->rows as $row) {
+                $result->addDescription(new Description(
+                    $row['language_id'],
+                    $row['name'],
+                    $row['description'],
+                    $row['meta_description'],
+                    $row['meta_keyword'],
+                    $row['seo_title'],
+                    $row['seo_h1']
+                ));
+            }
+            $this->getCache()->set($cacheKey, $result);
         }
         return $result;
     }
