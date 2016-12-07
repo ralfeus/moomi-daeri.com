@@ -497,7 +497,7 @@ SQL
         $filter = $this->buildFilter($filter);
 
         $sql = <<<SQL
-            SELECT DISTINCT p.product_id
+            SELECT p.product_id
             FROM
                 product p
                 LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
@@ -591,7 +591,7 @@ SQL
      * @return int
      */
     public function getProductsCount($data = []) {
-        $cacheKey = 'productCount.' . md5(serialize($data));
+        $cacheKey = 'product.count.' . md5(serialize($data));
         $result = $this->getCache()->get($cacheKey);
         if (!is_null($result)) {
             return $result;
