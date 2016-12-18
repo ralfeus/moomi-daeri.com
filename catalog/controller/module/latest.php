@@ -1,4 +1,6 @@
 <?php
+use model\catalog\ProductDAO;
+
 class ControllerModuleLatest extends Controller {
     public function __construct($registry)
     {
@@ -47,7 +49,7 @@ class ControllerModuleLatest extends Controller {
             $data['filter_manufacturer_id'] = $manufacturer_id;           
         }
 
-		$results = \model\catalog\ProductDAO::getInstance()->getProducts($data, $data['sort'], $data['order'], $data['start'], $data['limit'], true);
+		$results = \model\catalog\ProductDAO::getInstance()->getProducts($data, $data['sort'], $data['order'], $data['start'], $data['limit'], true, true);
         //$this->getLogger()->write(print_r($data, true));
 
 		foreach ($results as $result) {
@@ -121,7 +123,7 @@ class ControllerModuleLatest extends Controller {
 		}
 
         $pagination = new Pagination();
-        $pagination->total = $this->model_catalog_product->getTotalProducts($data);
+        $pagination->total = ProductDAO::getInstance()->getProductsCount($data);
         $pagination->page = $page;
         $pagination->limit = $this->setting['limit'];
         $pagination->text = $this->language->get('text_pagination');

@@ -497,7 +497,7 @@ SQL
         $filter = $this->buildFilter($filter);
 
         $sql = <<<SQL
-            SELECT p.product_id
+            SELECT DISTINCT p.product_id
             FROM
                 product p
                 LEFT JOIN product_description pd ON (p.product_id = pd.product_id)
@@ -571,10 +571,18 @@ SQL
      * @param int $start
      * @param int $limit
      * @param bool $shallow
+     * @param bool $forClient
      * @return Product[]
      */
-    public function getProducts($data = [], $sortColumn = null, $sortOrder = 'ASC', $start = null, $limit = null, $shallow = false) {
+    public function getProducts($data = [], $sortColumn = null, $sortOrder = 'ASC', $start = null, $limit = null, $shallow = false, $forClient = false) {
         $product_data = [];
+        if ($forClient) {
+            if ($data instanceof FilterTree) {
+                $data = new FilterTree(['filterEnabled' => true], 'AND', $data);
+            } else {
+                $data['filterEnabled'] = true;
+            }
+        }
         foreach ($this->getProductIds($data, $sortColumn, $sortOrder, $start, $limit) as $result) {
             try {
                 $product_data[$result['product_id']] = $this->getProduct($result['product_id'], $shallow, true);
@@ -588,13 +596,21 @@ SQL
 
     /**
      * @param FilterTree|array $data
+     * @param bool $forClient
      * @return int
      */
-    public function getProductsCount($data = []) {
+    public function getProductsCount($data = [], $forClient = false) {
         $cacheKey = 'product.count.' . md5(serialize($data));
         $result = $this->getCache()->get($cacheKey);
         if (!is_null($result)) {
             return $result;
+        }
+        if ($forClient) {
+            if ($data instanceof FilterTree) {
+                $data = new FilterTree(['filterEnabled' => true], 'AND', $data);
+            } else {
+                $data['filterEnabled'] = true;
+            }
         }
         $filter = $this->buildFilter($data);
         $sql = "

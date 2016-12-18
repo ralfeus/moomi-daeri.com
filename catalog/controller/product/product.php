@@ -128,6 +128,9 @@ class ControllerProductProduct extends Controller {
 
         try {
             $product = ProductDAO::getInstance()->getProduct($productId, false, true);
+            if ($product->getStatus() == false) {
+                throw new InvalidArgumentException("The product is disabled");
+            }
             $description = is_null($product->getDescription($this->getLanguage()->getId()))
                 ? new \model\localization\Description($this->getLanguage()->getId(), '')
                 : $product->getDescription($this->getLanguage()->getId());
