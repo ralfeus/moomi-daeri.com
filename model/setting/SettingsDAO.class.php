@@ -105,6 +105,7 @@ class SettingsDAO extends DAO {
             ]);
         }
         $this->getCache()->deleteAll("/^setting\\./");
+        $this->getCache()->deleteAll("/^extensions\\./");
     }
 
     public function deleteSetting($group, $key, $storeId = 0) {
