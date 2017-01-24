@@ -179,7 +179,7 @@ abstract class Controller extends OpenCartBase {
                         ? (isset($value[1]) // Predicate
                             ? ($value[1]($_REQUEST[$param]) ? $_REQUEST[$param] : $value[0])
                             : (!empty($_REQUEST[$param]) ? $_REQUEST[$param] : $value[0]))
-                        : (!empty($_REQUEST[$param]) ? $_REQUEST[$param] : $value);
+                        : (isset($_REQUEST[$param]) ? $_REQUEST[$param] : $value);
         }
     }
 
