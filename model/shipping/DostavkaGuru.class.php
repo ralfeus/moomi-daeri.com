@@ -74,6 +74,7 @@ class DostavkaGuru extends ShippingMethodBase {
                 'script' => 'all_list',
                 'city_name' => $address['city']
             ]);
+        $this->getLogger()->write($response);
         $xml = new \SimpleXMLElement($response);
         $result = [];
         foreach ($xml->xpath('point') as $point) {
