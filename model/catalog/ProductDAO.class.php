@@ -72,11 +72,11 @@ class ProductDAO extends DAO {
         }
         if (!empty($data['filterPriceRange'])) {
             $filterString = '';
-            if (!is_null($data['filterPriceRange'][0])) {
+            if (!empty($data['filterPriceRange'][0])) {
                 $filterString = " AND p.price >= :priceFrom";
             }
-            if (!is_null($data['filterPriceRange'][1])) {
-                $filterString .= "AND p.price <= :priceTo";
+            if (!empty($data['filterPriceRange'][1]) && ($data['filterPriceRange'][1] > 0)) {
+                $filterString .= " AND p.price <= :priceTo";
             }
             $filter->addChunk(substr($filterString, 4), [':priceFrom' => $data['filterPriceRange'][0], ':priceTo' => $data['filterPriceRange'][1]]);
         }
