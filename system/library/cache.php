@@ -34,7 +34,10 @@ final class Cache {
 //            $this->logger->write("Trying to get '$key'");
             if (apc_exists($key)) {
 //                $this->logger->write("\tFound '$key'");
-                return apc_fetch($key);
+
+                $value = apc_fetch($key);
+                $this->logger->write("Cache->get(): returning " . count($value) . " of " . gettype($value));
+                return $value;
             } else {
 //                $this->logger->write("\tCouldn't find '$key'");
                 return null; //TODO: Check why it was removed
@@ -59,6 +62,7 @@ final class Cache {
     public function set($key, $value) {
         if (function_exists('apc_store')) {
 //            $this->logger->write("Setting '$key'");
+            $this->logger->write("Cache->set(): Storing " . count($value) . " of " . gettype($value));
             apc_store($key, $value, $this->expire);
         } else {
             throw new CacheNotInstalledException();
