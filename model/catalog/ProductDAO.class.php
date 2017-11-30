@@ -679,14 +679,14 @@ SQL
         if (is_null($result)) {
             $filter = $this->buildFilter($data);
             $sql = "
-            SELECT DISTINCT s.supplier_id AS supplier_id, s.name AS supplier_name, p.product_id, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
+            SELECT DISTINCT s.supplier_id AS supplier_id, s.name AS supplier_name
             FROM
-                product AS p
+                product AS p /*, p.product_id, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name*/
                 LEFT JOIN product_description AS pd ON (p.product_id = pd.product_id)
                 LEFT JOIN supplier AS s ON p.supplier_id = s.supplier_id
                 LEFT JOIN manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
-                LEFT JOIN product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)
-                LEFT JOIN product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
+                /*LEFT JOIN product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)*/
+                /*LEFT JOIN product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)*/
                 LEFT JOIN user AS u ON p.user_id = u.user_id
                 LEFT JOIN product_to_category AS p2c ON (p.product_id = p2c.product_id)
                 LEFT JOIN product_tag AS pt ON p.product_id = pt.product_id
