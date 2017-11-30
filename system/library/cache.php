@@ -36,7 +36,7 @@ final class Cache {
 //                $this->logger->write("\tFound '$key'");
 
                 $value = apc_fetch($key);
-                $this->logger->write("Cache->get(): returning " . count($value) . " of " . gettype($value));
+                $this->logger->write("Returning " . count($value) . " of " . gettype($value) . " from '$key'");
                 return $value;
             } else {
 //                $this->logger->write("\tCouldn't find '$key'");
@@ -62,7 +62,7 @@ final class Cache {
     public function set($key, $value) {
         if (function_exists('apc_store')) {
 //            $this->logger->write("Setting '$key'");
-            $this->logger->write("Cache->set(): Storing " . count($value) . " of " . gettype($value));
+            $this->logger->write("Cache->set(): Storing " . count($value) . " of " . gettype($value) . " to '$key'");
             apc_store($key, $value, $this->expire);
         } else {
             throw new CacheNotInstalledException();
