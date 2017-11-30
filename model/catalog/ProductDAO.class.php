@@ -695,7 +695,7 @@ SQL
                 " GROUP BY p.product_id" .
                 $this->buildLimitString($data['start'], $data['limit']);
 
-            $result = $this->getDb()->query($sql, $filter->getParams())->rows;
+            $result = $this->getDb()->query($sql, $filter->getParams(), true)->rows;
             $this->getCache()->set($key, $result);
         }
         return $result;

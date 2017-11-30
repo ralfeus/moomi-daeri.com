@@ -62,7 +62,7 @@ final class Cache {
     public function set($key, $value) {
         if (function_exists('apc_store')) {
 //            $this->logger->write("Setting '$key'");
-            $this->logger->write("Cache->set(): Storing " . count($value) . " of " . gettype($value) . " to '$key'");
+            $this->logger->write("Storing " . count($value) . " of " . gettype($value) . " to '$key'");
             apc_store($key, $value, $this->expire);
         } else {
             throw new CacheNotInstalledException();

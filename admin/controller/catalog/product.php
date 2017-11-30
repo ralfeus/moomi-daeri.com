@@ -606,7 +606,6 @@ class ControllerCatalogProduct extends AdminController {
 		$product_total = ProductDAO::getInstance()->getProductsCount($data);
 
 		$products = ProductDAO::getInstance()->getProducts($data, $sort, $order, ($page - 1) * $limit, $limit);
-		$this->getLogger()->write("Got " . sizeof($products) . " products");
 		$this->data['suppliers'] = $this->getSuppliers();
 		$this->data['usernames'] = $this->getUserNames();
 		$this->data['manufacturers'] = $this->getManufacturers();

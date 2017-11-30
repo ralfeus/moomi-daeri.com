@@ -111,6 +111,9 @@ final class MySQL implements DBDriver{
                     } else {
                         $args = $params;
                     }
+                    if ($log) {
+                        $this->logger->write(print_r($args, true));
+                    }
                 }
                 if ($statement->execute($args) === true) {
                     if (strtoupper(substr($sql, 0, 6)) == 'SELECT') {
