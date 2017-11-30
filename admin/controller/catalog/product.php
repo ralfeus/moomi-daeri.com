@@ -606,6 +606,7 @@ class ControllerCatalogProduct extends AdminController {
 		$product_total = ProductDAO::getInstance()->getProductsCount($data);
 
 		$products = ProductDAO::getInstance()->getProducts($data, $sort, $order, ($page - 1) * $limit, $limit);
+		$this->getLogger()->write("Got " . sizeof($products) . " products");
 		$this->data['suppliers'] = $this->getSuppliers();
 		$this->data['usernames'] = $this->getUserNames();
 		$this->data['manufacturers'] = $this->getManufacturers();
@@ -1290,7 +1291,7 @@ class ControllerCatalogProduct extends AdminController {
 //		} else {
 //			$this->data['main_category_id'] = 0;
 //		}
-
+//
 //		if (isset($this->request->post['product_category'])) {
 //			$this->data['product_category'] = $this->request->post['product_category'];
 //		} elseif (isset($this->request->get['product_id'])) {
@@ -1325,7 +1326,7 @@ class ControllerCatalogProduct extends AdminController {
 //				);
 //			}
 //		}
-
+//
 //		if (isset($this->request->post['points'])) {
 //			$this->data['points'] = $this->request->post['points'];
 //		} else if (!empty($product_info)) {
@@ -1333,7 +1334,7 @@ class ControllerCatalogProduct extends AdminController {
 //		} else {
 //			$this->data['points'] = '';
 //		}
-
+//
 //		if (isset($this->request->post['koreanName'])) {
 //			$this->data['koreanName'] = $this->request->post['koreanName'];
 //		} else if (!empty($product_info)) {
@@ -1341,7 +1342,7 @@ class ControllerCatalogProduct extends AdminController {
 //		} else {
 //			$this->data['koreanName'] = '';
 //		}
-
+//
 //		if (isset($this->request->post['supplierUrl'])) {
 //			$this->data['supplierUrl'] = $this->request->post['supplierUrl'];
 //		} else if (!empty($product_info)) {
@@ -1349,7 +1350,7 @@ class ControllerCatalogProduct extends AdminController {
 //		} else {
 //			$this->data['supplierUrl'] = '';
 //		}
-
+//
 //		if (isset($this->request->post['product_reward'])) {
 //			$this->data['product_reward'] = $this->request->post['product_reward'];
 //		} elseif (isset($this->request->get['product_id'])) {
@@ -1357,7 +1358,7 @@ class ControllerCatalogProduct extends AdminController {
 //		} else {
 //			$this->data['product_reward'] = array();
 //		}
-
+//
 //		if (isset($this->request->post['product_layout'])) {
 //			$this->data['product_layout'] = $this->request->post['product_layout'];
 //		} elseif (isset($this->request->get['product_id'])) {
