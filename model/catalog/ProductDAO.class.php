@@ -695,7 +695,7 @@ SQL
                 " GROUP BY p.product_id" .
                 $this->buildLimitString($data['start'], $data['limit']);
 
-            $result = $this->getDb()->query($sql, $filter->getParams(), true)->rows;
+            $result = $this->getDb()->query($sql, $filter->getParams())->rows;
             $this->getCache()->set($key, $result);
         }
         return $result;
@@ -1011,14 +1011,14 @@ SQL
         if (is_null($result)) {
             $filter = $this->buildFilter($data);
             $sql = "
-            SELECT DISTINCT m.manufacturer_id AS manufacturer_id, p.product_id, m.name AS manufacturer_name, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name
+            SELECT DISTINCT m.manufacturer_id AS manufacturer_id/*, p.product_id*/, m.name AS manufacturer_name/*, n.text AS link, a.text AS korean_name, u.user_id, u.username AS user_name*/
             FROM
                 product AS p
                 LEFT JOIN product_description AS pd ON (p.product_id = pd.product_id)
                 LEFT JOIN supplier AS s ON p.supplier_id = s.supplier_id
                 LEFT JOIN manufacturer AS m ON p.manufacturer_id = m.manufacturer_id
-                LEFT JOIN product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)
-                LEFT JOIN product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)
+                /*LEFT JOIN product_attribute AS n ON (p.product_id = n.product_id AND n.attribute_id=43)
+                LEFT JOIN product_attribute AS a ON (p.product_id = a.product_id AND a.attribute_id=42)*/
                 LEFT JOIN user AS u ON p.user_id = u.user_id
                 LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
                 LEFT JOIN product_tag AS pt ON p.product_id = pt.product_id
