@@ -205,7 +205,7 @@ class ControllerProductManufacturer extends Controller {
                             $ar = explode("|", $m[1]);
                             return $ar[array_rand($ar, 1)];
                         },
-                        $product->getDescriptions()->getDescription($this->getLanguage()->getId())
+                        $product->getDescriptions()->getDescription($this->getLanguage()->getId())->getDescription()
                     );
                 }
     //	   		#kabantejay synonymizer end
