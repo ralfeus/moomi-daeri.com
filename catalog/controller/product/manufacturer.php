@@ -199,13 +199,14 @@ class ControllerProductManufacturer extends Controller {
                 if (is_null($product->getDescriptions())) {
                     $description = '';
                 } else {
+				    $productDescription = $product->getDescriptions()->getDescription($this->getLanguage()->getId());
                     $description = preg_replace_callback(
                         '/\{  (.*?)  \}/xs',
                         function ($m) {
                             $ar = explode("|", $m[1]);
                             return $ar[array_rand($ar, 1)];
                         },
-                        $product->getDescriptions()->getDescription($this->getLanguage()->getId())->getDescription()
+                        $productDescription == null ? '' : $productDescription->getDescription()
                     );
                 }
     //	   		#kabantejay synonymizer end
