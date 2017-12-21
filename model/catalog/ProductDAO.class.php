@@ -504,6 +504,7 @@ SQL
                 LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
                 LEFT JOIN product_tag pt ON (p.product_id = pt.product_id)
                 LEFT JOIN product_to_category p2c ON (p.product_id = p2c.product_id)
+                LEFT JOIN review AS r ON p.product_id = r.product_id
 SQL
         ;
 
