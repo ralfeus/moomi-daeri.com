@@ -244,5 +244,7 @@ abstract class ProductSource {
      * @return ImportSourceSite
      * @throws Exception
      */
-    public static abstract function createDefaultImportSourceSiteInstance();
+    public static function createDefaultImportSourceSiteInstance() {
+        throw new Exception("Must be implemented in child class");
+    }
 }
