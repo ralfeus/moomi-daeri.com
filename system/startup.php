@@ -82,7 +82,6 @@ require_once(DIR_SYSTEM . 'engine/model.php');
 require_once(DIR_SYSTEM . 'engine/registry.php');
 
 // Common
-require_once(DIR_SYSTEM . 'library/cache.php');
 require_once(DIR_SYSTEM . 'library/url.php');
 require_once(DIR_SYSTEM . 'library/config.php');
 require_once(DIR_SYSTEM . 'library/db.php');
