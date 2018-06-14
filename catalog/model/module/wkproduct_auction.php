@@ -3,7 +3,7 @@
 ################################################################################################
 # Product auction for Opencart 1.5.1.x From webkul http://webkul.com    #
 ################################################################################################
-class ModelModuleWkproductauction extends Model {
+class ModelModuleWkproductauction extends \system\engine\Model {
 	
 	public function getAuction($productId) {
 			

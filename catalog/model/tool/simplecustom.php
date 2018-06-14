@@ -5,7 +5,7 @@
 @link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */  
 
-class ModelToolSimpleCustom extends Model {
+class ModelToolSimpleCustom extends \system\engine\Model {
 
     public function getCustomerField($customer_id, $field) {
         return $this->getField(2, $customer_id, $field, 'customer');

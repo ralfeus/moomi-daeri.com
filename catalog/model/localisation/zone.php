@@ -1,5 +1,5 @@
 <?php
-class ModelLocalisationZone extends Model {
+class ModelLocalisationZone extends \system\engine\Model {
 	public function getZone($zone_id) {
 		$query = $this->getDb()->query("SELECT * FROM zone WHERE zone_id = '" . (int)$zone_id . "' AND status = '1'");
 		

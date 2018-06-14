@@ -1,5 +1,5 @@
 <?php 
-class ModelPaymentUnistreamTransfer extends Model {
+class ModelPaymentUnistreamTransfer extends \system\engine\Model {
   	public function getMethod($address, $total) {
 		$this->load->language('payment/unistream_transfer');
 		

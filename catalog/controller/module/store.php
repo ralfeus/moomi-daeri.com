@@ -1,10 +1,13 @@
-<?php   
-class ControllerModuleStore extends Controller {
+<?php
+use system\engine\Controller;
+use system\library\User;
+
+class ControllerModuleStore extends \system\engine\Controller {
 	protected function index() {
 		$status = true;
 		
 		if ($this->config->get('store_admin')) {
-			$this->load->library('user');
+			//$this->load->library('user');
 		
 			$this->user = new User($this->registry);
 			

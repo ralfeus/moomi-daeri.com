@@ -1,7 +1,9 @@
 <?php 
 	//trigger_error ( ' URL api make: ' . $m_url, E_USER_NOTICE );
 
-class ControllerPaymentMultiPay extends Controller {
+use system\engine\Controller;
+
+class ControllerPaymentMultiPay extends \system\engine\Controller {
 	private $error = array();
 
     public function install() {

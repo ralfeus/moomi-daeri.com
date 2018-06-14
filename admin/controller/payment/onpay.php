@@ -2,7 +2,7 @@
 /**
  * e-mail: s-m-o-k@list.ru
  */
-class ControllerPaymentOnPay extends Controller {
+class ControllerPaymentOnPay extends \system\engine\Controller {
 	private $error = array();
 
 	public function index() {

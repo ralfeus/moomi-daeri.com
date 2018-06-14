@@ -1,5 +1,7 @@
-<?php  
-class ControllerCommonLogin extends Controller { 
+<?php
+use system\engine\Controller;
+
+class ControllerCommonLogin extends \system\engine\Controller {
 	private $error = array();
 	          
 	public function index() { 
@@ -53,7 +55,7 @@ class ControllerCommonLogin extends Controller {
 			$this->data['success'] = '';
 		}
 				
-    	$this->data['action'] = $this->url->link('common/login', '', 'SSL');
+    	$this->data['action'] = $this->getUrl()->link('common/login', '', 'SSL');
 
 		if (isset($this->request->post['username'])) {
 			$this->data['username'] = $this->request->post['username'];

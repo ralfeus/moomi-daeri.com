@@ -1,5 +1,7 @@
 <?php
-class ControllerCommonHeader extends Controller {
+use system\engine\Controller;
+
+class ControllerCommonHeader extends \system\engine\Controller {
 	protected function index() {
 		$this->data['title'] = $this->document->getTitle();
 

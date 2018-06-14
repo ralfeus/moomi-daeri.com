@@ -1,5 +1,7 @@
 <?php
-class ControllerReportAffiliateCommission extends Controller {
+use system\engine\Controller;
+
+class ControllerReportAffiliateCommission extends \system\engine\Controller {
 	public function index() {     
 		$this->load->language('report/affiliate_commission');
 

@@ -4,7 +4,7 @@
  * Class ModelShippingRoyalMail
  * @deprecated
  */
-class ModelShippingRoyalMail extends Model {
+class ModelShippingRoyalMail extends \system\engine\Model {
 	function getQuote($address) {
 		$this->load->language('shipping/royal_mail');
 		

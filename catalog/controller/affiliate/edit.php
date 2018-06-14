@@ -1,5 +1,7 @@
 <?php
-class ControllerAffiliateEdit extends Controller {
+use system\engine\Controller;
+
+class ControllerAffiliateEdit extends \system\engine\Controller {
 	private $error = array();
 
 	public function index() {

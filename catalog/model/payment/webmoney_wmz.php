@@ -1,5 +1,5 @@
 <?php
-class ModelPaymentWebmoneyWMZ extends Model {
+class ModelPaymentWebmoneyWMZ extends \system\engine\Model {
 	public function getMethod($address, $total) {
 		$this->load->language('payment/webmoney_wmz');
 		

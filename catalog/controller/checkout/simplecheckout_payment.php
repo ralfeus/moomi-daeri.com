@@ -3,9 +3,11 @@
 @author	Dmitriy Kubarev
 @link	http://www.simpleopencart.com
 @link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
-*/  
+*/
 
-class ControllerCheckoutSimpleCheckoutPayment extends Controller {
+use system\engine\Controller;
+
+class ControllerCheckoutSimpleCheckoutPayment extends \system\engine\Controller {
     public function index() {
       
         $this->language->load('checkout/simplecheckout');

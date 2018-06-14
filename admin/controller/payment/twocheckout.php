@@ -1,5 +1,7 @@
-<?php 
-class ControllerPaymentTwoCheckout extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerPaymentTwoCheckout extends \system\engine\Controller {
 	private $error = array(); 
 
 	public function index() {

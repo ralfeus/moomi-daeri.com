@@ -4,7 +4,7 @@
  * Class ModelShippingPickup
  * @deprecated
  */
-class ModelShippingPickup extends Model {
+class ModelShippingPickup extends \system\engine\Model {
 	function getQuote($address) {
 		$this->load->language('shipping/pickup');
 		$sql = "SELECT * FROM zone_to_geo_zone WHERE geo_zone_id = '" . (int)$this->config->get('pickup_geo_zone_id') . "' AND country_id = '" . (int)$address['country_id'] . "' AND (zone_id = '" . (int)$address['zone_id'] . "' OR zone_id = '0')";

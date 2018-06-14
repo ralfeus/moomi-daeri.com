@@ -1,9 +1,11 @@
 <?php
 //trigger_error ( $this->session->data['redirect'] = $this->url->link(_url($_GET), 'SSL'), E_USER_NOTICE );
 
+use system\engine\Controller;
+
 define("ABR_DESCR", '<b>DEPOSITE</b>: ');
 
-class ControllerPaymentMultiPayDep extends Controller {
+class ControllerPaymentMultiPayDep extends \system\engine\Controller {
 
 	public function index() {
 		$this->load->helper('multi_pay');

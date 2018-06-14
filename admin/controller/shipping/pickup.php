@@ -1,5 +1,7 @@
 <?php
-class ControllerShippingPickup extends Controller {
+use system\engine\Controller;
+
+class ControllerShippingPickup extends \system\engine\Controller {
 	private $error = array();
 
     public function getCost()

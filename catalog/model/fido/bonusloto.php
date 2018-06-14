@@ -1,5 +1,5 @@
 <?php
-class ModelFidobonusloto extends Model {
+class ModelFidobonusloto extends \system\engine\Model {
 	public function getbonuslotoStory($bonusloto_id) {
 		$query = $this->getDb()->query("SELECT DISTINCT * FROM `" . DB_PREFIX . "bonusloto` bl LEFT JOIN `" . DB_PREFIX . "bonusloto_description` bld ON (bl.bonusloto_id = bld.bonusloto_id) LEFT JOIN `" . DB_PREFIX . "bonusloto_to_store` bl2s ON (bl.bonusloto_id = bl2s.bonusloto_id) WHERE bl.bonusloto_id = '" . (int)$bonusloto_id . "' AND bld.language_id = '" . (int)$this->config->get('config_language_id') . "' AND bl2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND bl.status = '1'");
 		return $query->row;

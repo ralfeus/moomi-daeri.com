@@ -1,5 +1,5 @@
 <?php
-class ModelCheckoutOrder extends Model {	
+class ModelCheckoutOrder extends \system\engine\Model {
 	public function addOrderItems($orderId, $order_items)
 	{
         /// Get totals from DB and cart
@@ -798,7 +798,7 @@ class ModelCheckoutOrder extends Model {
                 $this->config->get('config_sms_message'))
         );
 
-        $this->load->library('sms');
+        //$this->load->library('sms');
         $sms = new Sms($this->config->get('config_sms_gatename'), $options);
         $sms->send();
     }

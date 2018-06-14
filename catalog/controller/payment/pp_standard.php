@@ -1,5 +1,7 @@
 <?php
-class ControllerPaymentPPStandard extends Controller {
+use system\engine\Controller;
+
+class ControllerPaymentPPStandard extends \system\engine\Controller {
 	protected function index() {
 		$this->language->load('payment/pp_standard');
 		
@@ -116,7 +118,7 @@ class ControllerPaymentPPStandard extends Controller {
 				$this->data['paymentaction'] = 'sale';
 			}
 			
-			$this->load->library('encryption');
+			//$this->load->library('encryption');
 	
 			$encryption = new Encryption($this->config->get('config_encryption'));
 	
@@ -133,7 +135,7 @@ class ControllerPaymentPPStandard extends Controller {
 	}
 	
 	public function callback() {
-		$this->load->library('encryption');
+		//$this->load->library('encryption');
 	
 		$encryption = new Encryption($this->config->get('config_encryption'));
 		

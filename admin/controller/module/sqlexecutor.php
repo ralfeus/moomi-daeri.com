@@ -1,5 +1,7 @@
 <?php
-class ControllerModuleSqlExecutor extends Controller {
+use system\engine\Controller;
+
+class ControllerModuleSqlExecutor extends \system\engine\Controller {
 	private $error = array();
 
 //	public function info() {

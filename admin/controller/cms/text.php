@@ -6,7 +6,7 @@
  * Time: 19:20
  * To change this template use File | Settings | File Templates.
  */
-class ControllerCmsText extends Controller
+class ControllerCmsText extends \system\engine\Controller
 {
     private $modelContentManagementEditText;
 

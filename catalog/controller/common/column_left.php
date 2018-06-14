@@ -1,5 +1,7 @@
-<?php  
-class ControllerCommonColumnLeft extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerCommonColumnLeft extends \system\engine\Controller {
 	public function index() {
 //		$this->load->model('design/layout');
 		$this->load->model('catalog/category');
@@ -85,4 +87,3 @@ class ControllerCommonColumnLeft extends Controller {
 		$this->render();
 	}
 }
-?>

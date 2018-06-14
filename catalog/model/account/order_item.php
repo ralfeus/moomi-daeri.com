@@ -1,5 +1,5 @@
 <?php
-class ModelAccountOrderItem extends Model
+class ModelAccountOrderItem extends \system\engine\Model
 {
 	public function getOrderItem($order_item_id) {
 		$result = $this->fetchOrderItems("order_product_id = $order_item_id");

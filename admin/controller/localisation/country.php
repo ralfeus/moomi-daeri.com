@@ -1,7 +1,8 @@
 <?php
 use model\sale\CustomerDAO;
+use system\engine\Controller;
 
-class ControllerLocalisationCountry extends Controller {
+class ControllerLocalisationCountry extends \system\engine\Controller {
 	private $error = array();
  
 	public function index() {

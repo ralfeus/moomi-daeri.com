@@ -4,7 +4,7 @@
  * Class ModelShippingParcelforce48
  * @deprecated
  */
-class ModelShippingParcelforce48 extends Model {
+class ModelShippingParcelforce48 extends \system\engine\Model {
 	function getQuote($address) {
 		$this->load->language('shipping/parcelforce_48');
 		

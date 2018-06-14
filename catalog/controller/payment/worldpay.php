@@ -1,5 +1,7 @@
 <?php
-class ControllerPaymentWorldPay extends Controller {
+use system\engine\Controller;
+
+class ControllerPaymentWorldPay extends \system\engine\Controller {
 	protected function index() {
     	$this->data['button_confirm'] = $this->language->get('button_confirm');
 
@@ -7,7 +9,7 @@ class ControllerPaymentWorldPay extends Controller {
 		
 		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 		
-		$this->load->library('encryption');
+		//$this->load->library('encryption');
 		
 		$this->data['action'] = 'https://select.worldpay.com/wcc/purchase';
 

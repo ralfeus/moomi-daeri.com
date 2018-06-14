@@ -1,5 +1,9 @@
 <?php
+namespace admin\controller\sale;
+
+use system\engine\Controller;
 use model\sale\CustomerDAO;
+use system\library\Messaging;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -8,19 +12,18 @@ use model\sale\CustomerDAO;
  * Time: 11:22
  * To change this template use File | Settings | File Templates.
  */
-class ControllerSaleCreditManagement extends Controller {
+class ControllerSaleCreditManagement extends \system\engine\Controller {
     public function __construct($registry) {
         parent::__construct($registry);
 //        $this->log->write("Starting");
         $this->takeSessionVariables();
-        $this->load->library("Messaging");
+//        //$this->load->library("Messaging");
         $this->load->language('sale/creditManagement');
         $this->document->setTitle($this->language->get('HEADING_TITLE'));
         $this->data['headingTitle'] = $this->language->get('HEADING_TITLE');
     }
 
-    public function accept()
-    {
+    public function accept() {
 //        $this->log->write("Starting");
         $request = Messaging::getSystemMessage($this->request->request['requestId']);
         $request['data']->status = ADD_CREDIT_STATUS_ACCEPTED;
@@ -28,10 +31,8 @@ class ControllerSaleCreditManagement extends Controller {
         Messaging::updateSystemMessage($request['messageId'], $request['data']);
     }
 
-    private function getCustomers()
-    {
-        foreach ($this->parameters as $key => $value)
-        {
+    private function getCustomers() {
+        foreach ($this->parameters as $key => $value) {
             if (strpos($key, 'filter') === false)
                 continue;
             $data[$key] = $value;
@@ -45,8 +46,7 @@ class ControllerSaleCreditManagement extends Controller {
         return $tmpResult;
     }
 
-    public function index()
-    {
+    public function index() {
         $data = array();
         $data['systemMessageType'] = SYS_MSG_ADD_CREDIT;
         $data = array_merge($data, $this->parameters);
@@ -54,19 +54,17 @@ class ControllerSaleCreditManagement extends Controller {
 //        $this->log->write(print_r($addCreditRequests, true));
         $this->data['customersToFilterBy'] = $this->getCustomers();
         $this->data['requests'] = array();
-        foreach ($addCreditRequests as $addCreditRequest)
-        {
+        foreach ($addCreditRequests as $addCreditRequest) {
             $customer = CustomerDAO::getInstance()->getCustomer($addCreditRequest['senderId']);
             $actions = array();
-            if ($addCreditRequest['data']->status == ADD_CREDIT_STATUS_PENDING)
-            {
+            if ($addCreditRequest['data']->status == ADD_CREDIT_STATUS_PENDING) {
                 $actions['accept'] = array(
-                        'text' => $this->language->get('ACCEPT'),
-                        'onclick' => 'acceptRequest(' . $addCreditRequest['messageId'] . ', this)'
+                    'text' => $this->language->get('ACCEPT'),
+                    'onclick' => 'acceptRequest(' . $addCreditRequest['messageId'] . ', this)'
                 );
                 $actions['reject'] = array(
-                        'text' => $this->language->get('REJECT'),
-                        'onclick' => 'rejectRequest(' . $addCreditRequest['messageId'] . ', this)'
+                    'text' => $this->language->get('REJECT'),
+                    'onclick' => 'rejectRequest(' . $addCreditRequest['messageId'] . ', this)'
                 );
             }
             $this->data['requests'][] = array(
@@ -107,8 +105,7 @@ class ControllerSaleCreditManagement extends Controller {
         $this->getResponse()->setOutput($this->render());
     }
 
-    protected function initParameters()
-    {
+    protected function initParameters() {
         $this->parameters['amount'] = empty($_REQUEST['amount']) ? null : $_REQUEST['amount'];
         $this->parameters['comment'] = empty($_REQUEST['comment']) ? null : $_REQUEST['comment'];
         $this->parameters['filterCustomerId'] = empty($_REQUEST['filterCustomerId']) ? array() : $_REQUEST['filterCustomerId'];
@@ -116,39 +113,34 @@ class ControllerSaleCreditManagement extends Controller {
         $this->parameters['token'] = $this->session->data['token'];
     }
 
-    public function reject()
-    {
+    public function reject() {
         $request = Messaging::getSystemMessage($this->request->request['requestId']);
         $request['data']->status = ADD_CREDIT_STATUS_REJECTED;
 //        $this->log->write(print_r($request, true));
         Messaging::updateSystemMessage($request['messageId'], $request['data']);
     }
 
-    public function saveAmount()
-    {
+    public function saveAmount() {
 //        $this->log->write(print_r($this->parameters, true));
-        if ($this->validateInput())
-        {
+        if ($this->validateInput()) {
             $request = Messaging::getSystemMessage($this->parameters['requestId']);
             $request['data']->amount = $this->parameters['amount'];
             Messaging::updateSystemMessage($request['messageId'], $request['data']);
         }
     }
 
-    public function saveComment()
-    {
+    public function saveComment() {
 //        $this->log->write(print_r($this->parameters, true));
         $request = Messaging::getSystemMessage($this->parameters['requestId']);
         $request['data']->comment = $this->parameters['comment'];
         Messaging::updateSystemMessage($request['messageId'], $request['data']);
     }
 
-    protected function setBreadcrumps()
-    {
+    protected function setBreadcrumps() {
         $this->data['breadcrumbs'] = array();
         $this->data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('text_home'),
-            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+            'text' => $this->language->get('text_home'),
+            'href' => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
             'separator' => false
         );
         $this->data['breadcrumbs'][] = array(
@@ -158,8 +150,7 @@ class ControllerSaleCreditManagement extends Controller {
         );
     }
 
-    private function validateInput()
-    {
+    private function validateInput() {
         return
             is_numeric($this->parameters['requestId'])
             & is_numeric($this->parameters['amount']);

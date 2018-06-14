@@ -1,7 +1,7 @@
 <?php
 //trigger_error ( 'kk' 'SSL'), E_USER_NOTICE );
 
-class ControllerPaymentMultiPay extends Controller {
+class ControllerPaymentMultiPay extends \system\engine\Controller {
 
 	// открыть выбор способов оплаты для данной корзины и создать из нее заказ
 	public function pay() {

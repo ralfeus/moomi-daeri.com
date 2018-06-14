@@ -1,5 +1,5 @@
 <?php
-class ControllerCheckoutSuccess extends Controller {
+class ControllerCheckoutSuccess extends \system\engine\Controller {
 	public function index() {
                 if ( isset($this->session->data['order_id']) && ( ! empty($this->session->data['order_id']))  ) {
 			$this->session->data['last_order_id'] = $this->session->data['order_id'];

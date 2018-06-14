@@ -1,4 +1,7 @@
 <?php
+use system\engine\Registry;
+use system\library\Cache;
+
 final class Length {
 	private $lengths = array();
 

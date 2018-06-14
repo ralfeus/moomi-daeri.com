@@ -1,5 +1,7 @@
 <?php
-class ControllerModuleFeatured extends Controller {
+use system\engine\Controller;
+
+class ControllerModuleFeatured extends \system\engine\Controller {
 	protected function index($setting) {
 		$this->language->load('module/featured'); 
 

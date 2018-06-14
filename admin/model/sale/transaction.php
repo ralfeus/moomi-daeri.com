@@ -8,7 +8,7 @@ use model\sale\CustomerDAO;
  * Time: 22:46
  * To change this template use File | Settings | File Templates.
  */
-class ModelSaleTransaction extends Model
+class ModelSaleTransaction extends \system\engine\Model
 {
     public function addTransaction($invoiceId, $customerId, $amount, $currency_code, $description = '')
     {

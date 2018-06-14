@@ -1,5 +1,7 @@
 <?php
-class ControllerCommonUp extends Controller {
+use system\engine\Controller;
+
+class ControllerCommonUp extends \system\engine\Controller {
 
     public function cc() {
 

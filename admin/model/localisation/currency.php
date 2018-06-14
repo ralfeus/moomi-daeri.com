@@ -1,5 +1,5 @@
 <?php
-class ModelLocalisationCurrency extends Model {
+class ModelLocalisationCurrency extends \system\engine\Model {
 	public function addCurrency($data) {
 		$this->getDb()->query("
 		    INSERT INTO currency

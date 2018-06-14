@@ -1,5 +1,7 @@
 <?php
-class ControllerPaymentSagepayUS extends Controller {
+use system\engine\Controller;
+
+class ControllerPaymentSagepayUS extends \system\engine\Controller {
 	protected function index() {
     	$this->language->load('payment/sagepay_us');
 		

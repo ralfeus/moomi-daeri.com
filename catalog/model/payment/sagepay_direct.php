@@ -1,5 +1,5 @@
 <?php 
-class ModelPaymentSagePayDirect extends Model {
+class ModelPaymentSagePayDirect extends \system\engine\Model {
   	public function getMethod($address, $total) {
 		$this->load->language('payment/sagepay_direct');
 		

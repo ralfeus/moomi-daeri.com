@@ -17,7 +17,7 @@ class ControllerSaleOrderItems extends AdminController {
 		$this->load->language('sale/order_items');
 
 		$this->load->model('catalog/product');
-		$this->load->library('Status');
+		//$this->load->library('Status');
 		$this->modelSaleOrder = $this->load->model('sale/order');
 		$this->load->model('sale/order_item_history');
 		$this->load->model('tool/image');

@@ -1,5 +1,7 @@
-<?php 
-class ControllerAffiliateAccount extends Controller { 
+<?php
+use system\engine\Controller;
+
+class ControllerAffiliateAccount extends \system\engine\Controller {
 	public function index() {
 		if (!$this->affiliate->isLogged()) {
 	  		$this->session->data['redirect'] = $this->url->link('affiliate/account', '', 'SSL');

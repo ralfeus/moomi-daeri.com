@@ -1,5 +1,5 @@
 <?php 
-class ModelPaymentMoneygramTransfer extends Model {
+class ModelPaymentMoneygramTransfer extends \system\engine\Model {
   	public function getMethod($address, $total) {
 		$this->load->language('payment/moneygram_transfer');
 		

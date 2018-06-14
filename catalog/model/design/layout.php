@@ -1,5 +1,5 @@
 <?php
-//class ModelDesignLayout extends Model {
+//class ModelDesignLayout extends \system\engine\Model {
 //	public function getLayout($route) {
 //		$query = $this->getDb()->query("SELECT * FROM layout_route WHERE '" . $this->getDb()->escape($route) . "' LIKE CONCAT(route, '%') AND store_id = '" . (int)$this->config->get('config_store_id') . "' ORDER BY route ASC LIMIT 1");
 //

@@ -1,5 +1,5 @@
 <?php 
-class ModelLocalisationOrderStatus extends Model {
+class ModelLocalisationOrderStatus extends \system\engine\Model {
 	public function addOrderStatus($data) {
         $query = $this->db->query("
             SELECT MAX(status_id) AS last_id

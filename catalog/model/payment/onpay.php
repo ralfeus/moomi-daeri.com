@@ -2,7 +2,7 @@
 /**
  * e-mail: s-m-o-k@list.ru
  */
-class ModelPaymentonpay extends Model {
+class ModelPaymentonpay extends \system\engine\Model {
 	public function getMethod($address, $total) {
 		$this->load->language('payment/onpay');
 

@@ -1,5 +1,5 @@
 <?php 
-class ModelPaymentCheque extends Model {
+class ModelPaymentCheque extends \system\engine\Model {
   	public function getMethod($address, $total) {
 		$this->load->language('payment/cheque');
 		

@@ -1,5 +1,5 @@
 <?php
-class ModelSaleOrderItem extends Model
+class ModelSaleOrderItem extends \system\engine\Model
 {
     private $orderItemsFromQuery = "
             order_product as op

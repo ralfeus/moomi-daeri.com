@@ -1,5 +1,7 @@
 <?php
-class ControllerPaymentSberBankTransfer extends Controller {
+use system\engine\Controller;
+
+class ControllerPaymentSberBankTransfer extends \system\engine\Controller {
 	protected function index() {
 		$this->language->load('payment/sberbank_transfer');
 

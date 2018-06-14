@@ -1,5 +1,7 @@
-<?php 
-class ControllerTotalShipping extends Controller { 
+<?php
+use system\engine\Controller;
+
+class ControllerTotalShipping extends \system\engine\Controller {
 	private $error = array(); 
 	 
 	public function index() { 

@@ -2,7 +2,9 @@
 ################################################################################################
 # Auction Bids Opencart 1.5.1.x From Webkul  http://webkul.com 	#
 ################################################################################################
-class ControllerCatalogWkauctionbids extends Controller {
+use system\engine\Controller;
+
+class ControllerCatalogWkauctionbids extends \system\engine\Controller {
 	
 	private $error = array(); 
 	

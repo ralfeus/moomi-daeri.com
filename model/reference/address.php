@@ -6,7 +6,7 @@
  * Time: 23:30
  * To change this template use File | Settings | File Templates.
  */
-class ModelReferenceAddress extends Model
+class ModelReferenceAddress extends \system\engine\Model
 {
     public function addAddress(
         $lastname, $firstname, $company,

@@ -1,5 +1,7 @@
-<?php  
-class ControllerInformationSpecaction extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerInformationSpecaction extends \system\engine\Controller {
 	public function index() {
     	$this->language->load('information/specaction');
  

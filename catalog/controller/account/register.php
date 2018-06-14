@@ -1,5 +1,7 @@
 <?php
-class ControllerAccountRegister extends Controller {
+use system\engine\Controller;
+
+class ControllerAccountRegister extends \system\engine\Controller {
 	private $error = array();
     private $modelAccountCustomer;
     private $modelLocalisationCurrency;

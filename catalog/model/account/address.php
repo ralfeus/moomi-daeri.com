@@ -1,5 +1,5 @@
 <?php
-class ModelAccountAddress extends Model {
+class ModelAccountAddress extends \system\engine\Model {
 	public function addAddress($data) {
 		$this->getDb()->query("INSERT INTO address SET customer_id = '" . (int)$this->customer->getId() . "', company = '" . $this->getDb()->escape($data['company']) . "', firstname = '" . $this->getDb()->escape($data['firstname']) . "', lastname = '" . $this->getDb()->escape($data['lastname']) . "', phone='" . $this->getDb()->escape($data['phone']) . "', address_1 = '" . $this->getDb()->escape($data['address_1']) . "', address_2 = '" . $this->getDb()->escape($data['address_2']) . "', postcode = '" . $this->getDb()->escape($data['postcode']) . "', city = '" . $this->getDb()->escape($data['city']) . "', zone_id = '" . (int)$data['zone_id'] . "', country_id = '" . (int)$data['country_id'] . "'");
 		

@@ -1,5 +1,5 @@
 <?php
-class ModelPaymentRobokassa extends Model {
+class ModelPaymentRobokassa extends \system\engine\Model {
 	public function getMethod($address) {
 		$this->load->language('payment/robokassa');
 

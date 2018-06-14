@@ -1,5 +1,5 @@
 <?php 
-class ModelPaymentNOCHEX extends Model {
+class ModelPaymentNOCHEX extends \system\engine\Model {
   	public function getMethod($address, $total) {
 		$this->load->language('payment/nochex');
 		

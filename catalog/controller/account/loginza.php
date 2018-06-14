@@ -1,5 +1,7 @@
-<?php 
-class ControllerAccountLoginza extends Controller { 
+<?php
+use system\engine\Controller;
+
+class ControllerAccountLoginza extends \system\engine\Controller {
 	public function index() {
 		if (!isset($_POST['token'])) {
 			die('Ошибка: Отсутствует токен');

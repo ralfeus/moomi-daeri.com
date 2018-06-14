@@ -1,5 +1,7 @@
 <?php
-class ControllerModuleTopmenu extends Controller {
+use system\engine\Controller;
+
+class ControllerModuleTopmenu extends \system\engine\Controller {
 	private $error = array(); 
 	
 	public function index() {   

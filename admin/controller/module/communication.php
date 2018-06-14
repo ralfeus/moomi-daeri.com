@@ -1,4 +1,6 @@
 <?php
+use system\engine\Controller;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -6,7 +8,7 @@
  * Time: 18:39
  * To change this template use File | Settings | File Templates.
  */
-class ControllerModuleCommunication extends Controller
+class ControllerModuleCommunication extends \system\engine\Controller
 {
     public function __construct($registry)
     {

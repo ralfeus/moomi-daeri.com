@@ -1,5 +1,7 @@
 <?php
-class ControllerPaymentWebmoneyWMZ extends Controller {
+use system\engine\Controller;
+
+class ControllerPaymentWebmoneyWMZ extends \system\engine\Controller {
 	private $error = array();
 	
 	public function index() {

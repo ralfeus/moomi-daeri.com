@@ -1,5 +1,5 @@
 <?php
-class ModelLocalisationCountry extends Model {
+class ModelLocalisationCountry extends \system\engine\Model {
 	public function getCountry($country_id) {
 		$query = $this->getDb()->query("SELECT * FROM country WHERE country_id = '" . (int)$country_id . "' AND status = '1'");
 		

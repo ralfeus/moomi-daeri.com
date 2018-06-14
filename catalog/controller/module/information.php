@@ -1,5 +1,7 @@
-<?php  
-class ControllerModuleInformation extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerModuleInformation extends \system\engine\Controller {
 	protected function index() {
 		$this->language->load('module/information');
 		

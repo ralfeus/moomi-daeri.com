@@ -1,5 +1,5 @@
 <?php 
-class ModelCheckoutVoucherTheme extends Model {
+class ModelCheckoutVoucherTheme extends \system\engine\Model {
 	public function getVoucherTheme($voucher_theme_id) {
 		$query = $this->getDb()->query("SELECT * FROM voucher_theme vt LEFT JOIN voucher_theme_description vtd ON (vt.voucher_theme_id = vtd.voucher_theme_id) WHERE vt.voucher_theme_id = '" . (int)$voucher_theme_id . "' AND vtd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
 		

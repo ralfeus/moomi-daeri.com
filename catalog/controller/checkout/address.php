@@ -1,5 +1,7 @@
-<?php 
-class ControllerCheckoutAddress extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerCheckoutAddress extends \system\engine\Controller {
 	public function payment() {
 		$this->language->load('checkout/checkout');
     	

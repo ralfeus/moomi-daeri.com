@@ -4,6 +4,8 @@ use model\sale\InvoiceDAO;
 use model\sale\OrderItem;
 use model\sale\OrderItemDAO;
 use model\shipping\ShippingMethodDAO;
+use system\engine\Controller;
+use system\library\Transaction;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -12,7 +14,7 @@ use model\shipping\ShippingMethodDAO;
  * Time: 21:43
  * To change this template use File | Settings | File Templates.
  */
-class ControllerSaleInvoice extends Controller {
+class ControllerSaleInvoice extends \system\engine\Controller {
     /** @var ModelReferenceAddress */
     private $modelReferenceAddress;
     /** @var ModelSaleOrder */
@@ -21,7 +23,7 @@ class ControllerSaleInvoice extends Controller {
     public function __construct($registry) {
         parent::__construct($registry);
         $this->getLoader()->language('sale/invoice');
-        $this->getLoader()->library("Transaction");
+        //$this->getLoader()->library("Transaction");
         $this->modelReferenceAddress = $this->getLoader()->model('reference/address');
         $this->modelSaleOrder = $this->getLoader()->model('sale/order');
         $this->getLoader()->model('tool/image');
@@ -408,7 +410,9 @@ class ControllerSaleInvoice extends Controller {
             $this->data['orderItems'][$orderItem->getId()] = array(
                 'id' => $orderItem->getId(),
                 'comment' => $orderItem->getPublicComment(),
-                'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
+                'image_path' => (isset($this->getRequest()->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1')) ?
+                                    HTTPS_IMAGE : HTTP_IMAGE) .
+                                $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
                 'model' => $orderItem->getModel(),
                 'name' => $orderItem->getName(),
                 'order_id' => $orderItem->getOrderId(),
@@ -490,7 +494,9 @@ class ControllerSaleInvoice extends Controller {
             $this->data['orderItems'][] = array(
                 'id' => $orderItem->getId(),
                 'comment' => $orderItem->getPublicComment(),
-                'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
+                'image_path' => (isset($this->getRequest()->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1')) ?
+                                    HTTPS_IMAGE : HTTP_IMAGE) .
+                                $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
                 'model' => $orderItem->getModel(),
                 'name' => $orderItem->getName(),
                 'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
@@ -515,7 +521,9 @@ class ControllerSaleInvoice extends Controller {
                     $this->data['orderItems'][] = array(
                         'id' => $orderItem->getId(),
                         'comment' => $orderItem->getPublicComment(),
-                        'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
+                        'image_path' => (isset($this->getRequest()->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1')) ?
+                                            HTTPS_IMAGE : HTTP_IMAGE) .
+                                        $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
                         'model' => $orderItem->getModel(),
                         'name' => $orderItem->getName(),
                         'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),

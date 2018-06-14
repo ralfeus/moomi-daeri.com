@@ -4,7 +4,7 @@
  * Class ModelShippingWeight
  * @deprecated
  */
-class ModelShippingWeight extends Model {
+class ModelShippingWeight extends \system\engine\Model {
   	public function getQuote($address) {
 		$this->load->language('shipping/weight');
 

@@ -3,7 +3,7 @@
 // добавка для ЯДеньги к MultiPay
 
 
-class ModelPaymentMultiPayYandexMoney extends Model {
+class ModelPaymentMultiPayYandexMoney extends \system\engine\Model {
 	
 	//      для проверки платежа на достоверность и прочее
 	// взять хэш

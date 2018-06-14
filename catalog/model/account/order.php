@@ -1,5 +1,5 @@
 <?php
-class ModelAccountOrder extends Model {
+class ModelAccountOrder extends \system\engine\Model {
 	public function getOrder($order_id) {
 		$order_query = $this->db->query("
 			SELECT * 

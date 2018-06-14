@@ -1,5 +1,7 @@
-<?php 
-class ControllerTotalVoucher extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerTotalVoucher extends \system\engine\Controller {
 	public function index() {
 		$this->language->load('total/voucher');
 		

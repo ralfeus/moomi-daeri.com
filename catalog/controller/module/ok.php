@@ -1,5 +1,7 @@
-<?php  
-class ControllerModuleOk extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerModuleOk extends \system\engine\Controller {
 	protected function index($setting) {
 		$this->language->load('module/ok');
 		

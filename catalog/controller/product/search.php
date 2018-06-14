@@ -2,10 +2,11 @@
 use model\catalog\CategoryDAO;
 use model\catalog\Product;
 use model\catalog\ProductDAO;
+use system\engine\Controller;
 use system\helper\ImageService;
 use system\library\FilterTree;
 
-class ControllerProductSearch extends Controller {
+class ControllerProductSearch extends \system\engine\Controller {
     protected function loadStrings() {
         $this->data['heading_title'] = $this->getLanguage()->get('heading_title');
 

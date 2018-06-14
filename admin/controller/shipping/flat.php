@@ -1,5 +1,7 @@
 <?php
-class ControllerShippingFlat extends Controller {
+use system\engine\Controller;
+
+class ControllerShippingFlat extends \system\engine\Controller {
 	private $error = array();
 
     public function getCost()

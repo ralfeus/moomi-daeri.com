@@ -2,7 +2,7 @@
 ################################################################################################
 # Auction Bids  Opencart 1.5.1.x From Webkul  http://webkul.com 	#
 ################################################################################################
-class ModelCatalogWkauctionbids extends Model {
+class ModelCatalogWkauctionbids extends \system\engine\Model {
 	
 	public function addEvent($name,$date,$desc) {
 	$sql="INSERT INTO " . DB_PREFIX . "wkevent SET name = '" . $this->db->escape($name) . "', date = '" . $this->db->escape($date) . "', descs = '" . $this->db->escape($desc)."'";

@@ -1,5 +1,16 @@
 <?php
-class ModelToolImage extends Model {
+use system\engine\Model;
+use system\library\Image;
+
+class ModelToolImage extends \system\engine\Model {
+    /** @var \helper\IFileHandler */
+    private $fileHandler;
+
+    public function __construct($registry, $fileHandler = null) {
+        $this->fileHandler = $fileHandler != null ? $fileHandler : new \helper\FileSystemFileHandler();
+        parent::__construct($registry);
+    }
+
     /**
      * @param $url
      * @throws Exception
@@ -9,14 +20,15 @@ class ModelToolImage extends Model {
         if (preg_match('/https?:\/\/([\w\-\.]+)/', $url)) {
             $fileName = $this->getImageFileName($url);
             if ($fileName) {
-                $dirName = DIR_IMAGE . 'upload/' . session_id();
+                $dirName = 'upload/' . session_id();
                 if (!file_exists($dirName)) {
                     if (!mkdir($dirName)) {
                         throw new Exception("Couldn't create a folder '$dirName'");
                     }
                 }
-                file_put_contents($dirName . '/' . $fileName, file_get_contents($url));
-                return 'upload/' . session_id() . '/' . $fileName;
+                file_put_contents('/tmp/' . $fileName, file_get_contents($url));
+                $this->fileHandler->mv('/tmp/' . $fileName, $dirName . '/' . $fileName);
+                return $dirName . '/' . $fileName;
             } else {
                 throw new Exception("Provided URL isn't image: $url");
             }
@@ -35,53 +47,35 @@ class ModelToolImage extends Model {
 
     public function getImage($imagePath)
     {
-        if ($imagePath && file_exists(DIR_IMAGE . $imagePath)):
+        if ($imagePath && $this->fileHandler->exists($imagePath)):
             return $this->resize($imagePath, 100, 100);
         else:
             return $this->resize('no_image.jpg', 100, 100);
         endif;
     }
 
-	public function resize($filename, $width, $height) {
-		if (!file_exists(DIR_IMAGE . $filename) || !is_file(DIR_IMAGE . $filename)) {
-			return;
+	private function resize($filename, $width, $height) {
+		if (!$this->fileHandler->exists($filename)) {
+			return null;
 		}
 
-		$info = pathinfo($filename);
+		$info = $this->fileHandler->getInfo($filename);
 		$extension = $info['extension'];
 
 		$old_image = $filename;
 		$new_image = 'cache/' . utf8_substr($filename, 0, strrpos($filename, '.')) . '-' . $width . 'x' . $height . '.' . $extension;
 
-		if (!file_exists(DIR_IMAGE . $new_image) || (filemtime(DIR_IMAGE . $old_image) > filemtime(DIR_IMAGE . $new_image))) {
-			$path = '';
+		if (!$this->fileHandler->exists($new_image) || ($this->fileHandler->getTimeModified($old_image) > $this->fileHandler->getTimeModified($new_image))) {
+			try {
+                $image = new Image($old_image, $this->fileHandler);
+            } catch (Exception $exc) {
+                $this->log->write("The file $old_image has wrong format and can not be handled.");
+                $image = new Image('no_image.jpg', $this->fileHandler);
+            }
+            $image->resize($width, $height);
+            $image->save(DIR_IMAGE . $new_image);
+        }
 
-			$directories = explode('/', dirname(str_replace('../', '', $new_image)));
-
-			foreach ($directories as $directory) {
-				$path = $path . '/' . $directory;
-
-				if (!file_exists(DIR_IMAGE . $path)) {
-					@mkdir(DIR_IMAGE . $path, 0777);
-				}
-			}
-			try
-      {
-        $image = new Image(DIR_IMAGE . $old_image);
-      }
-      catch (Exception $exc)
-      {
-        $this->log->write("The file $old_image has wrong format and can not be handled.");
-        $image = new Image(DIR_IMAGE . 'no_image.jpg');
-      }
-      $image->resize($width, $height);
-      $image->save(DIR_IMAGE . $new_image);
-    }
-
-		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
-			return HTTPS_IMAGE . $new_image;
-		} else {
-			return HTTP_IMAGE . $new_image;
-		}
+		return $new_image;
 	}
 }

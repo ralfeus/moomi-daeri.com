@@ -1,5 +1,5 @@
 <?php
-class ModelCatalogCategory extends Model {
+class ModelCatalogCategory extends \system\engine\Model {
 	public function addCategory($data) {
 		$this->db->query("INSERT INTO category SET parent_id = '" . (int)$data['parent_id'] . "', `top` = '" . (isset($data['top']) ? (int)$data['top'] : 0) . "', `column` = '" . (int)$data['column'] . "', sort_order = '" . (int)$data['sort_order'] . "', status = '" . (int)$data['status'] . "', date_modified = NOW(), date_added = NOW()"
 			. ", affiliate_commission = '" . (float)$data['affiliate_commission'] . "'"

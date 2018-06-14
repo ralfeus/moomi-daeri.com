@@ -6,9 +6,11 @@
   @link http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */
 
+use system\engine\Controller;
+
 require_once(DIR_SYSTEM . 'library/simple/simple.php');
 
-class ControllerAccountSimpleEdit extends Controller {
+class ControllerAccountSimpleEdit extends \system\engine\Controller {
     private $error = array();
 
     public function index() {

@@ -1,5 +1,7 @@
-<?php 
-class ControllerCheckoutSuccess extends Controller { 
+<?php
+use system\engine\Controller;
+
+class ControllerCheckoutSuccess extends \system\engine\Controller {
 	public function index() { 
 		if (isset($this->session->data['order_id'])) {
             $this->cart->clear($this->session->data['selectedCartItems']);

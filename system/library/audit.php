@@ -6,9 +6,13 @@
  * Time: 20:43
  * To change this template use File | Settings | File Templates.
  */
+namespace system\library;
+use system\engine\OpenCartBase;
+use system\engine\Registry;
+
 require_once('auditConstants.php');
-class Audit extends OpenCartBase implements ILibrary
-{
+
+class Audit extends OpenCartBase implements ILibrary {
     /** @var  Audit */
     private static $instance;
 
@@ -23,7 +27,7 @@ class Audit extends OpenCartBase implements ILibrary
             ':userId' => $userId,
             ':userIp' => $_SERVER['REMOTE_ADDR'],
             ':userType' => $userType
-            ], false, true
+        ], false, true
         );
     }
 
@@ -31,8 +35,7 @@ class Audit extends OpenCartBase implements ILibrary
         $this->addEntry($adminId, 'admin', $eventId, $data);
     }
 
-    public function addUserEntry($userId, $eventId, $data)
-    {
+    public function addUserEntry($userId, $eventId, $data) {
         $this->addEntry($userId, 'user', $eventId, $data);
     }
 

@@ -1,5 +1,7 @@
-<?php 
-class ControllerLocalisationStockStatus extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerLocalisationStockStatus extends \system\engine\Controller {
 	private $error = array(); 
    
   	public function index() {

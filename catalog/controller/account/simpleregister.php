@@ -6,9 +6,11 @@
   @link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */
 
+use system\engine\Controller;
+
 require_once(DIR_SYSTEM . 'library/simple/simple.php');
 
-class ControllerAccountSimpleRegister extends Controller {
+class ControllerAccountSimpleRegister extends \system\engine\Controller {
 
     private $error = array();
 
@@ -283,7 +285,7 @@ class ControllerAccountSimpleRegister extends Controller {
     }
 
     public function captcha() {
-        $this->load->library('captcha');
+        //$this->load->library('captcha');
 
         $captcha = new Captcha();
 

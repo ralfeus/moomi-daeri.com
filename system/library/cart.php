@@ -1,4 +1,7 @@
 <?php
+use system\engine\OpenCartBase;
+use system\engine\Registry;
+
 final class Cart extends OpenCartBase {
     private $suppliers = array();
 

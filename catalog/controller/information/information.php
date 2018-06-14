@@ -1,5 +1,5 @@
 <?php 
-class ControllerInformationInformation extends Controller {
+class ControllerInformationInformation extends \system\engine\Controller {
 	public function index() {  
     	$this->language->load('information/information');
 		

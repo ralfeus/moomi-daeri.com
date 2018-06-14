@@ -5,7 +5,7 @@
 @link    http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */  
 
-class ModelToolSimpleGeo extends Model {
+class ModelToolSimpleGeo extends \system\engine\Model {
     static $geo = false;
     static $ip_checked = false;
     

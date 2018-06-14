@@ -1,7 +1,9 @@
-<?php 
+<?php
 
 
-class ControllerAccountMultiPay extends Controller {
+use system\engine\Controller;
+
+class ControllerAccountMultiPay extends \system\engine\Controller {
 
 	public function cancel_ok() {
 

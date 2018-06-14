@@ -1,8 +1,13 @@
 <?php
+namespace system\library;
+
+use system\library\Audit;
 use model\sale\CustomerDAO;
 use model\sale\InvoiceDAO;
+use ModelSaleTransaction;
+use system\engine\OpenCartBase;
+use system\engine\Registry;
 
-include_once("ILibrary.php");
 class Transaction extends OpenCartBase implements ILibrary {
     /** @var  Transaction */
     private static $instance;
@@ -14,8 +19,7 @@ class Transaction extends OpenCartBase implements ILibrary {
         $this->modelTransaction = $this->getLoader()->model('sale/transaction', 'admin');
     }
 
-    public static function addCredit($customerId, $amount, $currency, $registry, $description = "")
-    {
+    public static function addCredit($customerId, $amount, $currency, $registry, $description = "") {
 //        Transaction::$instance->log->write("Starting");
 //        $customer = CustomerDAO::getInstance()->getCustomer($customerId);
 //        Transaction::$instance->log->write("Adding transaction");
@@ -23,12 +27,11 @@ class Transaction extends OpenCartBase implements ILibrary {
 
         /// Try to pay all payment awaiting invoices
         $invoices = InvoiceDAO::getInstance()->getInvoices(array(
-            "filterCustomerId" => array((int)$customerId),
-            "filterInvoiceStatusId" => array(IS_AWAITING_PAYMENT))
+                "filterCustomerId" => array((int)$customerId),
+                "filterInvoiceStatusId" => array(IS_AWAITING_PAYMENT))
         );
         if ($invoices)
-            foreach ($invoices as $invoice)
-            {
+            foreach ($invoices as $invoice) {
                 Transaction::addPayment($customerId, $invoice['invoice_id'], $registry);
             }
     }
@@ -47,7 +50,7 @@ class Transaction extends OpenCartBase implements ILibrary {
         if (($customer['balance'] < $transactionAmount) && !$customer['allow_overdraft']) {
             InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
         } else {
-        	$temp = $invoice->getCustomer();
+            $temp = $invoice->getCustomer();
             Transaction::addTransaction(
                 $invoiceId,
                 $customerId,
@@ -108,8 +111,7 @@ class Transaction extends OpenCartBase implements ILibrary {
         );
     }
 
-    public static function getInstance($registry)
-    {
+    public static function getInstance($registry) {
 //        $registry->get('log')->write("Starting");
         if (!isset(Transaction::$instance))
             Transaction::$instance = new Transaction($registry);
@@ -120,8 +122,7 @@ class Transaction extends OpenCartBase implements ILibrary {
         return Transaction::$instance->modelTransaction->getTransaction($transactionId);
     }
 
-    public static function getTransactionByInvoiceId($invoiceId = 0)
-    {
+    public static function getTransactionByInvoiceId($invoiceId = 0) {
         return Transaction::$instance->modelTransaction->getTransactionByInvoiceId($invoiceId);
     }
 }

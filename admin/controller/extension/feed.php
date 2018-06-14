@@ -1,5 +1,7 @@
 <?php
-class ControllerExtensionFeed extends Controller {
+use system\engine\Controller;
+
+class ControllerExtensionFeed extends \system\engine\Controller {
 	public function index() {
 		$this->load->language('extension/feed');
 		 

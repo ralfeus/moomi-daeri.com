@@ -3,6 +3,7 @@ use model\sale\InvoiceDAO;
 use model\sale\OrderItemDAO;
 use model\shipping\ShippingMethodDAO;
 use system\engine\CustomerZoneController;
+use system\library\Transaction;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -16,7 +17,7 @@ class ControllerAccountInvoice extends CustomerZoneController {
         parent::__construct($registry);
 
         $this->load->language('account/invoice');
-        $this->load->library('Transaction');
+        //$this->load->library('Transaction');
         $this->load->model('reference/address');
         $this->load->model('account/order');
         $this->load->model('tool/image');

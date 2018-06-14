@@ -1,4 +1,6 @@
 <?php
+use system\library\LibraryClass;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev

@@ -1,5 +1,5 @@
 <?php  
-class ControllerCheckoutPayment extends Controller {
+class ControllerCheckoutPayment extends \system\engine\Controller {
   	public function index() {
 		$this->log->write("Opening checkout/payment");
 		$this->language->load('checkout/checkout');

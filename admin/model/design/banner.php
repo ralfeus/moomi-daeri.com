@@ -1,5 +1,5 @@
 <?php
-class ModelDesignBanner extends Model {
+class ModelDesignBanner extends \system\engine\Model {
 	public function addBanner($data) {
 		$this->db->query("INSERT INTO banner SET name = '" . $this->db->escape($data['name']) . "', status = '" . (int)$data['status'] . "'");
 	

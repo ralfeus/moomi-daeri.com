@@ -1,5 +1,5 @@
 <?php
-class ModelLocalisationLanguage extends Model {
+class ModelLocalisationLanguage extends \system\engine\Model {
 	public function getLanguageInfo($language_id) {
 		$query = $this->getDb()->query("SELECT * FROM language WHERE language_id = '" . (int)$language_id . "'");
 		

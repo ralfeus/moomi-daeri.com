@@ -1,5 +1,5 @@
 <?php
-class ModelAffiliateAffiliate extends Model {
+class ModelAffiliateAffiliate extends \system\engine\Model {
 	public function addAffiliate($data) {
       	$this->getDb()->query("
 			INSERT INTO affiliate 

@@ -1,5 +1,7 @@
 <?php
-class ControllerExtensionPayment extends Controller {
+use system\engine\Controller;
+
+class ControllerExtensionPayment extends \system\engine\Controller {
 	public function index() {
 		$this->load->language('extension/payment');
 		 

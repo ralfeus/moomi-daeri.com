@@ -1,5 +1,7 @@
 <?php
-class ModelCatalogInformation extends Model {
+use system\engine\Model;
+
+class ModelCatalogInformation extends \system\engine\Model {
 	public function getInformation($information_id) {
 		$query = $this->getDb()->query("SELECT DISTINCT * FROM information i LEFT JOIN information_description id ON (i.information_id = id.information_id) LEFT JOIN information_to_store i2s ON (i.information_id = i2s.information_id) WHERE i.information_id = '" . (int)$information_id . "' AND id.language_id = '" . (int)$this->config->get('config_language_id') . "' AND i2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND i.status = '1'");
 	

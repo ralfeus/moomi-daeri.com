@@ -1,5 +1,5 @@
 <?php
-class ModelCatalogReview extends Model {		
+class ModelCatalogReview extends \system\engine\Model {
 	public function addReview($product_id, $data) {
 		$this->getDb()->query("
 		    INSERT INTO review

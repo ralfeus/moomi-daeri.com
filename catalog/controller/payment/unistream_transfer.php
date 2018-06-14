@@ -1,5 +1,5 @@
 <?php
-class ControllerPaymentUnistreamTransfer extends Controller {
+class ControllerPaymentUnistreamTransfer extends \system\engine\Controller {
 	protected function index() {
 		$this->language->load('payment/unistream_transfer');
 		

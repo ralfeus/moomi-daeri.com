@@ -4,7 +4,7 @@
  * Class ModelShippingFlat
  * @deprecated
  */
-class ModelShippingFlat extends Model {
+class ModelShippingFlat extends \system\engine\Model {
 	function getQuote($address) {
 		$this->load->language('shipping/flat');
 		

@@ -1,5 +1,7 @@
 <?php
-class ControllerPaymentWesternTransfer extends Controller {
+use system\engine\Controller;
+
+class ControllerPaymentWesternTransfer extends \system\engine\Controller {
 	protected function index() {
 		$this->language->load('payment/western_transfer');
 		

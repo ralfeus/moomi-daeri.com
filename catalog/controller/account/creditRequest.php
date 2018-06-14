@@ -1,5 +1,6 @@
 <?php
 use system\engine\CustomerZoneController;
+use system\library\Messaging;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -14,8 +15,8 @@ class ControllerAccountCreditRequest extends CustomerZoneController {
         parent::__construct($registry);
 
         $this->takeSessionVariables();
-        $this->load->library("Messaging");
-        $this->load->library("Status");
+        //$this->load->library("system\library\Messaging");
+        //$this->load->library("Status");
     }
 
     public function getList() {

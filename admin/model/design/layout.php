@@ -1,5 +1,5 @@
 <?php
-class ModelDesignLayout extends Model {
+class ModelDesignLayout extends \system\engine\Model {
 	public function addLayout($data) {
 		$this->db->query("INSERT INTO layout SET name = '" . $this->db->escape($data['name']) . "'");
 	

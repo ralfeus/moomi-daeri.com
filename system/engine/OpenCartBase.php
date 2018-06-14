@@ -6,8 +6,18 @@
  * Time: 18:59
  * Base of MVCL architecture classes - models and controllers. Views and languages are not classes
  */
-require_once(DIR_SYSTEM . 'engine/registry.php');
-require_once(DIR_SYSTEM . 'library/db.php');
+namespace system\engine;
+use system\database\DBDriver;
+use system\library\Cache;
+use system\library\Config;
+use system\library\Currency;
+use system\library\DB;
+use system\library\Language;
+use system\library\Log;
+use system\library\Session;
+
+//require_once(DIR_SYSTEM . 'engine/registry.php');
+//require_once(DIR_SYSTEM . 'library/db.php');
 abstract class OpenCartBase {
     /** @var Config */
     /** @deprecated */

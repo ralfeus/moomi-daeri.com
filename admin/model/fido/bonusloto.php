@@ -1,5 +1,5 @@
 <?php
-class ModelFidobonusloto extends Model {
+class ModelFidobonusloto extends \system\engine\Model {
 	public function deletebonusloto($bonusloto_id) {
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "bonusloto` WHERE bonusloto_id = '" . (int)$bonusloto_id . "'");
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "bonusloto_description` WHERE bonusloto_id = '" . (int)$bonusloto_id . "'");

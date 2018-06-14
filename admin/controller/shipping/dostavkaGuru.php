@@ -1,8 +1,9 @@
 <?php
 use model\setting\SettingsDAO;
 use model\shipping\ShippingMethodDAO;
+use system\engine\Controller;
 
-class ControllerShippingDostavkaGuru extends Controller {
+class ControllerShippingDostavkaGuru extends \system\engine\Controller {
 	private $error = array();
 
 	public function __construct(Registry $registry) {

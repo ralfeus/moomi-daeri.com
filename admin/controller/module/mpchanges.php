@@ -6,8 +6,9 @@ use model\catalog\OptionDAO;
 use model\catalog\ProductOption;
 use model\catalog\ProductOptionValue;
 use model\catalog\SupplierDAO;
+use system\engine\Controller;
 
-class ControllerModuleMpchanges extends Controller {
+class ControllerModuleMpchanges extends \system\engine\Controller {
     private $mpfilter = array();
     private $mp_message = array("type" => "success", "message" => array());
     

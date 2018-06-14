@@ -1,5 +1,5 @@
 <?php
-class ModelAccountReturn extends Model {
+class ModelAccountReturn extends \system\engine\Model {
 	public function addReturn($data) {			      	
 		$this->getDb()->query("INSERT INTO `return` SET customer_id = '" . (int)$this->customer->getId() . "', order_id = '" . (int)$data['order_id'] . "', date_ordered = '" . $this->getDb()->escape($data['date_ordered']) . "', firstname = '" . $this->getDb()->escape($data['firstname']) . "', lastname = '" . $this->getDb()->escape($data['lastname']) . "', email = '" . $this->getDb()->escape($data['email']) . "', telephone = '" . $this->getDb()->escape($data['telephone']) . "', return_status_id = '" . (int)$this->config->get('config_return_status_id') . "', comment = '" . $this->getDb()->escape($data['comment']) . "', date_added = NOW(), date_modified = NOW()");
       	

@@ -1,5 +1,7 @@
-<?php  
-class ControllerInformationSitemap extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerInformationSitemap extends \system\engine\Controller {
 	public function index() {
     	$this->language->load('information/sitemap');
  

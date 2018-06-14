@@ -1,5 +1,5 @@
 <?php
-class ModelCheckoutVoucher extends Model {
+class ModelCheckoutVoucher extends \system\engine\Model {
 	public function addVoucher($order_id, $data) {
       	$this->getDb()->query("INSERT INTO voucher SET order_id = '" . (int)$order_id . "', code = '" . $this->getDb()->escape(substr(md5(rand()), 0, 7)) . "', from_name = '" . $this->getDb()->escape($data['from_name']) . "', from_email = '" . $this->getDb()->escape($data['from_email']) . "', to_name = '" . $this->getDb()->escape($data['to_name']) . "', to_email = '" . $this->getDb()->escape($data['to_email']) . "', message = '" . $this->getDb()->escape($data['message']) . "', amount = '" . (float)$data['amount'] . "', voucher_theme_id = '" . (int)$data['voucher_theme_id'] . "', status = '1', date_added = NOW()");
 	}

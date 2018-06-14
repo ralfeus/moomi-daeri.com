@@ -1,5 +1,5 @@
 <?php
-class ControllerModulebonusloto extends Controller {
+class ControllerModulebonusloto extends \system\engine\Controller {
 	private $error = array(); 
 
 	public function index() {

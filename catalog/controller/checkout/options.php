@@ -1,5 +1,6 @@
 <?php
 use model\shipping\ShippingMethodDAO;
+use system\engine\Controller;
 
 /**
  * class options
@@ -8,7 +9,7 @@ use model\shipping\ShippingMethodDAO;
  *
  * @author:
 */
-class ControllerCheckoutOptions extends Controller
+class ControllerCheckoutOptions extends \system\engine\Controller
 {
 	private $orderModel;
 

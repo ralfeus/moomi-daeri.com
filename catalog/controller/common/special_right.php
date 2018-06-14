@@ -1,7 +1,8 @@
 <?php
 use model\gallery\PhotoDAO;
+use system\engine\Controller;
 
-class ControllerCommonSpecialRight extends Controller {
+class ControllerCommonSpecialRight extends \system\engine\Controller {
 	public function index() {
 //		$this->load->model('design/layout');
 		$this->load->model('catalog/category');

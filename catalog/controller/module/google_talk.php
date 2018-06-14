@@ -1,5 +1,7 @@
-<?php  
-class ControllerModuleGoogleTalk extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerModuleGoogleTalk extends \system\engine\Controller {
 	protected function index() {
 		$this->language->load('module/google_talk');
 

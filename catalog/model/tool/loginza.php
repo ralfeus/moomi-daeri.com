@@ -1,5 +1,5 @@
 <?php
-class ModelToolLoginza extends Model {
+class ModelToolLoginza extends \system\engine\Model {
 	function check_identity($identity) {
 		$query = $this->getDb()->query("
 			SELECT customer_id

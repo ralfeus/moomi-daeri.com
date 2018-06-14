@@ -1,10 +1,12 @@
 <?php
+use catalog\model\tool\ModelToolImage;
 use model\catalog\ImportProduct;
 use model\catalog\ImportProductDAO;
 use model\catalog\Product;
 use model\extension\ImportSourceSiteDAO;
+use system\engine\Controller;
 
-class ControllerCatalogImport extends Controller {
+class ControllerCatalogImport extends \system\engine\Controller {
     /** @var ModelCatalogProduct */
     private $modelCatalogProduct;
 

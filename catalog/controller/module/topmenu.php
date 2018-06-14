@@ -1,5 +1,7 @@
 <?php
-class ControllerModuleTopmenu extends Controller {
+use system\engine\Controller;
+
+class ControllerModuleTopmenu extends \system\engine\Controller {
 	public function index() {
 		$this->document->addStyle('catalog/view/theme/' . $this->config->get('config_template') . '/stylesheet/topmenu.css');
 		$this->document->addScript('catalog/view/javascript/topmenu.js');

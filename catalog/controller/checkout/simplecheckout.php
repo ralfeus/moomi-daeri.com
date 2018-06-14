@@ -3,11 +3,13 @@
 @author	Dmitriy Kubarev
 @link	http://www.simpleopencart.com
 @link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
-*/  
+*/
+
+use system\engine\Controller;
 
 require_once(DIR_SYSTEM . 'library/simple/simple.php');
 
-class ControllerCheckoutSimpleCheckout extends Controller { 
+class ControllerCheckoutSimpleCheckout extends \system\engine\Controller {
     public function index() {
 
         if (!$this->customer->isLogged() && $this->config->get('simple_disable_guest_checkout')) {
@@ -507,7 +509,7 @@ class ControllerCheckoutSimpleCheckout extends Controller {
     			}
             }
             
-            $this->load->library('encryption');
+            //$this->load->library('encryption');
         
             foreach ($this->cart->getProducts() as $product) {
                 $option_data = array();

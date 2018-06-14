@@ -1,4 +1,9 @@
 <?php
+namespace system\library;
+
+use system\library\LibraryClass;
+use system\library\SystemMessageClassFactory;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -6,29 +11,25 @@
  * Time: 19:49
  * To change this template use File | Settings | File Templates.
  */
-class Messaging extends LibraryClass
-{
+class Messaging extends LibraryClass {
     private static $instance;
-    protected function __construct($registry)
-    {
+
+    protected function __construct($registry) {
         parent::__construct($registry);
     }
 
-    public static function getInstance($registry)
-    {
+    public static function getInstance($registry) {
         if (!isset($instance))
             Messaging::$instance = new Messaging($registry);
         return Messaging::$instance;
     }
 
-    private function buildFilterString($data = array())
-    {
+    private function buildFilterString($data = array()) {
 //        $this->log->write(print_r($data, true));
         $filter = "";
         if (isset($data['selectedItems']) && count($data['selectedItems']))
             $filter = "m.message_id in (" . implode(', ', $data['selectedItems']) . ")";
-        else
-        {
+        else {
             if (!empty($data['filterCustomerId']))
                 $filter .= ($filter ? " AND " : "") . "m.sender_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
             if (!empty($data['filterTimeAdded']))
@@ -41,8 +42,7 @@ class Messaging extends LibraryClass
         return $filter;
     }
 
-    private function buildLimitString($data = array())
-    {
+    private function buildLimitString($data = array()) {
         $limit = "";
         if (isset($data['start']) && is_numeric($data['start']) && isset($data['limit']) && is_numeric($data['limit']))
             $limit = "LIMIT " . $data['start'] . ", " . $data['limit'];
@@ -50,8 +50,7 @@ class Messaging extends LibraryClass
     }
 
 
-    public static function getSystemMessage($messageId)
-    {
+    public static function getSystemMessage($messageId) {
         $query = Messaging::$instance->db->query("
             SELECT *
             FROM messages AS m
@@ -71,8 +70,7 @@ class Messaging extends LibraryClass
     }
 
 //    public static function getSystemMessages($messageTypeId, $senderId = null, $start = null, $limit = null)
-    public static function getSystemMessages($data = array())
-    {
+    public static function getSystemMessages($data = array()) {
         $filter = Messaging::$instance->buildFilterString($data);
         $limit = Messaging::$instance->buildLimitString($data);
         $sql = "
@@ -84,11 +82,9 @@ class Messaging extends LibraryClass
         ";
         Messaging::$instance->log->write($sql);
         $query = Messaging::$instance->db->query($sql);
-        if ($query->num_rows)
-        {
+        if ($query->num_rows) {
             $messages = array();
-            foreach ($query->rows as $messageRecord)
-            {
+            foreach ($query->rows as $messageRecord) {
                 $messages[] = array(
                     'messageId' => $messageRecord['message_id'],
                     'messageTypeId' => $query->row['message_type_id'],
@@ -99,25 +95,22 @@ class Messaging extends LibraryClass
                 );
             }
             return $messages;
-        }
-        else
+        } else
             return array();
     }
 
-    public static function  getSystemMessagesCount($messageTypeId, $senderId = null)
-    {
+    public static function getSystemMessagesCount($messageTypeId, $senderId = null) {
         $query = Messaging::$instance->db->query("
-            SELECT count(*) as quantity
+            SELECT count(*) AS quantity
             FROM messages
             WHERE
                 message_type_id = " . (int)$messageTypeId .
-                ($senderId ? " AND sender_id = " . (int)$senderId : '')
+            ($senderId ? " AND sender_id = " . (int)$senderId : '')
         );
         return $query->row['quantity'];
     }
 
-    public static function submitSystemMessage($senderId, $recipientId, $messageTypeId, $data)
-    {
+    public static function submitSystemMessage($senderId, $recipientId, $messageTypeId, $data) {
         Messaging::$instance->db->query("
             INSERT INTO messages
             SET
@@ -131,9 +124,8 @@ class Messaging extends LibraryClass
         SystemMessageClassFactory::createInstance($messageTypeId, Messaging::$instance->load)->handleCreate(Messaging::$instance->db->getLastId());
     }
 
-    public static function updateSystemMessage($messageId, $data)
-    {
-//        Messaging::$instance->log->write(print_r($data, true));
+    public static function updateSystemMessage($messageId, $data) {
+//        system\library\Messaging::$instance->log->write(print_r($data, true));
         $message = Messaging::getSystemMessage($messageId);
         Messaging::$instance->db->query("
             UPDATE messages

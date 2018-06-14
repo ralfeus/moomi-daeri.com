@@ -1,5 +1,8 @@
 <?php
-class ControllerModuleBestSeller extends Controller {
+use catalog\model\tool\ModelToolImage;
+use system\engine\Controller;
+
+class ControllerModuleBestSeller extends \system\engine\Controller {
 	protected function index($setting) {
 		$this->language->load('module/bestseller');
  
@@ -9,18 +12,14 @@ class ControllerModuleBestSeller extends Controller {
 		
 		$this->getLoader()->model('catalog/product');
 		
-		$this->getLoader()->model('tool/image');
+		//$this->getLoader()->model('tool/image');
 
 		$this->data['products'] = array();
 
 		$results = $this->model_catalog_product->getBestSellerProducts($setting['limit']);
 		
 		foreach ($results as $result) {
-			if ($result['image']) {
-				$image = $this->model_tool_image->resize($result['image'], $setting['image_width'], $setting['image_height']);
-			} else {
-				$image = false;
-			}
+            $image = $result['image'] ? (new ModelToolImage($this->getRegistry()))->resize($result['image'], $setting['image_width'], $setting['image_height']) : false;
 			
 			if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
 				$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->getConfig()->get('config_tax')));

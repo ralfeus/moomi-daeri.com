@@ -1,5 +1,5 @@
 <?php
-class ModelReportProduct extends Model {
+class ModelReportProduct extends \system\engine\Model {
 	public function getProductsViewed($data = array()) {
 		$sql = "SELECT pd.name, p.model, p.viewed FROM product p LEFT JOIN product_description pd ON (p.product_id = pd.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.viewed > 0 ORDER BY p.viewed DESC";
 					

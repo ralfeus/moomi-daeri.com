@@ -6,8 +6,9 @@
 */
 
 use model\shipping\ShippingMethodDAO;
+use system\engine\Controller;
 
-class ControllerCheckoutSimpleCheckoutShipping extends Controller {
+class ControllerCheckoutSimpleCheckoutShipping extends \system\engine\Controller {
     public function index() {
 
         if (!$this->cart->hasShipping()) {

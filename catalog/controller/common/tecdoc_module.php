@@ -1,5 +1,7 @@
 <?php
-class Controllercommontecdocmodule extends Controller {
+use system\engine\Controller;
+
+class Controllercommontecdocmodule extends \system\engine\Controller {
     public function index() {
 
         //Save customer group ID for TDMod

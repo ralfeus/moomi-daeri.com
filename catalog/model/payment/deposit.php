@@ -1,5 +1,5 @@
 <?php 
-class ModelPaymentDeposit extends Model {
+class ModelPaymentDeposit extends \system\engine\Model {
   	public function getMethod($address, $total) {
 		$this->load->language('payment/deposit');
 		$status = true;

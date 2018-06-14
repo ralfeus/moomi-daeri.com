@@ -6,6 +6,9 @@
  * Time: 20:56
  * To change this template use File | Settings | File Templates.
  */
+use system\library\Messaging;
+use system\library\Transaction;
+
 include_once("SystemMessageBase.php");
 class AddCreditRequest extends SystemMessageBase
 {
@@ -30,7 +33,7 @@ class AddCreditRequest extends SystemMessageBase
 //        AddCreditRequest::$instance->log->write(print_r($request, true));
         if ($request['data']->status == ADD_CREDIT_STATUS_ACCEPTED)
         {
-            $this->load->library("Transaction");
+            //$this->load->library("Transaction");
             Transaction::addCredit($request['senderId'], $request['data']->amount, $request['data']->currency, $this->registry, $request['data']->comment);
         }
     }

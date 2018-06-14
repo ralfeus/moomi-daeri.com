@@ -1,5 +1,5 @@
 <?php
-class ControllerExtensionModule extends Controller {
+class ControllerExtensionModule extends \system\engine\Controller {
 	public function index() {
 		$this->load->language('extension/module');
 		 

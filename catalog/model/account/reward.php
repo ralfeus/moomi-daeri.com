@@ -1,5 +1,5 @@
 <?php
-class ModelAccountReward extends Model {	
+class ModelAccountReward extends \system\engine\Model {
 	public function getRewards($data = array()) {
 		$sql = "SELECT * FROM `customer_reward` WHERE customer_id = '" . (int)$this->customer->getId() . "'";
 		   

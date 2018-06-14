@@ -1,5 +1,7 @@
-<?php  
-class ControllerUserUser extends Controller {  
+<?php
+use system\engine\Controller;
+
+class ControllerUserUser extends \system\engine\Controller {
 	private $error = array();
    
   	public function index() {

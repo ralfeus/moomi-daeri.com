@@ -1,7 +1,8 @@
 <?php
 use model\sale\CustomerDAO;
+use system\engine\Controller;
 
-class ControllerSaleOrder extends Controller {
+class ControllerSaleOrder extends \system\engine\Controller {
 	private $error = array();
     /** @var ModelSaleOrder */
     private $modelSaleOrder;
@@ -301,7 +302,7 @@ class ControllerSaleOrder extends Controller {
 
 		$order_total = $this->modelSaleOrder->getTotalOrders($data);
 		$results = $this->modelSaleOrder->getOrders($data);
-        $this->load->library('Status');
+        //$this->load->library('Status');
         $statuses = Status::getStatuses(GROUP_ORDER_STATUS, (int)$this->config->get('config_language_id'));
 
     	foreach ($results as $result) {
@@ -2088,7 +2089,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 
     public function setStatus() {
         $this->load->language('sale/order');
-        $this->load->library('Status');
+        //$this->load->library('Status');
 
         if (!isset($this->error['warning'])) {
             $this->error['warning'] = '';

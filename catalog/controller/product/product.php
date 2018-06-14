@@ -2,9 +2,10 @@
 use model\catalog\CategoryDAO;
 use model\catalog\ManufacturerDAO;
 use model\catalog\ProductDAO;
+use system\engine\Controller;
 use system\helper\ImageService;
 
-class ControllerProductProduct extends Controller {
+class ControllerProductProduct extends \system\engine\Controller {
     protected function loadStrings() {
         $this->data['text_select'] = $this->language->get('text_select');
         $this->data['text_manufacturer'] = $this->language->get('text_manufacturer');
@@ -571,7 +572,7 @@ class ControllerProductProduct extends Controller {
 	}
 
 	public function captcha() {
-		$this->getLoader()->library('captcha');
+		//$this->getLoader()->library('captcha');
 
 		$captcha = new Captcha();
 
@@ -616,7 +617,7 @@ class ControllerProductProduct extends Controller {
 				$file = basename($filename) . '.' . md5(rand());
 
 				// Hide the uploaded file name sop people can not link to it directly.
-				$this->getLoader()->library('encryption');
+				//$this->getLoader()->library('encryption');
 
 				$encryption = new Encryption($this->getConfig()->get('config_encryption'));
 

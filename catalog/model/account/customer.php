@@ -1,5 +1,5 @@
 <?php
-class ModelAccountCustomer extends Model {
+class ModelAccountCustomer extends \system\engine\Model {
 	public function addCustomer($data) {
       	$this->db->query("
       	    INSERT INTO customer

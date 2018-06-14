@@ -1,5 +1,7 @@
 <?php
-class ControllerModulelototron extends Controller {
+use system\engine\Controller;
+
+class ControllerModulelototron extends \system\engine\Controller {
 	public function start() {
 
 	function super_unique($array) {

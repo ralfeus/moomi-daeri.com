@@ -1,5 +1,5 @@
 <?php
-class ModelReportCustomer extends Model {
+class ModelReportCustomer extends \system\engine\Model {
 	public function getOrders($data = array()) { 
 		$sql = "SELECT tmp.customer_id, tmp.customer, tmp.email, tmp.customer_group, tmp.status, COUNT(tmp.order_id) AS orders, SUM(tmp.products) AS products, SUM(tmp.total) AS total FROM (SELECT o.order_id, c.customer_id, CONCAT(o.firstname, ' ', o.lastname) AS customer, o.email, cg.name AS customer_group, c.status, (SELECT SUM(op.quantity) FROM `order_product` op WHERE op.order_id = o.order_id GROUP BY op.order_id) AS products, o.total FROM `order` o LEFT JOIN `customer` c ON (o.customer_id = c.customer_id) LEFT JOIN customer_group cg ON (c.customer_group_id = cg.customer_group_id) WHERE o.customer_id > 0";
 		

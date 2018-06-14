@@ -1,5 +1,7 @@
 <?php
-class ControllerPaymentPPProUK extends Controller {
+use system\engine\Controller;
+
+class ControllerPaymentPPProUK extends \system\engine\Controller {
 	protected function index() {
 		$this->language->load('payment/pp_pro_uk');
 		 

@@ -1,5 +1,7 @@
-<?php  
-class ControllerModuleLoginza extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerModuleLoginza extends \system\engine\Controller {
 	private $error = array();
 	
 	protected function index() {

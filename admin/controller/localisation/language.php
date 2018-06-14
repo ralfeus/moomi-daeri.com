@@ -1,5 +1,7 @@
-<?php 
-class ControllerLocalisationLanguage extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerLocalisationLanguage extends \system\engine\Controller {
 	private $error = array();
   
 	public function index() {

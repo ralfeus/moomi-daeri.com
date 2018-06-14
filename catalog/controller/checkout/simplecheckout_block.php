@@ -3,11 +3,13 @@
 @author	Dmitriy Kubarev
 @link	http://www.simpleopencart.com
 @link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
-*/  
+*/
+
+use system\engine\Controller;
 
 require_once(DIR_SYSTEM . 'library/simple/simple.php');
 
-class ControllerCheckoutSimpleCheckoutBlock extends Controller { 
+class ControllerCheckoutSimpleCheckoutBlock extends \system\engine\Controller {
     public function index() {
         $default_blocks = array('simplecheckout_shipping','simplecheckout_payment','simplecheckout_cart','simplecheckout_customer');
 

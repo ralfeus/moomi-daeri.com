@@ -1,5 +1,5 @@
 <?php
-class ModelLocalisationWeightClass extends Model {
+class ModelLocalisationWeightClass extends \system\engine\Model {
 	public function addWeightClass($data) {
 		$this->db->query("INSERT INTO weight_class SET value = '" . (float)$data['value'] . "'");
 		

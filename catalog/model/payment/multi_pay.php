@@ -1,5 +1,5 @@
 <?php
-class ModelPaymentMultiPay extends Model {
+class ModelPaymentMultiPay extends \system\engine\Model {
 
 	// вся инфо по модулю
 	public function get_info() {

@@ -1,5 +1,7 @@
 <?php
-class ControllerShopPage extends Controller {
+use system\engine\Controller;
+
+class ControllerShopPage extends \system\engine\Controller {
 	private $error = array();
 
 	public function index() {

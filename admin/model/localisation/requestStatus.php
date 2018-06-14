@@ -6,7 +6,7 @@
  * Time: 19:24
  * To change this template use File | Settings | File Templates.
  */
-class ModelLocalisationRequestStatus extends Model
+class ModelLocalisationRequestStatus extends \system\engine\Model
 {
     public function getStatus($statusId)
     {

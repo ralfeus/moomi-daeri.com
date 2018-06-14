@@ -1,5 +1,7 @@
-<?php  
-class ControllerModuleAccount extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerModuleAccount extends \system\engine\Controller {
 	protected function index() {
 		$this->language->load('module/account');
 		

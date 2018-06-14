@@ -1,5 +1,7 @@
 <?php
-class ModelCatalogProduct extends Model {
+use system\engine\Model;
+
+class ModelCatalogProduct extends \system\engine\Model {
 	public function getProductAuctions($product_id) {
 	    $data = $this->db->query("SELECT * FROM " . DB_PREFIX . "wkauction WHERE product_id = '" . (int)$product_id . "' GROUP BY id");
 

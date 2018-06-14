@@ -1,5 +1,7 @@
 <?php
-class ControllerInformationBonusloto extends Controller {
+use system\engine\Controller;
+
+class ControllerInformationBonusloto extends \system\engine\Controller {
 	public function index() {
     	$this->load->language('information/bonusloto');
 		$this->load->model('fido/bonusloto');

@@ -1,5 +1,7 @@
-<?php 
-class ControllerTotalReward extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerTotalReward extends \system\engine\Controller {
 	public function index() {
 		$points = $this->customer->getRewardPoints();
 		

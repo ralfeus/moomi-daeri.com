@@ -1,5 +1,7 @@
-<?php 
-class ControllerDesignBanner extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerDesignBanner extends \system\engine\Controller {
 	private $error = array();
  
 	public function index() {

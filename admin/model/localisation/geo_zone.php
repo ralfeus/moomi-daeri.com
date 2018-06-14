@@ -1,5 +1,5 @@
 <?php
-class ModelLocalisationGeoZone extends Model {
+class ModelLocalisationGeoZone extends \system\engine\Model {
 	public function addGeoZone($data) {
 
 		$desc = $this->json_encode_cyr($data['description']);

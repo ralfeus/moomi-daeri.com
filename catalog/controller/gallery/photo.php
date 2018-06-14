@@ -1,7 +1,8 @@
 <?php
 use model\gallery\PhotoDAO;
+use system\engine\Controller;
 
-class ControllerGalleryPhoto extends Controller {
+class ControllerGalleryPhoto extends \system\engine\Controller {
     protected function initParameters() {
         $this->initParametersWithDefaults([
             'photoID' => 0,

@@ -1,5 +1,7 @@
 <?php
-class ControllerExtensionTotal extends Controller {
+use system\engine\Controller;
+
+class ControllerExtensionTotal extends \system\engine\Controller {
 	public function index() {
 		$this->load->language('extension/total');
 		 

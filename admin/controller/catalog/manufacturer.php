@@ -1,7 +1,8 @@
 <?php
 use model\catalog\ManufacturerDAO;
+use system\engine\Controller;
 
-class ControllerCatalogManufacturer extends Controller {
+class ControllerCatalogManufacturer extends \system\engine\Controller {
 	private $error = array();
 
     public function __construct($registry) {

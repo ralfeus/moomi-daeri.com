@@ -193,7 +193,7 @@ class ControllerCheckoutCart extends CustomerController {
 							'value' => utf8_truncate($option['option_value'])
 						);
 					} else {
-						$this->load->library('encryption');
+						//$this->load->library('encryption');
 
 						$encryption = new Encryption($this->config->get('config_encryption'));
 
@@ -478,7 +478,7 @@ class ControllerCheckoutCart extends CustomerController {
                         'value' => utf8_truncate($option['option_value'])
 					);
 				} else {
-					$this->load->library('encryption');
+					//$this->load->library('encryption');
 
 					$encryption = new Encryption($this->config->get('config_encryption'));
 

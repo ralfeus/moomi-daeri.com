@@ -1,5 +1,7 @@
 <?php
-class ControllerCheckoutAddToOrder extends Controller {
+use system\engine\Controller;
+
+class ControllerCheckoutAddToOrder extends \system\engine\Controller {
 	private $modelCheckoutOrder;
 	
 	public function __construct($registry)

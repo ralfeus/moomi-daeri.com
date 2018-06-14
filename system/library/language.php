@@ -1,4 +1,7 @@
 <?php
+namespace system\library;
+use Exception;
+
 final class Language {
 	private $languageId;
     public $directory;

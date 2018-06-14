@@ -6,7 +6,7 @@
  * YML основан на стандарте XML (Extensible Markup Language)
  * описание формата YML http://partner.market.yandex.ru/legal/tt/
  */
-class ControllerFeedYandexMarket extends Controller {
+class ControllerFeedYandexMarket extends \system\engine\Controller {
 	private $shop = array();
 	private $currencies = array();
 	private $categories = array();

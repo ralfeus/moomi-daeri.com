@@ -1,5 +1,7 @@
-<?php  
-class ControllerCheckoutCheckout extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerCheckoutCheckout extends \system\engine\Controller {
     public function __construct($registry)
     {
         parent::__construct($registry);

@@ -1,8 +1,9 @@
 <?php
 use model\catalog\SupplierDAO;
 use model\catalog\SupplierGroupDAO;
+use system\engine\Controller;
 
-class ControllerCatalogSupplierGroup extends Controller {
+class ControllerCatalogSupplierGroup extends \system\engine\Controller {
 	private $error = array();
 
     public function __construct($registry) {

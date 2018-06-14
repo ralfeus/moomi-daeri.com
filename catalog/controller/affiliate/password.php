@@ -1,5 +1,7 @@
 <?php
-class ControllerAffiliatePassword extends Controller {
+use system\engine\Controller;
+
+class ControllerAffiliatePassword extends \system\engine\Controller {
 	private $error = array();
 	     
   	public function index() {	

@@ -1,5 +1,7 @@
-<?php 
-class ControllerLocalisationCurrency extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerLocalisationCurrency extends \system\engine\Controller {
 	private $error = array();
     /** @var ModelLocalisationCurrency */
     private $modelLocalisationCurrency;

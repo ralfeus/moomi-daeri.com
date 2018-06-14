@@ -1,7 +1,8 @@
 <?php
+use system\engine\Controller;
 use system\library\MeasureUnitDAO;
 
-class ControllerShippingUPS extends Controller {
+class ControllerShippingUPS extends \system\engine\Controller {
 	private $error = array(); 
 	
 	public function index() {

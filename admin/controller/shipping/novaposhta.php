@@ -1,6 +1,8 @@
 <?php
 
-class ControllerShippingnovaposhta extends Controller {
+use system\engine\Controller;
+
+class ControllerShippingnovaposhta extends \system\engine\Controller {
 
     private $error = array();
 

@@ -1,5 +1,5 @@
 <?php
-class ControllerPaymentMoneybookers extends Controller {
+class ControllerPaymentMoneybookers extends \system\engine\Controller {
 	protected function index() {
 		$this->load->model('checkout/order');
 		
@@ -41,7 +41,7 @@ class ControllerPaymentMoneybookers extends Controller {
 		
 		$this->data['detail1_text'] = $products;
 		
-		$this->load->library('encryption');
+		//$this->load->library('encryption');
 		
 		$encryption = new Encryption($this->config->get('config_encryption'));
 		
@@ -57,7 +57,7 @@ class ControllerPaymentMoneybookers extends Controller {
 	}
 	
 	public function callback() {
-		$this->load->library('encryption');
+		//$this->load->library('encryption');
 
 		$encryption = new Encryption($this->config->get('config_encryption'));
 

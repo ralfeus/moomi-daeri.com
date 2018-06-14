@@ -1,5 +1,5 @@
 <?php
-class ModelShopGeneral extends Model {
+class ModelShopGeneral extends \system\engine\Model {
 	public function getHolidays($data) {}
 
 	public function getAllHolidaysForCalendar() {

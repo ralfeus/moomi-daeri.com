@@ -96,7 +96,7 @@ require_once(DIR_SYSTEM . 'library/response.php');
 require_once(DIR_SYSTEM . 'library/session.php');
 require_once(DIR_SYSTEM . 'library/Shipping.php');
 require_once(DIR_SYSTEM . 'library/template.php');
-require_once(DIR_SYSTEM . 'library/Transaction.php');
+//require_once(DIR_SYSTEM . 'library/Transaction.php');
 function p() {
 	$exit = false;
 	$args = func_get_args();

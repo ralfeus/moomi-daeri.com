@@ -1,5 +1,7 @@
-<?php 
-class ControllerTotalLowOrderFee extends Controller { 
+<?php
+use system\engine\Controller;
+
+class ControllerTotalLowOrderFee extends \system\engine\Controller {
 	private $error = array(); 
 	 
 	public function index() { 

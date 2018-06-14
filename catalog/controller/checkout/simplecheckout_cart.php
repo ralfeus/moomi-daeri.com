@@ -3,9 +3,11 @@
 @author    Dmitriy Kubarev
 @link    http://www.simpleopencart.com
 @link    http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
-*/  
+*/
 
-class ControllerCheckoutSimpleCheckoutCart extends Controller { 
+use system\engine\Controller;
+
+class ControllerCheckoutSimpleCheckoutCart extends \system\engine\Controller {
     static $error = array();
     
     public function index() {
@@ -105,7 +107,7 @@ class ControllerCheckoutSimpleCheckoutCart extends Controller {
         
         $this->load->model('tool/image');
         
-        $this->load->library('encryption');
+        //$this->load->library('encryption');
         
         $this->data['column_image']         = $this->language->get('column_image');
         $this->data['column_name']          = $this->language->get('column_name');

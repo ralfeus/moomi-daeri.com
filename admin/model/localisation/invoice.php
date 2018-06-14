@@ -6,7 +6,7 @@
  * Time: 23:31
  * To change this template use File | Settings | File Templates.
  */
-class ModelLocalisationInvoice extends Model
+class ModelLocalisationInvoice extends \system\engine\Model
 {
     public function getInvoiceStatus($statusId, $languageId = 2)
     {

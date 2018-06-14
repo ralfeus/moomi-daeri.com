@@ -1,8 +1,9 @@
 <?php
 use model\catalog\ProductDAO;
+use system\engine\Controller;
 use system\helper\ImageService;
 
-class ControllerProductSpecial extends Controller {
+class ControllerProductSpecial extends \system\engine\Controller {
     protected function loadStrings() {
         $this->data['text_empty'] = $this->language->get('text_empty');
         $this->data['text_quantity'] = $this->language->get('text_quantity');

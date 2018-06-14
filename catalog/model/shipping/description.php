@@ -1,6 +1,6 @@
 <?php
 
-class ModelShippingDescription extends Model {
+class ModelShippingDescription extends \system\engine\Model {
 	function getDescription($geo_zone_id = null, $schipping_name = '') {
 		if(!is_null($geo_zone_id)) {
 			$query = "SELECT * FROM geo_zone WHERE geo_zone_id = '" . $geo_zone_id . "'";

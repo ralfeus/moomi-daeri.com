@@ -1,5 +1,7 @@
 <?php
-class ModelGalleryPhoto extends Model {
+use system\library\Transaction;
+
+class ModelGalleryPhoto extends \system\engine\Model {
 	public function addReview($data) {
 		$this->db->query("INSERT INTO review SET author = '" . $this->db->escape($data['author']) . "', product_id = '" . $this->db->escape($data['product_id']) . "', text = '" . $this->db->escape(strip_tags($data['text'])) . "', rating = '" . (int)$data['rating'] . "', status = '" . (int)$data['status'] . "', date_added = NOW()");
 	}
@@ -57,7 +59,7 @@ class ModelGalleryPhoto extends Model {
 		$query = "SELECT DISTINCT customer_id FROM gallery_photo WHERE photo_id IN (" . implode(",", $photo_ids) . ")";
 		$result = $this->db->query($query);
 		if($credits > 0) {
-			$this->load->library('Transaction');
+			//$this->load->library('Transaction');
 			foreach ($result->rows as $row) {
 				//$this->log->write("------------------------------------------------------>" . $credits);
 				Transaction::addCredit($row['customer_id'], $credits, 'WON', $this->registry, $desc);

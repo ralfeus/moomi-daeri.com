@@ -1,7 +1,8 @@
 <?php
 use model\sale\CustomerDAO;
+use system\engine\Controller;
 
-class ControllerLocalisationZone extends Controller {
+class ControllerLocalisationZone extends \system\engine\Controller {
 	private $error = array(); 
 
 	public function index() {

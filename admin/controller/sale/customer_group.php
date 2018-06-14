@@ -1,7 +1,8 @@
 <?php
 use model\sale\CustomerDAO;
+use system\engine\Controller;
 
-class ControllerSaleCustomerGroup extends Controller {
+class ControllerSaleCustomerGroup extends \system\engine\Controller {
 	private $error = array();
 
     public function __construct($registry)

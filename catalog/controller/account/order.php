@@ -11,7 +11,7 @@ class ControllerAccountOrder extends CustomerZoneController {
     public function __construct($registry)
     {
         parent::__construct($registry);
-        $this->load->library('Status');
+        //$this->load->library('Status');
         $this->language->load('account/order');
         $this->document->setTitle($this->language->get('heading_title'));
         $this->data['heading_title'] = $this->language->get('heading_title');

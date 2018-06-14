@@ -1,5 +1,5 @@
 <?php 
-class ControllerAffiliateSuccess extends Controller {  
+class ControllerAffiliateSuccess extends \system\engine\Controller {
 	public function index() {
     	$this->language->load('affiliate/success');
   

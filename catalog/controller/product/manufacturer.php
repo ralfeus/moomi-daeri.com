@@ -1,9 +1,10 @@
 <?php
 use model\catalog\ManufacturerDAO;
 use model\catalog\ProductDAO;
+use system\engine\Controller;
 use system\helper\ImageService;
 
-class ControllerProductManufacturer extends Controller {
+class ControllerProductManufacturer extends \system\engine\Controller {
     public function __construct($registry) {
         parent::__construct($registry);
         $this->getLanguage()->load('product/manufacturer');

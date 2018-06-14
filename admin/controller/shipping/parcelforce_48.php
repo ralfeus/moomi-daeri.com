@@ -1,5 +1,7 @@
 <?php
-class ControllerShippingParcelforce48 extends Controller {
+use system\engine\Controller;
+
+class ControllerShippingParcelforce48 extends \system\engine\Controller {
 	private $error = array(); 
 	
 	public function index() {   

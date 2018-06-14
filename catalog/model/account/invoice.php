@@ -8,7 +8,7 @@ use model\shipping\ShippingMethodDAO;
  * Time: 18:25
  * To change this template use File | Settings | File Templates.
  */
-class ModelAccountInvoice extends Model
+class ModelAccountInvoice extends \system\engine\Model
 {
     public function addInvoice($orderId, $order_items, $weight = 0)
     {

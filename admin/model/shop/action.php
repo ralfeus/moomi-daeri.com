@@ -1,5 +1,5 @@
 <?php
-class ModelShopAction extends Model {
+class ModelShopAction extends \system\engine\Model {
   public function getAllActions() {
     $query = "SELECT * FROM action";
     $result = $this->db->query($query);

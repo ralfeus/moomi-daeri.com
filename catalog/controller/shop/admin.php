@@ -1,5 +1,7 @@
 <?php
-class ControllerShopAdmin extends Controller {
+use system\engine\Controller;
+
+class ControllerShopAdmin extends \system\engine\Controller {
     /** @var ModelShopGeneral */
     private $modelShopGeneral;
 

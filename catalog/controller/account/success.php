@@ -1,5 +1,7 @@
-<?php 
-class ControllerAccountSuccess extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerAccountSuccess extends \system\engine\Controller {
     public function __construct($registry)
     {
         parent::__construct($registry);

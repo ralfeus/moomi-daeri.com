@@ -1,7 +1,8 @@
 <?php
 use model\gallery\PhotoDAO;
+use system\engine\Controller;
 
-class ControllerCommonSpecialBottom extends Controller {
+class ControllerCommonSpecialBottom extends \system\engine\Controller {
 	public function index() {
 //		$this->getLoader()->model('design/layout');
 		$this->getLoader()->model('catalog/category');

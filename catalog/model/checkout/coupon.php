@@ -4,7 +4,7 @@
  * Class ModelCheckoutCoupon
  * @Deprecated
  */
-class ModelCheckoutCoupon extends Model {
+class ModelCheckoutCoupon extends \system\engine\Model {
 	public function getCoupon($code, $chosenOnes = false) {
 		$status = true;
 		

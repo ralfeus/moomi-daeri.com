@@ -1,5 +1,5 @@
 <?php
-class ModelSettingExtension extends Model {
+class ModelSettingExtension extends \system\engine\Model {
     function getExtensions($type, $installedOnly = true, $enabledOnly = false)
     {
         $result = array();

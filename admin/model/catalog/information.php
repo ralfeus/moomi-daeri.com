@@ -1,5 +1,5 @@
 <?php
-class ModelCatalogInformation extends Model {
+class ModelCatalogInformation extends \system\engine\Model {
 	public function addInformation($data) {
 		$this->db->query("
 		    INSERT INTO information

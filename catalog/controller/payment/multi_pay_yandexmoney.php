@@ -1,5 +1,5 @@
 <?php
-class ControllerPaymentMultiPayYandexMoney extends Controller {
+class ControllerPaymentMultiPayYandexMoney extends \system\engine\Controller {
 
 // for test use LINK 
 //  index.php?route=payment/multi_pay_yandexmoney/callback&test&operation_id=12345&sender=7654321&currency=643&codepro=false&notification_type=p2p-incoming&datetime=2014-10-07T07:11:42Z&label=zakaz+71&amount=12

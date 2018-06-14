@@ -1,5 +1,7 @@
-<?php 
-class ControllerPaymentPPProUK extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerPaymentPPProUK extends \system\engine\Controller {
 	private $error = array(); 
 
 	public function index() {

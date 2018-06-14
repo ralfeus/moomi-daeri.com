@@ -1,5 +1,7 @@
 <?php
-class ControllerReportCustomerReward extends Controller {
+use system\engine\Controller;
+
+class ControllerReportCustomerReward extends \system\engine\Controller {
 	public function index() {     
 		$this->load->language('report/customer_reward');
 

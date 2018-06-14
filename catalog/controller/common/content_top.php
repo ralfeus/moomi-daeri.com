@@ -1,5 +1,7 @@
-<?php  
-class ControllerCommonContentTop extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerCommonContentTop extends \system\engine\Controller {
 	public function index() {
 //		$this->load->model('design/layout');
 		$this->load->model('catalog/category');

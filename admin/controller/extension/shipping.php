@@ -1,8 +1,9 @@
 <?php
 use model\setting\SettingsDAO;
 use model\shipping\ShippingMethodDAO;
+use system\engine\Controller;
 
-class ControllerExtensionShipping extends Controller {
+class ControllerExtensionShipping extends \system\engine\Controller {
 	public function index() {
 		$this->load->language('extension/shipping');
 		 

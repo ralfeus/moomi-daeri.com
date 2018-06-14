@@ -1,5 +1,5 @@
 <?php
-class ModelLocalisationCurrency extends Model {
+class ModelLocalisationCurrency extends \system\engine\Model {
 	public function getCurrencyByCode($currency) {
 		$query = $this->getDb()->query("SELECT DISTINCT * FROM currency WHERE code = '" . $this->getDb()->escape($currency) . "'");
 	

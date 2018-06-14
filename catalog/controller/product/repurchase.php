@@ -1,4 +1,6 @@
 <?php
+use system\engine\Controller;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -6,7 +8,7 @@
  * Time: 16:33
  * To change this template use File | Settings | File Templates.
  */
-class ControllerProductRepurchase extends Controller
+class ControllerProductRepurchase extends \system\engine\Controller
 {
     public function __construct($registry)
     {

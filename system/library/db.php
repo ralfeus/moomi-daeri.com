@@ -1,4 +1,7 @@
 <?php
+namespace system\library;
+use system\database\DBDriver;
+
 final class DB {
     /** @var DBDriver */
 	private $driver;
@@ -9,7 +12,7 @@ final class DB {
      * @param string $username
      * @param string $password
      * @param string $database
-     * @return \DBDriver
+     * @return DBDriver
      */
     public static function getDB($driver, $hostname, $username, $password, $database) {
 		if (file_exists(DIR_DATABASE . $driver . '.php')) {
@@ -18,7 +21,7 @@ final class DB {
 			exit('Error: Could not load database file ' . $driver . '!');
 		}
 				
-		return new $driver($hostname, $username, $password, $database);
+		return DBDriver::getDriver($driver, $hostname, $username, $password, $database);
 	}
 
     public function getDriver() {
@@ -45,4 +48,3 @@ final class DB {
 		return $this->driver->getLastId();
   	}	
 }
-?>

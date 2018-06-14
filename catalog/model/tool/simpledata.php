@@ -5,7 +5,7 @@
 @link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */  
 
-class ModelToolSimpleData extends Model {
+class ModelToolSimpleData extends \system\engine\Model {
 
     public function select_main_city($fields) {
         $values = array();

@@ -1,5 +1,7 @@
-<?php  
-class ControllerModuleAffiliate extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerModuleAffiliate extends \system\engine\Controller {
 	protected function index() {
 		$this->language->load('module/affiliate');
 		

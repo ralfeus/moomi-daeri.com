@@ -1,5 +1,6 @@
 <?php
 use model\sale\RepurchaseOrderDAO;
+use system\engine\Controller;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -8,12 +9,12 @@ use model\sale\RepurchaseOrderDAO;
  * Time: 8:16
  * To change this template use File | Settings | File Templates.
  */
-class ControllerSaleRepurchaseOrders extends Controller {
+class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
     public function __construct($registry) {
         parent::__construct($registry);
         $this->data['notifications'] = array();
         $this->load->language('sale/repurchaseOrders');
-        $this->load->library('Status');
+        //$this->load->library('Status');
         $this->document->setTitle($this->getLanguage()->get('HEADING_TITLE'));
         $this->data['headingTitle'] = $this->getLanguage()->get('HEADING_TITLE');
     }

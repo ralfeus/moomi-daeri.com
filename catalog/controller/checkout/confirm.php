@@ -1,8 +1,9 @@
 <?php
 use model\shipping\ShippingMethodDAO;
+use system\engine\Controller;
 use system\exception\NotImplementedException;
 
-class ControllerCheckoutConfirm extends Controller {
+class ControllerCheckoutConfirm extends \system\engine\Controller {
     private $modelCheckoutOrder;
 
     public function __construct($registry)
@@ -187,7 +188,7 @@ class ControllerCheckoutConfirm extends Controller {
 				$data['shipping_method'] = '';
 			}
 			
-			$this->load->library('encryption');
+			//$this->load->library('encryption');
 			
 			$product_data = array();
 		
@@ -301,7 +302,7 @@ class ControllerCheckoutConfirm extends Controller {
 							'value' => utf8_truncate($option['option_value'])
 						);
 					} else {
-						$this->load->library('encryption');
+						//$this->load->library('encryption');
 						
 						$encryption = new Encryption($this->config->get('config_encryption'));
 						

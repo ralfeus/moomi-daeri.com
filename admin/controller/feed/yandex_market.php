@@ -1,5 +1,7 @@
 <?php
-class ControllerFeedYandexMarket extends Controller {
+use system\engine\Controller;
+
+class ControllerFeedYandexMarket extends \system\engine\Controller {
 
 	private $error = array();
 

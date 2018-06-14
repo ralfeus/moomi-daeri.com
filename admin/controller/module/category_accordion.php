@@ -2,7 +2,9 @@
 ############################################################################################
 #  Category Accordion for Opencart 1.5.1.x from HostJars http://opencart.hostjars.com      #
 ############################################################################################
-class ControllerModuleCategoryAccordion extends Controller {
+use system\engine\Controller;
+
+class ControllerModuleCategoryAccordion extends \system\engine\Controller {
 	private $error = array(); 
 	
 	public function index() {   

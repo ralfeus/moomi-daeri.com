@@ -1,5 +1,7 @@
 <?php
-class ControllerReportCustomerCredit extends Controller {
+use system\engine\Controller;
+
+class ControllerReportCustomerCredit extends \system\engine\Controller {
 	public function index() {     
 		$this->load->language('report/customer_credit');
 

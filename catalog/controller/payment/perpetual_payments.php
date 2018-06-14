@@ -1,5 +1,7 @@
 <?php
-class ControllerPaymentPerpetualPayments extends Controller {
+use system\engine\Controller;
+
+class ControllerPaymentPerpetualPayments extends \system\engine\Controller {
 	protected function index() {
     	$this->language->load('payment/perpetual_payments');
 		

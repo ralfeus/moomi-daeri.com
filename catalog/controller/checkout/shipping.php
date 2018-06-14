@@ -1,8 +1,9 @@
 <?php
 use model\shipping\ShippingMethodDAO;
+use system\engine\Controller;
 use system\exception\NotImplementedException;
 
-class ControllerCheckoutShipping extends Controller {
+class ControllerCheckoutShipping extends \system\engine\Controller {
   	public function index() {
 //        $this->log->write("Opening checkout/shipping");
 		$this->language->load('checkout/checkout');

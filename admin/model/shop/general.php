@@ -1,5 +1,5 @@
 <?php
-class ModelShopGeneral extends Model {
+class ModelShopGeneral extends \system\engine\Model {
 	public function addHoliday($data) {
 		
 		$this->db->query("INSERT INTO shop_holiday SET start = '" . $this->db->escape($data['start']) . "', end = '" . $this->db->escape($data['end']) . "', name = '" . $this->db->escape(strip_tags($data['name'])) . "'");

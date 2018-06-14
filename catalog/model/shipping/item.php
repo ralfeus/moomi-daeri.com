@@ -4,7 +4,7 @@
  * Class ModelShippingItem
  * @deprecated
  */
-class ModelShippingItem extends Model {
+class ModelShippingItem extends \system\engine\Model {
 	public function getQuote($address) {
 		$this->load->language('shipping/item');
 		

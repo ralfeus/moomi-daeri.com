@@ -4,7 +4,7 @@
  * Class ModelShippingCitylink
  * @deprecated
  */
-class ModelShippingCitylink extends Model {
+class ModelShippingCitylink extends \system\engine\Model {
 	function getQuote($address) {
 		$this->load->language('shipping/citylink');
 		

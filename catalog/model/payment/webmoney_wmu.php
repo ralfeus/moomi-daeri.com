@@ -1,5 +1,5 @@
 <?php
-class ModelPaymentWebmoneyWMU extends Model {
+class ModelPaymentWebmoneyWMU extends \system\engine\Model {
 	public function getMethod($address, $total) {
 		$this->load->language('payment/webmoney_wmu');
 		

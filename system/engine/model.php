@@ -1,7 +1,7 @@
 <?php
+namespace system\engine;
 use system\library\Filter;
 
-require_once('OpenCartBase.php');
 abstract class Model extends OpenCartBase {
     public function __construct($registry) {
         parent::__construct($registry);
@@ -30,6 +30,7 @@ abstract class Model extends OpenCartBase {
      */
     protected function buildSimpleFieldFilterEntry($fieldName, $filterValues, &$filterString, &$params, $entryType = null) {
         if (isset($filterValues)) {
+//            $this->getLogger()->write(print_r($filterValues, true));
             $paramName = ':' . preg_replace('/\W+/', '', $fieldName);
             if (is_array($filterValues)) {
                 if (sizeof($filterValues)) {
@@ -44,6 +45,8 @@ abstract class Model extends OpenCartBase {
                     $tmpFinalFilterString = "$fieldName IN (" . substr($tmpFilterString, 2) . ')';
                     $filterString .= $tmpFinalFilterString;
                     return new Filter($tmpFinalFilterString, $tmpParams);
+                } else {
+                    return null;
                 }
             } else {
                 $filterString .= ($filterString ? " AND " : "") . "$fieldName = $paramName";
@@ -51,5 +54,6 @@ abstract class Model extends OpenCartBase {
                 return new Filter("$fieldName = $paramName", [$paramName => $filterValues]);
             }
         }
+        throw new \InvalidArgumentException("No filter values are provided");
     }
 }

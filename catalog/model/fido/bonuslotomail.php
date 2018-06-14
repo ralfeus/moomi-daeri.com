@@ -1,5 +1,5 @@
 <?php
-class ModelFidobonuslotoMail extends Model {
+class ModelFidobonuslotoMail extends \system\engine\Model {
 	public function sendBonuslotoMailWinner($bonusloto_id) {
 			$this->load->language('mail/bonusloto_confirm');
 			

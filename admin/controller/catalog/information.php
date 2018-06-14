@@ -1,5 +1,7 @@
 <?php
-class ControllerCatalogInformation extends Controller { 
+use system\engine\Controller;
+
+class ControllerCatalogInformation extends \system\engine\Controller {
 	private $error = array();
     /** @var  ModelCatalogInformation */
     private $modelCatalogInformation;

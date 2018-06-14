@@ -1,5 +1,7 @@
-<?php 
-class ControllerTotalCredit extends Controller { 
+<?php
+use system\engine\Controller;
+
+class ControllerTotalCredit extends \system\engine\Controller {
 	private $error = array(); 
 	 
 	public function index() { 

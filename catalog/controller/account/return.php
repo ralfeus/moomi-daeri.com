@@ -628,7 +628,7 @@ class ControllerAccountReturn extends CustomerZoneController {
   	}
 	
 	public function captcha() {
-		$this->load->library('captcha');
+		//$this->load->library('captcha');
 		
 		$captcha = new Captcha();
 		

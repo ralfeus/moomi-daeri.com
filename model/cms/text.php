@@ -6,7 +6,7 @@
  * Time: 19:56
  * To change this template use File | Settings | File Templates.
  */
-class ModelCmsText extends Model
+class ModelCmsText extends \system\engine\Model
 {
     private function buildFilterString($data = array())
     {

@@ -1,5 +1,5 @@
 <?php
-class ControllerShopAction extends Controller {
+class ControllerShopAction extends \system\engine\Controller {
   public function index() {
 
     $this->load->language('shop/admin');

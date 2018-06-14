@@ -1,5 +1,5 @@
 <?php
-class ModelCatalogProduct extends Model {
+class ModelCatalogProduct extends \system\engine\Model {
 	public function updateViewed($product_id) {
 		$this->getDb()->query("
 		    UPDATE product

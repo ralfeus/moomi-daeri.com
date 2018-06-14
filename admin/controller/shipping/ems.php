@@ -1,5 +1,7 @@
 <?php
-class ControllerShippingEMS extends Controller {
+use system\engine\Controller;
+
+class ControllerShippingEMS extends \system\engine\Controller {
 	private $error = array();
 
     public function getCost()

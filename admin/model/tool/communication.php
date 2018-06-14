@@ -6,7 +6,7 @@
  * Time: 23:11
  * To change this template use File | Settings | File Templates.
  */
-class ModelToolCommunication extends Model
+class ModelToolCommunication extends \system\engine\Model
 {
     public function sendMessage($customerId, $message, $messageTypeId)
     {

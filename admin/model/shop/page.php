@@ -1,5 +1,5 @@
 <?php
-class ModelShopPage extends Model {
+class ModelShopPage extends \system\engine\Model {
   public function getAllPages() {
     $query = "SELECT * FROM page";
     $result = $this->db->query($query);

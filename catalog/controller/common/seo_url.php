@@ -1,5 +1,7 @@
 <?php
-class ControllerCommonSeoUrl extends Controller {
+use system\engine\Controller;
+
+class ControllerCommonSeoUrl extends \system\engine\Controller {
 	public function index() {
 		// Add rewrite to url class
 		if ($this->config->get('config_seo_url')) {
@@ -116,4 +118,3 @@ class ControllerCommonSeoUrl extends Controller {
 		}		
 	}	
 }
-?>

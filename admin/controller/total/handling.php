@@ -1,5 +1,7 @@
-<?php 
-class ControllerTotalHandling extends Controller { 
+<?php
+use system\engine\Controller;
+
+class ControllerTotalHandling extends \system\engine\Controller {
 	private $error = array(); 
 	 
 	public function index() { 

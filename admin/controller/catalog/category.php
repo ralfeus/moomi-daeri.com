@@ -1,5 +1,7 @@
-<?php 
-class ControllerCatalogCategory extends Controller { 
+<?php
+use system\engine\Controller;
+
+class ControllerCatalogCategory extends \system\engine\Controller {
 	private $error = array();
 	private $category_id = 0;
 	private $path = array();

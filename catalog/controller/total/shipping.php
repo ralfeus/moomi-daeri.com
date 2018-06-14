@@ -1,7 +1,8 @@
 <?php
 use model\shipping\ShippingMethodDAO;
+use system\engine\Controller;
 
-class ControllerTotalShipping extends Controller {
+class ControllerTotalShipping extends \system\engine\Controller {
 	public function index() {
 		if (!isset($this->session->data['address_id']) && $this->cart->hasShipping() && $this->config->get('shipping_estimator')) {
 			$this->language->load('total/shipping');

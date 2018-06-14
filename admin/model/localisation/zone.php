@@ -1,5 +1,5 @@
 <?php
-class ModelLocalisationZone extends Model {
+class ModelLocalisationZone extends \system\engine\Model {
 	public function addZone($data) {
 		$this->db->query("INSERT INTO zone SET status = '" . (int)$data['status'] . "', name = '" . $this->db->escape($data['name']) . "', code = '" . $this->db->escape($data['code']) . "', country_id = '" . (int)$data['country_id'] . "'");
 			

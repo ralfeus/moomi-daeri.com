@@ -1,5 +1,5 @@
 <?php 
-class ControllerCheckoutGuest extends Controller {
+class ControllerCheckoutGuest extends \system\engine\Controller {
   	public function index() {
     	$this->language->load('checkout/checkout');
 		

@@ -1,5 +1,5 @@
 <?php
-class ModelCatalogDownload extends Model {
+class ModelCatalogDownload extends \system\engine\Model {
 	public function addDownload($data) {
       	$this->db->query("INSERT INTO download SET remaining = '" . (int)$data['remaining'] . "', date_added = NOW()");
 

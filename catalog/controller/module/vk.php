@@ -1,5 +1,7 @@
-<?php  
-class ControllerModuleVk extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerModuleVk extends \system\engine\Controller {
 	protected function index($setting) {
 		$this->language->load('module/vk');
 		

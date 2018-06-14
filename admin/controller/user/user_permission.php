@@ -1,5 +1,5 @@
 <?php
-class ControllerUserUserPermission extends Controller {
+class ControllerUserUserPermission extends \system\engine\Controller {
 	private $error = array();
  
 	public function index() {

@@ -2,7 +2,7 @@
 
 // это для работы с аккаунтом пользователя - депозитами его
 // поэтому не записываем его в payment/
-class ModelAccountMultiPay extends Model {
+class ModelAccountMultiPay extends \system\engine\Model {
 
 	// выдает кнопки для управления оплатой и отменой заказа в страницу account/order/info
 	public function order_info($order_info) {	

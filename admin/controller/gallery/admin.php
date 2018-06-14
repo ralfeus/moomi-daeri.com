@@ -1,5 +1,7 @@
 <?php
-class ControllerGalleryAdmin extends Controller {
+use system\engine\Controller;
+
+class ControllerGalleryAdmin extends \system\engine\Controller {
 
 	public function index() {
 

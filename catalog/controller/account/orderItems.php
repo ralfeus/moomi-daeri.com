@@ -13,7 +13,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
         $this->document->setTitle($this->language->get('HEADING_TITLE'));
 
         $this->load->model('catalog/product');
-        $this->load->library('Status');
+        //$this->load->library('Status');
         $this->orderModel = $this->load->model('account/order');
 //        $this->load->model('account/order_item_history');
         $this->load->model('tool/image');

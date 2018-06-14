@@ -2,8 +2,11 @@
 use model\sale\CustomerDAO;
 use model\sale\OrderItemDAO;
 use model\setting\StoreDAO;
+use system\engine\Controller;
+use system\library\Messaging;
+use system\library\Transaction;
 
-class ControllerSaleCustomer extends Controller {
+class ControllerSaleCustomer extends \system\engine\Controller {
 	private $error = array();
     private $modelLocalisationCurrency;
 
@@ -40,8 +43,6 @@ class ControllerSaleCustomer extends Controller {
 
     private function getCreditRequests($customer)
     {
-        $this->getLoader()->library('Messaging');
-        $this->getLoader()->library('Status');
         $addCreditRequests = Messaging::getSystemMessages(
             array(
                 'systemMessageType' => SYS_MSG_ADD_CREDIT,
@@ -1092,7 +1093,7 @@ class ControllerSaleCustomer extends Controller {
 	}
 	
 	public function transaction() {
-        $this->getLoader()->library('Transaction');
+        //$this->getLoader()->library('Transaction');
         $customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
         if ($this->request->server['REQUEST_METHOD'] == 'POST') {
             if ($this->user->hasPermission('modify', 'sale/customer')) {

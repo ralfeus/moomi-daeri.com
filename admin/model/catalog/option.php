@@ -1,5 +1,5 @@
 <?php
-class ModelCatalogOption extends Model {
+class ModelCatalogOption extends \system\engine\Model {
 	public function addOption($data) {
 		$this->db->query("INSERT INTO `option` SET type = '" . $this->db->escape($data['type']) . "', sort_order = '" . (int)$data['sort_order'] . "'");
 		

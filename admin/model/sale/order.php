@@ -3,7 +3,7 @@ use model\sale\CustomerDAO;
 use model\sale\OrderItemDAO;
 use model\shipping\ShippingMethodDAO;
 
-class ModelSaleOrder extends Model {
+class ModelSaleOrder extends \system\engine\Model {
 	public function addOrder($data) { //echo "asdsadas"; die();
 		$invoice_no = '';
 		$total = '';

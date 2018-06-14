@@ -1,5 +1,5 @@
 <?php 
-class ModelPaymentWesternTransfer extends Model {
+class ModelPaymentWesternTransfer extends \system\engine\Model {
   	public function getMethod($address, $total) {
 		$this->load->language('payment/western_transfer');
 		

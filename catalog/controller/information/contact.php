@@ -1,5 +1,7 @@
-<?php 
-class ControllerInformationContact extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerInformationContact extends \system\engine\Controller {
 	private $error = array(); 
 	    
   	public function index() {
@@ -173,7 +175,7 @@ class ControllerInformationContact extends Controller {
 	}
 
 	public function captcha() {
-		$this->load->library('captcha');
+		//$this->load->library('captcha');
 		
 		$captcha = new Captcha();
 		

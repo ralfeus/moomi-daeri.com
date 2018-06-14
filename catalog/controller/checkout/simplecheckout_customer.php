@@ -3,9 +3,11 @@
 @author	Dmitriy Kubarev
 @link	http://www.simpleopencart.com
 @link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
-*/  
+*/
 
-class ControllerCheckoutSimpleCheckoutCustomer extends Controller {
+use system\engine\Controller;
+
+class ControllerCheckoutSimpleCheckoutCustomer extends \system\engine\Controller {
     static $static_data = array();
     private $error = array();
     private $language_code = '';

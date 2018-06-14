@@ -1,5 +1,7 @@
-<?php  
-class ControllerModuleSlideshow extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerModuleSlideshow extends \system\engine\Controller {
 	protected function index($setting) {
 		static $module = 0;
 		

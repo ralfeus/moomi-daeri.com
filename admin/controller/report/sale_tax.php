@@ -1,5 +1,7 @@
 <?php
-class ControllerReportSaleTax extends Controller {
+use system\engine\Controller;
+
+class ControllerReportSaleTax extends \system\engine\Controller {
 	public function index() {     
 		$this->load->language('report/sale_tax');
 

@@ -1,5 +1,7 @@
-<?php  
-class ControllerModuleCarousel extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerModuleCarousel extends \system\engine\Controller {
 	protected function index($setting) {
 		static $module = 0;
 		

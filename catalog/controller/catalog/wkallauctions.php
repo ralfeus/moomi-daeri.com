@@ -1,7 +1,8 @@
 <?php
 use model\module\WKProductAuctionDAO;
+use system\engine\Controller;
 
-class ControllerCatalogWkallauctions extends Controller {
+class ControllerCatalogWkallauctions extends \system\engine\Controller {
 	private $error = array();
 
 	public function index() {

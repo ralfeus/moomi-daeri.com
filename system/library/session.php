@@ -1,4 +1,5 @@
 <?php
+namespace system\library;
 final class Session {
 	public $data = array();
 			
@@ -14,4 +15,3 @@ final class Session {
 		$this->data =& $_SESSION;
 	}
 }
-?>

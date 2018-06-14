@@ -1,7 +1,8 @@
 <?php
 use model\sale\OrderItemDAO;
+use system\engine\Model;
 
-class ModelSaleOrderItemHistory extends  Model
+class ModelSaleOrderItemHistory extends Model
 {
     public function __construct($registry)
     {

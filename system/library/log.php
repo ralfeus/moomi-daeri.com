@@ -1,4 +1,5 @@
 <?php
+namespace system\library;
 final class Log {
 	private $filename;
 	

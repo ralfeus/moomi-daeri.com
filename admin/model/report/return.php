@@ -1,5 +1,5 @@
 <?php
-class ModelReportReturn extends Model {
+class ModelReportReturn extends \system\engine\Model {
 	public function getReturns($data = array()) {
 		$sql = "SELECT MIN(tmp.date_added) AS date_start, MAX(tmp.date_added) AS date_end, COUNT(tmp.return_id) AS `returns`, SUM(tmp.products) AS products FROM (SELECT r.return_id, (SELECT SUM(rp.quantity) FROM `return_product` rp WHERE rp.return_id = r.return_id) AS products, r.date_added FROM `return` r";
 

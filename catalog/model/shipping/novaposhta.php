@@ -4,7 +4,7 @@
  * Class ModelShippingnovaposhta
  * @deprecated
  */
-class ModelShippingnovaposhta extends Model {
+class ModelShippingnovaposhta extends \system\engine\Model {
 
     function getQuote($address) {
         $this->load->language('shipping/novaposhta');

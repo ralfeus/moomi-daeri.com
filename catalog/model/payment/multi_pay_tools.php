@@ -1,6 +1,6 @@
 <?php
 
-class ModelPaymentMultiPayTools extends Model {
+class ModelPaymentMultiPayTools extends \system\engine\Model {
 
 	// выдает кнопки для управления оплатой
 	public function get_order_descr($order_id) {	

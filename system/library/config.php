@@ -1,4 +1,5 @@
 <?php
+namespace system\library;
 final class Config {
 	private $data = array();
 
@@ -29,4 +30,3 @@ final class Config {
 		}
   	}
 }
-?>

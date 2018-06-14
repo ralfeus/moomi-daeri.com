@@ -1,5 +1,5 @@
 <?php 
-class ModelLocalisationTaxClass extends Model {
+class ModelLocalisationTaxClass extends \system\engine\Model {
 	public function addTaxClass($data) {
 		$this->db->query("INSERT INTO tax_class SET title = '" . $this->db->escape($data['title']) . "', description = '" . $this->db->escape($data['description']) . "', date_added = NOW()");
 		

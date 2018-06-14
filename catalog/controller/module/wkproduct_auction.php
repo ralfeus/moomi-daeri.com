@@ -6,7 +6,7 @@
 
 use model\module\WKProductAuctionDAO;
 
-class ControllerModuleWkproductauction extends Controller {
+class ControllerModuleWkproductauction extends \system\engine\Controller {
 	protected function index() {
 		//LOAD LANGUAGE
 		$this->language->load('module/wkproduct_auction');

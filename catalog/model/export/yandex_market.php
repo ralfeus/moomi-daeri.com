@@ -1,5 +1,5 @@
 <?php
-class ModelExportYandexMarket extends Model {
+class ModelExportYandexMarket extends \system\engine\Model {
 	public function getCategory() {
 		$query = $this->getDb()->query("SELECT cd.name, c.category_id, c.parent_id FROM category c LEFT JOIN category_description cd ON (c.category_id = cd.category_id) LEFT JOIN category_to_store c2s ON (c.category_id = c2s.category_id) WHERE cd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND c2s.store_id = '" . (int)$this->config->get('config_store_id') . "'  AND c.status = '1' AND c.sort_order <> '-1'");
 

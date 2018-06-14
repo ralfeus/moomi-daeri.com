@@ -1,5 +1,5 @@
 <?php
-class ModelSaleCustomerGroup extends Model {
+class ModelSaleCustomerGroup extends \system\engine\Model {
 	public function addCustomerGroup($data) {
 		$this->db->query("
 		    INSERT INTO customer_group

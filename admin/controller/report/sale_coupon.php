@@ -1,5 +1,7 @@
 <?php
-class ControllerReportSaleCoupon extends Controller {
+use system\engine\Controller;
+
+class ControllerReportSaleCoupon extends \system\engine\Controller {
 	public function index() {     
 		$this->load->language('report/sale_coupon');
 

@@ -1,5 +1,5 @@
 <?php
-class ControllerPaymentMoneygramTransfer extends Controller {
+class ControllerPaymentMoneygramTransfer extends \system\engine\Controller {
 	protected function index() {
 		$this->language->load('payment/moneygram_transfer');
 		

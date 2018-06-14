@@ -1,5 +1,5 @@
 <?php
-class ModelCatalogReview extends Model {
+class ModelCatalogReview extends \system\engine\Model {
 	public function addReview($data) {
 		$this->db->query("INSERT INTO review SET author = '" . $this->db->escape($data['author']) . "', product_id = '" . $this->db->escape($data['product_id']) . "', text = '" . $this->db->escape(strip_tags($data['text'])) . "', rating = '" . (int)$data['rating'] . "', status = '" . (int)$data['status'] . "', date_added = NOW()");
 	}

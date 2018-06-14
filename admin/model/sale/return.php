@@ -1,5 +1,5 @@
 <?php
-class ModelSaleReturn extends Model {
+class ModelSaleReturn extends \system\engine\Model {
 	public function addReturn($data) {
       	$this->db->query("INSERT INTO `return` SET order_id = '" . (int)$data['order_id'] . "', date_ordered = '" . $this->db->escape($data['date_ordered']) . "', customer_id = '" . (int)$data['customer_id'] . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', return_status_id = '" . (int)$data['return_status_id'] . "', comment = '" . $this->db->escape($data['comment']) . "', date_added = NOW(), date_modified = NOW()");
       	

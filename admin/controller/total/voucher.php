@@ -1,5 +1,7 @@
 <?php
-class ControllerTotalVoucher extends Controller {
+use system\engine\Controller;
+
+class ControllerTotalVoucher extends \system\engine\Controller {
 	private $error = array(); 
 	 
 	public function index() { 

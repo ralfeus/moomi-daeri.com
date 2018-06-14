@@ -5,7 +5,7 @@
 @link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */  
 
-class ModelToolSimpleCustom extends Model {
+class ModelToolSimpleCustom extends \system\engine\Model {
     static $types = array(
         'order'    => 1,
         'customer' => 2,

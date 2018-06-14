@@ -1,5 +1,8 @@
 <?php
-class ControllerCommonMaintenance extends Controller {
+use system\engine\Controller;
+use system\library\User;
+
+class ControllerCommonMaintenance extends \system\engine\Controller {
     public function index() {
         if ($this->config->get('config_maintenance')) {
 			$route = '';
@@ -13,7 +16,7 @@ class ControllerCommonMaintenance extends Controller {
 			}
 			
 			// Show site if logged in as admin
-			$this->load->library('user');
+			//$this->load->library('user');
 			
 			$this->user = new User($this->registry);
 

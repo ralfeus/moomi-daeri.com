@@ -4,7 +4,7 @@
  * Class ModelShippingFree
  * @deprecated
  */
-class ModelShippingFree extends Model {
+class ModelShippingFree extends \system\engine\Model {
 	function getQuote($address) {
 		$this->load->language('shipping/free');
 		

@@ -1,5 +1,7 @@
 <?php
-class ControllerModuleSpecial extends Controller {
+use system\engine\Controller;
+
+class ControllerModuleSpecial extends \system\engine\Controller {
 	protected function index($setting) {
 		$this->language->load('module/special');
  

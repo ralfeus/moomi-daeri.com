@@ -1,5 +1,7 @@
 <?php
-class ControllerAffiliatePayment extends Controller {
+use system\engine\Controller;
+
+class ControllerAffiliatePayment extends \system\engine\Controller {
 	private $error = array();
 
 	public function index() {

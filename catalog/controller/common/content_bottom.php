@@ -1,5 +1,7 @@
-<?php  
-class ControllerCommonContentBottom extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerCommonContentBottom extends \system\engine\Controller {
 	public function index() {
 //		$this->load->model('design/layout');
 		$this->load->model('catalog/category');

@@ -1,5 +1,5 @@
 <?php 
-class ModelCatalogAttributeGroup extends Model {
+class ModelCatalogAttributeGroup extends \system\engine\Model {
 	public function addAttributeGroup($data) {
 		$this->db->query("INSERT INTO attribute_group SET sort_order = '" . (int)$data['sort_order'] . "'");
 		

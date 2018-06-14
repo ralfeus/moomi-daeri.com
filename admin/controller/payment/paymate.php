@@ -1,5 +1,7 @@
-<?php 
-class ControllerPaymentPayMate extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerPaymentPayMate extends \system\engine\Controller {
 	private $error = array(); 
 
 	public function index() {

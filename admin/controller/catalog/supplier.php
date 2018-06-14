@@ -4,8 +4,9 @@ use model\catalog\ManufacturerDAO;
 use model\catalog\Supplier;
 use model\catalog\SupplierDAO;
 use model\catalog\SupplierGroupDAO;
+use system\engine\Controller;
 
-class ControllerCatalogSupplier extends Controller { 
+class ControllerCatalogSupplier extends \system\engine\Controller {
 	private $error = array();
 
     public function __construct($registry) {

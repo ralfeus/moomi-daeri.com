@@ -1,4 +1,8 @@
 <?php
+namespace system\library;
+use system\engine\OpenCartBase;
+use system\engine\Registry;
+
 final class Currency extends OpenCartBase {
   	private $code;
   	private $currencies = array();
@@ -42,7 +46,7 @@ final class Currency extends OpenCartBase {
 
     /**
      * Sets base (default) currency
-     * @param \Currency $currency
+     * @param Currency $currency
      * @return void
      */
     public function set($currency) {

@@ -1,7 +1,8 @@
 <?php
 use model\catalog\ProductDAO;
+use system\engine\Controller;
 
-class ControllerModuleLatest extends Controller {
+class ControllerModuleLatest extends \system\engine\Controller {
     public function __construct($registry)
     {
         parent::__construct($registry);

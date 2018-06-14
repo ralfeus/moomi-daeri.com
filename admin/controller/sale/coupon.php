@@ -1,7 +1,7 @@
 <?php
 use model\sale\CouponDAO;
 
-class ControllerSaleCoupon extends Controller {
+class ControllerSaleCoupon extends \system\engine\Controller {
 	private $error = array();
      
   	public function index() {

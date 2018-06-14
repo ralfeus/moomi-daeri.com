@@ -1,4 +1,8 @@
 <?php
+use system\engine\Registry;
+use system\library\Config;
+use system\library\Currency;
+
 final class Customer {
     /** @var Config */
     private $config;
@@ -7,14 +11,14 @@ final class Customer {
 	private $lastname;
 	private $nickname;
 	private $email;
-    /** @var \Registry */
+    /** @var Registry */
     private $registry;
 	private $telephone;
 	private $fax;
 	private $newsletter;
 	private $customer_group_id;
 	private $address_id;
-    /** @var \Currency $baseCurrency */
+    /** @var Currency $baseCurrency */
     private $baseCurrency;
     private $balance;
     private $affiliate_id;

@@ -1,8 +1,10 @@
 <?php
+use system\engine\Controller;
+
 /**
  * e-mail: s-m-o-k@list.ru
  */
-class ControllerPaymentOnPay extends Controller {
+class ControllerPaymentOnPay extends \system\engine\Controller {
 	protected function index() {
 		$this->data['button_confirm'] = $this->language->get('button_confirm');
 

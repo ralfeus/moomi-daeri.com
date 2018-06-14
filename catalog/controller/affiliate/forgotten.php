@@ -1,5 +1,7 @@
 <?php
-class ControllerAffiliateForgotten extends Controller {
+use system\engine\Controller;
+
+class ControllerAffiliateForgotten extends \system\engine\Controller {
 	private $error = array();
 
 	public function index() {

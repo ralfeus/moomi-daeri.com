@@ -3,7 +3,7 @@
 /**
  * @deprecated Class ModelShippingUsps
  */
-class ModelShippingUsps extends Model {
+class ModelShippingUsps extends \system\engine\Model {
 	public function getQuote($address) {
 		$this->load->language('shipping/usps');
 

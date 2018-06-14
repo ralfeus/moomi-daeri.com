@@ -1,5 +1,7 @@
 <?php
-class ControllerPaymentQiwi extends Controller {
+use system\engine\Controller;
+
+class ControllerPaymentQiwi extends \system\engine\Controller {
 	protected function index() {
     	$this->data['button_confirm'] = $this->language->get('button_confirm');
 		$this->data['button_back'] = $this->language->get('button_back');
@@ -93,7 +95,7 @@ class ControllerPaymentQiwi extends Controller {
 
 }
 
-class qiwiSoap extends model {
+class qiwiSoap extends \system\engine\Model {
 
 	public function __construct() {
 		global $registry;

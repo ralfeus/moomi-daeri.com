@@ -1,5 +1,7 @@
 <?php
-class ControllerCommonHome extends Controller {
+use system\engine\Controller;
+
+class ControllerCommonHome extends \system\engine\Controller {
 
 	public function index() {
 		$this->document->setTitle($this->config->get('config_title'));

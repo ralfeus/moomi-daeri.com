@@ -1,5 +1,5 @@
 <?php
-class ControllerPaymentCheque extends Controller {
+class ControllerPaymentCheque extends \system\engine\Controller {
 	protected function index() {
 		$this->language->load('payment/cheque');
 		

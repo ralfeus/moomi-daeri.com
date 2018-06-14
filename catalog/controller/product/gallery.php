@@ -1,4 +1,6 @@
 <?php
+use system\engine\Controller;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: dev
@@ -6,7 +8,7 @@
  * Time: 20:12
  * To change this template use File | Settings | File Templates.
  */
-class ControllerProductGallery extends Controller {
+class ControllerProductGallery extends \system\engine\Controller {
     private function getData() {
         $this->data['files'] = array();
         $this->data['heading_title'] = $this->language->get('heading_title');

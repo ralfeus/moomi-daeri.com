@@ -1,10 +1,12 @@
-<?php 
-class ControllerCheckoutManual extends Controller {
+<?php
+use system\engine\Controller;
+
+class ControllerCheckoutManual extends \system\engine\Controller {
 	public function index() {
 		/*
 		$json = array();
 		
-		$this->load->library('user');
+		//$this->load->library('user');
 		
 		$this->user = new User($this->registry);
 		

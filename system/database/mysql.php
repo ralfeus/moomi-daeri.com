@@ -1,8 +1,17 @@
 <?php
-require_once('DBDriver.php');
-final class MySQL implements DBDriver{
+
+namespace system\database;
+//use system\library\Cache;
+use system\exception\CacheNotInstalledException;
+use Exception;
+use system\library\Log;
+use PDO;
+use PDOException;
+use PDOStatement;
+
+final class MySQL extends DBDriver {
     /** @var PDO */
-	private $connection;
+    private $connection;
     /** @var PDOStatement[] */
     private $statements = array();
     /** @var string */
@@ -13,15 +22,15 @@ final class MySQL implements DBDriver{
     private $database;
     private $affectedCount;
     private $logger;
-	
-	public function __construct($hostname, $username, $password, $database) {
-	    $this->logger = new Log('sql.log');
+
+    public function __construct($hostname, $username, $password, $database) {
+        $this->logger = new Log('sql.log');
         $this->hostName = $hostname;
         $this->userName = $username;
         $this->password = $password;
         $this->database = $database;
-		$this->connect();
-  	}
+        $this->connect();
+    }
 
     /**
      * @return string[]
@@ -60,8 +69,8 @@ final class MySQL implements DBDriver{
             return $this->statements[$statementHash];
         }
         $statement = null;
-            $this->statements[$statementHash] = $this->connection->prepare($sql);
-            return $this->statements[$statementHash];
+        $this->statements[$statementHash] = $this->connection->prepare($sql);
+        return $this->statements[$statementHash];
     }
 
     /**
@@ -69,7 +78,7 @@ final class MySQL implements DBDriver{
      * @param string[] $params
      * @param bool $log
      * @param bool $noCache
-     * @return int|stdClass
+     * @return int|\stdClass
      * @throws CacheNotInstalledException
      */
     public function query($sql, $params = array(), $log = false, $noCache = false) {
@@ -88,7 +97,9 @@ final class MySQL implements DBDriver{
 //            }
 //        }
 
-        $attempts = 10; $statement = null; $lastError = new Exception("Unknown error has occurred during query execution");
+        $attempts = 10;
+        $statement = null;
+        $lastError = new Exception("Unknown error has occurred during query execution");
         while ($attempts--) {
             try {
                 $statement = $this->prepareQuery($sql);
@@ -117,7 +128,7 @@ final class MySQL implements DBDriver{
                 }
                 if ($statement->execute($args) === true) {
                     if (strtoupper(substr($sql, 0, 6)) == 'SELECT') {
-                        $rowSet = new stdClass();
+                        $rowSet = new \stdClass();
                         $rowSet->rows = $statement->fetchAll(PDO::FETCH_ASSOC);
                         $rowSet->row = isset($rowSet->rows[0]) ? $rowSet->rows[0] : array();
                         $rowSet->num_rows = sizeof($rowSet->rows);
@@ -172,25 +183,25 @@ final class MySQL implements DBDriver{
         $this->connect();
     }
 
-	public function escape($value) {
-        $search = array("\\",  "\x00", "\n",  "\r",  "'",  '"', "\x1a");
-        $replace = array("\\\\","\\0","\\n", "\\r", "\'", '\"', "\\Z");
+    public function escape($value) {
+        $search = array("\\", "\x00", "\n", "\r", "'", '"', "\x1a");
+        $replace = array("\\\\", "\\0", "\\n", "\\r", "\'", '\"', "\\Z");
 
         return str_replace($search, $replace, $value);
     }
-	
-  	public function countAffected() {
-    	return $this->affectedCount;
-  	}
 
-  	public function getLastId() {
-    	return $this->connection->lastInsertId();
-  	}
+    public function countAffected() {
+        return $this->affectedCount;
+    }
 
-	public function __destruct() {
+    public function getLastId() {
+        return $this->connection->lastInsertId();
+    }
+
+    public function __destruct() {
         $this->connection = null;
         file_put_contents(DIR_LOGS . '/sql.queries.log', self::$queriesLog, FILE_APPEND);
-	}
+    }
 
     public function beginTransaction() {
         return $this->connection->beginTransaction();
@@ -204,81 +215,81 @@ final class MySQL implements DBDriver{
         return $this->connection->rollBack();
     }
 
-    /**
-     * @param Cache $cache
-     * @param string $query
-     * @param string $queryHash
-     * @param StdClass $result
-     * @throws CacheNotInstalledException
-     * @internal param PDOStatement $statement
-     */
-    private function setCache($cache, $query, $queryHash, $result) {
-        $cache->set("query.$queryHash", serialize($result));
-        $matches = [];
-        $logger = new Log('cache.log');
-        if (preg_match_all(
-                '/(?<=FROM|JOIN|OJ)[\s\(]+((((?!SELECT\b)`?[\w_]+`?)(\s*\)?,\s*)*)+)/i',
-                $query, $matches/*, PREG_SET_ORDER*/)) {
-            $logger->write("Waiting for 'cachedQueryHashes' to release");
-            while ($cache->get('lockCachedQueryHashes')) {
-                sleep(1);
-            }
-            $cache->set('lockCachedQueryHashes', 1);
-            $logger->write(">>>>>>>>> 'cachedQueryHashes' is locked");
-            $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
-            foreach ($matches[0] as $tableString) {
-                $tables = explode(',', $tableString);
-//                if (!is_array($tables)) {
-//                    $tables[] = $tables;
+//    /**
+//     * @param Cache $cache
+//     * @param string $query
+//     * @param string $queryHash
+//     * @param StdClass $result
+//     * @throws CacheNotInstalledException
+//     * @internal param PDOStatement $statement
+//     */
+//    private function setCache($cache, $query, $queryHash, $result) {
+//        $cache->set("query.$queryHash", serialize($result));
+//        $matches = [];
+//        $logger = new Log('cache.log');
+//        if (preg_match_all(
+//            '/(?<=FROM|JOIN|OJ)[\s\(]+((((?!SELECT\b)`?[\w_]+`?)(\s*\)?,\s*)*)+)/i',
+//            $query, $matches/*, PREG_SET_ORDER*/)) {
+//            $logger->write("Waiting for 'cachedQueryHashes' to release");
+//            while ($cache->get('lockCachedQueryHashes')) {
+//                sleep(1);
+//            }
+//            $cache->set('lockCachedQueryHashes', 1);
+//            $logger->write(">>>>>>>>> 'cachedQueryHashes' is locked");
+//            $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
+//            foreach ($matches[0] as $tableString) {
+//                $tables = explode(',', $tableString);
+////                if (!is_array($tables)) {
+////                    $tables[] = $tables;
+////                }
+//                foreach ($tables as $table) {
+//                    $table = trim($table, " `)\t\n\r\0\x0B");
+//                    $cachedQueryHashes[$table][] = $queryHash;
+//                    $logger->write("Adding 'query.$queryHash' for table '$table'");
 //                }
-                foreach ($tables as $table) {
-                    $table = trim($table, " `)\t\n\r\0\x0B");
-                    $cachedQueryHashes[$table][] = $queryHash;
-                    $logger->write("Adding 'query.$queryHash' for table '$table'");
-                }
-            }
-            $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
-            $logger->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
-            $cache->delete('lockCachedQueryHashes');
-        }
-    }
-
-    /**
-     * @param Cache $cache
-     * @param string $query
-     */
-    private function invalidateCache($cache, $query) {
-        $logger = new Log('cache.log');
-        $matches = [];
-        $verb = strtoupper(substr($query, 0, 6));
-        if ($verb == 'DELETE') {
-            $pattern = '/FROM\s+`?([\w_]+)`?/';
-        } else if ($verb == 'INSERT') {
-            $pattern = '/INTO\s+`?([\w_]+)`?/';
-        } else if ($verb == 'UPDATE') {
-            $pattern = '/UPDATE\s+`?([\w_]+)`?/';
-        } else {
-            return;
-        }
-        if (preg_match ($pattern, $query, $matches)) {
-            $table = $matches[1];
-            $logger->write("Waiting for 'cachedQueryHashes' to release");
-            while ($cache->get('lockCachedQueryHashes')) {
-                sleep(1);
-            }
-            $cache->set('lockCachedQueryHashes', 1);
-            $logger->write(">>>>>>>>> 'cachedQueryHashes' is locked");
-            $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
-            $logger->write('Invalidating entries for table: "' . $table . '" due to query:');
-            $logger->write($query);
-            foreach ($cachedQueryHashes[$table] as $queryHash) {
-                $result = $cache->delete("query.$queryHash");
-                $logger->write("\tquery.$queryHash: " . ($result ? "deleted" : "wasn't deleted (probably doesn't exist"));
-            }
-            unset($cachedQueryHashes[$table]);
-            $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
-            $logger->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
-            $cache->delete('lockCachedQueryHashes');
-        }
-    }
+//            }
+//            $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
+//            $logger->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
+//            $cache->delete('lockCachedQueryHashes');
+//        }
+//    }
+//
+//    /**
+//     * @param Cache $cache
+//     * @param string $query
+//     */
+//    private function invalidateCache($cache, $query) {
+//        $logger = new Log('cache.log');
+//        $matches = [];
+//        $verb = strtoupper(substr($query, 0, 6));
+//        if ($verb == 'DELETE') {
+//            $pattern = '/FROM\s+`?([\w_]+)`?/';
+//        } else if ($verb == 'INSERT') {
+//            $pattern = '/INTO\s+`?([\w_]+)`?/';
+//        } else if ($verb == 'UPDATE') {
+//            $pattern = '/UPDATE\s+`?([\w_]+)`?/';
+//        } else {
+//            return;
+//        }
+//        if (preg_match($pattern, $query, $matches)) {
+//            $table = $matches[1];
+//            $logger->write("Waiting for 'cachedQueryHashes' to release");
+//            while ($cache->get('lockCachedQueryHashes')) {
+//                sleep(1);
+//            }
+//            $cache->set('lockCachedQueryHashes', 1);
+//            $logger->write(">>>>>>>>> 'cachedQueryHashes' is locked");
+//            $cachedQueryHashes = unserialize($cache->get('cachedQueryHashes'));
+//            $logger->write('Invalidating entries for table: "' . $table . '" due to query:');
+//            $logger->write($query);
+//            foreach ($cachedQueryHashes[$table] as $queryHash) {
+//                $result = $cache->delete("query.$queryHash");
+//                $logger->write("\tquery.$queryHash: " . ($result ? "deleted" : "wasn't deleted (probably doesn't exist"));
+//            }
+//            unset($cachedQueryHashes[$table]);
+//            $cache->set('cachedQueryHashes', serialize($cachedQueryHashes));
+//            $logger->write("<<<<<<<<< Releasing 'cachedQueryHashes'");
+//            $cache->delete('lockCachedQueryHashes');
+//        }
+//    }
 }

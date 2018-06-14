@@ -1,5 +1,6 @@
 <?php
 use system\engine\CustomerZoneController;
+use system\library\Messaging;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -21,7 +22,7 @@ class ControllerAccountAddCredit extends CustomerZoneController
     {
         if ($this->validateInput())
         {
-            $this->load->library("Messaging");
+            //$this->load->library("system\library\Messaging");
             Messaging::submitSystemMessage(
                 $this->customer->getId(),
                 0,

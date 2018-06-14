@@ -1,5 +1,7 @@
 <?php
-class ControllerPaymentWebmoneyWMZ extends Controller {
+use system\engine\Controller;
+
+class ControllerPaymentWebmoneyWMZ extends \system\engine\Controller {
 	protected function index() {
 	$this->data['button_confirm'] = $this->language->get('button_confirm');
 		$this->data['button_back'] = $this->language->get('button_back');

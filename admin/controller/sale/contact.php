@@ -1,7 +1,8 @@
 <?php
 use model\sale\CustomerDAO;
+use system\engine\Controller;
 
-class ControllerSaleContact extends Controller {
+class ControllerSaleContact extends \system\engine\Controller {
 	private $error = array();
 	 
 	public function index() {

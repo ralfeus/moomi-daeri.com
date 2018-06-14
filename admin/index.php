@@ -1,6 +1,18 @@
 <?php 
 // Version
+use system\engine\Loader;
+use system\engine\Registry;
+use system\library\Config;
+use system\library\Currency;
+use system\library\DB;
+use system\library\Language;
+use system\library\Log;
+use system\library\NoCache;
+use system\library\Session;
+use system\library\User;
+
 define('VERSION', '1.5.1.3');
+require_once('../vendor/autoload.php');
 // Configuration
 require_once('config.php');
 /// Constants
@@ -15,20 +27,20 @@ if (!defined('DIR_APPLICATION')) {
 /** Register loader for class files. The function is called when
  * new operator is called but the class definition is not found.
  */
-spl_autoload_register(function($class) {
-    if ((strpos($class, '\\') !== false) && (strpos($class, '\\') > 0)) {
-        $classPath = DIR_ROOT . preg_replace('/\\\\/', '/', $class) . '.class.php';
-    } else if (strpos($class, '\\') == 0) { // legacy classes
-		$classPath = DIR_SYSTEM . 'library/' . str_replace('\\', '', strtolower($class)) . '.php';
-    } else {
-        return false;
-    }
-    include($classPath);
-	if (!class_exists($class)) {
-		throw new ErrorException("Class $class was not found");
-	}
-	return true;
-});
+//spl_autoload_register(function($class) {
+//    if ((strpos($class, '\\') !== false) && (strpos($class, '\\') > 0)) {
+//        $classPath = DIR_ROOT . preg_replace('/\\\\/', '/', $class) . '.class.php';
+//    } else if (strpos($class, '\\') == 0) { // legacy classes
+//		$classPath = DIR_SYSTEM . 'library/' . str_replace('\\', '', strtolower($class)) . '.php';
+//    } else {
+//        return false;
+//    }
+//    include($classPath);
+//	if (!class_exists($class)) {
+//		throw new ErrorException("Class $class was not found");
+//	}
+//	return true;
+//});
 
 // Startup
 require_once(DIR_SYSTEM . 'startup.php');
@@ -117,7 +129,7 @@ $response->addHeader('Content-Type: text/html; charset=utf-8');
 $registry->set('response', $response); 
 
 // Cache
-$cache = new Cache();
+$cache = new NoCache();
 $registry->set('cache', $cache); 
 
 // Session
@@ -177,4 +189,3 @@ $controller->dispatch($action, new Action('error/not_found'));
 
 // Output
 $response->output();
-?>

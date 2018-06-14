@@ -1,5 +1,10 @@
 <?php
-require_once("OpenCartBase.php");
+namespace system\engine;
+use Exception;
+use system\library\ILibrary;
+use system\library\Language;
+use system\library\Log;
+
 final class Loader {// extends OpenCartBase
     private $registry;
 
@@ -12,27 +17,6 @@ final class Loader {// extends OpenCartBase
 //		parent::__construct($registry);
         $this->log = new Log('Loader.log');
     }
-
-	/**
-	 * @param string $library
-	 * @return mixed
-	 */
-	public function library($library) {
-		$file = DIR_SYSTEM . 'library/' . $library . '.php';
-
-		if (file_exists($file))
-        {
-            include_once(DIR_SYSTEM . 'library/LibraryClass.php');
-			include_once($file);
-			/** @var ILibrary $library */
-            return $library::getInstance($this->registry);
-		}
-        else
-        {
-			trigger_error('Error: Could not load library ' . $library . '!');
-			exit();
-		}
-	}
 
     /**
      * @param $model
