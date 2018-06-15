@@ -625,13 +625,8 @@ class ControllerCatalogProduct extends AdminController {
 				'href' => $product->getSupplierUrl()
 			);
 
-			if ($product->getImagePath() && file_exists(DIR_IMAGE . $product->getImagePath())) {
-				$image = ImageService::getInstance()->resize($product->getImagePath(), 100, 100);
-				$popImage = ImageService::getInstance()->resize($product->getImagePath(), 300, 300);
-			} else {
-				$image = ImageService::getInstance()->resize('no_image.jpg', 100, 100);
-				$popImage = ImageService::getInstance()->resize('no_image.jpg', 100, 100);
-			}
+            $image = ImageService::getInstance()->resize($product->getImagePath(), 100, 100);
+            $popImage = ImageService::getInstance()->resize($product->getImagePath(), 300, 300);
 
 			$special = false;
 			$product_specials = ProductDAO::getInstance()->getProductSpecials($product->getId());

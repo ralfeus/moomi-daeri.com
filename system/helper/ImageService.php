@@ -41,16 +41,13 @@ class ImageService extends DAO {
      */
     public function resize($filename, $width, $height) {
         if (!$this->fileHandler->exists($filename)) {
-            return null;
+            $filename = 'no_image.jpg';
         }
 
         $info = $this->fileHandler->getInfo($filename);
         $extension = $info['extension'];
 
         $old_image = $filename;
-        if (!$this->fileHandler->exists($filename)) {
-            $filename = 'no_image.jpg';
-        }
 //        try {$image = new Image(DIR_IMAGE . $old_image);}
 //        catch (Exception $exc) {$image = new Image(DIR_IMAGE . 'no_image.jpg');}
         /// Ensure target size doesn't exceed original size
@@ -72,7 +69,7 @@ class ImageService extends DAO {
             $targetWidth = $expectedWidth;
             $targetHeight = $imageSize[1];
         }
-        $new_image = 'cache/' . substr($filename, 0, strrpos($filename, '.')) . '-' . $targetWidth . 'x' . $targetHeight . '.' . $extension;
+        $new_image = DIR_IMAGE . 'cache/' . substr($filename, 0, strrpos($filename, '.')) . '-' . $targetWidth . 'x' . $targetHeight . '.' . $extension;
 
         if (!$this->fileHandler->exists($new_image) || $this->fileHandler->getTimeModified($old_image) > $this->fileHandler->getTimeModified($new_image)) {
             $image = new Image($old_image, $this->fileHandler);
