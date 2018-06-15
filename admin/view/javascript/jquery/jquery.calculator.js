@@ -1,4 +1,4 @@
-﻿/* http://keith-wood.name/calculator.html
+﻿﻿/* http://keith-wood.name/calculator.html
    Calculator field entry extension for jQuery v2.0.1.
    Written by Keith Wood (kbwood{at}iinet.com.au) October 2008.
    Licensed under the MIT (https://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt) licence. 
