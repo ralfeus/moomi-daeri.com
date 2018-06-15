@@ -100,7 +100,7 @@ abstract class Controller extends OpenCartBase {
 
 
     protected function redirect($url, $status = 302) {
-        header('Status: ' . $status);
+        header('system\library\Status: ' . $status);
         header('Location: ' . str_replace('&amp;', '&', $url));
         exit();
     }

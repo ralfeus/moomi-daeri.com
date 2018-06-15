@@ -22,7 +22,7 @@ $_['text_payment_button'] = 'Payments and bills';
 // for multi_pay_tools
 $_['text_order_bill_descr'] = 'Bill <b><a href="%s"  target="_blank" class="btn btn-info">created</a></b>. '.
 	'You can manually <b><a href="%s" class="btn btn-info">check payments</a></b>';
-$_['text_order_bill_status'] = 'The bill is paid. Status: [%s]';
-$_['text_order_bill_status_NOT'] = 'The bill is <b>NOT</b> paid. Status: [%s]';
+$_['text_order_bill_status'] = 'The bill is paid. system\library\Status: [%s]';
+$_['text_order_bill_status_NOT'] = 'The bill is <b>NOT</b> paid. system\library\Status: [%s]';
 
 ?>

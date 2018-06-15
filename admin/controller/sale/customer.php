@@ -4,6 +4,7 @@ use model\sale\OrderItemDAO;
 use model\setting\StoreDAO;
 use system\engine\Controller;
 use system\library\Messaging;
+use system\library\Status;
 use system\library\Transaction;
 
 class ControllerSaleCustomer extends \system\engine\Controller {
@@ -59,7 +60,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
                 'amount' => $addCreditRequest['data']->amount,
                 'comment' => $addCreditRequest['data']->comment,
                 'currency' => $addCreditRequest['data']->currency,
-                'status' => Status::getStatus($addCreditRequest['data']->status, $this->config->get('language_id'), true),
+                'status' => Status::getInstance($this->getRegistry())->getStatus($addCreditRequest['data']->status, $this->config->get('language_id'), true),
                 'statusId' => $addCreditRequest['data']->status,
                 'timeAdded' => $addCreditRequest['timeAdded']
             );

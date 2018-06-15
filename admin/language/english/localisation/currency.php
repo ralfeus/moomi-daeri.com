@@ -23,7 +23,7 @@ $_['entry_value']          = 'Value:<br /><span class="help">Set to 1.00000 if t
 $_['entry_symbol_left']    = 'Symbol Left:';
 $_['entry_symbol_right']   = 'Symbol Right:';
 $_['entry_decimal_place']  = 'Decimal Places:';
-$_['entry_status']         = 'Status:';
+$_['entry_status']         = 'system\library\Status:';
 
 // Error
 $_['error_permission']     = 'Warning: You do not have permission to modify currencies!';

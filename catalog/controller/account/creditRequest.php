@@ -1,6 +1,7 @@
 <?php
 use system\engine\CustomerZoneController;
 use system\library\Messaging;
+use system\library\Status;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -16,7 +17,7 @@ class ControllerAccountCreditRequest extends CustomerZoneController {
 
         $this->takeSessionVariables();
         //$this->load->library("system\library\Messaging");
-        //$this->load->library("Status");
+        //$this->load->library("system\library\Status");
     }
 
     public function getList() {
@@ -36,7 +37,7 @@ class ControllerAccountCreditRequest extends CustomerZoneController {
                 'amount' => $addCreditRequest['data']->amount,
                 'comment' => $addCreditRequest['data']->comment,
                 'currency' => $addCreditRequest['data']->currency,
-                'status' => Status::getStatus($addCreditRequest['data']->status, $this->config->get('language_id'), true),
+                'status' => Status::getInstance($this->getRegistry())->getStatus($addCreditRequest['data']->status, $this->config->get('language_id'), true),
                 'statusId' => $addCreditRequest['data']->status,
                 'timeAdded' => $addCreditRequest['timeAdded']
             );

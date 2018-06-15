@@ -14,7 +14,7 @@ $_['text_column_right']   = 'Column Right';
 $_['entry_code']          = 'Google Talk Code:<br /><span class="help">Goto <a onclick="window.open(\'http://www.google.com/talk/service/badge/New\');"><u>Create a Google Talk chatback badge</u></a> and copy &amp; paste the generated code into the text box.</span>';
 $_['entry_layout']        = 'Layout:';
 $_['entry_position']      = 'Position:';
-$_['entry_status']        = 'Status:';
+$_['entry_status']        = 'system\library\Status:';
 $_['entry_sort_order']    = 'Sort Order:';
 
 // Error

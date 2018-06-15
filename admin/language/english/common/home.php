@@ -24,7 +24,7 @@ $_['text_customer']                 = 'Total Customers';
 // Column 
 $_['column_order']                  = 'Order ID';
 $_['column_customer']               = 'Customer';
-$_['column_status']                 = 'Status';
+$_['column_status']                 = 'system\library\Status';
 $_['column_date_added']             = 'Date Added';
 $_['column_total']                  = 'Total';
 $_['column_firstname']              = 'First Name';

@@ -1,11 +1,13 @@
 <?php
+use system\library\Status;
+
 class ModelLocalisationOrderItemStatus extends \system\engine\Model
 {
     public function getOrderItemStatus($order_item_status_id)
     {
         $order_item_status_data = $this->cache->get('order_item_status.' . (int)$this->config->get('config_language_id'));
-        //$this->load->library("Status");
-        return Status::getStatus($order_item_status_id, $this->config->get('config_language_id'));
+        //$this->load->library("system\library\Status");
+        return Status::getInstance($this->getRegistry())->getStatus($order_item_status_id, $this->config->get('config_language_id'));
         if (!$order_item_status_data)
             $order_item_status_data = $this->getOrderItemStatuses();
         foreach ($order_item_status_data as $order_item_status)

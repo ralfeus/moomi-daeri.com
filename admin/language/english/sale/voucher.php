@@ -16,7 +16,7 @@ $_['column_to']         = 'To';
 $_['column_amount']     = 'Amount';
 $_['column_theme']      = 'Theme';
 $_['column_date_added'] = 'Date Added';
-$_['column_status']     = 'Status';
+$_['column_status']     = 'system\library\Status';
 $_['column_order_id']   = 'Order ID';
 $_['column_customer']   = 'Customer';
 $_['column_date_added'] = 'Date Added';
@@ -31,7 +31,7 @@ $_['entry_to_email']    = 'To E-Mail:';
 $_['entry_message']     = 'Message:';
 $_['entry_amount']      = 'Amount:';
 $_['entry_theme']       = 'Theme:';
-$_['entry_status']      = 'Status:';
+$_['entry_status']      = 'system\library\Status:';
 
 // Error
 $_['error_permission']  = 'Warning: You do not have permission to modify vouchers!';

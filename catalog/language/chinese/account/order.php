@@ -8,7 +8,7 @@ $_['text_order']            = 'Order Information';
 $_['text_order_detail']     = 'Order Detail';
 $_['text_invoice_no']       = 'Invoice No.:';
 $_['text_order_id']         = 'Order ID:';
-$_['text_status']           = 'Status:';
+$_['text_status']           = 'system\library\Status:';
 $_['text_date_added']       = 'Date Added:';
 $_['text_customer']         = 'Customer:';
 $_['text_shipping_address'] = 'Shipping Address';
@@ -33,7 +33,7 @@ $_['column_quantity']       = 'Quantity';
 $_['column_price']          = 'Price';
 $_['column_total']          = 'Total';
 $_['column_date_added']     = 'Date Added';
-$_['column_status']         = 'Status';
+$_['column_status']         = 'system\library\Status';
 $_['column_comment']        = 'Comment';
 
 // Error

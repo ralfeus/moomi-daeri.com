@@ -18,7 +18,7 @@ $_['column_vqmver']        = 'Версия VQMod';
 // Entry
 $_['entry_backup']         = 'Резервное копирование файлов:';
 $_['entry_ext_version']    = 'Версия VQMod Менеджера:';
-$_['entry_status']         = 'VQMod Manager Status:';
+$_['entry_status']         = 'VQMod Manager system\library\Status:';
 $_['entry_upload']         = 'Загрузить скрипт VQMod:';
 $_['entry_vqmod_path']     = 'Директория VQMod:';
 $_['entry_vqcache']        = 'Кэш VQMod:';

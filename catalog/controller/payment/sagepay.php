@@ -177,7 +177,7 @@ class ControllerPaymentSagepay extends \system\engine\Controller {
 					$message .= 'Last4Digits: ' . $data['Last4Digits'] . "\n";
 				}
 				
-				if ($data['Status'] == 'OK') {
+				if ($data['system\library\Status'] == 'OK') {
 					$this->model_checkout_order->update($this->request->get['order_id'], $this->config->get('sagepay_order_status_id'), $message, false);
 				} else {
 					$this->model_checkout_order->update($this->request->get['order_id'], $this->config->get('config_order_status_id'), $message, false);
@@ -206,7 +206,7 @@ class ControllerPaymentSagepay extends \system\engine\Controller {
 	
 	private function getToken($string) {
   		$tokens = array(
-   			'Status',
+   			'system\library\Status',
     		'StatusDetail',
     		'VendorTxCode',
    			'VPSTxId',

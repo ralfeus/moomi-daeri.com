@@ -1,6 +1,7 @@
 <?php
 use model\sale\RepurchaseOrderDAO;
 use system\engine\Controller;
+use system\library\Status;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -14,7 +15,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
         parent::__construct($registry);
         $this->data['notifications'] = array();
         $this->load->language('sale/repurchaseOrders');
-        //$this->load->library('Status');
+        //$this->load->library('system\library\Status');
         $this->document->setTitle($this->getLanguage()->get('HEADING_TITLE'));
         $this->data['headingTitle'] = $this->getLanguage()->get('HEADING_TITLE');
     }
@@ -96,7 +97,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
                 'comment' => $order_item['comment'],
                 'publicComment' => $order_item['comment'],
                 'status'       	=> $order_item['status']
-                    ? Status::getStatus(
+                    ? Status::getInstance($this->getRegistry())->getStatus(
                         $order_item['status'],
                         $this->config->get('config_language_id'))
                     : "",
@@ -227,7 +228,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
     private function initStatuses()
     {
         $this->data['statuses'] = array();
-        foreach (Status::getStatuses(
+        foreach (Status::getInstance($this->getRegistry())->getStatuses(
                      GROUP_REPURCHASE_ORDER_ITEM_STATUS,
                      $this->config->get('config_language_id')) as $statusId => $status)
             $this->data['statuses'][] = array(
@@ -364,7 +365,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
             $modelSaleOrder->verifyOrderCompletion($repurchaseOrder['orderId']);
         }
 
-        $json['newStatusName'] = Status::getStatus(
+        $json['newStatusName'] = Status::getInstance($this->getRegistry())->getStatus(
             $_REQUEST['statusId'], $this->config->get('config_language_id'));
 
         $this->getResponse()->setOutput(json_encode($json));

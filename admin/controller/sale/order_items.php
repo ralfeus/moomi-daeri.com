@@ -5,6 +5,7 @@ use model\sale\CustomerDAO;
 use model\sale\OrderItem;
 use model\sale\OrderItemDAO;
 use system\engine\AdminController;
+use system\library\Status;
 
 class ControllerSaleOrderItems extends AdminController {
 	private $error = array();
@@ -17,7 +18,7 @@ class ControllerSaleOrderItems extends AdminController {
 		$this->load->language('sale/order_items');
 
 		$this->load->model('catalog/product');
-		//$this->load->library('Status');
+		//$this->load->library('system\library\Status');
 		$this->modelSaleOrder = $this->load->model('sale/order');
 		$this->load->model('sale/order_item_history');
 		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
@@ -125,7 +126,7 @@ class ControllerSaleOrderItems extends AdminController {
 			{
 				$filterStatusString = '';
 				foreach ($value as $statusId)
-					$filterStatusString .= ',' . Status::getStatus($statusId, $this->config->get('config_language_id'));
+					$filterStatusString .= ',' . Status::getInstance($this->getRegistry())->getStatus($statusId, $this->config->get('config_language_id'));
 				$result['StatusId'] = substr($filterStatusString, 1);
 			}
 			elseif ($key == 'filterSupplierId')
@@ -290,7 +291,7 @@ class ControllerSaleOrderItems extends AdminController {
 					'supplier_name'	            => $orderItem->getSupplier()->getName(),
 					'supplier_url'	            => $orderItem->getSupplierUrl(),
 					'supplier_internal_model'   => $orderItem->getInternalModel(),
-					'status'       	            => $orderItem->getStatusId() ? Status::getStatus($orderItem->getStatusId(), $this->config->get('language_id')) : "",
+					'status'       	            => $orderItem->getStatusId() ? Status::getInstance($this->getRegistry())->getStatus($orderItem->getStatusId(), $this->config->get('language_id')) : "",
 					'price'			                => $this->getCurrency()->format($orderItem->getPrice(), $this->config->get('config_currency')),
 					'weight'		                => $this->weight->format($orderItem->getWeight(), $orderItem->getWeightClassId()),
 					'quantity'		              => $orderItem->getQuantity(),
@@ -433,7 +434,7 @@ class ControllerSaleOrderItems extends AdminController {
 	private function initStatuses()
 	{
 		$this->data['statuses'] = array();
-		foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
+		foreach (Status::getInstance($this->getRegistry())->getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
 			$this->data['statuses'][GROUP_ORDER_ITEM_STATUS][] = array(
 				'id'    => $statusId,
 				'name' => $status,
@@ -443,7 +444,7 @@ class ControllerSaleOrderItems extends AdminController {
 					"order_item_new_status=$statusId&token=" . $this->parameters['token'], 'SSL')
 			);
 
-		foreach (Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
+		foreach (Status::getInstance($this->getRegistry())->getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id')) as $statusId => $status)
 			$this->data['statuses'][GROUP_REPURCHASE_ORDER_ITEM_STATUS][] = array(
 				'id' => $statusId,
 				'name' => $status
@@ -689,13 +690,13 @@ class ControllerSaleOrderItems extends AdminController {
 					$this->session->data['success'] .= sprintf(
 						$this->language->get("text_status_set"),
 						$orderItemId,
-						Status::getStatus($orderItemNewStatus, $this->config->get('language_id')));
+						Status::getInstance($this->getRegistry())->getStatus($orderItemNewStatus, $this->config->get('language_id')));
 				}
 				else {
 					$this->error['warning'] .= sprintf(
 						$this->language->get('error_status_already_set'),
 						$orderItemId,
-						Status::getStatus($orderItemNewStatus, $this->config->get('language_id')));
+						Status::getInstance($this->getRegistry())->getStatus($orderItemNewStatus, $this->config->get('language_id')));
 				}
 				$orderItem = OrderItemDAO::getInstance()->getOrderItem($orderItemId);
 				$this->modelSaleOrder->verifyOrderCompletion($orderItem->getOrderId());

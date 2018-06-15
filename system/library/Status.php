@@ -1,5 +1,7 @@
 <?php
-use system\library\LibraryClass;
+namespace system\library;
+
+use system\engine\Registry;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -8,27 +10,27 @@ use system\library\LibraryClass;
  * Time: 22:39
  * To change this template use File | Settings | File Templates.
  */
-class Status extends LibraryClass
-{
+class Status extends LibraryClass {
     private static $instance;
 
-    public static function getInstance($registry)
-    {
+    /**
+     * @param Registry $registry
+     * @return Status
+     */
+    public static function getInstance($registry) {
         if (empty(Status::$instance))
             Status::$instance = new Status($registry);
         return Status::$instance;
     }
 
-    public static function getStatus($statusId, $languageId, $isPublic = false)
-    {
-//        Status::$instance->log->write("$statusId, $languageId, $isPublic");
+    public static function getStatus($statusId, $languageId, $isPublic = false) {
+//        system\library\Status::$instance->log->write("$statusId, $languageId, $isPublic");
         $fieldName = $isPublic ? "public_name" : "name";
         while (true) {
             $sql = "
                 SELECT $fieldName
                 FROM statuses
-                WHERE group_id << 16 | status_id = " . (int)$statusId . " AND language_id = " . (int)$languageId
-            ;
+                WHERE group_id << 16 | status_id = " . (int)$statusId . " AND language_id = " . (int)$languageId;
 
             $query = Status::$instance->db->query($sql);
 
@@ -41,10 +43,8 @@ class Status extends LibraryClass
         }
     }
 
-    public static function getStatuses($statusGroupId, $languageId, $public = false)
-    {
-        while (true)
-        {
+    public static function getStatuses($statusGroupId, $languageId, $public = false) {
+        while (true) {
             $sql = "
                 SELECT group_id << 16 | status_id as status_id, " . ($public ? 'public_name' : 'name') . " AS name
                 FROM statuses
@@ -65,8 +65,7 @@ class Status extends LibraryClass
         }
     }
 
-    protected function __construct($registry)
-    {
+    protected function __construct($registry) {
         parent::__construct($registry);
     }
 }

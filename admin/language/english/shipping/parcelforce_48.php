@@ -15,7 +15,7 @@ $_['entry_display_insurance'] = 'Display Insurance:<br /><span class="help">Do y
 $_['entry_display_time']      = 'Display Delivery Time:<br /><span class="help">Do you want to display the shipping time? (e.g. Ships within 3 to 5 days)</span>';
 $_['entry_tax_class']         = 'Tax Class:';
 $_['entry_geo_zone']          = 'Geo Zone:';
-$_['entry_status']            = 'Status:';
+$_['entry_status']            = 'system\library\Status:';
 $_['entry_sort_order']        = 'Sort Order:';
 
 // Error

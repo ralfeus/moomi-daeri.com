@@ -65,7 +65,7 @@ $_['entry_display_weight']  = 'Display Delivery Weight:<br /><span class="help">
 $_['entry_weight_class']    = 'Weight Class:<br /><span class="help">Must be set to Pound.</span>';
 $_['entry_tax']             = 'Tax Class:';
 $_['entry_geo_zone']        = 'Geo Zone:';
-$_['entry_status']          = 'Status:';
+$_['entry_status']          = 'system\library\Status:';
 $_['entry_sort_order']      = 'Sort Order:';
 $_['entry_debug']      		= 'Debug Mode:<br /><span class="help">Saves send/recv data to the system log</span>';
 

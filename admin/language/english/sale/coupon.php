@@ -13,7 +13,7 @@ $_['column_code']         = 'Code';
 $_['column_discount']     = 'Discount';
 $_['column_date_start']   = 'Date Start';
 $_['column_date_end']     = 'Date End';
-$_['column_status']       = 'Status';
+$_['column_status']       = 'system\library\Status';
 $_['column_order_id']     = 'Order ID';
 $_['column_customer']     = 'Customer';
 $_['column_amount']       = 'Amount';
@@ -34,7 +34,7 @@ $_['entry_date_start']    = 'Date Start:';
 $_['entry_date_end']      = 'Date End:';
 $_['entry_uses_total']    = 'Uses Per Coupon:<br /><span class="help">The maximum number of times the coupon can be used by any customer. Leave blank for unlimited</span>';
 $_['entry_uses_customer'] = 'Uses Per Customer:<br /><span class="help">The maximum number of times the coupon can be used by a single customer. Leave blank for unlimited</span>';
-$_['entry_status']        = 'Status:';
+$_['entry_status']        = 'system\library\Status:';
 
 // Error
 $_['error_permission']    = 'Warning: You do not have permission to modify coupons!';

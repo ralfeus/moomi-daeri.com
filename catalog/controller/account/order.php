@@ -3,6 +3,7 @@ use model\sale\OrderItemDAO;
 use model\catalog\ProductDAO;
 use model\shipping\ShippingMethodDAO;
 use system\engine\CustomerZoneController;
+use system\library\Status;
 
 class ControllerAccountOrder extends CustomerZoneController {
 	private $error = array();
@@ -11,7 +12,7 @@ class ControllerAccountOrder extends CustomerZoneController {
     public function __construct($registry)
     {
         parent::__construct($registry);
-        //$this->load->library('Status');
+        //$this->load->library('system\library\Status');
         $this->language->load('account/order');
         $this->document->setTitle($this->language->get('heading_title'));
         $this->data['heading_title'] = $this->language->get('heading_title');
@@ -338,7 +339,7 @@ class ControllerAccountOrder extends CustomerZoneController {
           			'price'            => $this->getCurrency()->format($orderItem->getPrice(true), $order_info['currency_code'], 1),
 					'total'            => $this->getCurrency()->format($orderItem->getTotal(true), $order_info['currency_code'], 1),
                     'imagePath' => $image,
-                    'item_status'      => Status::getStatus($orderItem->getStatusId(), $this->config->get('language_id'), true),
+                    'item_status'      => Status::getInstance($this->getRegistry())->getStatus($orderItem->getStatusId(), $this->config->get('language_id'), true),
                     'selected'         => false //isset($this->request->post['selected']) && in_array($result['order_product_id'], $this->request->post['selected'])
         		);
       		}

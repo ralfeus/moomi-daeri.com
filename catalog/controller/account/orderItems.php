@@ -1,6 +1,7 @@
 <?php
 use model\sale\OrderItemDAO;
 use system\engine\CustomerZoneController;
+use system\library\Status;
 
 class ControllerAccountOrderItems extends CustomerZoneController {
 	private $error = array();
@@ -13,7 +14,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
         $this->document->setTitle($this->language->get('HEADING_TITLE'));
 
         $this->load->model('catalog/product');
-        //$this->load->library('Status');
+        //$this->load->library('system\library\Status');
         $this->orderModel = $this->load->model('account/order');
 //        $this->load->model('account/order_item_history');
         $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
@@ -87,7 +88,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
 					'order_url'					=> $this->url->link('account/order/info', 'order_id=' . $orderItem->getOrderId(), 'SSL'),
                     'options'       => nl2br(OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId())),
                     'publicComment'                   => $orderItem->getPublicComment(),
-					'status'       	=> $orderItem->getStatusId() ? Status::getStatus($orderItem->getStatusId(), $this->config->get('language_id'), true) : "",
+					'status'       	=> $orderItem->getStatusId() ? Status::getInstance($this->getRegistry())->getStatus($orderItem->getStatusId(), $this->config->get('language_id'), true) : "",
                     'price'			=> $orderItem->getCurrency()->getString($orderItem->getPrice(true)),
 		            'weight'		=> $this->weight->format($orderItem->getWeight(), $orderItem->getWeightClassId()),
                     'quantity'		=> $orderItem->getQuantity(),
@@ -182,7 +183,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
     private function initStatuses()
     {
         $this->data['statuses'] = array();
-        foreach (Status::getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id'), true) as $statusId => $status)
+        foreach (Status::getInstance($this->getRegistry())->getStatuses(GROUP_ORDER_ITEM_STATUS, $this->config->get('language_id'), true) as $statusId => $status)
             $this->data['statuses'][GROUP_ORDER_ITEM_STATUS][] = array(
                 'id'    => $statusId,
                 'name' => $status,
@@ -190,7 +191,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
                 'viewable' => true,
                 'set_status_url' => $this->url->link('sale/order_items/set_status', $this->buildUrlParameterString($this->parameters) . "&order_item_new_status=$statusId", 'SSL')
             );
-        foreach (Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id'), true) as $statusId => $status)
+        foreach (Status::getInstance($this->getRegistry())->getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id'), true) as $statusId => $status)
             $this->data['statuses'][GROUP_REPURCHASE_ORDER_ITEM_STATUS][] = array(
                 'id' => $statusId,
                 'name' => $status
@@ -246,12 +247,12 @@ class ControllerAccountOrderItems extends CustomerZoneController {
 					$this->session->data['success'] .= sprintf(
 						$this->language->get("text_status_set"),
 						$order_item_id,
-						Status::getStatus($order_item_new_status, $this->config->get('language_id')));
+						Status::getInstance($this->getRegistry())->getStatus($order_item_new_status, $this->config->get('language_id')));
                 else
 					$this->error['warning'] .= sprintf(
 						$this->language->get('error_status_already_set'),
 						$order_item_id,
-                        Status::getStatus($order_item_new_status, $this->config->get('language_id')));
+                        Status::getInstance($this->getRegistry())->getStatus($order_item_new_status, $this->config->get('language_id')));
             $this->clearSelection();
         }
 

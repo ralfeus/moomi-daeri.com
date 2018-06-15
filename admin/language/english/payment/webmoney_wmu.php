@@ -13,9 +13,9 @@ $_['entry_secret_key']      = 'Secret Key:';
 $_['entry_result_url']     	= 'Result URL:';
 $_['entry_success_url']     = 'Success URL:';
 $_['entry_fail_url']      	= 'Fail URL :';
-$_['entry_order_status'] 	= 'Order Status:';
+$_['entry_order_status'] 	= 'Order system\library\Status:';
 $_['entry_geo_zone']     = 'Geo Zone:';
-$_['entry_status']       = 'Status:';
+$_['entry_status']       = 'system\library\Status:';
 $_['entry_sort_order']   = 'Sort Order:';
 $_['entry_donate_me']   	= 'Donate me:';
 

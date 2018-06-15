@@ -2,6 +2,7 @@
 use model\sale\OrderItemDAO;
 use model\sale\RepurchaseOrderDAO;
 use system\engine\CustomerZoneController;
+use system\library\Status;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -19,7 +20,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
         $this->language->load('account/repurchaseOrders');
         $this->document->setTitle($this->language->get('HEADING_TITLE'));
         $this->data['headingTitle'] = $this->language->get('HEADING_TITLE');
-        //$this->load->library('Status');
+        //$this->load->library('system\library\Status');
     }
 
     public function index() {
@@ -63,7 +64,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
     private function getList() {
         $ordersPerPage = 10;
         $this->data['orders'] = array();
-        $this->data['statuses'] = Status::getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id'), true);
+        $this->data['statuses'] = Status::getInstance($this->getRegistry())->getStatuses(GROUP_REPURCHASE_ORDER_ITEM_STATUS, $this->config->get('language_id'), true);
         $data = $this->parameters;
         $data['filterCustomerId'] = $this->getCurrentCustomer()->getId();
         unset($data['page']);
@@ -101,7 +102,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
                 'quantity' => $repurchase_order['quantity'],
                 'shipping' => $this->currency->format($repurchase_order['shipping']),
                 'statusId' => $repurchase_order['status'],
-                'statusName' => Status::getStatus($repurchase_order['status'], $this->config->get('config_language_id'), true),
+                'statusName' => Status::getInstance($this->getRegistry())->getStatus($repurchase_order['status'], $this->config->get('config_language_id'), true),
                 'timeAdded'    => $repurchase_order['timeAdded'],
                 'subtotal'         => $this->currency->format($repurchase_order['subtotal']),
                 'textAccept' => $textAccept,
@@ -207,7 +208,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
     private function setStatus($orderId, $statusId) {
         RepurchaseOrderDAO::getInstance()->setStatus($orderId, $statusId);
 
-        $json['newStatusName'] = Status::getStatus(
+        $json['newStatusName'] = Status::getInstance($this->getRegistry())->getStatus(
             $statusId, $this->config->get('config_language_id'));
 //        $this->log->write(print_r($json, true));
 

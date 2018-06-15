@@ -1,6 +1,7 @@
 <?php
 use model\sale\CustomerDAO;
 use system\engine\Controller;
+use system\library\Status;
 
 class ControllerSaleOrder extends \system\engine\Controller {
 	private $error = array();
@@ -302,8 +303,9 @@ class ControllerSaleOrder extends \system\engine\Controller {
 
 		$order_total = $this->modelSaleOrder->getTotalOrders($data);
 		$results = $this->modelSaleOrder->getOrders($data);
-        //$this->load->library('Status');
-        $statuses = Status::getStatuses(GROUP_ORDER_STATUS, (int)$this->config->get('config_language_id'));
+        //$this->load->library('system\library\Status');
+        $statuses = Status::getInstance($this->getRegistry())->getStatuses(
+            GROUP_ORDER_STATUS, (int)$this->getConfig()->get('config_language_id'));
 
     	foreach ($results as $result) {
 //			$this->model_sale_order->updateOrderTotals($result['order_id']);
@@ -2089,7 +2091,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 
     public function setStatus() {
         $this->load->language('sale/order');
-        //$this->load->library('Status');
+        //$this->load->library('system\library\Status');
 
         if (!isset($this->error['warning'])) {
             $this->error['warning'] = '';
@@ -2102,7 +2104,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
                 $this->session->data['success'] .= sprintf(
                     $this->language->get("STATUS_SET"),
                     $orderId,
-                    Status::getStatus(0x00080000 + $this->parameters['orderStatusId'], $this->config->get('language_id'))
+                    Status::getInstance($this->getRegistry())->getStatus(0x00080000 + $this->parameters['orderStatusId'], $this->config->get('language_id'))
                 );
 
             }

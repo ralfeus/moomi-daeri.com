@@ -12,7 +12,7 @@ $_['DESCRIPTION'] = 'Shipping method description';
 $_['entry_rate']       = 'Rates:<br /><span class="help">Example: 5:10.00,7:12.00 Weight:Cost,Weight:Cost, etc..</span>';
 $_['entry_tax_class']  = 'Tax Class:';
 $_['entry_geo_zone']   = 'Geo Zone:';
-$_['entry_status']     = 'Status:';
+$_['entry_status']     = 'system\library\Status:';
 $_['entry_sort_order'] = 'Sort Order:';
 
 // Error

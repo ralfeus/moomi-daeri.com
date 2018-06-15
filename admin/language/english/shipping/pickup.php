@@ -9,7 +9,7 @@ $_['text_success']     = 'Success: You have modified pickup from store!';
 
 // Entry
 $_['entry_geo_zone']   = 'Geo Zone:';
-$_['entry_status']     = 'Status:';
+$_['entry_status']     = 'system\library\Status:';
 $_['entry_sort_order'] = 'Sort Order:';
 
 // Error

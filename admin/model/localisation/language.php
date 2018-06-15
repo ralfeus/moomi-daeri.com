@@ -82,7 +82,7 @@ class ModelLocalisationLanguage extends \system\engine\Model {
 			$this->db->query("INSERT INTO option_value_description SET option_value_id = '" . (int)$option_value['option_value_id'] . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_value['option_id'] . "', name = '" . $this->db->escape($option_value['name']) . "'");
 		}
 				
-		// Order Status
+		// Order system\library\Status
 		$query = $this->db->query("SELECT * FROM order_status WHERE language_id = '" . (int)$this->config->get('config_language_id') . "'");
 
 		foreach ($query->rows as $order_status) {
@@ -144,14 +144,14 @@ class ModelLocalisationLanguage extends \system\engine\Model {
 			$this->db->query("INSERT INTO return_reason SET return_reason_id = '" . (int)$return_reason['return_reason_id'] . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($return_reason['name']) . "'");
 		}
 		
-		// Return Status
+		// Return system\library\Status
 		$query = $this->db->query("SELECT * FROM return_status WHERE language_id = '" . (int)$this->config->get('config_language_id') . "'");
 
 		foreach ($query->rows as $return_status) {
 			$this->db->query("INSERT INTO return_status SET return_status_id = '" . (int)$return_status['return_status_id'] . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($return_status['name']) . "'");
 		}
 						
-		// Stock Status
+		// Stock system\library\Status
 		$query = $this->db->query("SELECT * FROM stock_status WHERE language_id = '" . (int)$this->config->get('config_language_id') . "'");
 
 		foreach ($query->rows as $stock_status) {

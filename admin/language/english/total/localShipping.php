@@ -10,7 +10,7 @@ $_['text_success']     = 'Success: You have modified Local Shipping Cost!';
 $_['entry_total']      = 'Order Total:';
 $_['entry_fee']        = 'Fee:';
 $_['entry_tax_class']  = 'Tax Class:';
-$_['entry_status']     = 'Status:';
+$_['entry_status']     = 'system\library\Status:';
 $_['entry_sort_order'] = 'Sort Order:';
 
 // Error

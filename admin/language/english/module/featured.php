@@ -15,7 +15,7 @@ $_['entry_product']       = 'Products:<br /><span class="help">(Autocomplete)</s
 $_['entry_image']         = 'Image (W x H):';
 $_['entry_layout']        = 'Layout:';
 $_['entry_position']      = 'Position:';
-$_['entry_status']        = 'Status:';
+$_['entry_status']        = 'system\library\Status:';
 $_['entry_sort_order']    = 'Sort Order:';
 
 // Error 

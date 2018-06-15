@@ -1,6 +1,7 @@
 <?php
 use system\engine\CustomerZoneController;
 use system\library\Messaging;
+use system\library\Status;
 
 class ControllerAccountTransaction extends CustomerZoneController {
     public function __construct($registry)
@@ -18,7 +19,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
     public function getCreditRequests()
     {
         //$this->load->library('system\library\Messaging');
-        //$this->load->library('Status');
+        //$this->load->library('system\library\Status');
         $addCreditRequests = Messaging::getSystemMessages(
             array(
                 'systemMessageType' => SYS_MSG_ADD_CREDIT,
@@ -35,7 +36,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
                 'amount' => $addCreditRequest['data']->amount,
                 'comment' => $addCreditRequest['data']->comment,
                 'currency' => $addCreditRequest['data']->currency,
-                'status' => Status::getStatus($addCreditRequest['data']->status, $this->config->get('language_id'), true),
+                'status' => Status::getInstance($this->getRegistry())->getStatus($addCreditRequest['data']->status, $this->config->get('language_id'), true),
                 'statusId' => $addCreditRequest['data']->status,
                 'timeAdded' => $addCreditRequest['timeAdded']
             );
