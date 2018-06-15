@@ -1,13 +1,14 @@
 <?php
+use system\helper\FileSystemFileHandler;
 use system\engine\Model;
 use system\library\Image;
 
 class ModelToolImage extends \system\engine\Model {
-    /** @var \helper\IFileHandler */
+    /** @var \system\helper\IFileHandler */
     private $fileHandler;
 
     public function __construct($registry, $fileHandler = null) {
-        $this->fileHandler = $fileHandler != null ? $fileHandler : new \helper\FileSystemFileHandler();
+        $this->fileHandler = $fileHandler != null ? $fileHandler : new FileSystemFileHandler(DIR_IMAGE);
         parent::__construct($registry);
     }
 

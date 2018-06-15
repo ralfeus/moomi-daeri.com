@@ -6,7 +6,7 @@
  * Time: 21:42
  */
 
-namespace helper;
+namespace system\helper;
 
 
 interface IFileHandler {

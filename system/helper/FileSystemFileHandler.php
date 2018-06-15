@@ -1,14 +1,23 @@
 <?php
-namespace helper;
+namespace system\helper;
 class FileSystemFileHandler implements IFileHandler {
+    private $baseDir;
+
+    /**
+     * FileSystemFileHandler constructor.
+     * @param string $baseDir A base directory for all file operations
+     */
+    public function __construct($baseDir) {
+        $this->baseDir = preg_match('/\/$/', $baseDir) ? $baseDir : $baseDir . '/';
+    }
 
     /**
      * @param string $path Full path of file to check
      * @return bool Whether file exists
      */
     function exists($path) {
-        //echo("$path\n");
-        return file_exists(DIR_IMAGE . $path) && is_file(DIR_IMAGE . $path);
+//        echo($this->baseDir . $path . "\n");
+        return file_exists($this->baseDir . $path) && is_file($this->baseDir . $path);
     }
 
     /**
@@ -16,7 +25,7 @@ class FileSystemFileHandler implements IFileHandler {
      * @return mixed File's metadata
      */
     public function getInfo($filename) {
-        return pathinfo(DIR_IMAGE . $filename);
+        return pathinfo($this->baseDir . $filename);
     }
 
     /**
@@ -24,7 +33,7 @@ class FileSystemFileHandler implements IFileHandler {
      * @return array Array containing information about image's size
      */
     public function getImageSize($filename) {
-        return getimagesize(DIR_IMAGE . $filename);
+        return getimagesize($this->baseDir . $filename);
     }
 
     /**
@@ -32,7 +41,7 @@ class FileSystemFileHandler implements IFileHandler {
      * @return mixed Modification time of the file
      */
     public function getTimeModified($file) {
-        return filemtime(DIR_IMAGE . $file);
+        return filemtime($this->baseDir . $file);
     }
 
     /**
@@ -40,13 +49,13 @@ class FileSystemFileHandler implements IFileHandler {
      * @return mixed Absolute path to the target file in file handler's system
      */
     public function getFullPath($file) {
-        return DIR_IMAGE . $file;
+        return $this->baseDir . $file;
     }
 
     /**
      * Moves file
-     * @param string $localFile Local file name
-     * @param string $destinationFile File name in the destination system
+     * @param string $localFile Local file full path
+     * @param string $destinationFile Relative file name in the destination system
      * @return bool True on success, false on failure
      */
     public function mv($localFile, $destinationFile) {
@@ -55,10 +64,17 @@ class FileSystemFileHandler implements IFileHandler {
         foreach ($directories as $directory) {
             $path = $path . '/' . $directory;
 
-            if (!file_exists(DIR_IMAGE . $path)) {
-                @mkdir(DIR_IMAGE . $path, 0777);
+            if (!file_exists($this->baseDir . $path)) {
+                @mkdir($this->baseDir . $path, 0777);
             }
         }
-        return rename($localFile, DIR_IMAGE . $destinationFile);
+        return rename($localFile, $this->baseDir . $destinationFile);
+    }
+
+    /**
+     * @return string Base working directory
+     */
+    public function getCwd() {
+        return $this->baseDir;
     }
 }

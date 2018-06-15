@@ -2,8 +2,8 @@
 namespace system\library;
 
 use Exception;
-use helper\FileSystemFileHandler;
-use helper\IFileHandler;
+use system\helper\FileSystemFileHandler;
+use system\helper\IFileHandler;
 use InvalidArgumentException;
 
 final class Image {
@@ -13,7 +13,7 @@ final class Image {
     private $fileHandler;
 
     public function __construct($file, IFileHandler $fileHandler = null) {
-        $this->fileHandler = $fileHandler != null ? $fileHandler : new FileSystemFileHandler();
+        $this->fileHandler = $fileHandler != null ? $fileHandler : new FileSystemFileHandler(DIR_IMAGE);
         if ($this->fileHandler->exists($file)) {
             $this->file = $file;
 
@@ -68,7 +68,9 @@ final class Image {
         $info = $this->fileHandler->getInfo($file);
 
         $extension = strtolower($info['extension']);
-        $tmpFile = "/tmp/" . $info['basename'];
+        $tmpFile = tempnam(DIR_IMAGE, 'img');
+//        echo("\n" . $tmpFile . "\n");
+//        echo($file . "\n");
 
         if ($extension == 'jpeg' || $extension == 'jpg') {
             imagejpeg($this->image, $tmpFile, $quality);
@@ -77,6 +79,7 @@ final class Image {
         } elseif ($extension == 'gif') {
             imagegif($this->image, $tmpFile);
         }
+//        print_r(scandir(dirname($tmpFile)));
         $this->fileHandler->mv($tmpFile, $file);
         imagedestroy($this->image);
     }

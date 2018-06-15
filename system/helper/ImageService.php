@@ -9,9 +9,9 @@
 namespace system\helper;
 
 use Exception;
-use helper\DigitalOceanFileHandler;
-use helper\FileSystemFileHandler;
-use helper\IFileHandler;
+use system\helper\DigitalOceanFileHandler;
+use system\helper\FileSystemFileHandler;
+use system\helper\IFileHandler;
 use system\library\Image;
 use model\DAO;
 
@@ -21,7 +21,7 @@ class ImageService extends DAO {
 
     public function __construct($registry, $fileHandler = null) {
         parent::__construct($registry);
-        $this->fileHandler = $fileHandler != null ? $fileHandler : new FileSystemFileHandler();
+        $this->fileHandler = $fileHandler != null ? $fileHandler : new FileSystemFileHandler(DIR_IMAGE);
     }
 
     public function getImage($imagePath)
