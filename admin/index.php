@@ -7,7 +7,6 @@ use system\library\Currency;
 use system\library\DB;
 use system\library\Language;
 use system\library\Log;
-use system\library\NoCache;
 use system\library\Session;
 use system\library\User;
 use system\library\WeightOld;
@@ -130,7 +129,7 @@ $response->addHeader('Content-Type: text/html; charset=utf-8');
 $registry->set('response', $response); 
 
 // Cache
-$cache = new NoCache();
+$cache = (new ReflectionClass('system\library\\' . CACHE))->newInstance();
 $registry->set('cache', $cache); 
 
 // Session

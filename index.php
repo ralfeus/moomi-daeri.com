@@ -63,7 +63,7 @@ require_once(DIR_SYSTEM . 'library/cart.php');
 $registry = new Registry();
 
 // Cache
-$cache = new NoCache();
+$cache = (new ReflectionClass('system\library\\' . CACHE))->newInstance();
 $registry->set('cache', $cache);
 
 // Loader
