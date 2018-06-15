@@ -8,6 +8,7 @@ use system\library\Language;
 use system\library\Log;
 use system\library\NoCache;
 use system\library\Session;
+use system\library\WeightOld;
 
 //ini_set('display_errors', 1);
 //ini_set('log_errors', 1);
@@ -35,7 +36,7 @@ require_once(DIR_SYSTEM . 'library/customer.php');
 require_once(DIR_SYSTEM . 'library/affiliate.php');
 require_once(DIR_SYSTEM . 'library/currency.php');
 require_once(DIR_SYSTEM . 'library/tax.php');
-require_once(DIR_SYSTEM . 'library/weight.php');
+//require_once(DIR_SYSTEM . 'library/WeightOld.php');
 require_once(DIR_SYSTEM . 'library/length.php');
 require_once(DIR_SYSTEM . 'library/cart.php');
 
@@ -258,7 +259,7 @@ $tax = new Tax($registry);
 $registry->set('tax', $tax);
 
 // Weight
-$registry->set('weight', new Weight($registry));
+$registry->set('weight', new WeightOld($registry));
 
 // Length
 $registry->set('length', new Length($registry));

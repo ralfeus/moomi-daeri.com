@@ -10,6 +10,7 @@ use system\library\Log;
 use system\library\NoCache;
 use system\library\Session;
 use system\library\User;
+use system\library\WeightOld;
 
 define('VERSION', '1.5.1.3');
 require_once('../vendor/autoload.php');
@@ -48,7 +49,7 @@ require_once(DIR_SYSTEM . 'startup.php');
 // Application Classes
 require_once(DIR_SYSTEM . 'library/currency.php');
 require_once(DIR_SYSTEM . 'library/user.php');
-require_once(DIR_SYSTEM . 'library/weight.php');
+//require_once(DIR_SYSTEM . 'library/WeightOld.php');
 require_once(DIR_SYSTEM . 'library/length.php');
 
 // Registry
@@ -160,7 +161,7 @@ $registry->set('document', $document);
 $registry->set('currency', new Currency($registry));		
 		
 // Weight
-$registry->set('weight', new Weight($registry));
+$registry->set('weight', new WeightOld($registry));
 
 // Length
 $registry->set('length', new Length($registry));
