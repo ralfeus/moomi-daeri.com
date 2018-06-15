@@ -7,7 +7,7 @@ class ControllerModuleBanner extends \system\engine\Controller {
 		static $module = 0;
 		
 //		$this->load->model('design/banner');
-//		$this->load->model('tool/image');
+//		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 		
 		$this->document->addScript('catalog/view/javascript/jquery/jquery.cycle.js');
 				

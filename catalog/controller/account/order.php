@@ -102,7 +102,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 					$this->data['note'] = $this->session->data['note'];
 					unset( $this->session->data['note'] );
 				} else $this->data['note'] = '';
-    $this->modelToolImage = $this->load->model('tool/image');
+    $this->modelToolImage = $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 		if (isset($this->request->get['order_id'])) {
 			$order_id = $this->request->get['order_id'];
 		} else {

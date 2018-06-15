@@ -11,7 +11,7 @@ class ControllerModuleFeatured extends \system\engine\Controller {
 		
 		$this->load->model('catalog/product'); 
 		
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
 		$this->data['products'] = array();
 
@@ -22,7 +22,7 @@ class ControllerModuleFeatured extends \system\engine\Controller {
 			
 			if ($product_info) {
 				if ($product_info['image']) {
-					$image = $this->model_tool_image->resize($product_info['image'], $setting['image_width'], $setting['image_height']);
+					$image = $modelToolImage->resize($product_info['image'], $setting['image_width'], $setting['image_height']);
 				} else {
 					$image = false;
 				}

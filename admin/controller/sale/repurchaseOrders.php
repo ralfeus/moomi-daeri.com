@@ -20,7 +20,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
     }
 
     private function getData() 	{
-        $modelToolImage = $this->load->model('tool/image');
+        $modelToolImage = $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
         $urlParameters = $this->buildUrlParameterString($this->parameters);
 
         $this->data['invoice'] = $this->url->link('sale/invoice/showForm', $urlParameters, 'SSL');

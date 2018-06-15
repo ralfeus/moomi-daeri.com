@@ -663,7 +663,7 @@ class ControllerSettingStore extends \system\engine\Controller {
 			$this->data['config_cart_weight'] = '';
 		}
 				
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
 		if (isset($this->request->post['config_logo'])) {
 			$this->data['config_logo'] = $this->request->post['config_logo'];
@@ -674,9 +674,9 @@ class ControllerSettingStore extends \system\engine\Controller {
 		}
 
 		if (isset($store_info['config_logo']) && file_exists(DIR_IMAGE . $store_info['config_logo']) && is_file(DIR_IMAGE . $store_info['config_logo'])) {
-			$this->data['logo'] = $this->model_tool_image->resize($store_info['config_logo'], 100, 100);		
+			$this->data['logo'] = $modelToolImage->resize($store_info['config_logo'], 100, 100);
 		} else {
-			$this->data['logo'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+			$this->data['logo'] = $modelToolImage->resize('no_image.jpg', 100, 100);
 		}
 
 		if (isset($this->request->post['config_icon'])) {
@@ -688,12 +688,12 @@ class ControllerSettingStore extends \system\engine\Controller {
 		}
 		
 		if (isset($store_info['config_icon']) && file_exists(DIR_IMAGE . $store_info['config_icon']) && is_file(DIR_IMAGE . $store_info['config_icon'])) {
-			$this->data['icon'] = $this->model_tool_image->resize($store_info['config_icon'], 100, 100);
+			$this->data['icon'] = $modelToolImage->resize($store_info['config_icon'], 100, 100);
 		} else {
-			$this->data['icon'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+			$this->data['icon'] = $modelToolImage->resize('no_image.jpg', 100, 100);
 		}
 		
-		$this->data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+		$this->data['no_image'] = $modelToolImage->resize('no_image.jpg', 100, 100);
 		
 		if (isset($this->request->post['config_image_category_height'])) {
 			$this->data['config_image_category_height'] = $this->request->post['config_image_category_height'];

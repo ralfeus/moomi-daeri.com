@@ -10,7 +10,7 @@ class ControllerModuleLatest extends \system\engine\Controller {
         $this->data['heading_title'] = $this->language->get('heading_title');
         $this->load->model('catalog/category');
         $this->load->model('catalog/product');
-        $this->load->model('tool/image');
+        $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
     }
     
     private function _endc( $array ) { return end( $array ); }

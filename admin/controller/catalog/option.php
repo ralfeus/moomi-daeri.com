@@ -834,7 +834,7 @@ $this->error['warning'] = $this->language->get('error_options_deletion_denied');
 			
 			$this->load->model('catalog/option');
 			
-			$this->load->model('tool/image');
+			$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 			
 			$data = array(
 				'filter_name' => $this->request->get['filter_name'],
@@ -852,7 +852,7 @@ $this->error['warning'] = $this->language->get('error_options_deletion_denied');
 					
 					foreach ($option_values as $option_value) {
 						if ($option_value['image'] && file_exists(DIR_IMAGE . $option_value['image'])) {
-							$image = $this->model_tool_image->resize($option_value['image'], 50, 50);
+							$image = $modelToolImage->resize($option_value['image'], 50, 50);
 						} else {
 							$image = '';
 						}

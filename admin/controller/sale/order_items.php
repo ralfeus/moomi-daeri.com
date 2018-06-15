@@ -20,7 +20,7 @@ class ControllerSaleOrderItems extends AdminController {
 		//$this->load->library('Status');
 		$this->modelSaleOrder = $this->load->model('sale/order');
 		$this->load->model('sale/order_item_history');
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 	}
 
 	public function index() {
@@ -227,9 +227,9 @@ class ControllerSaleOrderItems extends AdminController {
 				}
 
 				if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath())) {
-					$image = $this->model_tool_image->resize($orderItem->getImagePath(), 100, 100);
+					$image = $modelToolImage->resize($orderItem->getImagePath(), 100, 100);
 				} else {
-					$image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+					$image = $modelToolImage->resize('no_image.jpg', 100, 100);
 				}
 
 //				$supplier_url = "";
@@ -462,7 +462,7 @@ class ControllerSaleOrderItems extends AdminController {
 
 		$this->document->setTitle($this->language->get('heading_title'));
 		$this->load->model('catalog/product');
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
 		if (isset($_REQUEST['order'])) {
 			$order = $_REQUEST['order'];
@@ -480,9 +480,9 @@ class ControllerSaleOrderItems extends AdminController {
 
 		foreach (OrderItemDAO::getInstance()->getOrderItems($data, null, true) as $orderItem) {
 			if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath())) {
-				$image = $this->model_tool_image->resize($orderItem->getImagePath(), 100, 100);
+				$image = $modelToolImage->resize($orderItem->getImagePath(), 100, 100);
 			} else {
-				$image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+				$image = $modelToolImage->resize('no_image.jpg', 100, 100);
 			}
 
 			if (SupplierGroupDAO::getInstance()->getSupplierGroup($orderItem->getSupplierGroupId()))
@@ -565,7 +565,7 @@ class ControllerSaleOrderItems extends AdminController {
 		$this->document->setTitle($this->language->get('heading_title'));
 		$this->load->model('catalog/product');
 		$this->load->model('catalog/supplier_group');
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
 		if (isset($_REQUEST['sort'])) {
 			$sort = $_REQUEST['sort'];
@@ -588,9 +588,9 @@ class ControllerSaleOrderItems extends AdminController {
 		foreach (OrderItemDAO::getInstance()->getOrderItems($data, null, true) as $orderItem)
 		{
 			if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath())) {
-				$image = $this->model_tool_image->resize($orderItem->getImagePath(), 100, 100);
+				$image = $modelToolImage->resize($orderItem->getImagePath(), 100, 100);
 			} else {
-				$image = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+				$image = $modelToolImage->resize('no_image.jpg', 100, 100);
 			}
 
 			if (SupplierGroupDAO::getInstance()->getSupplierGroup($orderItem->getSupplierGroupId()))

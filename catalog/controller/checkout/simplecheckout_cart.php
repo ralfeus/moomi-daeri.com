@@ -105,7 +105,7 @@ class ControllerCheckoutSimpleCheckoutCart extends \system\engine\Controller {
         
         $this->data['action'] = $this->url->link('checkout/simplecheckout_cart');
         
-        $this->load->model('tool/image');
+        $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
         
         //$this->load->library('encryption');
         
@@ -181,7 +181,7 @@ class ControllerCheckoutSimpleCheckoutCart extends \system\engine\Controller {
                 $image_cart_width = $image_cart_width ? $image_cart_width : 40;
                 $image_cart_height = $this->config->get('config_image_cart_height');
                 $image_cart_height = $image_cart_height ? $image_cart_height : 40;
-                $image = $this->model_tool_image->resize($product['image'], $image_cart_width, $image_cart_height);
+                $image = $modelToolImage->resize($product['image'], $image_cart_width, $image_cart_height);
             } else {
                 $image = '';
             }

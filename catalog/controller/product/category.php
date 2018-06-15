@@ -7,7 +7,7 @@ class ControllerProductCategory extends \system\engine\Controller {
 
 		$this->load->model('catalog/product');
 
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
 		$this->data['isSaler'] = $this->customer->getCustomerGroupId() == 6;
 
@@ -113,7 +113,7 @@ class ControllerProductCategory extends \system\engine\Controller {
 			$this->data['button_continue'] = $this->language->get('button_continue');
 
 			if ($category_info['image']) {
-				$this->data['thumb'] = $this->model_tool_image->resize($category_info['image'], $this->config->get('config_image_category_width'), $this->config->get('config_image_category_height'));
+				$this->data['thumb'] = $modelToolImage->resize($category_info['image'], $this->config->get('config_image_category_width'), $this->config->get('config_image_category_height'));
 			} else {
 				$this->data['thumb'] = '';
 			}
@@ -174,7 +174,7 @@ class ControllerProductCategory extends \system\engine\Controller {
 
 			foreach ($results as $result) {
 				if ($result['image']) {
-					$image = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
+					$image = $modelToolImage->resize($result['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
 				} else {
 					$image = false;
 				}

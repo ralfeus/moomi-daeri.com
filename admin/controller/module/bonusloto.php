@@ -312,7 +312,7 @@ class ControllerModulebonusloto extends \system\engine\Controller {
 			$this->data['bonusloto_posting'] = $this->config->get('bonusloto_posting');
 		} 
 
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
 		if (isset($this->request->post['bonusloto_background_img'])) {
 			$bonusloto_background_img = $this->request->post['bonusloto_background_img'];
@@ -329,11 +329,11 @@ class ControllerModulebonusloto extends \system\engine\Controller {
 		}			
 		$this->data['bonusloto_background_img'] = array(
 			'image'                    => $image,
-			'thumb'                    => $this->model_tool_image->resize($image, 100, 100)
+			'thumb'                    => $modelToolImage->resize($image, 100, 100)
 		);	
 
 
-		$this->data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);		
+		$this->data['no_image'] = $modelToolImage->resize('no_image.jpg', 100, 100);
 
 
 		if (isset($this->request->post['bonusloto_posting_time'])) {

@@ -57,7 +57,7 @@ class ControllerCommonFileManager extends AdminController {
 		$this->getLoader()->model('tool/image');
 		
 		if (isset($this->request->get['image'])) {
-			$this->getResponse()->setOutput($this->model_tool_image->resize(html_entity_decode($this->request->get['image'], ENT_QUOTES, 'UTF-8'), 100, 100));
+			$this->getResponse()->setOutput($modelToolImage->resize(html_entity_decode($this->request->get['image'], ENT_QUOTES, 'UTF-8'), 100, 100));
 		}
 	}
 	
@@ -165,7 +165,7 @@ class ControllerCommonFileManager extends AdminController {
 						'file'     => utf8_substr($file, strlen(DIR_IMAGE . 'data/')),
 						'filename' => basename($file),
 						'size'     => round(utf8_substr($size, 0, strpos($size, '.') + 4), 2) . $suffix[$i],
-						'thumb'    => $this->model_tool_image->resize(utf8_substr($file, strlen(DIR_IMAGE)), 100, 100)
+						'thumb'    => $modelToolImage->resize(utf8_substr($file, strlen(DIR_IMAGE)), 100, 100)
 					);
 				}
 			}

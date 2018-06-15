@@ -20,7 +20,7 @@ class ControllerAccountInvoice extends CustomerZoneController {
         //$this->load->library('Transaction');
         $this->load->model('reference/address');
         $this->load->model('account/order');
-        $this->load->model('tool/image');
+        $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
         $this->data['notifications'] = array();
         $this->document->setTitle($this->language->get('headingTitle'));

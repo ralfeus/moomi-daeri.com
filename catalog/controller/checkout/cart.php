@@ -142,7 +142,7 @@ class ControllerCheckoutCart extends CustomerController {
 				$this->data['weight'] = false;
 			}
 
-			$this->load->model('tool/image');
+			$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
       		$this->data['products'] = array();
 			$products = CartDAO::getInstance()->getProducts();
@@ -179,9 +179,9 @@ class ControllerCheckoutCart extends CustomerController {
         }*/
 				$product_image = ProductDAO::getInstance()->getImage($product['product_id']);
         if ($product['image']) {
-					$image = $this->model_tool_image->resize($product['image'], $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
+					$image = $modelToolImage->resize($product['image'], $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
 				} else {
-					$image = $this->model_tool_image->resize($product_image, $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
+					$image = $modelToolImage->resize($product_image, $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
 				}
 
 				$option_data = array();
@@ -453,7 +453,7 @@ class ControllerCheckoutCart extends CustomerController {
 			}
 		}
 
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
 		$this->data['text_empty'] = $this->language->get('text_empty');
 
@@ -464,7 +464,7 @@ class ControllerCheckoutCart extends CustomerController {
 
 		foreach ($this->cart->getProducts() as $result) {
 			if ($result['image']) {
-				$image = $this->model_tool_image->resize($result['image'], 40, 40);
+				$image = $modelToolImage->resize($result['image'], 40, 40);
 			} else {
 				$image = '';
 			}

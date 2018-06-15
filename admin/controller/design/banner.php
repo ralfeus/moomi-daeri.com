@@ -364,7 +364,7 @@ class ControllerDesignBanner extends \system\engine\Controller {
 		
 		$this->data['languages'] = $this->model_localisation_language->getLanguages();
 		
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 	
 		if (isset($this->request->post['banner_image'])) {
 			$banner_images = $this->request->post['banner_image'];
@@ -387,11 +387,11 @@ class ControllerDesignBanner extends \system\engine\Controller {
 				'banner_image_description' => $banner_image['banner_image_description'],
 				'link'                     => $banner_image['link'],
 				'image'                    => $image,
-				'thumb'                    => $this->model_tool_image->resize($image, 100, 100)
+				'thumb'                    => $modelToolImage->resize($image, 100, 100)
 			);	
 		} 
 	
-		$this->data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);		
+		$this->data['no_image'] = $modelToolImage->resize('no_image.jpg', 100, 100);
 
 		$this->template = 'design/banner_form.tpl';
 		$this->children = array(

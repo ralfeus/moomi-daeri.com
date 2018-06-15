@@ -21,7 +21,7 @@ class ControllerFeedYandexMarket extends \system\engine\Controller {
 
 			$this->load->model('export/yandex_market');
 			$this->load->model('localisation/currency');
-			$this->load->model('tool/image');
+			$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
 			// Магазин
 			$this->setShop('name', $this->config->get('yandex_market_shopname'));
@@ -92,7 +92,7 @@ class ControllerFeedYandexMarket extends \system\engine\Controller {
 //				$data['manufacturer_warranty'] = 'true';
 //				$data['barcode'] = $product['sku'];
 				if ($product['image']) {
-					$data['picture'] = $this->model_tool_image->resize($product['image'], 100, 100);
+					$data['picture'] = $modelToolImage->resize($product['image'], 100, 100);
 				}
 /*
 				// пример структуры массива для вывода параметров

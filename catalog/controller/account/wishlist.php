@@ -13,7 +13,7 @@ class ControllerAccountWishList extends CustomerZoneController {
 		
 		$this->load->model('catalog/product');
 		
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 		
 		if (!isset($this->session->data['wishlist'])) {
 			$this->session->data['wishlist'] = array();
@@ -80,7 +80,7 @@ class ControllerAccountWishList extends CustomerZoneController {
 			
 			if ($product_info) { 
 				if ($product_info['image']) {
-					$image = $this->model_tool_image->resize($product_info['image'], $this->config->get('config_image_wishlist_width'), $this->config->get('config_image_wishlist_height'));
+					$image = $modelToolImage->resize($product_info['image'], $this->config->get('config_image_wishlist_width'), $this->config->get('config_image_wishlist_height'));
 				} else {
 					$image = false;
 				}

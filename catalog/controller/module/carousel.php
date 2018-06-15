@@ -6,7 +6,7 @@ class ControllerModuleCarousel extends \system\engine\Controller {
 		static $module = 0;
 		
 //		$this->load->model('design/banner');
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 		
 		$this->document->addScript('catalog/view/javascript/jquery/jquery.jcarousel.min.js');
 		$this->document->addStyle('catalog/view/theme/' . $this->config->get('config_template') . '/stylesheet/carousel.css');
@@ -23,7 +23,7 @@ class ControllerModuleCarousel extends \system\engine\Controller {
 				$this->data['banners'][] = array(
 					'title' => $result['title'],
 					'link'  => $result['link'],
-					'image' => $this->model_tool_image->resize($result['image'], $setting['width'], $setting['height'])
+					'image' => $modelToolImage->resize($result['image'], $setting['width'], $setting['height'])
 				);
 			}
 		}

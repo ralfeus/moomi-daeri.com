@@ -16,7 +16,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
         //$this->load->library('Status');
         $this->orderModel = $this->load->model('account/order');
 //        $this->load->model('account/order_item_history');
-        $this->load->model('tool/image');
+        $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
     }
 
     public function cancel() {
@@ -70,9 +70,9 @@ class ControllerAccountOrderItems extends CustomerZoneController {
                   $orderItem->setImagePath(!empty($itemUrl) ? $itemUrl : $orderItem->getImagePath());
                 }
                 if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath())):
-                    $image = $this->model_tool_image->resize($orderItem->getImagePath(), 80, 80);
+                    $image = $modelToolImage->resize($orderItem->getImagePath(), 80, 80);
                 else:
-                    $image = $this->model_tool_image->resize('no_image.jpg', 80, 80);
+                    $image = $modelToolImage->resize('no_image.jpg', 80, 80);
                 endif;
 
                 $action = array();

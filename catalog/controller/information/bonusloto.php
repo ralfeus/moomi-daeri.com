@@ -36,13 +36,13 @@ class ControllerInformationBonusloto extends \system\engine\Controller {
 
 
 		$bonusloto_background_img = $this->config->get('bonusloto_background_img');
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 		$this->data['bonusloto_background_img'] = array();
 		if ($bonusloto_background_img['image'] != 'no_image.jpg' && file_exists(DIR_IMAGE . $bonusloto_background_img['image'])) {
 			$image = $bonusloto_background_img['image'];
 			$this->data['styles'][] = array(
 					'style_tg'	=>	'#lott-timer-box',
-					'param'		=>	'background-image: url('.$this->model_tool_image->resize($image, 500, 220).');background-repeat: no-repeat;'
+					'param'		=>	'background-image: url('.$modelToolImage->resize($image, 500, 220).');background-repeat: no-repeat;'
 			);	
 		}			
 

@@ -7,7 +7,7 @@ class ControllerProductCompare extends \system\engine\Controller {
 		
 		$this->load->model('catalog/product');
 
-		$this->load->model('tool/image');
+		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 		
 		if (!isset($this->session->data['compare'])) {
 			$this->session->data['compare'] = array();
@@ -74,7 +74,7 @@ class ControllerProductCompare extends \system\engine\Controller {
 			
 			if ($product_info) {
 				if ($product_info['image']) {
-					$image = $this->model_tool_image->resize($product_info['image'], $this->config->get('config_image_compare_width'), $this->config->get('config_image_compare_height'));
+					$image = $modelToolImage->resize($product_info['image'], $this->config->get('config_image_compare_width'), $this->config->get('config_image_compare_height'));
 				} else {
 					$image = false;
 				}

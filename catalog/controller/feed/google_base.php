@@ -13,7 +13,7 @@ class ControllerFeedGoogleBase extends \system\engine\Controller {
 			
 			$this->load->model('catalog/product');
 			
-			$this->load->model('tool/image');
+			$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 			
 			$products = $this->model_catalog_product->getProducts();
 			
@@ -28,9 +28,9 @@ class ControllerFeedGoogleBase extends \system\engine\Controller {
 					$output .= '<g:id>' . $product['product_id'] . '</g:id>';
 					
 					if ($product['image']) {
-						$output .= '<g:image_link>' . $this->model_tool_image->resize($product['image'], 500, 500) . '</g:image_link>';
+						$output .= '<g:image_link>' . $modelToolImage->resize($product['image'], 500, 500) . '</g:image_link>';
 					} else {
-						$output .= '<g:image_link>' . $this->model_tool_image->resize('no_image.jpg', 500, 500) . '</g:image_link>';
+						$output .= '<g:image_link>' . $modelToolImage->resize('no_image.jpg', 500, 500) . '</g:image_link>';
 					}
 					
 					$output .= '<g:mpn>' . $product['model'] . '</g:mpn>';

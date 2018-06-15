@@ -485,9 +485,9 @@ if(isset($this->request->get['clear_cache'])){
 			);
 
 			if ($product->getImagePath() && file_exists(DIR_IMAGE . $product->getImagePath())) {
-				//$image = $this->model_tool_image->resize($result['image'], 40, 40);
+				//$image = $modelToolImage->resize($result['image'], 40, 40);
 			} else {
-				//$image = $this->model_tool_image->resize('no_image.jpg', 40, 40);
+				//$image = $modelToolImage->resize('no_image.jpg', 40, 40);
 			}
 
 			$this->data['products'][] = array(

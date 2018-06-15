@@ -490,7 +490,7 @@ class ControllerCatalogImport extends \system\engine\Controller {
             unlink(DIR_IMAGE . $localProduct['image']);
         }
         /** @var ModelToolImage $modelToolImage */
-        $modelToolImage = $this->load->model('tool/image');
+        $modelToolImage = $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
         try {
             $thumbnail = $modelToolImage->download($product->getThumbnailUrl());
         } catch (Exception $e) {
@@ -519,7 +519,7 @@ class ControllerCatalogImport extends \system\engine\Controller {
      */
     private function updateDescriptionImages($id, $description) {
         /** @var ModelToolImage $modelToolImage */
-        $modelToolImage = $this->load->model('tool/image');
+        $modelToolImage = $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
         /// Download images in image description
         $html = new \simple_html_dom($description);
         $descriptionImages = $html->find('img');
