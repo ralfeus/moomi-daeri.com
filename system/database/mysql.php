@@ -24,7 +24,7 @@ final class MySQL extends DBDriver {
     private $logger;
 
     public function __construct($hostname, $username, $password, $database) {
-        $this->logger = new Log('sql.log');
+        $this->logger = new \system\library\Log('sql.log');
         $this->hostName = $hostname;
         $this->userName = $username;
         $this->password = $password;
@@ -226,7 +226,7 @@ final class MySQL extends DBDriver {
 //    private function setCache($cache, $query, $queryHash, $result) {
 //        $cache->set("query.$queryHash", serialize($result));
 //        $matches = [];
-//        $logger = new Log('cache.log');
+//        $logger = new \system\library\Log('cache.log');
 //        if (preg_match_all(
 //            '/(?<=FROM|JOIN|OJ)[\s\(]+((((?!SELECT\b)`?[\w_]+`?)(\s*\)?,\s*)*)+)/i',
 //            $query, $matches/*, PREG_SET_ORDER*/)) {
@@ -259,7 +259,7 @@ final class MySQL extends DBDriver {
 //     * @param string $query
 //     */
 //    private function invalidateCache($cache, $query) {
-//        $logger = new Log('cache.log');
+//        $logger = new \system\library\Log('cache.log');
 //        $matches = [];
 //        $verb = strtoupper(substr($query, 0, 6));
 //        if ($verb == 'DELETE') {

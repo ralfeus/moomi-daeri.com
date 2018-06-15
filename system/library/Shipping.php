@@ -26,7 +26,7 @@
 //
 ////    public static function getShippingMethods($address, $registry = null)
 ////    {
-////        $logging = new Log('shipping.log');
+////        $logging = new \system\library\Log('shipping.log');
 ////        $result = array();
 ////        if (!$registry)
 ////            return $result;

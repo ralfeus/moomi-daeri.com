@@ -121,7 +121,7 @@ $url = new Url($config->get('config_url'), $config->get('config_use_ssl') ? $con
 $registry->set('url', $url);
 
 // Log
-$log = new Log($config->get('config_error_filename'));
+$log = new \system\library\Log($config->get('config_error_filename'));
 $registry->set('log', $log);
 
 function error_handler($errno, $errstr, $errfile, $errline) {

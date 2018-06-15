@@ -1,6 +1,5 @@
 <?php
 namespace model\shipping;
-use Log;
 use model\DAO;
 use model\setting\ExtensionDAO;
 
@@ -14,7 +13,7 @@ use model\setting\ExtensionDAO;
 class ShippingMethodDAO extends DAO {
     public function __construct($registry) {
         parent::__construct($registry);
-        $this->log = new Log('shippingModel.log');
+        $this->log = new \system\library\Log('shippingModel.log');
     }
 
     /**
@@ -31,7 +30,7 @@ class ShippingMethodDAO extends DAO {
      * @throws \Exception
      */
     public function getShippingOptions($address) {
-        $logging = new Log('shipping.log');
+        $logging = new \system\library\Log('shipping.log');
         $result = array();
 
 //        $logging->write(print_r($address, true));

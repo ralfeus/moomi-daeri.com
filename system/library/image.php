@@ -54,7 +54,7 @@ final class Image {
             }
             return $image;
         } catch (Exception $exc) {
-            $logger = new Log('error.log');
+            $logger = new \system\library\Log('error.log');
             $tmpExc = $exc;
             while ($tmpExc != null) {
                 $logger->write($exc->getMessage());

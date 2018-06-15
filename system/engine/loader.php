@@ -15,7 +15,7 @@ final class Loader {// extends OpenCartBase
 	public function __construct($registry) {
         $this->registry = $registry;
 //		parent::__construct($registry);
-        $this->log = new Log('Loader.log');
+        $this->log = new \system\library\Log('Loader.log');
     }
 
     /**

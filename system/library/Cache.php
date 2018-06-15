@@ -6,7 +6,7 @@ abstract class Cache {
     protected $logger;
 	
 	  	public function __construct() {
-        $this->logger = new Log("cache.log");
+        $this->logger = new \system\library\Log("cache.log");
 //		$files = glob(DIR_CACHE . 'cache.*');
 //
 //		if ($files) {
