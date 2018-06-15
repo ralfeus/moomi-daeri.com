@@ -29,10 +29,9 @@ class ModelLocalisationLanguage extends \system\engine\Model {
     		}	
 			
 			$this->cache->set('language', $language_data);
-            $this->log->write("Language data is cached. Data is: " . print_r($language_data, true));
+            //$this->log->write("Language data is cached. Data is: " . print_r($language_data, true));
 		}
 		
 		return $language_data;	
 	}
 }
-?>

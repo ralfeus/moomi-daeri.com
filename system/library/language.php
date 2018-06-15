@@ -30,7 +30,7 @@ final class Language {
 			
 			return $this->data;
 		} else {
-			throw new Exception('Error: Could not load language ' . $filename . '!');
+			throw new Exception('Error: Could not load language set "' . $filename . '" for language "' . $this->directory . '"!');
 		}
   	}
 }

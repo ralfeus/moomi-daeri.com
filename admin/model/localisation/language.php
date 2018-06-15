@@ -309,7 +309,7 @@ class ModelLocalisationLanguage extends \system\engine\Model {
       				);
     			}	
 				$this->cache->set('language', $language_data);
-                $this->log->write("(admin) Language data is cached. Data is: " . print_r($language_data, true));
+                //$this->log->write("(admin) Language data is cached. Data is: " . print_r($language_data, true));
 			}
 		
 			return $language_data;			
@@ -322,4 +322,3 @@ class ModelLocalisationLanguage extends \system\engine\Model {
 		return $query->row['total'];
 	}
 }
-?>
