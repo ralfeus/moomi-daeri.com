@@ -489,7 +489,7 @@ class ControllerCatalogImport extends \system\engine\Controller {
         if (file_exists(DIR_IMAGE . $localProduct['image']) && is_file(DIR_IMAGE . $localProduct['image'])) {
             unlink(DIR_IMAGE . $localProduct['image']);
         }
-        /** @var ModelToolImage $modelToolImage */
+        /** @var \admin\model\tool\ModelToolImage $modelToolImage */
         $modelToolImage = $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
         try {
             $thumbnail = $modelToolImage->download($product->getThumbnailUrl());
@@ -518,7 +518,7 @@ class ControllerCatalogImport extends \system\engine\Controller {
      * @throws Exception
      */
     private function updateDescriptionImages($id, $description) {
-        /** @var ModelToolImage $modelToolImage */
+        /** @var \admin\model\tool\ModelToolImage $modelToolImage */
         $modelToolImage = $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
         /// Download images in image description
         $html = new \simple_html_dom($description);

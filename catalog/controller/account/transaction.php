@@ -19,7 +19,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
     public function getCreditRequests()
     {
         //$this->load->library('system\library\Messaging');
-        //$this->load->library('system\library\Status');
+        //$this->load->library('status');
         $addCreditRequests = Messaging::getSystemMessages(
             array(
                 'systemMessageType' => SYS_MSG_ADD_CREDIT,

@@ -15,7 +15,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
         parent::__construct($registry);
         $this->data['notifications'] = array();
         $this->load->language('sale/repurchaseOrders');
-        //$this->load->library('system\library\Status');
+        //$this->load->library('status');
         $this->document->setTitle($this->getLanguage()->get('HEADING_TITLE'));
         $this->data['headingTitle'] = $this->getLanguage()->get('HEADING_TITLE');
     }
@@ -337,7 +337,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
         $this->getResponse()->setOutput(json_encode($json));
     }
 
-    protected function setBreadcrumbs()
+    protected function setBreadcrumbs($breadcrumbs = null)
     {
         $this->data['breadcrumbs'] = array();
 

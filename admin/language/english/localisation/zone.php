@@ -12,7 +12,7 @@ $_['column_country']         = 'Country';
 $_['column_action']          = 'Action';
 
 // Entry
-$_['entry_status']           = 'Zone system\library\Status:';
+$_['entry_status']           = 'Zone status:';
 $_['entry_name']             = 'Zone Name:';
 $_['entry_code']             = 'Zone Code:';
 $_['entry_country']          = 'Country:';
@@ -25,4 +25,3 @@ $_['error_store']            = 'Warning: This zone cannot be deleted as it is cu
 $_['error_address']          = 'Warning: This zone cannot be deleted as it is currently assigned to %s address book entries!';
 $_['error_affiliate']        = 'Warning: This zone cannot be deleted as it is currently assigned to %s affiliates!';
 $_['error_zone_to_geo_zone'] = 'Warning: This zone cannot be deleted as it is currently assigned to %s zones to geo zones!';
-?>

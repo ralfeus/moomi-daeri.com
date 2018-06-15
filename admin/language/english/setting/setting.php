@@ -51,10 +51,10 @@ $_['entry_commission']         = 'Affiliate Commission (%):<br /><span class="he
 $_['entry_stock_display']      = 'Display Stock:<br /><span class="help">Display stock quantity on the product page.</span>';
 $_['entry_stock_warning']      = 'Show Out Of Stock Warning:<br /><span class="help">Display out of stock message on the shopping cart page if a product is out of stock but stock checkout is yes. (Warning always shows if stock checkout is no)</span>';
 $_['entry_stock_checkout']     = 'Stock Checkout:<br /><span class="help">Allow customers to still checkout if the products they are ordering are not in stock.</span>';
-$_['entry_stock_status']       = 'Out of Stock system\library\Status:<br /><span class="help">Set the default out of stock status selected in product edit.</span>';
-$_['entry_order_status']       = 'Order system\library\Status:<br /><span class="help">Set the default order status when an order is processed.</span>';
-$_['entry_complete_status']    = 'Complete Order system\library\Status:<br /><span class="help">Set the order status the customers order must reach before they are allowed to access their downloadable products and gift vouchers.</span>';
-$_['entry_return_status']      = 'Return system\library\Status:<br /><span class="help">Set the default return status when an returns request is submitted.</span>';
+$_['entry_stock_status']       = 'Out of Stock status:<br /><span class="help">Set the default out of stock status selected in product edit.</span>';
+$_['entry_order_status']       = 'Order status:<br /><span class="help">Set the default order status when an order is processed.</span>';
+$_['entry_complete_status']    = 'Complete Order status:<br /><span class="help">Set the order status the customers order must reach before they are allowed to access their downloadable products and gift vouchers.</span>';
+$_['entry_return_status']      = 'Return status:<br /><span class="help">Set the default return status when an returns request is submitted.</span>';
 $_['entry_review']       	   = 'Allow Reviews:<br /><span class="help">Enable/Disable new review entry and display of existing reviews</span>';
 $_['entry_download']           = 'Allow Downloads:';
 $_['entry_upload_allowed']     = 'Allowed Upload File Extensions:<br /><span class="help">Add which file extensions are allowed to be uploaded. Use comma separated values.</span>';

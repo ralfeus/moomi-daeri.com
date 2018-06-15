@@ -13,7 +13,7 @@ $_['text_special_right']   = 'Special Right';
 // Entry
 $_['entry_layout']        = 'Layout:';
 $_['entry_position']      = 'Position:';
-$_['entry_status']        = 'system\library\Status:';
+$_['entry_status']        = 'Status:';
 $_['entry_sort_order']    = 'Sort Order:';
 
 // Error

@@ -602,7 +602,7 @@ class ControllerCatalogProduct extends AdminController {
 		$data['sort']            = $sort;
 		$data['order']           = $order;
 
-		$this->getLoader()->model('tool/image');
+		//$this->getLoader()->model('tool/image');
 
 		$product_total = ProductDAO::getInstance()->getProductsCount($data);
 

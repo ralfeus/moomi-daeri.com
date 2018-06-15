@@ -13,7 +13,7 @@ class ModelSaleOrderItemHistory extends Model
 //    public function addEntry($order_item_id, $order_item_status_id)
 //    {
 //        if (OrderItemDAO::getInstance()->getOrderItem($order_item_id) &&
-//            system\library\Status::getInstance($this->getRegistry())->getStatus($order_item_id, $this->config->get('language_id')))
+//            status::getInstance($this->getRegistry())->getStatus($order_item_id, $this->config->get('language_id')))
 //            $this->db->query("
 //                INSERT INTO order_item_history
 //                SET

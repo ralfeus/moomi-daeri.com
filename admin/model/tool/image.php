@@ -1,9 +1,12 @@
 <?php
+namespace admin\model\tool;
+
+use Exception;
 use system\helper\FileSystemFileHandler;
 use system\engine\Model;
 use system\library\Image;
 
-class ModelToolImage extends \system\engine\Model {
+class ModelToolImage extends Model {
     /** @var \system\helper\IFileHandler */
     private $fileHandler;
 
@@ -38,16 +41,14 @@ class ModelToolImage extends \system\engine\Model {
         }
     }
 
-    private function getImageFileName($fileName)
-    {
+    private function getImageFileName($fileName) {
         if (@exif_imagetype($fileName))
             return sprintf("%f6", microtime(true)) . image_type_to_extension(exif_imagetype($fileName));
         else
             return '';
     }
 
-    public function getImage($imagePath)
-    {
+    public function getImage($imagePath) {
         if ($imagePath && $this->fileHandler->exists($imagePath)):
             return $this->resize($imagePath, 100, 100);
         else:
@@ -55,19 +56,19 @@ class ModelToolImage extends \system\engine\Model {
         endif;
     }
 
-	private function resize($filename, $width, $height) {
-		if (!$this->fileHandler->exists($filename)) {
-			return null;
-		}
+    private function resize($filename, $width, $height) {
+        if (!$this->fileHandler->exists($filename)) {
+            return null;
+        }
 
-		$info = $this->fileHandler->getInfo($filename);
-		$extension = $info['extension'];
+        $info = $this->fileHandler->getInfo($filename);
+        $extension = $info['extension'];
 
-		$old_image = $filename;
-		$new_image = 'cache/' . utf8_substr($filename, 0, strrpos($filename, '.')) . '-' . $width . 'x' . $height . '.' . $extension;
+        $old_image = $filename;
+        $new_image = 'cache/' . utf8_substr($filename, 0, strrpos($filename, '.')) . '-' . $width . 'x' . $height . '.' . $extension;
 
-		if (!$this->fileHandler->exists($new_image) || ($this->fileHandler->getTimeModified($old_image) > $this->fileHandler->getTimeModified($new_image))) {
-			try {
+        if (!$this->fileHandler->exists($new_image) || ($this->fileHandler->getTimeModified($old_image) > $this->fileHandler->getTimeModified($new_image))) {
+            try {
                 $image = new Image($old_image, $this->fileHandler);
             } catch (Exception $exc) {
                 $this->log->write("The file $old_image has wrong format and can not be handled.");
@@ -77,6 +78,6 @@ class ModelToolImage extends \system\engine\Model {
             $image->save(DIR_IMAGE . $new_image);
         }
 
-		return $new_image;
-	}
+        return $new_image;
+    }
 }

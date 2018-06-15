@@ -10,7 +10,7 @@ $_['text_success']     = 'Success: You have modified free shipping!';
 // Entry
 $_['entry_total']      = 'Total:<br /><span class="help">Sub-Total amount needed before the free shipping module becomes available.</span>';
 $_['entry_geo_zone']   = 'Geo Zone:';
-$_['entry_status']     = 'system\library\Status:';
+$_['entry_status']     = 'Status:';
 $_['entry_sort_order'] = 'Sort Order:';
 
 // Error

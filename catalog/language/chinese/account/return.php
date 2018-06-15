@@ -13,7 +13,7 @@ $_['text_message']       = '<p>Thank you for submitting your return request. You
 $_['text_return_id']     = 'Return ID:';
 $_['text_order_id']      = 'Order ID:';
 $_['text_date_ordered']  = 'Order Date:';
-$_['text_status']        = 'system\library\Status:';
+$_['text_status']        = 'Status:';
 $_['text_date_added']    = 'Date Added:';
 $_['text_customer']      = 'Customer:';
 $_['text_comment']       = 'Return Comments';
@@ -32,7 +32,7 @@ $_['column_comment']     = 'Comment';
 $_['column_reason']      = 'Reason';
 $_['column_action']      = 'Action';
 $_['column_date_added']  = 'Date Added';
-$_['column_status']      = 'system\library\Status';
+$_['column_status']      = 'status';
 
 // Entry
 $_['entry_order_id']     = 'Order ID:';

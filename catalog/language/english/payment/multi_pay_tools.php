@@ -9,8 +9,8 @@ $_['bill_re_ask'] = 'check payments';
 $_['bill_descr'] = '%s is created. You can %s manually';
 
 $_['bill_not_changed'] = 'Bill status not changed';
-$_['bill_payed'] = 'Bill is paid. system\library\Status: [%s]';
-$_['bill_paying'] = 'Bill in paying. system\library\Status: [%s]';
+$_['bill_payed'] = 'Bill is paid. status: [%s]';
+$_['bill_paying'] = 'Bill in paying. status: [%s]';
 $_['bill_fill'] = 'Payment is not enough, pay the bill';
 $_['bill_expired'] = 'Bill expired';
 $_['bill_invalid'] = 'Bill is invalid';

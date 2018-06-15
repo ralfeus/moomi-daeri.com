@@ -9,7 +9,7 @@ $_['text_all_status']       = 'All Statuses';
 $_['column_customer']       = 'Customer Name';
 $_['column_email']          = 'E-Mail';
 $_['column_customer_group'] = 'Customer Group';
-$_['column_status']         = 'system\library\Status';
+$_['column_status']         = 'status';
 $_['column_orders']         = 'No. Orders';
 $_['column_products']       = 'No. Products';
 $_['column_total']          = 'Total';
@@ -18,5 +18,5 @@ $_['column_action']         = 'Action';
 // Entry
 $_['entry_date_start']      = 'Date Start:';
 $_['entry_date_end']        = 'Date End:';
-$_['entry_status']          = 'Order system\library\Status:';
+$_['entry_status']          = 'Order status:';
 ?>

@@ -1,10 +1,12 @@
 <?php
+use admin\model\tool\ModelToolImage;
 use model\catalog\SupplierDAO;
 use model\catalog\SupplierGroupDAO;
 use model\sale\CustomerDAO;
 use model\sale\OrderItem;
 use model\sale\OrderItemDAO;
 use system\engine\AdminController;
+use system\helper\ImageService;
 use system\library\Status;
 
 class ControllerSaleOrderItems extends AdminController {
@@ -18,10 +20,9 @@ class ControllerSaleOrderItems extends AdminController {
 		$this->load->language('sale/order_items');
 
 		$this->load->model('catalog/product');
-		//$this->load->library('system\library\Status');
+		//$this->load->library('status');
 		$this->modelSaleOrder = $this->load->model('sale/order');
 		$this->load->model('sale/order_item_history');
-		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 	}
 
 	public function index() {
@@ -228,9 +229,9 @@ class ControllerSaleOrderItems extends AdminController {
 				}
 
 				if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath())) {
-					$image = $modelToolImage->resize($orderItem->getImagePath(), 100, 100);
+					$image = ImageService::getInstance()->resize($orderItem->getImagePath(), 100, 100);
 				} else {
-					$image = $modelToolImage->resize('no_image.jpg', 100, 100);
+					$image = ImageService::getInstance()->resize('no_image.jpg', 100, 100);
 				}
 
 //				$supplier_url = "";

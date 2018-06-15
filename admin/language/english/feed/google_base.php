@@ -7,7 +7,7 @@ $_['text_feed']        = 'Product Feeds';
 $_['text_success']     = 'Success: You have modified Google Base feed!';
 
 // Entry
-$_['entry_status']     = 'system\library\Status:';
+$_['entry_status']     = 'Status:';
 $_['entry_data_feed']  = 'Data Feed Url:';
 
 // Error

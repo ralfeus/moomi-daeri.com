@@ -21,7 +21,7 @@ $_['text_count_all']    	  = 'All Visits';
 // Entry
 $_['entry_layout']      	  = 'Layout :';
 $_['entry_position']    	  = 'Position :';
-$_['entry_status']      	  = 'system\library\Status :';
+$_['entry_status']      	  = 'status :';
 $_['entry_sort_order']  	  = 'Sort Order :';
 
 $_['entry_name']      	      = 'Auction';

@@ -77,10 +77,10 @@ $_['entry_bonusloto_timezone'] 			= 'Timezone: <br/> <a class="support" tabindex
 $_['entry_bonusloto_cron']      	= 'Cron:<br/><a class="support" tabindex="1"><em>?</em><span class="tip">Option is needed to determine the winner and protection against fraud</span></a>';
 $_['entry_bonusloto_start_url'] 		= 'Set to be placed in cron: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip" >Option to determine the winner and protection from fraud</span></a>';
 $_['entry_bonusloto_cron_wget_path']   	= '�ath to the utility <b>wget</b>:<a class="support" tabindex="1"><em>?</em><span class="tip">Specify the full path to the Utel wget (verify this information from your host). If this field is left blank, the default path will be exposed <b>/usr/bin/wget</b></span></a>';
-$_['entry_bonusloto_start_lototron'] 		= 'system\library\Status: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">Wait for the draw before the save settings</span></a>';
+$_['entry_bonusloto_start_lototron'] 		= 'status: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">Wait for the draw before the save settings</span></a>';
 $_['entry_bonusloto_display'] 			= 'Display in the lottery: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">Set that will display your user name or partially hidden mail</span></a>';
 $_['entry_position'] 				= 'Position: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">Position html code</span></a>';
-$_['entry_status'] 				= 'system\library\Status: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">system\library\Status module</span></a>';
+$_['entry_status'] 				= 'status: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">status module</span></a>';
 $_['entry_sort_order'] 				= 'Order sort: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">The location of html code</span></a>';
 $_['entry_headline_chars'] 			= 'Black-in characters in the results: <br/> <a class="support" tabindex="1"> <em>?</em> <span class = "tip" >Count-in displayed on the results of the draw Bonus-Lottery</span></a> ';
 $_['entry_layout'] 				= 'Page:';
@@ -99,7 +99,7 @@ $_['entry_bonusloto_posting_time'] 		= 'Time re-post: <br/> <a class="support" t
 $_['entry_bonusloto_posting_points'] 		= 'Black-in credits for re-post: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">Number of points</span></a>';
 $_['entry_bonusloto_game'] 			= 'Games Lottery: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">List of installed games</span></a>';
 
-$_['entry_game_status'] 			= 'system\library\Status games: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">State games</span></a>';
+$_['entry_game_status'] 			= 'status games: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">State games</span></a>';
 $_['entry_game_type'] 				= 'Type games: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">Set type games</span></a>';
 $_['entry_game_data'] 				= 'Date games: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">Set the date for the start of the game</span></a>';
 $_['entry_game_time'] 				= 'Time games: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">Set time games</span></a>';
@@ -118,12 +118,12 @@ $_['entry_bonusloto_rotater_time']  		= 'Time rotator:<br/><a class="support" ta
 $_['entry_bonusloto_gamer_count'] 		= 'Show the number of players on the drum: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">Will be shown numeric value on the drum in the list of players</span></a>';
 $_['entry_keyword'] 				= 'SEO URL: <br/> <a class="support" tabindex="1"> <em>?</em> <span class="tip">Should be unique on the System. <br/>Attention!!!Will work with correctly configuring the System SEO URL.</span></a>';
 
-$_['entry_cron_status']          	= 'system\library\Status:<br/><a class="support" tabindex="1"><em>?</em><span class="tip">Cron status</span></a>';
+$_['entry_cron_status']          	= 'status:<br/><a class="support" tabindex="1"><em>?</em><span class="tip">Cron status</span></a>';
 $_['entry_cron_log']          		= 'Logging:<br/><a class="support" tabindex="1"><em>?</em><span class="tip">Log stored in:<br/><b>/cron/bonusloto/cronbonusloto.log</b></span></a>';
 $_['entry_cron_value']          	= 'Periodicity:<br/><a class="support" tabindex="1"><em>?</em><span class="tip">Expose the task execution periodicity</span></a>';
 $_['entry_cron_test']          		= 'Testing:<br/><a class="support" tabindex="1"><em>?</em><span class="tip">Verify is configured correctly your hosting</span></a>';
 $_['entry_cron_question']          	= 'Description:';
-$_['entry_cron_question_well']         	= 'If you want to use the functions of planning, your server must support the function <strong> Cron </ strong>. <br /> <br /> <Strong> Cron-daemon </ strong> - this is a long process that executes commands on certain days and watch. By clicking <strong class = "button"> Test Cron </ strong>, you can check if your server <strong>Cron</strong> commands';
+$_['entry_cron_question_well']         	= 'If you want to use the functions of planning, your server must support the function <strong> Cron </strong>. <br /> <br /> <Strong> Cron-daemon </strong> - this is a long process that executes commands on certain days and watch. By clicking <strong class = "button"> Test Cron </strong>, you can check if your server <strong>Cron</strong> commands';
 
 //Error
 $_['error_permission'] 				= 'You have no rights to control this module.';

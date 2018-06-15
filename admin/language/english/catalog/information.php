@@ -16,7 +16,7 @@ $_['entry_title']       = 'Information Title:';
 $_['entry_description'] = 'Description:';
 $_['entry_store']       = 'Stores:';
 $_['entry_keyword']     = 'SEO Keyword:';
-$_['entry_status']      = 'system\library\Status:';
+$_['entry_status']      = 'Status:';
 $_['entry_sort_order']  = 'Sort Order:<br/><span class="help">Set to -1 to hide from listing</span>';
 $_['entry_layout']      = 'Layout Override:';
 $_['entry_seo_title']   = 'HTML Tag Title:';

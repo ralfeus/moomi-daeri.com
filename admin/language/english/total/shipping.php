@@ -8,7 +8,7 @@ $_['text_success']     = 'Success: You have modified shipping total!';
 
 // Entry
 $_['entry_estimator']  = 'Shipping Estimator:';
-$_['entry_status']     = 'system\library\Status:';
+$_['entry_status']     = 'Status:';
 $_['entry_sort_order'] = 'Sort Order:';
 
 // Error

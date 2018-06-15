@@ -8,7 +8,7 @@ $_['text_uninstall']   = 'Uninstall';
 
 // Column
 $_['column_name']      = 'Product Feed Name';
-$_['column_status']    = 'system\library\Status';
+$_['column_status']    = 'status';
 $_['column_action']    = 'Action';
 
 // Error

@@ -24,7 +24,7 @@ class Status extends LibraryClass {
     }
 
     public static function getStatus($statusId, $languageId, $isPublic = false) {
-//        system\library\Status::$instance->log->write("$statusId, $languageId, $isPublic");
+//        status::$instance->log->write("$statusId, $languageId, $isPublic");
         $fieldName = $isPublic ? "public_name" : "name";
         while (true) {
             $sql = "

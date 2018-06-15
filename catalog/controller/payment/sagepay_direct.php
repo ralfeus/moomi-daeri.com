@@ -226,12 +226,12 @@ class ControllerPaymentSagepayDirect extends \system\engine\Controller {
 		
 		$json = array();
       
-		if ($data['system\library\Status'] == '3DAUTH') {
+		if ($data['status'] == '3DAUTH') {
 			$json['ACSURL'] = $data['ACSURL'];
 			$json['MD'] = $data['MD'];
 			$json['PaReq'] = $data['PAReq'];
 			$json['TermUrl'] = $this->url->link('payment/sagepay_direct/callback');
-		} elseif ($data['system\library\Status'] == 'OK' || $data['system\library\Status'] == 'AUTHENTICATED' || $data['system\library\Status'] == 'REGISTERED') {
+		} elseif ($data['status'] == 'OK' || $data['status'] == 'AUTHENTICATED' || $data['status'] == 'REGISTERED') {
 			$this->model_checkout_order->confirm($this->session->data['order_id'], $this->config->get('config_order_status_id'));
 			
 			$message = '';
@@ -311,7 +311,7 @@ class ControllerPaymentSagepayDirect extends \system\engine\Controller {
 				}
 			}
 			
-			if ($data['system\library\Status'] == 'OK' || $data['system\library\Status'] == 'AUTHENTICATED' || $data['system\library\Status'] == 'REGISTERED') {
+			if ($data['status'] == 'OK' || $data['status'] == 'AUTHENTICATED' || $data['status'] == 'REGISTERED') {
 				$this->load->model('checkout/order');
 				
 				$this->model_checkout_order->confirm($this->session->data['order_id'], $this->config->get('config_order_status_id'));

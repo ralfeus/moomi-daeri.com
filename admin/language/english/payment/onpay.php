@@ -9,12 +9,12 @@
 	$_['text_help']		     = 'documentation';
 
     // Entry
-	$_['entry_order_status'] = 'Order system\library\Status:';
+	$_['entry_order_status'] = 'Order status:';
 	$_['entry_callback'] 	 = 'URL callback API:';
 	$_['entry_merchant']     = 'Merchant ID:';
 	$_['entry_security']     = 'Security Code:';
 	$_['entry_geo_zone']     = 'Geo Zone:';
-	$_['entry_status']       = 'system\library\Status:';
+	$_['entry_status']       = 'Status:';
 	$_['entry_sort_order']   = 'Sort Order:';
 	$_['entry_add_params']    = 'Additional parameters:';
 

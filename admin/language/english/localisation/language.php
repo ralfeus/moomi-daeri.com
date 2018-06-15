@@ -18,7 +18,7 @@ $_['entry_locale']      = 'Locale:<br /><span class="help">eg: en_US.UTF-8,en_US
 $_['entry_image']       = 'Image:<br /><span class="help">eg: gb.png</span>';
 $_['entry_directory']   = 'Directory:<br /><span class="help">name of the language directory (case-sensitive)</span>';
 $_['entry_filename']    = 'Filename:<br /><span class="help">main language filename without extension</span>';
-$_['entry_status']      = 'system\library\Status:<br /><span class="help">Hide/Show it in language dropdown</span>';
+$_['entry_status']      = 'status:<br /><span class="help">Hide/Show it in language dropdown</span>';
 $_['entry_sort_order']  = 'Sort Order:';
 
 // Error

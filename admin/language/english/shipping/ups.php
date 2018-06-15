@@ -77,7 +77,7 @@ $_['entry_length_class']           = 'Length Class:<span class="help">Set to cen
 $_['entry_dimension']			   = 'Dimensions (L x W x H):';
 $_['entry_tax_class']              = 'Tax Class:';
 $_['entry_geo_zone']               = 'Geo Zone:';
-$_['entry_status']                 = 'system\library\Status:';
+$_['entry_status']                 = 'Status:';
 $_['entry_sort_order']             = 'Sort Order:';
 
 // Error

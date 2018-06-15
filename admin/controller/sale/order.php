@@ -303,7 +303,7 @@ class ControllerSaleOrder extends \system\engine\Controller {
 
 		$order_total = $this->modelSaleOrder->getTotalOrders($data);
 		$results = $this->modelSaleOrder->getOrders($data);
-        //$this->load->library('system\library\Status');
+        //$this->load->library('status');
         $statuses = Status::getInstance($this->getRegistry())->getStatuses(
             GROUP_ORDER_STATUS, (int)$this->getConfig()->get('config_language_id'));
 
@@ -2091,7 +2091,7 @@ $this->error['warning'] = $this->language->get('error_order_deletion_denied');
 
     public function setStatus() {
         $this->load->language('sale/order');
-        //$this->load->library('system\library\Status');
+        //$this->load->library('status');
 
         if (!isset($this->error['warning'])) {
             $this->error['warning'] = '';

@@ -45,7 +45,7 @@ $_['entry_account']            = 'Account Terms:<br /><span class="help">Forces 
 $_['entry_checkout']           = 'Checkout Terms:<br /><span class="help">Forces people to agree to terms before an a customer can checkout.</span>';
 $_['entry_stock_display']      = 'Display Stock:<br /><span class="help">Display stock quantity on the product page.</span>';
 $_['entry_stock_checkout']     = 'Stock Checkout:<br /><span class="help">Allow customers to still checkout if the products they are ordering are not in stock.</span>';
-$_['entry_order_status']       = 'Order system\library\Status:<br /><span class="help">Set the default order status when an order is processed.</span>';
+$_['entry_order_status']       = 'Order status:<br /><span class="help">Set the default order status when an order is processed.</span>';
 $_['entry_cart_weight']        = 'Display Weight on Cart Page:';
 $_['entry_logo']               = 'Store Logo:';
 $_['entry_icon']               = 'Icon:<br /><span class="help">The icon should be a PNG that is 16px x 16px.</span>';

@@ -1,6 +1,7 @@
 <?php
 use model\sale\OrderItemDAO;
 use system\engine\CustomerZoneController;
+use system\helper\ImageService;
 use system\library\Status;
 
 class ControllerAccountOrderItems extends CustomerZoneController {
@@ -14,7 +15,7 @@ class ControllerAccountOrderItems extends CustomerZoneController {
         $this->document->setTitle($this->language->get('HEADING_TITLE'));
 
         $this->load->model('catalog/product');
-        //$this->load->library('system\library\Status');
+        //$this->load->library('status');
         $this->orderModel = $this->load->model('account/order');
 //        $this->load->model('account/order_item_history');
         $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
@@ -71,9 +72,9 @@ class ControllerAccountOrderItems extends CustomerZoneController {
                   $orderItem->setImagePath(!empty($itemUrl) ? $itemUrl : $orderItem->getImagePath());
                 }
                 if ($orderItem->getImagePath() && file_exists(DIR_IMAGE . $orderItem->getImagePath())):
-                    $image = $modelToolImage->resize($orderItem->getImagePath(), 80, 80);
+                    $image = ImageService::getInstance()->resize($orderItem->getImagePath(), 80, 80);
                 else:
-                    $image = $modelToolImage->resize('no_image.jpg', 80, 80);
+                    $image = ImageService::getInstance()->resize('no_image.jpg', 80, 80);
                 endif;
 
                 $action = array();
