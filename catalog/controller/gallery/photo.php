@@ -1,6 +1,7 @@
 <?php
 use model\gallery\PhotoDAO;
 use system\engine\Controller;
+use system\engine\Registry;
 
 class ControllerGalleryPhoto extends \system\engine\Controller {
     protected function initParameters() {
