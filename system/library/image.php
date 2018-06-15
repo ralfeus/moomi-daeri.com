@@ -69,6 +69,7 @@ final class Image {
 
         $extension = strtolower($info['extension']);
         $tmpFile = tempnam(DIR_IMAGE, 'img');
+        chmod($tmpFile, 0644);
 //        echo("\n" . $tmpFile . "\n");
 //        echo($file . "\n");
 

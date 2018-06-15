@@ -24,7 +24,11 @@ class ImageService extends DAO {
         $this->fileHandler = $fileHandler != null ? $fileHandler : new FileSystemFileHandler(DIR_IMAGE);
     }
 
-    public function getImage($imagePath)
+    /**
+     * @param $imagePath
+     * @return string Path to image or path to
+     */
+    public function getThumbnail($imagePath)
     {
         if ($imagePath && $this->fileHandler->exists($imagePath)):
             return $this->resize($imagePath, 100, 100);
@@ -37,9 +41,10 @@ class ImageService extends DAO {
      * @param string $filename
      * @param int $width
      * @param int $height
-     * @return string
+     * @return string URL to resized image
      */
     public function resize($filename, $width, $height) {
+        $filename = $filename;
         if (!$this->fileHandler->exists($filename)) {
             $filename = 'no_image.jpg';
         }
@@ -69,7 +74,7 @@ class ImageService extends DAO {
             $targetWidth = $expectedWidth;
             $targetHeight = $imageSize[1];
         }
-        $new_image = DIR_IMAGE . 'cache/' . substr($filename, 0, strrpos($filename, '.')) . '-' . $targetWidth . 'x' . $targetHeight . '.' . $extension;
+        $new_image = 'cache/' . basename($filename, ".$extension") . '-' . $targetWidth . 'x' . $targetHeight . '.' . $extension;
 
         if (!$this->fileHandler->exists($new_image) || $this->fileHandler->getTimeModified($old_image) > $this->fileHandler->getTimeModified($new_image)) {
             $image = new Image($old_image, $this->fileHandler);
@@ -77,6 +82,6 @@ class ImageService extends DAO {
             $image->save($new_image);
         }
 
-        return $new_image;
+        return parse_url(HTTP_IMAGE)['path'] . "$new_image";
     }
 }
