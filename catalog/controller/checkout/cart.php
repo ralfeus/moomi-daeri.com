@@ -42,14 +42,14 @@ class ControllerCheckoutCart extends CustomerController {
       				$this->getCart()->add($this->request->post['product_id'], $this->request->post['quantity'], $option);
 				} else {
 					foreach ($this->request->post['quantity'] as $key => $value) {
-	      				$this->cart->update($key, $value);
+	      				$this->getCart()->update($key, $value);
 					}
 				}
       		}
 
       		if (isset($this->request->post['remove'])) {
 	    		foreach ($this->request->post['remove'] as $key) {
-          			$this->cart->remove($key);
+          			$this->getCart()->remove($key);
 				}
       		}
 
@@ -92,7 +92,7 @@ class ControllerCheckoutCart extends CustomerController {
         	'separator' => $this->language->get('text_separator')
       	);
 
-    	if ($this->cart->hasProducts() || (isset($this->session->data['vouchers']) && $this->session->data['vouchers'])) {
+    	if ($this->getCart()->hasProducts() || (isset($this->session->data['vouchers']) && $this->session->data['vouchers'])) {
       		$this->data['heading_title'] = $this->language->get('heading_title');
 
 			$this->data['text_select'] = $this->language->get('text_select');
@@ -113,13 +113,13 @@ class ControllerCheckoutCart extends CustomerController {
             $this->data['textBrand'] = $this->language->get('MANUFACTURER');
             $this->data['textCheckoutSelected'] = $this->language->get('CHECKOUT_SELECTED');
 
-			if ($this->config->get('config_customer_price') && !$this->customer->isLogged()) {
+			if ($this->getConfig()->get('config_customer_price') && !$this->customer->isLogged()) {
 				$this->data['attention'] = sprintf($this->language->get('text_login'), $this->url->link('account/login'), $this->url->link('account/register'));
 			} else {
 				$this->data['attention'] = '';
 			}
 
-			if (!$this->cart->hasStock() && (!$this->config->get('config_stock_checkout') || $this->config->get('config_stock_warning'))) {
+			if (!$this->getCart()->hasStock() && (!$this->getConfig()->get('config_stock_checkout') || $this->getConfig()->get('config_stock_warning'))) {
       			$this->data['error_warning'] = $this->language->get('error_stock');
 			} elseif (isset($this->session->data['error'])) {
 				$this->data['error_warning'] = $this->session->data['error'];
@@ -137,13 +137,11 @@ class ControllerCheckoutCart extends CustomerController {
 				$this->data['success'] = '';
 			}
 
-			if ($this->config->get('config_cart_weight')) {
-				$this->data['weight'] = $this->weight->format($this->cart->getWeight(), $this->config->get('config_weight_class_id'), $this->language->get('decimal_point'), $this->language->get('thousand_point'));
+			if ($this->getConfig()->get('config_cart_weight')) {
+				$this->data['weight'] = $this->weight->format($this->getCart()->getWeight(), $this->getConfig()->get('config_weight_class_id'), $this->language->get('decimal_point'), $this->language->get('thousand_point'));
 			} else {
 				$this->data['weight'] = false;
 			}
-
-			$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
       		$this->data['products'] = array();
 			$products = CartDAO::getInstance()->getProducts();
@@ -180,9 +178,9 @@ class ControllerCheckoutCart extends CustomerController {
         }*/
 				$product_image = ProductDAO::getInstance()->getImage($product['product_id']);
         if ($product['image']) {
-					$image = $modelToolImage->resize($product['image'], $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
+					$image = ImageService::getInstance()->resize($product['image'], $this->getConfig()->get('config_image_cart_width'), $this->getConfig()->get('config_image_cart_height'));
 				} else {
-					$image = $modelToolImage->resize($product_image, $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
+					$image = ImageService::getInstance()->resize($product_image, $this->getConfig()->get('config_image_cart_width'), $this->getConfig()->get('config_image_cart_height'));
 				}
 
 				$option_data = array();
@@ -194,9 +192,7 @@ class ControllerCheckoutCart extends CustomerController {
 							'value' => utf8_truncate($option['option_value'])
 						);
 					} else {
-						//$this->load->library('encryption');
-
-						$encryption = new Encryption($this->config->get('config_encryption'));
+						$encryption = new Encryption($this->getConfig()->get('config_encryption'));
 
 						$file = substr($encryption->decrypt($option['option_value']), 0, strrpos($encryption->decrypt($option['option_value']), '.'));
 
@@ -207,14 +203,14 @@ class ControllerCheckoutCart extends CustomerController {
 					}
         		}
 
-				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-					$price = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')));
+				if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
+					$price = $this->getCurrency()->format($this->getTax()->calculate($product['price'], $product['tax_class_id'], $this->getConfig()->get('config_tax')));
 				} else {
 					$price = false;
 				}
 
-				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-					$total = $this->currency->format($this->tax->calculate($product['total'], $product['tax_class_id'], $this->config->get('config_tax')));
+				if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
+					$total = $this->getCurrency()->format($this->getTax()->calculate($product['total'], $product['tax_class_id'], $this->getConfig()->get('config_tax')));
 				} else {
 					$total = false;
 				}
@@ -260,7 +256,7 @@ class ControllerCheckoutCart extends CustomerController {
 					$this->data['vouchers'][] = array(
 						'key'         => $key,
 						'description' => $voucher['description'],
-						'amount'      => $this->currency->format($voucher['amount'])
+						'amount'      => $this->getCurrency()->format($voucher['amount'])
 					);
 				}
 			}
@@ -269,19 +265,19 @@ class ControllerCheckoutCart extends CustomerController {
 			$total = 0;
 			$taxes = $this->getCart()->getTaxes();
 
-			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+			if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
 				$this->load->model('setting/extension');
 
 				$sort_order = array();
 
 				$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('total');
 				foreach ($results as $key => $value) {
-					$sort_order[$key] = $this->config->get($value['code'] . '_sort_order');
+					$sort_order[$key] = $this->getConfig()->get($value['code'] . '_sort_order');
 				}
 				array_multisort($sort_order, SORT_ASC, $results);
 
 				foreach ($results as $result) {
-					if ($this->config->get($result['code'] . '_status')) {
+					if ($this->getConfig()->get($result['code'] . '_status')) {
 						$this->load->model('total/' . $result['code']);
 
 						$this->{'model_total_' . $result['code']}->getTotal($total_data, $total, $taxes);
@@ -304,7 +300,7 @@ class ControllerCheckoutCart extends CustomerController {
 
 			if (isset($results)) {
 				foreach ($results as $result) {
-					if ($this->config->get($result['code'] . '_status') && file_exists(DIR_APPLICATION . 'controller/total/' . $result['code'] . '.php')) {
+					if ($this->getConfig()->get($result['code'] . '_status') && file_exists(DIR_APPLICATION . 'controller/total/' . $result['code'] . '.php')) {
 						$this->data['modules'][] = $this->getChild('total/' . $result['code']);
 					}
 				}
@@ -320,8 +316,8 @@ class ControllerCheckoutCart extends CustomerController {
 
 			$this->data['urlCheckout'] = $this->url->link('checkout/checkout', '', 'SSL');
 
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/cart.tpl.php')) {
-				$this->template = $this->config->get('config_template') . '/template/checkout/cart.tpl.php';
+			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/checkout/cart.tpl.php')) {
+				$this->template = $this->getConfig()->get('config_template') . '/template/checkout/cart.tpl.php';
 			} else {
 				$this->template = 'default/template/checkout/cart.tpl.php';
 			}
@@ -342,8 +338,8 @@ class ControllerCheckoutCart extends CustomerController {
       		$this->data['button_continue'] = $this->language->get('button_continue');
       		$this->data['continue'] = $this->url->link('common/home');
 
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/error/not_found.tpl')) {
-				$this->template = $this->config->get('config_template') . '/template/error/not_found.tpl';
+			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/error/not_found.tpl')) {
+				$this->template = $this->getConfig()->get('config_template') . '/template/error/not_found.tpl';
 			} else {
 				$this->template = 'default/template/error/not_found.tpl';
 			}
@@ -375,7 +371,7 @@ class ControllerCheckoutCart extends CustomerController {
         if (isset($_REQUEST['key']))
         {
 //            $this->log->write(print_r($_REQUEST, true));
-            $this->cart->remove($_REQUEST['key']);
+            $this->getCart()->remove($_REQUEST['key']);
         }
         $this->redirect('index.php?route=checkout/cart');
     }
@@ -400,7 +396,7 @@ class ControllerCheckoutCart extends CustomerController {
 
                     $product_total = 0;
 
-                    $products = $this->cart->getProducts();
+                    $products = $this->getCart()->getProducts();
 
                     foreach ($products as $product_2) {
                         if ($product_2['product_id'] == $this->request->post['product_id']) {
@@ -426,7 +422,7 @@ class ControllerCheckoutCart extends CustomerController {
 
 			if (!isset($json['error'])) {
 //                $this->log->write(print_r($option, true));
-				$this->cart->add($this->request->post['product_id'], $this->parameters['itemPrice'], $quantity, $option);
+				$this->getCart()->add($this->request->post['product_id'], $this->parameters['itemPrice'], $quantity, $option);
 
 				$json['success'] = sprintf($this->language->get('text_success'), $this->url->link('product/product', 'product_id=' . $this->request->post['product_id']), $product_info['name'], $this->url->link('checkout/cart'));
 
@@ -440,7 +436,7 @@ class ControllerCheckoutCart extends CustomerController {
 		}
 
       	if (isset($this->request->post['remove'])) {
-        	$this->cart->remove($this->request->post['remove']);
+        	$this->getCart()->remove($this->request->post['remove']);
 
 			unset($this->session->data['shipping_methods']);
 			unset($this->session->data['shipping_method']);
@@ -463,7 +459,7 @@ class ControllerCheckoutCart extends CustomerController {
 
 		$this->data['products'] = array();
 
-		foreach ($this->cart->getProducts() as $result) {
+		foreach ($this->getCart()->getProducts() as $result) {
 			if ($result['image']) {
 				$image = ImageService::getInstance()->resize($result['image'], 40, 40);
 			} else {
@@ -481,7 +477,7 @@ class ControllerCheckoutCart extends CustomerController {
 				} else {
 					//$this->load->library('encryption');
 
-					$encryption = new Encryption($this->config->get('config_encryption'));
+					$encryption = new Encryption($this->getConfig()->get('config_encryption'));
 
 					$file = substr($encryption->decrypt($option['option_value']), 0, strrpos($encryption->decrypt($option['option_value']), '.'));
 
@@ -492,14 +488,14 @@ class ControllerCheckoutCart extends CustomerController {
 				}
 			}
 
-			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-				$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+			if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
+				$price = $this->getCurrency()->format($this->getTax()->calculate($result['price'], $result['tax_class_id'], $this->getConfig()->get('config_tax')));
 			} else {
 				$price = false;
 			}
 
-			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-				$total = $this->currency->format($this->tax->calculate($result['total'], $result['tax_class_id'], $this->config->get('config_tax')));
+			if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
+				$total = $this->getCurrency()->format($this->getTax()->calculate($result['total'], $result['tax_class_id'], $this->getConfig()->get('config_tax')));
 			} else {
 				$total = false;
 			}
@@ -527,7 +523,7 @@ class ControllerCheckoutCart extends CustomerController {
 				$this->data['vouchers'][] = array(
 					'key'         => $key,
 					'description' => $voucher['description'],
-					'amount'      => $this->currency->format($voucher['amount'])
+					'amount'      => $this->getCurrency()->format($voucher['amount'])
 				);
 			}
 		}
@@ -535,9 +531,9 @@ class ControllerCheckoutCart extends CustomerController {
 		// Calculate Totals
 		$total_data = array();
 		$total = 0;
-		$taxes = $this->cart->getTaxes();
+		$taxes = $this->getCart()->getTaxes();
 
-		if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+		if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
 			$this->load->model('setting/extension');
 
 			$sort_order = array();
@@ -545,13 +541,13 @@ class ControllerCheckoutCart extends CustomerController {
 			$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('total');
 
 			foreach ($results as $key => $value) {
-				$sort_order[$key] = $this->config->get($value['code'] . '_sort_order');
+				$sort_order[$key] = $this->getConfig()->get($value['code'] . '_sort_order');
 			}
 
 			array_multisort($sort_order, SORT_ASC, $results);
 
 			foreach ($results as $result) {
-   				if ($this->config->get($result['code'] . '_status')) {
+   				if ($this->getConfig()->get($result['code'] . '_status')) {
 					$this->load->model('total/' . $result['code']);
 
 					$this->{'model_total_' . $result['code']}->getTotal($total_data, $total, $taxes);
@@ -567,16 +563,16 @@ class ControllerCheckoutCart extends CustomerController {
 			array_multisort($sort_order, SORT_ASC, $total_data);
 		}
 
-		$json['total'] = sprintf($this->language->get('text_items'), $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->currency->format($total));
-    $json['total_data'] = sprintf($this->language->get('text_items_data'), $this->cart->countProducts());
+		$json['total'] = sprintf($this->language->get('text_items'), $this->getCart()->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->getCurrency()->format($total));
+    $json['total_data'] = sprintf($this->language->get('text_items_data'), $this->getCart()->countProducts());
 
 		$this->data['totals'] = $total_data;
 
 		$this->data['checkout'] = $this->url->link('checkout/checkout', '', 'SSL');
 
         $templateName = '/template/common/cart.tpl.php';
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateName)) {
-			$this->template = $this->config->get('config_template') . $templateName;
+		if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . $templateName)) {
+			$this->template = $this->getConfig()->get('config_template') . $templateName;
 		} else {
 			$this->template = 'default' . $templateName;
 		}

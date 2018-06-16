@@ -165,4 +165,11 @@ abstract class OpenCartBase {
     protected function setSession($value) {
         $this->registry->set('session', $value);
     }
+
+    /**
+     * @return \Tax
+     */
+    protected function getTax() {
+        return $this->registry->get('tax');
+    }
 }
