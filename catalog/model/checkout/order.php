@@ -182,7 +182,7 @@ class ModelCheckoutOrder extends \system\engine\Model {
                     ':name' => $option['name'],
                     ':value' => $option['value'],
                     ':type' => $option['type']
-                ), true);
+                ), false);
 			}
 				
 			foreach ($product['download'] as $download) {
