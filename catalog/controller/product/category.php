@@ -1,13 +1,11 @@
 <?php
+use model\catalog\CategoryDAO;
+use model\catalog\ProductDAO;
+use system\helper\ImageService;
+
 class ControllerProductCategory extends \system\engine\Controller {
 	public function index() {
 		$this->language->load('product/category');
-
-		$this->load->model('catalog/category');
-
-		$this->load->model('catalog/product');
-
-		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
 		$this->data['isSaler'] = $this->customer->getCustomerGroupId() == 6;
 
@@ -33,16 +31,8 @@ class ControllerProductCategory extends \system\engine\Controller {
 		if (isset($this->request->get['limit'])) {
 			$limit = $this->request->get['limit'];
 		} else {
-			$limit = $this->config->get('config_catalog_limit');
+			$limit = $this->getConfig()->get('config_catalog_limit');
 		}
-
-		$this->data['breadcrumbs'] = array();
-
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home'),
-       		'separator' => false
-   		);
 
 		if (isset($this->request->get['path'])) {
 			$path = '';
@@ -56,18 +46,18 @@ class ControllerProductCategory extends \system\engine\Controller {
 					$path .= '_' . $path_id;
 				}
 
-				$category_info = $this->model_catalog_category->getCategory($path_id);
+				$category = CategoryDAO::getInstance()->getCategory($path_id);
 
 				#kabantejay synonymizer start
-				$razdel = isset($category_info['name']) ? $category_info['name'] : '';
+				$razdel = $category->getDescription()->getName();
 				#kabantejay synonymizer end
       
-				if ($category_info) {
-	       			$this->data['breadcrumbs'][] = array(
-   	    				'text'      => $category_info['name'],
-						'href'      => $this->url->link('product/category', 'path=' . $path),
-        				'separator' => $this->language->get('text_separator')
-        			);
+				if ($category) {
+				    $this->setBreadcrumbs([[
+   	    				'text'      => $category->getDescription()->getName(),
+						'href'      => $this->getUrl()->link('product/category', 'path=' . $path),
+        				'separator' => $this->getLanguage()->get('text_separator')
+        			]]);
 				}
 			}
 
@@ -76,21 +66,21 @@ class ControllerProductCategory extends \system\engine\Controller {
 			$category_id = 0;
 		}
 
-		$category_info = $this->model_catalog_category->getCategory($category_id);
+		$category = CategoryDAO::getInstance()->getCategory($category_id);
 
-		if ($category_info) {
-			if ($category_info['seo_title']) {
-		  		$this->document->setTitle($category_info['seo_title']);
+		if ($category) {
+			if ($category->getDescription()->getSeoTitle()) {
+		  		$this->document->setTitle($category->getDescription()->getSeoTitle());
 			} else {
-		  		$this->document->setTitle($category_info['name']);
+		  		$this->document->setTitle($category->getDescription()->getName());
 			}
 
-			$this->document->setDescription($category_info['meta_description']);
-			$this->document->setKeywords($category_info['meta_keyword']);
+			$this->document->setDescription($category->getDescription()->getMetaDescription());
+			$this->document->setKeywords($category->getDescription()->getMetaKeyword());
 
-			$this->data['seo_h1'] = $category_info['seo_h1'];
+			$this->data['seo_h1'] = $category->getDescription()->getSeoH1();
 
-			$this->data['heading_title'] = $category_info['name'];
+			$this->data['heading_title'] = $category->getDescription()->getName();
 
 			$this->data['text_refine'] = $this->language->get('text_refine');
 			$this->data['text_empty'] = $this->language->get('text_empty');
@@ -112,14 +102,17 @@ class ControllerProductCategory extends \system\engine\Controller {
 			$this->data['button_compare'] = $this->language->get('button_compare');
 			$this->data['button_continue'] = $this->language->get('button_continue');
 
-			if ($category_info['image']) {
-				$this->data['thumb'] = $modelToolImage->resize($category_info['image'], $this->config->get('config_image_category_width'), $this->config->get('config_image_category_height'));
+			if ($category->getImage()) {
+				$this->data['thumb'] = ImageService::getInstance()->resize(
+				    $category->getImage(),
+                    $this->getConfig()->get('config_image_category_width'),
+                    $this->getConfig()->get('config_image_category_height'));
 			} else {
 				$this->data['thumb'] = '';
 			}
 
-			$this->data['description'] = html_entity_decode($category_info['description'], ENT_QUOTES, 'UTF-8');
-			$this->data['compare'] = $this->url->link('product/compare');
+			$this->data['description'] = html_entity_decode($category->getDescription()->getDescription(), ENT_QUOTES, 'UTF-8');
+			$this->data['compare'] = $this->getUrl()->link('product/compare');
 
 			$url = '';
 
@@ -137,128 +130,110 @@ class ControllerProductCategory extends \system\engine\Controller {
 
 			$this->data['categories'] = array();
 
-			$results = $this->model_catalog_category->getCategories($category_id);
+			$results = CategoryDAO::getInstance()->getCategories($category_id);
 
 			foreach ($results as $result) {
-				$data = array(
-					'filter_category_id'  => $result['category_id'],
-					'filter_sub_category' => true
+				$filter = array(
+					'filterCategoryId'  => $result['category_id'],
+					'filterSubCategories' => true
 				);
 
-				$product_total = $this->model_catalog_product->getTotalProducts($data);
+				$product_total = ProductDAO::getInstance()->getProductsCount($filter, true);
 
 				$this->data['categories'][] = array(
 					'name'  => $result['name'] . ' (' . $product_total . ')',
-					'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '_' . $result['category_id'] . $url)
+					'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . '_' . $result['category_id'] . $url)
 				);
 			}
 
 			$this->data['products'] = array();
 
-      #kabantejay synonymizer start
+            #kabantejay synonymizer start
 			$this->data['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $this->data['description']);
 			#kabantejay synonymizer end
       
-			$data = array(
-				'filter_category_id' => $category_id,
-				'sort'               => $sort,
-				'order'              => $order,
-				'start'              => ($page - 1) * $limit,
-				'limit'              => $limit,
-				'nocache'   => 1
-			);
 
-			$product_total = $this->model_catalog_product->getTotalProducts($data);
-
-			$results = $this->model_catalog_product->getProducts($data);
-
+            $filter = ['filterCategoryId' => $category_id];
+            $product_total = ProductDAO::getInstance()->getProductsCount($filter, true);
+            $results = ProductDAO::getInstance()->getProducts($filter, $sort, $order, ($page -1) * $limit, $limit, true, true);
 			foreach ($results as $result) {
-				if ($result['image']) {
-					$image = $modelToolImage->resize($result['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
+				if ($result->getImagePath()) {
+					$image = ImageService::getInstance()->resize(
+					    $result->getImagePath(),
+                        $this->getConfig()->get('config_image_product_width'),
+                        $this->getConfig()->get('config_image_product_height')
+                    );
 				} else {
 					$image = false;
 				}
 
-				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-					$price = $this->getCurrency()->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+				if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
+					$price = $this->getCurrency()->format($result->getPrice());
 				} else {
 					$price = false;
 				}
 
-				if ((float)$result['special']) {
-					$special = $this->getCurrency()->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+				if ((float)$result->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId())) {
+					$special = $this->getCurrency()->format($result->getSpecialPrice($this->getCurrentCustomer()->getCustomerGroupId()));
 				} else {
 					$special = false;
 				}
 
-				if ($this->config->get('config_tax')) {
-					$tax = $this->getCurrency()->format((float)$result['special'] ? $result['special'] : $result['price']);
-				} else {
-					$tax = false;
-				}
+				$tax = false;
 
-//				if ($this->config->get('config_review_status')) {
+//				if ($this->getConfig()->get('config_review_status')) {
 //					$rating = (int)$result['rating'];
 //				} else {
 //					$rating = false;
 //				}
 
-				$date_added = getdate(strtotime($result['date_added']));
+				$date_added = getdate(strtotime($result->getDateAdded()));
 				$date_added = mktime(0, 0, 0, $date_added['mon'], $date_added['mday'], $date_added['year']);
 
-        #kabantejay synonymizer start
-        if (!isset($result['manufacturer'])) {
-          $brand = '';
-        } else {
-          $brand = $result['manufacturer'];
-        }
-        if (!isset($razdel)) {
-          $razdel = '';
-        }
-        if (!isset($result['name'])) {
-          $syncat = '';
-        } else {
-          $syncat = $category_info['name'];
-        }
-        if (!isset($result['model'])) {
-          $synmod = '';
-        } else {
-          $synmod = $result['model'];
-        }
-        if ($special == false) {
-          $synprice = $price;
-        } else {
-          $synprice = $special;
-        }
+                #kabantejay synonymizer start
+                $brand = $result->getManufacturer();
+                if (!isset($razdel)) {
+                  $razdel = '';
+                }
+                $syncat = $result->getName() ? $category->getDescription()->getName() : '';
+                $synmod = $result->getModel() ? $result->getModel() : '';
+                $synprice = $special ? $special : $price;
 
-        $syntext=array(
-          array("%H1%",$result['name']),
-          array("%BRAND%",$brand),
-          array("%RAZDEL%",$razdel),
-          array("%CATEGORY%",$syncat),
-          array("%MODEL%",$synmod),
-          array("%PRICE%",$synprice)
-        );
+                $syntext=array(
+                  array("%H1%",$result->getName()),
+                  array("%BRAND%",$brand),
+                  array("%RAZDEL%",$razdel),
+                  array("%CATEGORY%",$syncat),
+                  array("%MODEL%",$synmod),
+                  array("%PRICE%",$synprice)
+                );
 
-        for ($it=0; $it<6; $it++)  {
-	       $result['description'] = str_replace($syntext[$it][0],$syntext[$it][1],$result['description']);
-        }
-        $result['description'] = preg_replace_callback('/\{  (.*?)  \}/xs', function ($m) {$ar = explode("|", $m[1]);return $ar[array_rand($ar, 1)];}, $result['description']);
-        #kabantejay synonymizer end
+                $description = '';
+                try {
+                    for ($it = 0; $it < 6; $it++) {
+                        $description = str_replace($syntext[$it][0], $syntext[$it][1], $result->getDescription());
+                    }
+                    $description = preg_replace_callback('/\{  (.*?)  \}/xs',
+                        function ($m) {
+                            $ar = explode("|", $m[1]);
+                            return $ar[array_rand($ar, 1)];
+                        }, $description);
+                } catch (InvalidArgumentException $exception) {} // $description will remain empty
+                #kabantejay synonymizer end
 
 				$this->data['products'][] = array(
-					'product_id'  => $result['product_id'],
+					'product_id'  => $result->getId(),
 					'thumb'       => $image,
-					'name'        => $result['name'],
-					'description' => utf8_truncate(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
+					'name'        => $result->getName(),
+					'description' => utf8_truncate(strip_tags(html_entity_decode($description, ENT_QUOTES, 'UTF-8')), 400, '&nbsp;&hellip;', true),
 					'price'       => $price,
-					'isSaler'			=> $this->data['isSaler'],
+					'isSaler'	  => $this->data['isSaler'],
 					'special'     => $special,
 					'tax'         => $tax,
-					'rating'      => $result['rating'],
-					'reviews'     => sprintf($this->language->get('text_reviews'), (int)$result['reviews']),
-					'href'        => $this->url->link('product/product', 'path=' . $this->request->get['path'] . '&product_id=' . $result['product_id']),
-					'hot'           => $date_added + 86400 * $this->config->get('config_product_hotness_age') > time()
+					'rating'      => $result->getRating(),
+					'reviews'     => sprintf($this->language->get('text_reviews'), (int)$result->getReviewsCount()),
+					'href'        => $this->getUrl()->link('product/product', 'path=' . $this->request->get['path'] . '&product_id=' . $result->getId()),
+					'hot'           => $date_added + 86400 * $this->getConfig()->get('config_product_hotness_age') > time()
 				);
 			}
 
@@ -273,55 +248,55 @@ class ControllerProductCategory extends \system\engine\Controller {
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_default'),
 				'value' => 'p.sort_order-ASC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.sort_order&order=ASC' . $url)
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.sort_order&order=ASC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_name_asc'),
 				'value' => 'pd.name-ASC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=pd.name&order=ASC' . $url)
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . '&sort=pd.name&order=ASC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_name_desc'),
 				'value' => 'pd.name-DESC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=pd.name&order=DESC' . $url)
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . '&sort=pd.name&order=DESC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_price_asc'),
 				'value' => 'p.price-ASC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.price&order=ASC' . $url)
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.price&order=ASC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_price_desc'),
 				'value' => 'p.price-DESC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.price&order=DESC' . $url)
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.price&order=DESC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_rating_desc'),
 				'value' => 'rating-DESC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=rating&order=DESC' . $url)
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . '&sort=rating&order=DESC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_rating_asc'),
 				'value' => 'rating-ASC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=rating&order=ASC' . $url)
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . '&sort=rating&order=ASC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_model_asc'),
 				'value' => 'p.model-ASC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.model&order=ASC' . $url)
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.model&order=ASC' . $url)
 			);
 
 			$this->data['sorts'][] = array(
 				'text'  => $this->language->get('text_model_desc'),
 				'value' => 'p.model-DESC',
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.model&order=DESC' . $url)
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.model&order=DESC' . $url)
 			);
 
 			$url = '';
@@ -337,33 +312,33 @@ class ControllerProductCategory extends \system\engine\Controller {
 			$this->data['limits'] = array();
 
 			$this->data['limits'][] = array(
-				'text'  => $this->config->get('config_catalog_limit'),
-				'value' => $this->config->get('config_catalog_limit'),
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=' . $this->config->get('config_catalog_limit'))
+				'text'  => $this->getConfig()->get('config_catalog_limit'),
+				'value' => $this->getConfig()->get('config_catalog_limit'),
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=' . $this->getConfig()->get('config_catalog_limit'))
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 25,
 				'value' => 25,
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=25')
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=25')
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 50,
 				'value' => 50,
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=50')
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=50')
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 75,
 				'value' => 75,
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=75')
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=75')
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 100,
 				'value' => 100,
-				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=100')
+				'href'  => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . $url . '&limit=100')
 			);
 
 			$url = '';
@@ -385,7 +360,7 @@ class ControllerProductCategory extends \system\engine\Controller {
 			$pagination->page = $page;
 			$pagination->limit = $limit;
 			$pagination->text = $this->language->get('text_pagination');
-			$pagination->url = $this->url->link('product/category', 'path=' . $this->request->get['path'] . $url . '&page={page}');
+			$pagination->url = $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . $url . '&page={page}');
 
 			$this->data['pagination'] = $pagination->render();
 
@@ -393,11 +368,11 @@ class ControllerProductCategory extends \system\engine\Controller {
 			$this->data['order'] = $order;
 			$this->data['limit'] = $limit;
 
-			$this->data['continue'] = $this->url->link('common/home');
+			$this->data['continue'] = $this->getUrl()->link('common/home');
 
             $templateName = '/template/product/category.tpl';
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateName)) {
-				$this->template = $this->config->get('config_template') . $templateName;
+			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . $templateName)) {
+				$this->template = $this->getConfig()->get('config_template') . $templateName;
 			} else {
 				$this->template = 'default' . $templateName;
 			}
@@ -445,7 +420,7 @@ class ControllerProductCategory extends \system\engine\Controller {
 
 			$this->data['breadcrumbs'][] = array(
 				'text'      => $this->language->get('text_error'),
-				'href'      => $this->url->link('product/category', $url),
+				'href'      => $this->getUrl()->link('product/category', $url),
 				'separator' => $this->language->get('text_separator')
 			);
 
@@ -457,10 +432,10 @@ class ControllerProductCategory extends \system\engine\Controller {
 
       		$this->data['button_continue'] = $this->language->get('button_continue');
 
-      		$this->data['continue'] = $this->url->link('common/home');
+      		$this->data['continue'] = $this->getUrl()->link('common/home');
 
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/error/not_found.tpl')) {
-				$this->template = $this->config->get('config_template') . '/template/error/not_found.tpl';
+			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/error/not_found.tpl')) {
+				$this->template = $this->getConfig()->get('config_template') . '/template/error/not_found.tpl';
 			} else {
 				$this->template = 'default/template/error/not_found.tpl';
 			}
