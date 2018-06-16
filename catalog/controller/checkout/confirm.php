@@ -3,7 +3,7 @@ use model\shipping\ShippingMethodDAO;
 use system\engine\Controller;
 use system\exception\NotImplementedException;
 
-class ControllerCheckoutConfirm extends \system\engine\Controller {
+class ControllerCheckoutConfirm extends Controller {
     private $modelCheckoutOrder;
 
     public function __construct($registry)

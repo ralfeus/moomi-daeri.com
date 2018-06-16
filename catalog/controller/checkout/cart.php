@@ -2,6 +2,7 @@
 use model\checkout\CartDAO;
 use model\catalog\ProductDAO;
 use system\engine\CustomerController;
+use system\helper\ImageService;
 
 class ControllerCheckoutCart extends CustomerController {
 	private $error = array();
@@ -453,7 +454,7 @@ class ControllerCheckoutCart extends CustomerController {
 			}
 		}
 
-		$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
+		//$modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
 		$this->data['text_empty'] = $this->language->get('text_empty');
 
@@ -464,7 +465,7 @@ class ControllerCheckoutCart extends CustomerController {
 
 		foreach ($this->cart->getProducts() as $result) {
 			if ($result['image']) {
-				$image = $modelToolImage->resize($result['image'], 40, 40);
+				$image = ImageService::getInstance()->resize($result['image'], 40, 40);
 			} else {
 				$image = '';
 			}

@@ -53,8 +53,7 @@ class ControllerCheckoutShipping extends \system\engine\Controller {
 					$this->load->model('localisation/description');
 
 					$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('shipping');
-                    $this->log->write(print_r($results, true));
-//print_r($results); die();
+                    //$this->log->write(print_r($results, true));
 				foreach ($results as $result) {
 			  		$shippingMethod = ShippingMethodDAO::getInstance()->getMethod($result->getCode());
 			  		if ($shippingMethod->isEnabled()) {
