@@ -52,7 +52,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 
 		$order_total = $this->model_account_order->getTotalOrders();
 
-		$results = $this->model_account_order->getOrders(($page - 1) * $this->config->get('config_catalog_limit'), $this->config->get('config_catalog_limit'));
+		$results = $this->model_account_order->getOrders(($page - 1) * $this->getConfig()->get('config_catalog_limit'), $this->getConfig()->get('config_catalog_limit'));
 
 		foreach ($results as $result) {
             $product_total = $this->model_account_order->getTotalOrderProductsByOrderId($result['order_id']);
@@ -71,7 +71,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 		$pagination = new Pagination();
 		$pagination->total = $order_total;
 		$pagination->page = $page;
-		$pagination->limit = $this->config->get('config_catalog_limit');
+		$pagination->limit = $this->getConfig()->get('config_catalog_limit');
 		$pagination->text = $this->language->get('text_pagination');
 		$pagination->url = $this->url->link('account/order', 'page={page}', 'SSL');
 
@@ -80,8 +80,8 @@ class ControllerAccountOrder extends CustomerZoneController {
 		$this->data['continue'] = $this->url->link('account/account', '', 'SSL');
 
         $templateName = '/template/account/order_list.tpl';
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateName)) {
-			$this->template = $this->config->get('config_template') . $templateName;
+		if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . $templateName)) {
+			$this->template = $this->getConfig()->get('config_template') . $templateName;
 		} else {
 			$this->template = 'default' . $templateName;
 		}
@@ -339,7 +339,7 @@ class ControllerAccountOrder extends CustomerZoneController {
           			'price'            => $this->getCurrency()->format($orderItem->getPrice(true), $order_info['currency_code'], 1),
 					'total'            => $this->getCurrency()->format($orderItem->getTotal(true), $order_info['currency_code'], 1),
                     'imagePath' => $image,
-                    'item_status'      => Status::getInstance($this->getRegistry())->getStatus($orderItem->getStatusId(), $this->config->get('language_id'), true),
+                    'item_status'      => Status::getInstance($this->getRegistry())->getStatus($orderItem->getStatusId(), $this->getConfig()->get('language_id'), true),
                     'selected'         => false //isset($this->request->post['selected']) && in_array($result['order_product_id'], $this->request->post['selected'])
         		);
       		}
@@ -359,8 +359,8 @@ class ControllerAccountOrder extends CustomerZoneController {
 
       		$this->data['continue'] = $this->url->link('account/order', '', 'SSL');
 
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/account/order_info.tpl.php')) {
-				$this->template = $this->config->get('config_template') . '/template/account/order_info.tpl.php';
+			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/account/order_info.tpl.php')) {
+				$this->template = $this->getConfig()->get('config_template') . '/template/account/order_info.tpl.php';
 			} else {
 				$this->template = 'default/template/account/order_info.tpl.php';
 			}
@@ -388,8 +388,8 @@ class ControllerAccountOrder extends CustomerZoneController {
 
       		$this->data['continue'] = $this->url->link('account/order', '', 'SSL');
 
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/error/not_found.tpl')) {
-				$this->template = $this->config->get('config_template') . '/template/error/not_found.tpl';
+			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/error/not_found.tpl')) {
+				$this->template = $this->getConfig()->get('config_template') . '/template/error/not_found.tpl';
 			} else {
 				$this->template = 'default/template/error/not_found.tpl';
 			}
@@ -452,16 +452,11 @@ class ControllerAccountOrder extends CustomerZoneController {
 		$this->data['column_comment'] = $this->language->get('column_comment');
 
 		$this->load->model('account/order');
-
 		$this->load->model('setting/setting');
 
 		$this->data['orders'] = array();
 
-		$orders = array();
-
-		if (isset($this->request->get['order_id']))
-			$order_id = $this->request->get['order_id'];
-
+		$order_id = isset($this->request->get['order_id']) ? $this->request->get['order_id'] : null;
 		$order_info = $this->model_account_order->getOrder($order_id);
 
 		if ($order_info) {
@@ -473,10 +468,10 @@ class ControllerAccountOrder extends CustomerZoneController {
 				$store_telephone = $store_info['config_telephone'];
 				$store_fax = $store_info['config_fax'];
 			} else {
-				$store_address = $this->config->get('config_address');
-				$store_email = $this->config->get('config_email');
-				$store_telephone = $this->config->get('config_telephone');
-				$store_fax = $this->config->get('config_fax');
+				$store_address = $this->getConfig()->get('config_address');
+				$store_email = $this->getConfig()->get('config_email');
+				$store_telephone = $this->getConfig()->get('config_telephone');
+				$store_fax = $this->getConfig()->get('config_fax');
 			}
 
 			if ($order_info['invoice_no']) {
@@ -610,15 +605,18 @@ class ControllerAccountOrder extends CustomerZoneController {
 		}
 
 		$templateFileName = '/template/account/order_invoice.tpl';
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . $templateFileName))
-			$this->template = $this->config->get('config_template') . $templateFileName;
+		if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . $templateFileName))
+			$this->template = $this->getConfig()->get('config_template') . $templateFileName;
 		else
 			$this->template = 'default' . $templateFileName;
 
 		$this->getResponse()->setOutput($this->render());
 	}
 
-    protected function setBreadcrumbs()
+    /**
+     * @param null $breadcrumbs
+     */
+    protected function setBreadcrumbs($breadcrumbs = null)
     {
         $this->data['breadcrumbs'] = array();
       	$this->data['breadcrumbs'][] = array(

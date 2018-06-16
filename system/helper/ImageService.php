@@ -8,10 +8,6 @@
 
 namespace system\helper;
 
-use Exception;
-use system\helper\DigitalOceanFileHandler;
-use system\helper\FileSystemFileHandler;
-use system\helper\IFileHandler;
 use system\library\Image;
 use model\DAO;
 
@@ -44,7 +40,6 @@ class ImageService extends DAO {
      * @return string URL to resized image
      */
     public function resize($filename, $width, $height) {
-        $filename = $filename;
         if (!$this->fileHandler->exists($filename)) {
             $filename = 'no_image.jpg';
         }

@@ -1,7 +1,10 @@
 <?php
 namespace system\helper;
+use system\library\Log;
+
 class FileSystemFileHandler implements IFileHandler {
     private $baseDir;
+    private $log;
 
     /**
      * FileSystemFileHandler constructor.
@@ -9,6 +12,7 @@ class FileSystemFileHandler implements IFileHandler {
      */
     public function __construct($baseDir) {
         $this->baseDir = preg_match('/\/$/', $baseDir) ? $baseDir : $baseDir . '/';
+        $this->log = new Log('error.log');
     }
 
     /**
@@ -68,7 +72,14 @@ class FileSystemFileHandler implements IFileHandler {
                 @mkdir($this->baseDir . $path, 0777);
             }
         }
-        return rename($localFile, $this->baseDir . $destinationFile);
+        $this->log->write("Trying to move $localFile to $destinationFile");
+        $result = rename($localFile, $this->baseDir . $destinationFile);
+        if ($result) {
+            $this->log->write("Moved");
+        } else {
+            $this->log->write("Failed to move");
+        }
+        return $result;
     }
 
     /**
