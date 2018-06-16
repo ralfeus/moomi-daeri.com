@@ -1,4 +1,6 @@
 <?php
+use system\library\Language;
+
 class ModelCheckoutOrder extends \system\engine\Model {
 	public function addOrderItems($orderId, $order_items)
 	{
@@ -139,16 +141,26 @@ class ModelCheckoutOrder extends \system\engine\Model {
 			$this->getDb()->query("
 			    INSERT INTO order_product
 			    SET
-			        order_id = '" . (int)$order_id . "',
-			        product_id = '" . (int)$product['product_id'] . "',
-			        name = '" . $this->getDb()->escape($product['name']) . "',
-			        model = '" . $this->getDb()->escape($product['model']) . "',
-			        quantity = '" . (int)$product['quantity'] . "',
-			        price = '" . (float)$product['price'] . "',
-			        status_id = " . $this->getOrderItemInitialStatus($product) . ",
-			        total = '" . (float)$product['total'] . "',
-			        tax = '" . (float)$product['tax'] . "'
-            ");
+			        order_id = :orderId,
+			        product_id = :productId,
+			        name = :name,
+			        model = :model,
+			        quantity = :quantity,
+			        price = :price,
+			        status_id = :statusId,
+			        total = :total,
+			        tax = :tax
+                ", [
+                    ':orderId' => (int)$order_id,
+                    ':productId' => (int)$product['product_id'],
+                    ':name' => $product['name'],
+                    ':model' => $product['model'],
+                    ':quantity' => (int)$product['quantity'],
+                    ':price' => (float)$product['price'],
+                    ':statusId' => $this->getOrderItemInitialStatus($product),
+                    ':total' => (float)$product['total'],
+                    ':tax' => (float)$product['tax']
+            ]);
             $order_product_id = $this->getDb()->getLastId();
 
 			foreach ($product['option'] as $option) {
@@ -163,10 +175,10 @@ class ModelCheckoutOrder extends \system\engine\Model {
 				        `value` = :value,
 				        `type` = :type
                 ", array(
-                    ':orderId' => $order_id,
-                    ':orderProductId' => $order_product_id,
-                    ':productOptionId' => $option['product_option_id'],
-                    ':productOptionValueId' => $option['product_option_value_id'],
+                    ':orderId' => (int)$order_id,
+                    ':orderProductId' => (int)$order_product_id,
+                    ':productOptionId' => (int)$option['product_option_id'],
+                    ':productOptionValueId' => (int)$option['product_option_value_id'],
                     ':name' => $option['name'],
                     ':value' => $option['value'],
                     ':type' => $option['type']
