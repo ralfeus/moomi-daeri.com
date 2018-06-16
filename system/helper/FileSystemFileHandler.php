@@ -72,13 +72,13 @@ class FileSystemFileHandler implements IFileHandler {
                 @mkdir($this->baseDir . $path, 0777);
             }
         }
-        $this->log->write("Trying to move $localFile to $destinationFile");
+//        $this->log->write("Trying to move $localFile to $destinationFile");
         $result = rename($localFile, $this->baseDir . $destinationFile);
-        if ($result) {
-            $this->log->write("Moved");
-        } else {
-            $this->log->write("Failed to move");
-        }
+//        if ($result) {
+//            $this->log->write("Moved");
+//        } else {
+//            $this->log->write("Failed to move");
+//        }
         return $result;
     }
 
