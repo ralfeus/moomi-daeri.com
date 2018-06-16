@@ -24,7 +24,7 @@ class ProductDAO extends DAO {
             return $data;
         }
         $filter = new Filter();
-        $tmp0 = $tmp1 = '';
+        $tmp0 = $tmp1 = null;
         if (isset($data['selectedItems'])) {
             $filter->addChunk($this->buildSimpleFieldFilterEntry('p.product_id', $data['selectedItems'], $tmp0, $tmp1));
         }
@@ -638,15 +638,16 @@ SQL
     public function getProductSpecials($productId, $active = false) {
         $cacheKey = "product.specials." . $productId . $active;
         $result = $this->getCache()->get($cacheKey);
+        $activeIntervalFilter = $active ? " 
+                        AND ((p.date_start = '0000-00-00' OR p.date_start < NOW())
+                        AND (p.date_end = '0000-00-00' OR p.date_end > DATE_ADD(NOW(), INTERVAL 1 HOUR)))" : '';
         if (is_null($result)) {
             $query = "
                 SELECT *
                 FROM product_special AS p
                 WHERE 
-                    product_id = :productId " .
-                    ($active ? " 
-                        AND ((p.date_start = '0000-00-00' OR p.date_start < NOW())
-                        AND (p.date_end = '0000-00-00' OR p.date_end > DATE_ADD(NOW(), INTERVAL 1 HOUR)))" : "") . "
+                    product_id = :productId 
+                    $activeIntervalFilter
                 ORDER BY priority, price
             ";
 //		$this->log->write($query);
@@ -694,7 +695,7 @@ SQL
         ";
             $sql .= $filter->getFilterString(true) .
                 " GROUP BY p.product_id" .
-                $this->buildLimitString($data['start'], $data['limit']);
+                $this->buildLimitString($data);
 
             $result = $this->getDb()->query($sql, $filter->getParams())->rows;
             $this->getCache()->set($key, $result);
@@ -1026,7 +1027,7 @@ SQL
         ";
             $sql .= $filter->getFilterString(true) .
                 " GROUP BY p.product_id" .
-                $this->buildLimitString($data['start'], $data['limit']);
+                $this->buildLimitString($data);
 
             $result = $this->getDb()->query($sql, $filter->getParams())->rows;
             $this->getCache()->set($key, $result);
@@ -1609,7 +1610,7 @@ SQL
        ";
         $sql .= $filter->getFilterString(true) .
                 " GROUP BY p.product_id" .
-                $this->buildLimitString($data['start'], $data['limit']);
+                $this->buildLimitString($data);
 
         return $this->getDb()->query($sql, $filter->getParams())->rows;
     }

@@ -8,11 +8,17 @@ abstract class Model extends OpenCartBase {
     }
 
     /**
-     * @param int $start
-     * @param int $limit
-     * @return string
+     * @param array|string $param1 Either array containing 'start' and 'limit' keys or a string containing 'start' value
+     * @param string $limit Limit of the output
+     * @return string Filter string
      */
-    protected function buildLimitString($start = null, $limit = null) {
+    protected function buildLimitString($param1 = null, $limit = null) {
+        if (is_array($param1)) {
+            $start = key_exists('start', $param1) ? $param1['start'] : null;
+            $limit = key_exists('limit', $param1) ? $param1['limit'] : null;
+        } else {
+            $start = $param1;
+        }
         if (isset($start) && isset($limit)) {
             return "\r\nLIMIT $start, $limit";
         } else {
