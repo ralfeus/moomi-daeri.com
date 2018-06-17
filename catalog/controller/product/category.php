@@ -55,7 +55,8 @@ class ControllerProductCategory extends \system\engine\Controller {
 				if ($category) {
 				    $this->setBreadcrumbs([[
    	    				'text'      => $category->getDescription()->getName(),
-						'href'      => $this->getUrl()->link('product/category', 'path=' . $path),
+						'route'      => 'product/category',
+                        'args' => ['path' => $path],
         				'separator' => $this->getLanguage()->get('text_separator')
         			]]);
 				}

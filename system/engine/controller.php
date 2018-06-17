@@ -234,13 +234,23 @@ abstract class Controller extends OpenCartBase {
         $this->data['breadcrumbs'] = array();
         $this->data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/home', isset($this->session->data['token']) ? 'token=' . $this->session->data['token'] : '', 'SSL'),
+            'href' => $this->getUrl()->link('common/home', isset($this->session->data['token']) ? 'token=' . $this->session->data['token'] : '', 'SSL'),
             'separator' => false
         );
         foreach ($breadcrumbs as $breadcrumb) {
+            $args = '';
+            if (is_array($breadcrumb['args'])) {
+                foreach ($breadcrumb['args'] as $param => $value) {
+                    $args .= "&$param=$value";
+                }
+            }
+            $args .= isset($this->session->data['token']) ? '&token=' . $this->session->data['token'] : '';
+
             $this->data['breadcrumbs'][] = [
                 'text' => $breadcrumb['text'],
-                'href' => $this->getUrl()->link($breadcrumb['route'], isset($this->session->data['token']) ? 'token=' . $this->session->data['token'] : '', 'SSL'),
+                'href' => $this->getUrl()->link(
+                    $breadcrumb['route'],
+                    strlen($args) ? substr($args, 1) : '' , 'SSL'),
                 'separator' => '::'
             ];
         }

@@ -71,7 +71,8 @@ class ControllerProductProduct extends \system\engine\Controller {
 
                     $this->setBreadcrumbs([[
         		        'text' => $category->getDescription()->getName(),
-                        'route' => 'product/category&path=' . $path
+                        'route' => 'product/category',
+                        'args' => ['path' => $path ]
                     ]]);
 				}
 			}

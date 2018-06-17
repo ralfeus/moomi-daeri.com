@@ -5,7 +5,4 @@ system/logs
 vendor/
 composer.*
 .idea/
-test/
 yandex_7db4879326d0ef09.html
-/admin/view/javascript/ckeditor/
-!/admin/view/javascript/ckeditor/
