@@ -191,7 +191,7 @@ class ControllerProductCategory extends \system\engine\Controller {
 				$date_added = mktime(0, 0, 0, $date_added['mon'], $date_added['mday'], $date_added['year']);
 
                 #kabantejay synonymizer start
-                $brand = $result->getManufacturer();
+                $brand = $result->getManufacturer()->getName();
                 if (!isset($razdel)) {
                   $razdel = '';
                 }
