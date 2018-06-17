@@ -239,7 +239,7 @@ abstract class Controller extends OpenCartBase {
         );
         foreach ($breadcrumbs as $breadcrumb) {
             $args = '';
-            if (is_array($breadcrumb['args'])) {
+            if (isset($breadcrumb['args']) && is_array($breadcrumb['args'])) {
                 foreach ($breadcrumb['args'] as $param => $value) {
                     $args .= "&$param=$value";
                 }
