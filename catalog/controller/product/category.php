@@ -211,7 +211,7 @@ class ControllerProductCategory extends \system\engine\Controller {
                 $description = '';
                 try {
                     for ($it = 0; $it < 6; $it++) {
-                        $description = str_replace($syntext[$it][0], $syntext[$it][1], $result->getDescription());
+                        $description = str_replace($syntext[$it][0], $syntext[$it][1], $result->getDescription()->getDescription());
                     }
                     $description = preg_replace_callback('/\{  (.*?)  \}/xs',
                         function ($m) {

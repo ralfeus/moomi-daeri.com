@@ -213,7 +213,7 @@ class ControllerProductSearch extends \system\engine\Controller {
 				'limit'               => $limit
 			);
 
-			$product_total = ProductDAO::getInstance()->getProductsCount($filter);
+			$product_total = ProductDAO::getInstance()->getProductsCount($filter, true);
 			$results = ProductDAO::getInstance()->getProducts($filter, $sort, $order, ($page - 1) * $limit, $limit);
             if ($sort == null) {
                 $results = $this->sortByRelevance($results, $filter_name);
