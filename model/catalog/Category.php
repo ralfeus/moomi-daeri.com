@@ -10,6 +10,7 @@ namespace model\catalog;
 
 
 use model\localization\Description;
+use model\localization\DescriptionCollection;
 
 class Category {
     private $id;
@@ -24,6 +25,8 @@ class Category {
     private $afcId;
     private $affiliateCommission;
     private $description;
+    /** @var  DescriptionCollection */
+    private $descriptions;
 
     /**
      * Category constructor.
@@ -139,5 +142,15 @@ class Category {
      */
     public function getDescription() {
         return $this->description;
+    }
+
+    /**
+     * @return DescriptionCollection
+     */
+    public function getDescriptions(): DescriptionCollection {
+        if (empty($this->descriptions)) {
+            $this->descriptions = CategoryDAO::getInstance()->getCategoryDescriptions($this->id);
+        }
+        return $this->descriptions;
     }
 }

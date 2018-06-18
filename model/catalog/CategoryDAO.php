@@ -9,6 +9,7 @@ namespace model\catalog;
 
 use model\DAO;
 use model\localization\Description;
+use model\localization\DescriptionCollection;
 
 class CategoryDAO extends DAO {
     public function addCategory($data) {
@@ -215,22 +216,23 @@ SQL
     }
 
     public function getCategoryDescriptions($category_id) {
-        $category_description_data = array();
+        $descriptionCollection = new DescriptionCollection();
 
         $query = $this->getDb()->query("SELECT * FROM category_description WHERE category_id = '" . (int)$category_id . "'");
 
         foreach ($query->rows as $result) {
-            $category_description_data[$result['language_id']] = array(
-                'seo_title'        => $result['seo_title'],
-                'seo_h1'           => $result['seo_h1'],
-                'name'             => $result['name'],
-                'meta_keyword'     => $result['meta_keyword'],
-                'meta_description' => $result['meta_description'],
-                'description'      => $result['description']
-            );
+            $descriptionCollection->addDescription(new Description(
+                $result['language_id'],
+                $result['name'],
+                $result['description'],
+                $result['meta_description'],
+                $result['meta_keyword'],
+                $result['seo_title'],
+                $result['seo_h1']
+            ));
         }
 
-        return $category_description_data;
+        return $descriptionCollection;
     }
 
     public function getCategoryStores($category_id) {

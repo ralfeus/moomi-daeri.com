@@ -49,12 +49,12 @@ class ControllerProductCategory extends \system\engine\Controller {
 				$category = CategoryDAO::getInstance()->getCategory($path_id);
 
 				#kabantejay synonymizer start
-				$razdel = $category->getDescription()->getName();
+				$razdel = $category->getDescriptions()->getDescription($this->getLanguage()->getId())->getName();
 				#kabantejay synonymizer end
       
 				if ($category) {
 				    $this->setBreadcrumbs([[
-   	    				'text'      => $category->getDescription()->getName(),
+   	    				'text'      => $category->getDescriptions()->getDescription($this->getLanguage()->getId())->getName(),
 						'route'      => 'product/category',
                         'args' => ['path' => $path],
         				'separator' => $this->getLanguage()->get('text_separator')
