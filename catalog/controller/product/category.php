@@ -47,7 +47,9 @@ class ControllerProductCategory extends \system\engine\Controller {
 				}
 
 				$category = CategoryDAO::getInstance()->getCategory($path_id);
-
+                if (is_null($category)) {
+                    continue;
+                }
 				#kabantejay synonymizer start
 				$razdel = $category->getDescriptions()->getDescription($this->getLanguage()->getId())->getName();
 				#kabantejay synonymizer end

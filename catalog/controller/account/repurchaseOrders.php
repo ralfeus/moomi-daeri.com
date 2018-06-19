@@ -2,6 +2,7 @@
 use model\sale\OrderItemDAO;
 use model\sale\RepurchaseOrderDAO;
 use system\engine\CustomerZoneController;
+use system\helper\ImageService;
 use system\library\Status;
 
 /**
@@ -75,7 +76,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
         {
             if (file_exists(DIR_IMAGE . $repurchase_order['imagePath']))
             {
-                $imagePath = $this->load->model('tool/image')->resize($repurchase_order['imagePath'], 100, 100);
+                $imagePath = ImageService::getInstance()->resize($repurchase_order['imagePath'], 100, 100);
                 $warningHint = '';
             }
             else
