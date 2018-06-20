@@ -23,6 +23,7 @@ class ControllerProductSearchTest extends CatalogControllerProductTest {
     public function index() {
         $class = new \ControllerProductSearch($this->registry);
         $class->index();
+        $this->assertTrue(true);
     }
 }
  

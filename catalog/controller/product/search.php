@@ -187,7 +187,7 @@ class ControllerProductSearch extends \system\engine\Controller {
 		
 		$this->data['products'] = array();
 		
-		if (isset($this->request->get['filter_name']) || isset($this->request->get['filter_tag'])) {
+		if (!empty($filter_name)) {
 		    $filter = new FilterTree(
 		        [
 		            'filterEnabled' => true,
