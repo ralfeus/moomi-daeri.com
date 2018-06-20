@@ -410,9 +410,7 @@ class ControllerSaleInvoice extends \system\engine\Controller {
             $this->data['orderItems'][$orderItem->getId()] = array(
                 'id' => $orderItem->getId(),
                 'comment' => $orderItem->getPublicComment(),
-                'image_path' => (isset($this->getRequest()->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1')) ?
-                                    HTTPS_IMAGE : HTTP_IMAGE) .
-                                ImageService::getInstance()->getThumbnail($orderItem->getImagePath()),
+                'image_path' => ImageService::getInstance()->getThumbnail($orderItem->getImagePath()),
                 'model' => $orderItem->getModel(),
                 'name' => $orderItem->getName(),
                 'order_id' => $orderItem->getOrderId(),
@@ -494,9 +492,7 @@ class ControllerSaleInvoice extends \system\engine\Controller {
             $this->data['orderItems'][] = array(
                 'id' => $orderItem->getId(),
                 'comment' => $orderItem->getPublicComment(),
-                'image_path' => (isset($this->getRequest()->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1')) ?
-                                    HTTPS_IMAGE : HTTP_IMAGE) .
-                                ImageService::getInstance()->getThumbnail($orderItem->getImagePath()),
+                'image_path' => ImageService::getInstance()->getThumbnail($orderItem->getImagePath()),
                 'model' => $orderItem->getModel(),
                 'name' => $orderItem->getName(),
                 'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
@@ -521,9 +517,7 @@ class ControllerSaleInvoice extends \system\engine\Controller {
                     $this->data['orderItems'][] = array(
                         'id' => $orderItem->getId(),
                         'comment' => $orderItem->getPublicComment(),
-                        'image_path' => (isset($this->getRequest()->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1')) ?
-                                            HTTPS_IMAGE : HTTP_IMAGE) .
-                                        ImageService::getInstance()->getThumbnail($orderItem->getImagePath()),
+                        'image_path' => ImageService::getInstance()->getThumbnail($orderItem->getImagePath()),
                         'model' => $orderItem->getModel(),
                         'name' => $orderItem->getName(),
                         'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),

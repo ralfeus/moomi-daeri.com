@@ -22,7 +22,7 @@ class ImageService extends DAO {
 
     /**
      * @param $imagePath
-     * @return string Path to image or path to
+     * @return string URL of the image
      */
     public function getThumbnail($imagePath)
     {
