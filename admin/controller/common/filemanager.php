@@ -1,5 +1,6 @@
 <?php
 use system\engine\AdminController;
+use system\helper\ImageService;
 
 class ControllerCommonFileManager extends AdminController {
 	public function index() {
@@ -54,10 +55,8 @@ class ControllerCommonFileManager extends AdminController {
 	}	
 	
 	public function image() {
-		$this->getLoader()->model('tool/image');
-		
 		if (isset($this->request->get['image'])) {
-			$this->getResponse()->setOutput($modelToolImage->resize(html_entity_decode($this->request->get['image'], ENT_QUOTES, 'UTF-8'), 100, 100));
+			$this->getResponse()->setOutput(ImageService::getInstance()->resize(html_entity_decode($this->request->get['image'], ENT_QUOTES, 'UTF-8'), 100, 100));
 		}
 	}
 	
@@ -114,8 +113,6 @@ class ControllerCommonFileManager extends AdminController {
     public function files() {
 		$json = array();
 		
-		$this->getLoader()->model('tool/image');
-		
 		if (!empty($this->request->post['directory'])) {
 			$directory = DIR_IMAGE . 'data/' . str_replace('../', '', $this->request->post['directory']);
 		} else {
@@ -165,7 +162,7 @@ class ControllerCommonFileManager extends AdminController {
 						'file'     => utf8_substr($file, strlen(DIR_IMAGE . 'data/')),
 						'filename' => basename($file),
 						'size'     => round(utf8_substr($size, 0, strpos($size, '.') + 4), 2) . $suffix[$i],
-						'thumb'    => $modelToolImage->resize(utf8_substr($file, strlen(DIR_IMAGE)), 100, 100)
+						'thumb'    => ImageService::getInstance()->resize(utf8_substr($file, strlen(DIR_IMAGE)), 100, 100)
 					);
 				}
 			}

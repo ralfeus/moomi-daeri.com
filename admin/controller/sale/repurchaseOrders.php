@@ -1,6 +1,7 @@
 <?php
 use model\sale\RepurchaseOrderDAO;
 use system\engine\Controller;
+use system\helper\ImageService;
 use system\library\Status;
 
 /**
@@ -306,7 +307,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
                 break;
             case 'image':
                 RepurchaseOrderDAO::getInstance()->setImage($this->parameters['orderId'], $this->parameters['value']);
-                $json['image'] = $this->load->model('tool/image')->resize($this->parameters['value'], 100, 100);
+                $json['image'] = ImageService::getInstance()->resize($this->parameters['value'], 100, 100);
                 break;
             case 'itemName':
                 RepurchaseOrderDAO::getInstance()->setItemName($this->parameters['orderId'], $this->parameters['value']);

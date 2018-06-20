@@ -1,5 +1,6 @@
 <?php
 use system\engine\Controller;
+use system\helper\ImageService;
 use system\library\MeasureUnitDAO;
 
 class ControllerSettingSetting extends \system\engine\Controller {
@@ -616,8 +617,6 @@ class ControllerSettingSetting extends \system\engine\Controller {
             $this->data['config_product_hotness_age'] = $this->getConfig()->get('config_product_hotness_age');
         }
 
-        $this->getLoader()->model('tool/image');
-
 		if (isset($this->request->post['config_logo'])) {
 			$this->data['config_logo'] = $this->request->post['config_logo'];
 		} else {
@@ -625,9 +624,9 @@ class ControllerSettingSetting extends \system\engine\Controller {
 		}
 
 		if ($this->getConfig()->get('config_logo') && file_exists(DIR_IMAGE . $this->getConfig()->get('config_logo')) && is_file(DIR_IMAGE . $this->getConfig()->get('config_logo'))) {
-			$this->data['logo'] = $modelToolImage->resize($this->getConfig()->get('config_logo'), 100, 100);
+			$this->data['logo'] = ImageService::getInstance()->resize($this->getConfig()->get('config_logo'), 100, 100);
 		} else {
-			$this->data['logo'] = $modelToolImage->resize('no_image.jpg', 100, 100);
+			$this->data['logo'] = ImageService::getInstance()->resize('no_image.jpg', 100, 100);
 		}
 
 		if (isset($this->request->post['config_icon'])) {
@@ -637,12 +636,12 @@ class ControllerSettingSetting extends \system\engine\Controller {
 		}
 		
 		if ($this->getConfig()->get('config_icon') && file_exists(DIR_IMAGE . $this->getConfig()->get('config_icon')) && is_file(DIR_IMAGE . $this->getConfig()->get('config_icon'))) {
-			$this->data['icon'] = $modelToolImage->resize($this->getConfig()->get('config_icon'), 100, 100);
+			$this->data['icon'] = ImageService::getInstance()->resize($this->getConfig()->get('config_icon'), 100, 100);
 		} else {
-			$this->data['icon'] = $modelToolImage->resize('no_image.jpg', 100, 100);
+			$this->data['icon'] = ImageService::getInstance()->resize('no_image.jpg', 100, 100);
 		}
 		
-		$this->data['no_image'] = $modelToolImage->resize('no_image.jpg', 100, 100);
+		$this->data['no_image'] = ImageService::getInstance()->resize('no_image.jpg', 100, 100);
 
 		if (isset($this->request->post['config_image_category_width'])) {
 			$this->data['config_image_category_width'] = $this->request->post['config_image_category_width'];

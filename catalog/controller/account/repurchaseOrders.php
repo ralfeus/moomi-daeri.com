@@ -81,7 +81,7 @@ class ControllerAccountRepurchaseOrders extends CustomerZoneController
             }
             else
             {
-                $imagePath = $this->load->model('tool/image')->resize('no_image.jpg', 100, 100);
+                $imagePath = ImageService::getInstance()->resize('no_image.jpg', 100, 100);
                 $warningHint = $this->language->get('WARNING_HTML_PAGE_PROVIDED');
             }
             if ($repurchase_order['status'] == REPURCHASE_ORDER_ITEM_STATUS_OFFER) {

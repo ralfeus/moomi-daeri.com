@@ -5,6 +5,7 @@ use model\sale\OrderItem;
 use model\sale\OrderItemDAO;
 use model\shipping\ShippingMethodDAO;
 use system\engine\Controller;
+use system\helper\ImageService;
 use system\library\Transaction;
 
 /**
@@ -26,7 +27,6 @@ class ControllerSaleInvoice extends \system\engine\Controller {
         //$this->getLoader()->library("Transaction");
         $this->modelReferenceAddress = $this->getLoader()->model('reference/address');
         $this->modelSaleOrder = $this->getLoader()->model('sale/order');
-        $this->getLoader()->model('tool/image');
 
         $this->data['notifications'] = array();
         $this->document->setTitle($this->language->get('headingTitle'));
@@ -412,7 +412,7 @@ class ControllerSaleInvoice extends \system\engine\Controller {
                 'comment' => $orderItem->getPublicComment(),
                 'image_path' => (isset($this->getRequest()->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1')) ?
                                     HTTPS_IMAGE : HTTP_IMAGE) .
-                                $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
+                                ImageService::getInstance()->getThumbnail($orderItem->getImagePath()),
                 'model' => $orderItem->getModel(),
                 'name' => $orderItem->getName(),
                 'order_id' => $orderItem->getOrderId(),
@@ -496,7 +496,7 @@ class ControllerSaleInvoice extends \system\engine\Controller {
                 'comment' => $orderItem->getPublicComment(),
                 'image_path' => (isset($this->getRequest()->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1')) ?
                                     HTTPS_IMAGE : HTTP_IMAGE) .
-                                $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
+                                ImageService::getInstance()->getThumbnail($orderItem->getImagePath()),
                 'model' => $orderItem->getModel(),
                 'name' => $orderItem->getName(),
                 'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
@@ -523,7 +523,7 @@ class ControllerSaleInvoice extends \system\engine\Controller {
                         'comment' => $orderItem->getPublicComment(),
                         'image_path' => (isset($this->getRequest()->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1')) ?
                                             HTTPS_IMAGE : HTTP_IMAGE) .
-                                        $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
+                                        ImageService::getInstance()->getThumbnail($orderItem->getImagePath()),
                         'model' => $orderItem->getModel(),
                         'name' => $orderItem->getName(),
                         'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
