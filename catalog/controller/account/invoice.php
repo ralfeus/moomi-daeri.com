@@ -3,6 +3,7 @@ use model\sale\InvoiceDAO;
 use model\sale\OrderItemDAO;
 use model\shipping\ShippingMethodDAO;
 use system\engine\CustomerZoneController;
+use system\helper\ImageService;
 use system\library\Transaction;
 
 /**
@@ -20,7 +21,6 @@ class ControllerAccountInvoice extends CustomerZoneController {
         //$this->load->library('Transaction');
         $this->load->model('reference/address');
         $this->load->model('account/order');
-        $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
 
         $this->data['notifications'] = array();
         $this->document->setTitle($this->language->get('headingTitle'));
@@ -33,7 +33,7 @@ class ControllerAccountInvoice extends CustomerZoneController {
             $json['error'] = "Unexpected error";
         else
         {
-            Transaction::addPayment(
+            Transaction::getInstance()->addPayment(
                 $this->customer->getId(),
                 $this->request->request['invoiceId'],
                 $this->registry);
@@ -76,14 +76,14 @@ class ControllerAccountInvoice extends CustomerZoneController {
                 $action = array();
                 $action[] = array(
                     'text' => $this->language->get('textView'),
-                    'href' => $this->url->link('sale/invoice/showForm', 'invoiceId=' . $invoice->getId(), 'SSL')
+                    'href' => $this->getUrl()->link('sale/invoice/showForm', 'invoiceId=' . $invoice->getId(), 'SSL')
                 );
                 $this->data['invoices'][] = array(
                     'invoiceId' => $invoice->getId(),
                     'action' => $action,
                     'customer' => $this->customer->getLastName() . ' ' . $this->customer->getFirstname(),
                     'timeModified' =>$invoice->getTimeModified(),
-                    'href' => $this->url->link('account/invoice/showForm', 'invoiceId=' . $invoice->getId(), 'SSL'),
+                    'href' => $this->getUrl()->link('account/invoice/showForm', 'invoiceId=' . $invoice->getId(), 'SSL'),
                     'itemsCount' => InvoiceDAO::getInstance()->getInvoiceItemsCount($invoice->getId()),
                     'shippingCost' => $this->getCurrency()->format($invoice->getShippingCost()),
                     'shippingMethod' => ShippingMethodDAO::getInstance()->
@@ -93,7 +93,7 @@ class ControllerAccountInvoice extends CustomerZoneController {
                         $this->session->data['language_id']),
                     'subtotal' => $this->getCurrency()->format($invoice->getSubtotal()),
                     'total' => $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $this->getCurrency()->getCode(), 1),
-                    'transaction' => $invoice->getStatusId() == IS_PAID ? Transaction::getTransactionByInvoiceId($invoice->getId()) : null,
+                    'transaction' => $invoice->getStatusId() == IS_PAID ? Transaction::getInstance()->getTransactionByInvoiceId($invoice->getId()) : null,
                     'weight' => $invoice->getWeight(),
                     'package_number' => $invoice->getPackageNumber()
                 );
@@ -131,17 +131,17 @@ class ControllerAccountInvoice extends CustomerZoneController {
         $this->getResponse()->setOutput($this->render());
     }
 
-    protected function setBreadcrumbs()
+    protected function setBreadcrumbs($breadCrumbs = [])
     {
         $this->data['breadcrumbs'] = array();
         $this->data['breadcrumbs'][] = array(
             'text'      => $this->language->get('text_home'),
-            'href'      => $this->url->link('common/home', '', 'SSL'),
+            'href'      => $this->getUrl()->link('common/home', '', 'SSL'),
             'separator' => false
         );
         $this->data['breadcrumbs'][] = array(
             'text'      => $this->language->get('textAccount'),
-            'href'      => $this->url->link('account/account', '', 'SSL'),
+            'href'      => $this->getUrl()->link('account/account', '', 'SSL'),
             'separator' => ' :: '
         );
         $this->data['breadcrumbs'][] = array(
@@ -156,14 +156,13 @@ class ControllerAccountInvoice extends CustomerZoneController {
         if (is_null($this->getRequest()->getParam('invoiceId')))
             return;
 
-        $modelOrderItem = $this->load->model('account/order_item');
         $modelReferenceAddress = $this->load->model('reference/address');
         $invoice = InvoiceDAO::getInstance()->getInvoice($this->getRequest()->getParam('invoiceId'));
 
         /// Initialize interface values
         $this->data['headingTitle'] = sprintf($this->language->get('INVOICE'), $invoice->getId());
         $this->data['button_action'] = $this->language->get('button_close');
-        $this->data['submit_action'] = $this->url->link('account/invoice/close', '', 'SSL');
+        $this->data['submit_action'] = $this->getUrl()->link('account/invoice/close', '', 'SSL');
         $this->data['textComment'] = $this->language->get('textComment');
         $this->data['textConfirm'] = $this->language->get('CONFIRM');
         $this->data['textDiscount'] = $this->language->get('DISCOUNT');
@@ -189,20 +188,29 @@ class ControllerAccountInvoice extends CustomerZoneController {
             /// Prepare list
             $subTotalCustomerCurrency = 0;
             foreach ($invoice->getOrderItems() as $orderItem) {
+                try {
+                    $priceString = $orderItem->getCurrency()->getString($orderItem->getPrice(true));
+                    $shippingString = $orderItem->getCurrency()->getString($orderItem->getShippingCost(true));
+                    $subtotalString = $orderItem->getCurrency()->getString($orderItem->getTotal(true));
+                } catch (Exception $exception) {
+                    $priceString = $shippingString = $subtotalString = "Couldn't convert amount to current currency. Total won't be accurate";
+                }
                 $this->data['orderItems'][] = array(
                     'id' => $orderItem->getId(),
                     'comment' => $orderItem->getPublicComment(),
-                    'image_path' => $this->registry->get('model_tool_image')->getImage($orderItem->getImagePath()),
+                    'image_path' => ImageService::getInstance()->getThumbnail($orderItem->getImagePath()),
                     'model' => $orderItem->getModel(),
                     'name' => $orderItem->getName(),
                     'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
                     'order_id' => $orderItem->getOrderId(),
-                    'price' => $orderItem->getCurrency()->getString($orderItem->getPrice(true)),
+                    'price' => $priceString,
                     'quantity' => $orderItem->getQuantity(),
-                    'shipping' => $orderItem->getCurrency()->getString($orderItem->getShippingCost(true)),
-                    'subtotal' => $orderItem->getCurrency()->getString($orderItem->getTotal(true))
+                    'shipping' => $shippingString,
+                    'subtotal' => $subtotalString
                 );
-                $subTotalCustomerCurrency += $orderItem->getTotal(true);
+                try {
+                    $subTotalCustomerCurrency += $orderItem->getTotal(true);
+                } catch (Exception $exception) {}
             }
 
 //            foreach ($this->data['orderItems'] as $item) {

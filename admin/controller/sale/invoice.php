@@ -108,9 +108,9 @@ class ControllerSaleInvoice extends \system\engine\Controller {
 
     public function delete() {
         if (!empty($this->parameters['invoiceId'])) {
-            $relatedTransaction = Transaction::getTransactionByInvoiceId($this->parameters['invoiceId']);
+            $relatedTransaction = Transaction::getInstance()->getTransactionByInvoiceId($this->parameters['invoiceId']);
             if (!empty($relatedTransaction))
-                Transaction::deleteTransaction($relatedTransaction['customer_transaction_id']);
+                Transaction::getInstance()->deleteTransaction($relatedTransaction['customer_transaction_id']);
             InvoiceDAO::getInstance()->deleteInvoice($this->request->request['invoiceId']);
             $this->data['notifications']['success'] = sprintf(
                 $this->language->get('SUCCESS_INVOICE_DELETED'), $this->request->request['invoiceId']);

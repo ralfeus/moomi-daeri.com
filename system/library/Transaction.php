@@ -1,28 +1,25 @@
 <?php
 namespace system\library;
 
-use system\library\Audit;
+use model\DAO;
 use model\sale\CustomerDAO;
 use model\sale\InvoiceDAO;
 use ModelSaleTransaction;
-use system\engine\OpenCartBase;
 use system\engine\Registry;
 
-class Transaction extends OpenCartBase implements ILibrary {
-    /** @var  Transaction */
-    private static $instance;
+class Transaction extends DAO {
     /** @var  ModelSaleTransaction */
     private $modelTransaction;
 
-    protected function __construct($registry) {
+    public function __construct($registry) {
         parent::__construct($registry);
         $this->modelTransaction = $this->getLoader()->model('sale/transaction', 'admin');
     }
 
     public static function addCredit($customerId, $amount, $currency, $registry, $description = "") {
-//        Transaction::$instance->log->write("Starting");
+//        $this->log->write("Starting");
 //        $customer = CustomerDAO::getInstance()->getCustomer($customerId);
-//        Transaction::$instance->log->write("Adding transaction");
+//        $this->log->write("Adding transaction");
         Transaction::addTransaction(0, $customerId, -$amount, $currency, $description);
 
         /// Try to pay all payment awaiting invoices
@@ -42,8 +39,8 @@ class Transaction extends OpenCartBase implements ILibrary {
      * @param Registry $registry
      * @param string $description
      */
-    public static function addPayment($customerId, $invoiceId, $registry, $description = "") {
-        Transaction::$instance->log->write("Starting");
+    public function addPayment($customerId, $invoiceId, $registry, $description = "") {
+        $this->log->write("Starting");
         $customer = CustomerDAO::getInstance()->getCustomer($customerId);
         $invoice = InvoiceDAO::getInstance()->getInvoice($invoiceId);
         $transactionAmount = $invoice->getTotalCustomerCurrency();
@@ -62,47 +59,47 @@ class Transaction extends OpenCartBase implements ILibrary {
         }
     }
 
-    public static function addTransaction($invoiceId, $customer, $amount, $currency_code, $description = '') {
+    public function addTransaction($invoiceId, $customer, $amount, $currency_code, $description = '') {
         if (is_numeric($customer)) { /// customer ID is passed. Need to get customer object
             $customer = CustomerDAO::getInstance()->getCustomer($customer);
         }
 
         /// Now need to convert transaction amount to customer base currency
-        $currency = Transaction::$instance->getRegistry()->get('currency');
+        $currency = $this->getRegistry()->get('currency');
         $amountInCustomerCurrency = (float)$currency->convert($amount, $currency_code, $customer['base_currency_code']);
         $newCustomerBalance = $customer['balance'] - $amountInCustomerCurrency;
-        Transaction::$instance->getDb()->query("
+        $this->getDb()->query("
             INSERT INTO customer_transaction
             SET
                 customer_id = " . (int)$customer['customer_id'] . ",
                 invoice_id = " . (int)$invoiceId . ",
-                description = '" . Transaction::$instance->getDb()->escape($description) . "',
+                description = '" . $this->getDb()->escape($description) . "',
                 amount = $amountInCustomerCurrency,
                 currency_code = '" . $customer['base_currency_code'] . "',
                 date_added = NOW(),
                 balance = $newCustomerBalance,
-                balance_currency = '" . Transaction::$instance->getDb()->escape($customer['base_currency_code']) . "'
+                balance_currency = '" . $this->getDb()->escape($customer['base_currency_code']) . "'
         ");
-        //$transactionId = Transaction::$instance->getDb()->getLastId();
+        //$transactionId = $this->getDb()->getLastId();
         /// Update customer's balance
-        Transaction::$instance->getDb()->query("
+        $this->getDb()->query("
                 UPDATE customer
                 SET
                     balance = $newCustomerBalance
                 WHERE customer_id = " . $customer['customer_id']
         );
-        Transaction::$instance->getCache()->delete('customer.' . $customer['customer_id']);
-        if (Transaction::$instance->user->isLogged()) {
-            Audit::getInstance(Transaction::$instance->getRegistry())->addAdminEntry(Transaction::$instance->user->getId(), AUDIT_ADMIN_TRANSACTION_ADD, $_REQUEST);
-        } elseif (Transaction::$instance->customer->isLogged()) {
-            Audit::getInstance(Transaction::$instance->getRegistry())->addUserEntry(Transaction::$instance->customer->getId(), AUDIT_ADMIN_TRANSACTION_ADD, $_REQUEST);
+        $this->getCache()->delete('customer.' . $customer['customer_id']);
+        if ($this->user->isLogged()) {
+            Audit::getInstance($this->getRegistry())->addAdminEntry($this->user->getId(), AUDIT_ADMIN_TRANSACTION_ADD, $_REQUEST);
+        } elseif ($this->customer->isLogged()) {
+            Audit::getInstance($this->getRegistry())->addUserEntry($this->customer->getId(), AUDIT_ADMIN_TRANSACTION_ADD, $_REQUEST);
         }
     }
 
-    public static function deleteTransaction($transactionId) {
-        $transaction = Transaction::$instance->getTransaction($transactionId);
-//        Transaction::$instance->modelTransaction->deleteTransaction($transactionId);
-        Transaction::$instance->addTransaction(
+    public function deleteTransaction($transactionId) {
+        $transaction = $this->getTransaction($transactionId);
+//        $this->modelTransaction->deleteTransaction($transactionId);
+        $this->addTransaction(
             $transaction['invoice_id'],
             $transaction['customer_id'],
             -$transaction['amount'],
@@ -111,18 +108,11 @@ class Transaction extends OpenCartBase implements ILibrary {
         );
     }
 
-    public static function getInstance($registry) {
-//        $registry->get('log')->write("Starting");
-        if (!isset(Transaction::$instance))
-            Transaction::$instance = new Transaction($registry);
-        return Transaction::$instance;
-    }
-
     private function getTransaction($transactionId) {
-        return Transaction::$instance->modelTransaction->getTransaction($transactionId);
+        return $this->modelTransaction->getTransaction($transactionId);
     }
 
-    public static function getTransactionByInvoiceId($invoiceId = 0) {
-        return Transaction::$instance->modelTransaction->getTransactionByInvoiceId($invoiceId);
+    public function getTransactionByInvoiceId($invoiceId = 0) {
+        return $this->modelTransaction->getTransactionByInvoiceId($invoiceId);
     }
 }
