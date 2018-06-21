@@ -51,11 +51,11 @@ class ControllerSaleContact extends \system\engine\Controller {
 				case 'customer':
 					if (isset($this->request->post['customer'])) {					
 						foreach ($this->request->post['customer'] as $customer_id) {
-							$customer_info = CustomerDAO::getInstance()->getCustomer($customer_id);
-							
-							if ($customer_info) {
-								$emails[] = $customer_info['email'];
-							}
+						    try {
+						        $customer_info = CustomerDAO::getInstance()->getCustomer($customer_id);
+                                $emails[] = $customer_info['email'];
+						    }
+						    catch (InvalidArgumentException $exception) {}
 						}
 					}
 					break;	
@@ -241,14 +241,16 @@ class ControllerSaleContact extends \system\engine\Controller {
 		
 		if (isset($this->request->post['customer'])) {					
 			foreach ($this->request->post['customer'] as $customer_id) {
-				$customer_info = CustomerDAO::getInstance()->getCustomer($customer_id);
-					
-				if ($customer_info) {
-					$this->data['customers'][] = array(
-						'customer_id' => $customer_info['customer_id'],
-						'name'        => $customer_info['firstname'] . ' ' . $customer_info['lastname']
-					);
-				}
+			    try {
+                    $customer_info = CustomerDAO::getInstance()->getCustomer($customer_id);
+
+                    if ($customer_info) {
+                        $this->data['customers'][] = array(
+                            'customer_id' => $customer_info['customer_id'],
+                            'name' => $customer_info['firstname'] . ' ' . $customer_info['lastname']
+                        );
+                    }
+                } catch (InvalidArgumentException $exception) {}
 			}
 		}
 

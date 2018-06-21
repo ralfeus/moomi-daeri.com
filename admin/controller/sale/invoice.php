@@ -119,7 +119,8 @@ class ControllerSaleInvoice extends AdminController {
     }
 
     private function getCustomers() {
-        foreach (InvoiceDAO::getInstance()->getInvoiceCustomers($this->parameters) as $customer) {
+        $customers = InvoiceDAO::getInstance()->getInvoiceCustomers($this->parameters);
+        foreach ($customers as $customer) {
             $tmpResult[$customer['customer_id']] =
                 $customer['lastname'] . " " .
                 $customer['firstname'] . ' / ' .

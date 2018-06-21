@@ -55,33 +55,35 @@ class ControllerSaleCreditManagement extends Controller {
         $this->data['customersToFilterBy'] = $this->getCustomers();
         $this->data['requests'] = array();
         foreach ($addCreditRequests as $addCreditRequest) {
-            $customer = CustomerDAO::getInstance()->getCustomer($addCreditRequest['senderId']);
-            $actions = array();
-            if ($addCreditRequest['data']->status == ADD_CREDIT_STATUS_PENDING) {
-                $actions['accept'] = array(
-                    'text' => $this->language->get('ACCEPT'),
-                    'onclick' => 'acceptRequest(' . $addCreditRequest['messageId'] . ', this)'
+            try {
+                $customer = CustomerDAO::getInstance()->getCustomer($addCreditRequest['senderId']);
+                $actions = array();
+                if ($addCreditRequest['data']->status == ADD_CREDIT_STATUS_PENDING) {
+                    $actions['accept'] = array(
+                        'text' => $this->language->get('ACCEPT'),
+                        'onclick' => 'acceptRequest(' . $addCreditRequest['messageId'] . ', this)'
+                    );
+                    $actions['reject'] = array(
+                        'text' => $this->language->get('REJECT'),
+                        'onclick' => 'rejectRequest(' . $addCreditRequest['messageId'] . ', this)'
+                    );
+                }
+                $this->data['requests'][] = array(
+                    'requestId' => $addCreditRequest['messageId'],
+                    'actions' => $actions,
+                    'amount' => $addCreditRequest['data']->amount,
+                    'comment' => $addCreditRequest['data']->comment,
+                    'currency' => $addCreditRequest['data']->currency,
+                    'customerName' => $customer['lastname'] . ' ' . $customer['firstname'] . ' / ' . $customer['nickname'],
+                    'customerUrl' => $this->url->link(
+                        'sale/customer/update',
+                        'token=' . $this->session->data['token'] . '&customer_id=' . $addCreditRequest['senderId'],
+                        'SSL'),
+                    'status' => $this->load->model('localisation/requestStatus')->getStatus($addCreditRequest['data']->status),
+                    'statusId' => $addCreditRequest['data']->status,
+                    'timeAdded' => $addCreditRequest['timeAdded']
                 );
-                $actions['reject'] = array(
-                    'text' => $this->language->get('REJECT'),
-                    'onclick' => 'rejectRequest(' . $addCreditRequest['messageId'] . ', this)'
-                );
-            }
-            $this->data['requests'][] = array(
-                'requestId' => $addCreditRequest['messageId'],
-                'actions' => $actions,
-                'amount' => $addCreditRequest['data']->amount,
-                'comment' => $addCreditRequest['data']->comment,
-                'currency' => $addCreditRequest['data']->currency,
-                'customerName' => $customer['lastname'] . ' ' . $customer['firstname'] . ' / ' . $customer['nickname'],
-                'customerUrl' => $this->url->link(
-                    'sale/customer/update',
-                    'token=' . $this->session->data['token'] . '&customer_id=' . $addCreditRequest['senderId'],
-                    'SSL'),
-                'status' => $this->load->model('localisation/requestStatus')->getStatus($addCreditRequest['data']->status),
-                'statusId' => $addCreditRequest['data']->status,
-                'timeAdded' => $addCreditRequest['timeAdded']
-            );
+            } catch (\InvalidArgumentException $exception) {}
         }
         $this->data = array_merge($this->data, $this->parameters);
 

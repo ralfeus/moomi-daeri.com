@@ -1,4 +1,5 @@
-config.php
+/config.php
+/admin/config.php
 image/cache
 system/logs
 *.bak
@@ -7,3 +8,4 @@ composer.*
 .idea/
 yandex_7db4879326d0ef09.html
 /.gitignore
+!/system/library/config.php

@@ -223,7 +223,9 @@ class InvoiceDAO extends DAO {
         $query .= "GROUP BY customer_id";
         $result = [];
         foreach ($this->getDb()->query($query, $filter->getParams())->rows as $row) {
-            $result[] = CustomerDAO::getInstance()->getCustomer($row['customer_id']);
+            try {
+                $result[] = CustomerDAO::getInstance()->getCustomer($row['customer_id']);
+            } catch (\InvalidArgumentException $exception) {}
         }
         return $result;
     }

@@ -183,12 +183,11 @@ abstract class Controller extends OpenCartBase {
             $paramName = preg_replace_callback('/_(\w)/', function ($m) {
                 return strtoupper($m[1]);
             }, $param);
-            $this->parameters[$paramName] =
-                is_array($value)
-                    ? (isset($value[1]) // Predicate
-                    ? ($value[1]($_REQUEST[$param]) ? $_REQUEST[$param] : $value[0])
-                    : (!empty($_REQUEST[$param]) ? $_REQUEST[$param] : $value[0]))
-                    : (isset($_REQUEST[$param]) ? $_REQUEST[$param] : $value);
+           if (is_array($value) && isset($value[1]) && is_callable($value[1])) {
+                $this->parameters[$paramName] = isset($_REQUEST[$param]) && $value[1]($_REQUEST[$param]) ? $_REQUEST[$param] : $value[0];
+           } else {
+                $this->parameters[$paramName] = (isset($_REQUEST[$param]) ? $_REQUEST[$param] : $value);
+           }
         }
     }
 

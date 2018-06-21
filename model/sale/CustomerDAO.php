@@ -177,6 +177,7 @@ class CustomerDAO extends DAO {
     /**
      * @param $customerId
      * @return array
+     * @throws \InvalidArgumentException In case customer is not found
      */
     public function getCustomer($customerId) {
         $cacheKey = 'customer.' . $customerId;
@@ -193,6 +194,9 @@ class CustomerDAO extends DAO {
 SQL
           , [ ':customerId' => $customerId ]
         );
+        if (!$query->num_rows) {
+            throw new \InvalidArgumentException("Customer ID#$customerId was not found");
+        }
 
         $this->getCache()->set($cacheKey, $query->row);
 		return $query->row;

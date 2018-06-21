@@ -213,13 +213,15 @@ class ControllerSaleCustomer extends AdminController {
 			$approved = 0;
 			
 			foreach ($this->request->post['selected'] as $customer_id) {
-				$customer_info = CustomerDAO::getInstance()->getCustomer($customer_id);
-				
-				if ($customer_info && !$customer_info['approved']) {
-					CustomerDAO::getInstance()->approve($customer_id);
-					
-					$approved++;
-				}
+			    try {
+                    $customer_info = CustomerDAO::getInstance()->getCustomer($customer_id);
+
+                    if ($customer_info && !$customer_info['approved']) {
+                        CustomerDAO::getInstance()->approve($customer_id);
+
+                        $approved++;
+                    }
+                } catch (InvalidArgumentException $exception) {}
 			} 
 			
 			$this->session->data['success'] = sprintf($this->language->get('text_approved'), $approved);	
@@ -741,7 +743,9 @@ class ControllerSaleCustomer extends AdminController {
     	$this->data['cancel'] = $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
     	if (isset($_REQUEST['customer_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
-      		$customer_info = CustomerDAO::getInstance()->getCustomer($_REQUEST['customer_id']);
+    	    try {
+                $customer_info = CustomerDAO::getInstance()->getCustomer($_REQUEST['customer_id']);
+            } catch (InvalidArgumentException $exception) {}
     	} else {
             $customer_info = null;
         }
@@ -987,45 +991,47 @@ class ControllerSaleCustomer extends AdminController {
   	} 
 	
 	public function login() {
-		$customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
-				
-		if ($customer) {
-			$token = md5(mt_rand());
-			CustomerDAO::getInstance()->editToken($this->parameters['customerId'], $token);
+        try {
+            $customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
 
-			$store = StoreDAO::getInstance()->getStore($this->parameters['storeId']);
-			if ($store) {
-				$this->redirect($store['url'] . 'index.php?route=account/login&token=' . $token);
-			} else { 
-				$this->redirect(HTTP_CATALOG . 'index.php?route=account/login&token=' . $token);
-			}
-		} else {
-			$this->getLoader()->language('error/not_found');
-			$this->document->setTitle($this->language->get('heading_title'));
-			$this->data['heading_title'] = $this->language->get('heading_title');
-			$this->data['text_not_found'] = $this->language->get('text_not_found');
+            if ($customer) {
+                $token = md5(mt_rand());
+                CustomerDAO::getInstance()->editToken($this->parameters['customerId'], $token);
 
-			$this->data['breadcrumbs'] = array();
+                $store = StoreDAO::getInstance()->getStore($this->parameters['storeId']);
+                if ($store) {
+                    $this->redirect($store['url'] . 'index.php?route=account/login&token=' . $token);
+                } else {
+                    $this->redirect(HTTP_CATALOG . 'index.php?route=account/login&token=' . $token);
+                }
+            } else {
+                $this->getLoader()->language('error/not_found');
+                $this->document->setTitle($this->language->get('heading_title'));
+                $this->data['heading_title'] = $this->language->get('heading_title');
+                $this->data['text_not_found'] = $this->language->get('text_not_found');
 
-			$this->data['breadcrumbs'][] = array(
-				'text'      => $this->language->get('text_home'),
-				'href'      => $this->getUrl()->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
-				'separator' => false
-			);
+                $this->data['breadcrumbs'] = array();
 
-			$this->data['breadcrumbs'][] = array(
-				'text'      => $this->language->get('heading_title'),
-				'href'      => $this->getUrl()->link('error/not_found', 'token=' . $this->session->data['token'], 'SSL'),
-				'separator' => ' :: '
-			);
-		
-			$this->children = array(
-				'common/header',
-				'common/footer'
-			);
-		
-			$this->getResponse()->setOutput($this->render('error/not_found.tpl'));
-		}
+                $this->data['breadcrumbs'][] = array(
+                    'text' => $this->language->get('text_home'),
+                    'href' => $this->getUrl()->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+                    'separator' => false
+                );
+
+                $this->data['breadcrumbs'][] = array(
+                    'text' => $this->language->get('heading_title'),
+                    'href' => $this->getUrl()->link('error/not_found', 'token=' . $this->session->data['token'], 'SSL'),
+                    'separator' => ' :: '
+                );
+
+                $this->children = array(
+                    'common/header',
+                    'common/footer'
+                );
+
+                $this->getResponse()->setOutput($this->render('error/not_found.tpl'));
+            }
+        } catch (InvalidArgumentException $exception) {}
 	}
 
     public function orderItemsHistory() {
@@ -1059,9 +1065,11 @@ class ControllerSaleCustomer extends AdminController {
     public function purgeCart()
     {
         CustomerDAO::getInstance()->purgeCart($this->parameters['customerId']);
-        $customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
-        $json = array('success' => sprintf($this->language->get('SUCCESS_CART_PURGED'), $customer['nickname']));
-        $this->getResponse()->setOutput(json_encode($json));
+        try {
+            $customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
+            $json = array('success' => sprintf($this->language->get('SUCCESS_CART_PURGED'), $customer['nickname']));
+            $this->getResponse()->setOutput(json_encode($json));
+        } catch (InvalidArgumentException $exception) {}
     }
 		
 	public function zone() {
