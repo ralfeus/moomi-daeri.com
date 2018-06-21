@@ -4,18 +4,10 @@ namespace system\library;
 use model\DAO;
 use model\sale\CustomerDAO;
 use model\sale\InvoiceDAO;
-use ModelSaleTransaction;
+use model\sale\TransactionDAO;
 use system\engine\Registry;
 
 class Transaction extends DAO {
-    /** @var  ModelSaleTransaction */
-    private $modelTransaction;
-
-    public function __construct($registry) {
-        parent::__construct($registry);
-        $this->modelTransaction = $this->getLoader()->model('sale/transaction', 'admin');
-    }
-
     public function addCredit($customerId, $amount, $currency, $registry, $description = "") {
 //        $this->log->write("Starting");
 //        $customer = CustomerDAO::getInstance()->getCustomer($customerId);
@@ -109,10 +101,10 @@ class Transaction extends DAO {
     }
 
     public function getTransaction($transactionId) {
-        return $this->modelTransaction->getTransaction($transactionId);
+        return TransactionDAO::getInstance()->getTransaction($transactionId);
     }
 
     public function getTransactionByInvoiceId($invoiceId = 0) {
-        return $this->modelTransaction->getTransactionByInvoiceId($invoiceId);
+        return TransactionDAO::getInstance()->getTransactionByInvoiceId($invoiceId);
     }
 }
