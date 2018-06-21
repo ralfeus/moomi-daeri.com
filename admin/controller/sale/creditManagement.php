@@ -12,7 +12,7 @@ use system\library\Messaging;
  * Time: 11:22
  * To change this template use File | Settings | File Templates.
  */
-class ControllerSaleCreditManagement extends \system\engine\Controller {
+class ControllerSaleCreditManagement extends Controller {
     public function __construct($registry) {
         parent::__construct($registry);
 //        $this->log->write("Starting");
@@ -25,10 +25,10 @@ class ControllerSaleCreditManagement extends \system\engine\Controller {
 
     public function accept() {
 //        $this->log->write("Starting");
-        $request = Messaging::getSystemMessage($this->request->request['requestId']);
+        $request = Messaging::getInstance()->getSystemMessage($this->request->request['requestId']);
         $request['data']->status = ADD_CREDIT_STATUS_ACCEPTED;
         $this->log->write(print_r($request, true));
-        Messaging::updateSystemMessage($request['messageId'], $request['data']);
+        Messaging::getInstance()->updateSystemMessage($request['messageId'], $request['data']);
     }
 
     private function getCustomers() {
@@ -50,7 +50,7 @@ class ControllerSaleCreditManagement extends \system\engine\Controller {
         $data = array();
         $data['systemMessageType'] = SYS_MSG_ADD_CREDIT;
         $data = array_merge($data, $this->parameters);
-        $addCreditRequests = Messaging::getSystemMessages($data);
+        $addCreditRequests = Messaging::getInstance()->getSystemMessages($data);
 //        $this->log->write(print_r($addCreditRequests, true));
         $this->data['customersToFilterBy'] = $this->getCustomers();
         $this->data['requests'] = array();
@@ -114,26 +114,26 @@ class ControllerSaleCreditManagement extends \system\engine\Controller {
     }
 
     public function reject() {
-        $request = Messaging::getSystemMessage($this->request->request['requestId']);
+        $request = Messaging::getInstance()->getSystemMessage($this->request->request['requestId']);
         $request['data']->status = ADD_CREDIT_STATUS_REJECTED;
 //        $this->log->write(print_r($request, true));
-        Messaging::updateSystemMessage($request['messageId'], $request['data']);
+        Messaging::getInstance()->updateSystemMessage($request['messageId'], $request['data']);
     }
 
     public function saveAmount() {
 //        $this->log->write(print_r($this->parameters, true));
         if ($this->validateInput()) {
-            $request = Messaging::getSystemMessage($this->parameters['requestId']);
+            $request = Messaging::getInstance()->getSystemMessage($this->parameters['requestId']);
             $request['data']->amount = $this->parameters['amount'];
-            Messaging::updateSystemMessage($request['messageId'], $request['data']);
+            Messaging::getInstance()->updateSystemMessage($request['messageId'], $request['data']);
         }
     }
 
     public function saveComment() {
 //        $this->log->write(print_r($this->parameters, true));
-        $request = Messaging::getSystemMessage($this->parameters['requestId']);
+        $request = Messaging::getInstance()->getSystemMessage($this->parameters['requestId']);
         $request['data']->comment = $this->parameters['comment'];
-        Messaging::updateSystemMessage($request['messageId'], $request['data']);
+        Messaging::getInstance()->updateSystemMessage($request['messageId'], $request['data']);
     }
 
     protected function setBreadcrumps() {

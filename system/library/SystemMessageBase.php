@@ -1,5 +1,5 @@
 <?php
-use system\library\LibraryClass;
+namespace system\library;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -8,9 +8,10 @@ use system\library\LibraryClass;
  * Time: 20:56
  * To change this template use File | Settings | File Templates.
  */
-abstract class SystemMessageBase extends LibraryClass
-{
+abstract class SystemMessageBase extends LibraryClass {
     public abstract function handleCreate($messageId);
+
     public abstract function handleDelete($messageId);
+
     public abstract function handleUpdate($messageId);
 }

@@ -2,13 +2,14 @@
 use model\sale\CustomerDAO;
 use model\sale\OrderItemDAO;
 use model\setting\StoreDAO;
-use system\engine\Controller;
+use system\engine\AdminController;
 use system\library\Messaging;
 use system\library\Status;
 use system\library\Transaction;
 
-class ControllerSaleCustomer extends \system\engine\Controller {
+class ControllerSaleCustomer extends AdminController {
 	private $error = array();
+	/** @var \ModelLocalisationCurrency */
     private $modelLocalisationCurrency;
 
     public function __construct($registry)
@@ -27,6 +28,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 
     private function getCustomers()
     {
+        $data = [];
         foreach ($this->parameters as $key => $value)
         {
             if (strpos($key, 'filter') === false)
@@ -44,7 +46,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 
     private function getCreditRequests($customer)
     {
-        $addCreditRequests = Messaging::getSystemMessages(
+        $addCreditRequests = Messaging::getInstance()->getSystemMessages(
             array(
                 'systemMessageType' => SYS_MSG_ADD_CREDIT,
                 'filterCustomerId' => array($customer['customer_id']),
@@ -60,7 +62,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
                 'amount' => $addCreditRequest['data']->amount,
                 'comment' => $addCreditRequest['data']->comment,
                 'currency' => $addCreditRequest['data']->currency,
-                'status' => Status::getInstance($this->getRegistry())->getStatus($addCreditRequest['data']->status, $this->config->get('language_id'), true),
+                'status' => Status::getInstance($this->getRegistry())->getStatus($addCreditRequest['data']->status, $this->getLanguage()->getId(), true),
                 'statusId' => $addCreditRequest['data']->status,
                 'timeAdded' => $addCreditRequest['timeAdded']
             );
@@ -74,11 +76,11 @@ class ControllerSaleCustomer extends \system\engine\Controller {
         $this->data['textTimeAdded'] = $this->language->get('TIME_ADDED');
 
         $pagination = new Pagination();
-        $pagination->total = Messaging::getSystemMessagesCount(SYS_MSG_ADD_CREDIT, $customer['customer_id']);
+        $pagination->total = Messaging::getInstance()->getSystemMessagesCount(SYS_MSG_ADD_CREDIT, $customer['customer_id']);
         $pagination->page = $this->parameters['creditRequestsPage'];
         $pagination->limit = 10;
         $pagination->text = $this->language->get('text_pagination');
-        $pagination->url = $this->url->link(
+        $pagination->url = $this->getUrl()->link(
             'sale/customer/transaction',
             'creditRequestsPage={page}&transactionsPage=' . $this->parameters['transactionsPage'] .
                 '&token=' . $this->parameters['token'] .
@@ -88,7 +90,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 
     private function getTransactions($customer)
     {
-        //$this->data['addCreditUrl'] = $this->url->link('account/addCredit', '', 'SSL');
+        //$this->data['addCreditUrl'] = $this->getUrl()->link('account/addCredit', '', 'SSL');
         $this->data['textTimeAdded'] = $this->language->get('TIME_ADDED');
         $this->data['textComment'] = $this->language->get('COMMENT');
         $this->data['textBalance'] = $this->language->get('BALANCE');
@@ -100,7 +102,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
         $this->data['textAddCredit'] = $this->language->get('ADD_CREDIT');
         $this->data['textInvoiceId'] = $this->language->get('INVOICE_ID');
         $this->data['textTransactionId'] = $this->language->get('TRANSACTION_ID');
-        $this->data['total'] = $this->currency->format($customer['balance'], $customer['base_currency_code'], 1);
+        $this->data['total'] = $this->getCurrency()->format($customer['balance'], $customer['base_currency_code'], 1);
 
         $data = array(
             'sort'  => 'customer_transaction_id',
@@ -120,10 +122,10 @@ class ControllerSaleCustomer extends \system\engine\Controller {
                 'onclick' => "deleteTransaction(" . $transaction['customer_transaction_id'] . ");"
             );
             $amount = -$transaction['amount'];
-            $amountString = $this->currency->format($amount, $transaction['currency_code'], 1);
+            $amountString = $this->getCurrency()->format($amount, $transaction['currency_code'], 1);
             $this->data['transactions'][] = array(
                 'actions' => $actions,
-                'balance' => $this->currency->format(
+                'balance' => $this->getCurrency()->format(
                     $transaction['balance'], $transaction['balance_currency'] ? $transaction['balance_currency'] : $customer['base_currency_code'], 1),
                 'expenseAmount'      => $amount < 0 ? $amountString : '',
                 'incomeAmount'      => $amount >= 0 ? $amountString : '',
@@ -131,7 +133,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
                 'date_added'  => $transaction['date_added'],
                 'description' => $transaction['description'],
                 'invoiceId' => $transaction['invoice_id'] ? $transaction['invoice_id'] : '',
-                'invoiceUrl' => $this->url->link('sale/invoice/showForm', 'invoiceId=' . $transaction['invoice_id'] . '&token=' . $this->parameters['token'], 'SSL'),
+                'invoiceUrl' => $this->getUrl()->link('sale/invoice/showForm', 'invoiceId=' . $transaction['invoice_id'] . '&token=' . $this->parameters['token'], 'SSL'),
                 'transactionId' => $transaction['customer_transaction_id']
             );
         }
@@ -141,7 +143,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
         $pagination->page = $this->parameters['transactionsPage'];
         $pagination->limit = 10;
         $pagination->text = $this->language->get('text_pagination');
-        $pagination->url = $this->url->link(
+        $pagination->url = $this->getUrl()->link(
             'sale/customer/transaction',
             'transactionsPage={page}&creditRequestsPage=' . $this->parameters['creditRequestsPage'] .
                 '&token=' . $this->parameters['token'] .
@@ -163,6 +165,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
         $this->parameters['sort'] = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : 'name';
         $this->parameters['order'] = isset($_REQUEST['order']) ? $_REQUEST['order'] : 'ASC';
         $this->parameters['page'] = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1;
+        $this->parameters['limit'] = isset($_REQUEST['limit']) ? $_REQUEST['limit'] : $this->getConfig()->get('config_admin_limit');
 
         $this->parameters['baseCurrency'] = empty($_REQUEST['baseCurrency']) ? null : $_REQUEST['baseCurrency'];
         $this->parameters['customerId'] =
@@ -177,7 +180,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
       	  	CustomerDAO::getInstance()->addCustomer($this->request->post);
 			$this->session->data['success'] = $this->language->get('text_success');
-			$this->redirect($this->url->link('sale/customer', $this->buildUrlParameterString($this->parameters), 'SSL'));
+			$this->redirect($this->getUrl()->link('sale/customer', $this->buildUrlParameterString($this->parameters), 'SSL'));
 		}
     	$this->getForm();
   	} 
@@ -186,7 +189,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			CustomerDAO::getInstance()->editCustomer($_REQUEST['customer_id'], $this->request->post);
 			$this->session->data['success'] = $this->language->get('text_success');
-			$this->redirect($this->url->link('sale/customer', $this->buildUrlParameterString($this->parameters), 'SSL'));
+			$this->redirect($this->getUrl()->link('sale/customer', $this->buildUrlParameterString($this->parameters), 'SSL'));
 		}
     
     	$this->getForm();
@@ -198,13 +201,13 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 				CustomerDAO::getInstance()->deleteCustomer($customer_id);
 			}
 			$this->session->data['success'] = $this->language->get('text_success');
-			$this->redirect($this->url->link('sale/customer', $this->buildUrlParameterString($this->parameters), 'SSL'));
+			$this->redirect($this->getUrl()->link('sale/customer', $this->buildUrlParameterString($this->parameters), 'SSL'));
     	}
     	$this->getList();
   	}  
 	
 	public function approve() {
-		if (!$this->user->hasPermission('modify', 'sale/customer')) {
+		if (!$this->getUser()->hasPermission('modify', 'sale/customer')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		} elseif (isset($this->request->post['selected'])) {
 			$approved = 0;
@@ -220,54 +223,54 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 			} 
 			
 			$this->session->data['success'] = sprintf($this->language->get('text_approved'), $approved);	
-			$this->redirect($this->url->link('sale/customer', $this->buildUrlParameterString($this->parameters), 'SSL'));
+			$this->redirect($this->getUrl()->link('sale/customer', $this->buildUrlParameterString($this->parameters), 'SSL'));
 		}
 		
 		$this->getList();
 	} 
     
   	private function getList() {
-		if (isset($this->request->get['page'])) {
-			$page = $this->request->get['page'];
-		} else {
-			$page = 1;
-		}
+//		if (isset($this->request->get['page'])) {
+//			$page = $this->request->get['page'];
+//		} else {
+//			$page = 1;
+//		}
 
-		if (isset($this->request->get['limit'])) {
-			$limit = $this->request->get['limit'];
-		} else {
-			$limit = $this->config->get('config_admin_limit');
-		}
+//		if (isset($this->request->get['limit'])) {
+//			$limit = $this->request->get['limit'];
+//		} else {
+//			$limit = $this->getConfig()->get('config_admin_limit');
+//		}
 
-		if (isset($this->request->get['filterCustomerId'])) {
-			$filterCustomerId = $this->request->get['filterCustomerId'];
-		} else {
-			$filterCustomerId = null;
-		}
+//		if (isset($this->request->get['filterCustomerId'])) {
+//			$filterCustomerId = $this->request->get['filterCustomerId'];
+//		} else {
+//			$filterCustomerId = null;
+//		}
 
-		if (isset($this->request->get['filterEmail'])) {
-			$filterEmail = $this->request->get['filterEmail'];
-		} else {
-			$filterEmail = null;
-		}
+//		if (isset($this->request->get['filterEmail'])) {
+//			$filterEmail = $this->request->get['filterEmail'];
+//		} else {
+//			$filterEmail = null;
+//		}
+//
+//		if (isset($this->request->get['filterCustomerGroupId'])) {
+//			$filterCustomerGroupId = $this->request->get['filterCustomerGroupId'];
+//		} else {
+//			$filterCustomerGroupId = null;
+//		}
 
-		if (isset($this->request->get['filterCustomerGroupId'])) {
-			$filterCustomerGroupId = $this->request->get['filterCustomerGroupId'];
-		} else {
-			$filterCustomerGroupId = null;
-		}
-
-		if (isset($this->request->get['sort'])) {
-			$sort = $this->request->get['sort'];
-		} else {
-			$sort = 'c.customer_id';
-		}
+//		if (isset($this->request->get['sort'])) {
+//			$sort = $this->request->get['sort'];
+//		} else {
+//			$sort = 'c.customer_id';
+//		}
 		
-		if (isset($this->request->get['order'])) {
-			$order = $this->request->get['order'];
-		} else {
-			$order = 'ASC';
-		}
+//		if (isset($this->request->get['order'])) {
+//			$order = $this->request->get['order'];
+//		} else {
+//			$order = 'ASC';
+//		}
 
 		$url = '';
 						
@@ -312,26 +315,26 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 		}
 
 
-		$this->data['approve'] = $this->url->link('sale/customer/approve', 'token=' . $this->session->data['token'] . $url, 'SSL');
-		$this->data['insert'] = $this->url->link('sale/customer/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
-		$this->data['delete'] = $this->url->link('sale/customer/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
+		$this->data['approve'] = $this->getUrl()->link('sale/customer/approve', 'token=' . $this->session->data['token'] . $url, 'SSL');
+		$this->data['insert'] = $this->getUrl()->link('sale/customer/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
+		$this->data['delete'] = $this->getUrl()->link('sale/customer/delete', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
 		$this->data['customers'] = array();
 //        $data = $this->parameters;
 
-        $data['start']           = ($page - 1) * $limit;
-        $data['limit']           = $limit;
-		$data['filterCustomerId']	  = $filterCustomerId;
-		$data['filterEmail']	  = $filterEmail;
-		$data['filterCustomerGroupId'] = $filterCustomerGroupId;
-		$data['filterStatus']	  = $filterStatus;
-		$data['filterApproved']	  = $filterApproved;
-		$data['filterIp']	  = $filterIp;
-		$data['filterDateAdded']	  = $filterDateAdded;
-		$data['sort']            = $sort;
-		$data['order']           = $order;
+//        $data['limit']           = $limit;
+//		$data['filterCustomerId']	  = $filterCustomerId;
+//		$data['filterEmail']	  = $filterEmail;
+//		$data['filterCustomerGroupId'] = $filterCustomerGroupId;
+//		$data['filterStatus']	  = $filterStatus;
+//		$data['filterApproved']	  = $filterApproved;
+//		$data['filterIp']	  = $filterIp;
+//		$data['filterDateAdded']	  = $filterDateAdded;
+//		$data['sort']            = $sort;
+//		$data['order']           = $order;
     
-        $data = array_merge($data, $this->parameters);
+        $data = $this->parameters;
+        $data['start']           = ($data['page'] - 1) * $data['limit'];
         $this->data = array_merge($this->data, $this->parameters);
 
         $this->data['customersToFilterBy'] = $this->getCustomers();
@@ -344,15 +347,15 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 		
 			$action[] = array(
 				'text' => $this->language->get('text_edit'),
-				'href' => $this->url->link('sale/customer/update', 'token=' . $this->parameters['token'] . '&customer_id=' . $result['customer_id'], 'SSL')
+				'href' => $this->getUrl()->link('sale/customer/update', 'token=' . $this->parameters['token'] . '&customer_id=' . $result['customer_id'], 'SSL')
 			);
             $action[] = array(
                 'text' => $this->language->get('PURGE_CART'),
-                'onclick' => "ajaxAction(this, '" . $this->url->link('sale/customer/purgeCart', 'token=' . $this->parameters['token'] . '&customerId=' . $result['customer_id'], 'SSL') . "')"
+                'onclick' => "ajaxAction(this, '" . $this->getUrl()->link('sale/customer/purgeCart', 'token=' . $this->parameters['token'] . '&customerId=' . $result['customer_id'], 'SSL') . "')"
             );
             $action[] = array(
                 'text' => $this->language->get('ORDER_ITEMS_HISTORY'),
-                'onclick' => "ajaxAction(this, '" . $this->url->link('sale/customer/orderItemsHistory', 'token=' . $this->parameters['token'] . '&customerId=' . $result['customer_id'], 'SSL') . "')"
+                'onclick' => "ajaxAction(this, '" . $this->getUrl()->link('sale/customer/orderItemsHistory', 'token=' . $this->parameters['token'] . '&customerId=' . $result['customer_id'], 'SSL') . "')"
             );
             $action[] = array(
                 'text' => $this->language->get('LOGON_AS_CUSTOMER'),
@@ -405,8 +408,8 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 		$this->data['button_delete'] = $this->language->get('button_delete');
 		$this->data['button_filter'] = $this->language->get('FILTER');
 
-        $this->data['urlCustomerLogin'] = $this->url->link('sale/customer/login', 'token=' . $this->parameters['token'], 'SSL');
-        $this->data['urlSelf'] = $this->url->link($this->selfRoute, 'token=' . $this->parameters['token'], 'SSL');
+        $this->data['urlCustomerLogin'] = $this->getUrl()->link('sale/customer/login', 'token=' . $this->parameters['token'], 'SSL');
+        $this->data['urlSelf'] = $this->getUrl()->link($this->selfRoute, 'token=' . $this->parameters['token'], 'SSL');
 
         if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
@@ -425,33 +428,33 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 			$this->data['limits'] = array();
 
 			$this->data['limits'][] = array(
-				'text'  => $this->config->get('config_admin_limit'),
-				'value' => $this->config->get('config_admin_limit'),
-				'href'  => $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=' . $this->config->get('config_admin_limit'). $url, 'SSL')
+				'text'  => $this->getConfig()->get('config_admin_limit'),
+				'value' => $this->getConfig()->get('config_admin_limit'),
+				'href'  => $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=' . $this->getConfig()->get('config_admin_limit'). $url, 'SSL')
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 150,
 				'value' => 150,
-				'href'  => $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=150' . $url, 'SSL')
+				'href'  => $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=150' . $url, 'SSL')
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 100,
 				'value' => 100,
-				'href'  => $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=100' . $url, 'SSL')
+				'href'  => $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=100' . $url, 'SSL')
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 50,
 				'value' => 50,
-				'href'  => $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=50' . $url, 'SSL')
+				'href'  => $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=50' . $url, 'SSL')
 			);
 
 			$this->data['limits'][] = array(
 				'text'  => 25,
 				'value' => 25,
-				'href'  => $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=25' . $url, 'SSL')
+				'href'  => $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&limit=25' . $url, 'SSL')
 			);
 
 		$url = '';
@@ -488,7 +491,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 			$url .= '&filterDateAdded=' . $this->request->get['filterDateAdded'];
 		}
 		
-		if ($order == 'ASC') {
+		if ($data['order'] == 'ASC') {
 			$url .= '&order=DESC';
 		} else {
 			$url .= '&order=ASC';
@@ -498,21 +501,21 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 			$url .= '&page=' . $this->request->get['page'];
 		}
 		
-		$this->data['sort_name'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.customer_id' . $url, 'SSL');
-        $this->data['sort_nickname'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.nickname' . $url, 'SSL');
-		$this->data['sort_email'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.email' . $url, 'SSL');
-		$this->data['sort_customer_group'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=customer_group' . $url, 'SSL');
-		$this->data['sort_status'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.status' . $url, 'SSL');
-		$this->data['sort_approved'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.approved' . $url, 'SSL');
-		$this->data['sort_ip'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.ip' . $url, 'SSL');
-		$this->data['sort_date_added'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.date_added' . $url, 'SSL');
+		$this->data['sort_name'] = $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.customer_id' . $url, 'SSL');
+        $this->data['sort_nickname'] = $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.nickname' . $url, 'SSL');
+		$this->data['sort_email'] = $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.email' . $url, 'SSL');
+		$this->data['sort_customer_group'] = $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=customer_group' . $url, 'SSL');
+		$this->data['sort_status'] = $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.status' . $url, 'SSL');
+		$this->data['sort_approved'] = $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.approved' . $url, 'SSL');
+		$this->data['sort_ip'] = $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.ip' . $url, 'SSL');
+		$this->data['sort_date_added'] = $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&sort=c.date_added' . $url, 'SSL');
 		
 		$pagination = new Pagination();
 		$pagination->total = $customer_total;
-		$pagination->page = $page;
-		$pagination->limit = $limit;
+		$pagination->page = $data['page'];
+		$pagination->limit = $data['limit'];
 		$pagination->text = $this->language->get('text_pagination');
-		$pagination->url = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . '&page={page}', 'SSL');
+		$pagination->url = $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . '&page={page}', 'SSL');
 		$this->data['pagination'] = $pagination->render();
 
 		$this->getLoader()->model('sale/customer_group');
@@ -521,13 +524,6 @@ class ControllerSaleCustomer extends \system\engine\Controller {
     	$this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
 		$this->data['stores'] = $this->model_setting_store->getStores();
 
-		$this->data['filterEmail'] = $filterEmail;
-		$this->data['sort'] = $sort;
-		$this->data['order'] = $order;
-		$this->data['limit'] = $limit;
-    
-//    $this->data = array_merge($this->data, $this->parameters);
-				
 		$this->children = array(
 			'common/header',
 			'common/footer'
@@ -726,23 +722,23 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 
    		$this->data['breadcrumbs'][] = array(
        		'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+			'href'      => $this->getUrl()->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
       		'separator' => false
    		);
 
    		$this->data['breadcrumbs'][] = array(
        		'text'      => $this->language->get('heading_title'),
-			'href'      => $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . $url, 'SSL'),
+			'href'      => $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . $url, 'SSL'),
       		'separator' => ' :: '
    		);
 
 		if (!isset($_REQUEST['customer_id'])) {
-			$this->data['action'] = $this->url->link('sale/customer/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
+			$this->data['action'] = $this->getUrl()->link('sale/customer/insert', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		} else {
-			$this->data['action'] = $this->url->link('sale/customer/update', 'token=' . $this->session->data['token'] . '&customer_id=' . $_REQUEST['customer_id'] . $url, 'SSL');
+			$this->data['action'] = $this->getUrl()->link('sale/customer/update', 'token=' . $this->session->data['token'] . '&customer_id=' . $_REQUEST['customer_id'] . $url, 'SSL');
 		}
 		  
-    	$this->data['cancel'] = $this->url->link('sale/customer', 'token=' . $this->session->data['token'] . $url, 'SSL');
+    	$this->data['cancel'] = $this->getUrl()->link('sale/customer', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
     	if (isset($_REQUEST['customer_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
       		$customer_info = CustomerDAO::getInstance()->getCustomer($_REQUEST['customer_id']);
@@ -828,7 +824,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
     	} elseif (isset($customer_info)) { 
 			$this->data['customer_group_id'] = $customer_info['customer_group_id'];
 		} else {
-      		$this->data['customer_group_id'] = $this->config->get('config_customer_group_id');
+      		$this->data['customer_group_id'] = $this->getConfig()->get('config_customer_group_id');
     	}
 		
     	if (isset($this->request->post['status'])) {
@@ -887,7 +883,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 	}
 			 
   	private function validateForm() {
-    	if (!$this->user->hasPermission('modify', 'sale/customer')) {
+    	if (!$this->getUser()->hasPermission('modify', 'sale/customer')) {
       		$this->error['warning'] = $this->language->get('error_permission');
     	}
 
@@ -979,7 +975,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
   	}    
 
   	private function validateDelete() {
-    	if (!$this->user->hasPermission('modify', 'sale/customer')) {
+    	if (!$this->getUser()->hasPermission('modify', 'sale/customer')) {
       		$this->error['warning'] = $this->language->get('error_permission');
     	}	
 	  	 
@@ -1013,23 +1009,22 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 
 			$this->data['breadcrumbs'][] = array(
 				'text'      => $this->language->get('text_home'),
-				'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+				'href'      => $this->getUrl()->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
 				'separator' => false
 			);
 
 			$this->data['breadcrumbs'][] = array(
 				'text'      => $this->language->get('heading_title'),
-				'href'      => $this->url->link('error/not_found', 'token=' . $this->session->data['token'], 'SSL'),
+				'href'      => $this->getUrl()->link('error/not_found', 'token=' . $this->session->data['token'], 'SSL'),
 				'separator' => ' :: '
 			);
 		
-			$this->template = 'error/not_found.tpl';
 			$this->children = array(
 				'common/header',
 				'common/footer'
 			);
 		
-			$this->getResponse()->setOutput($this->render());
+			$this->getResponse()->setOutput($this->render('error/not_found.tpl'));
 		}
 	}
 
@@ -1054,8 +1049,8 @@ class ControllerSaleCustomer extends \system\engine\Controller {
         $this->data['textOrderItemId'] = $this->language->get('ORDER_ITEM_ID');
         $this->data['textEventDate'] = $this->language->get('DATE');
         $this->data['textStatusName'] = $this->language->get('STATUS');
-        $this->template = 'sale/customerOrderItemsHistory.php';
-        $result = $this->render();
+
+        $result = $this->render('sale/customerOrderItemsHistory.php');
         $json = array('content' => $result);
 //        $this->log->write(print_r($json, true));
         $this->getResponse()->setOutput(json_encode($json));
@@ -1097,12 +1092,12 @@ class ControllerSaleCustomer extends \system\engine\Controller {
         //$this->getLoader()->library('Transaction');
         $customer = CustomerDAO::getInstance()->getCustomer($this->parameters['customerId']);
         if ($this->request->server['REQUEST_METHOD'] == 'POST') {
-            if ($this->user->hasPermission('modify', 'sale/customer')) {
+            if ($this->getUser()->hasPermission('modify', 'sale/customer')) {
                 if ($this->request->post['action'] == 'add')
                 {
                     if ($this->request->post['amount'] < 0)
                     {
-                        Transaction::addCredit(
+                        Transaction::getInstance()->addCredit(
                             $this->parameters['customerId'],
                             -$this->request->post['amount'],
                             $customer['base_currency_code'],
@@ -1112,7 +1107,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
                     }
                     elseif ($this->request->post['amount'] > 0)
                     {
-                        Transaction::addTransaction(
+                        Transaction::getInstance()->addTransaction(
                             0,
                             $this->parameters['customerId'],
                             $this->request->post['amount'],
@@ -1123,8 +1118,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
                 }
                 elseif ($this->request->post['action'] == 'delete')
                 {
-                    $modelSaleTransaction = $this->getLoader()->model('sale/transaction');
-                    $transaction = $modelSaleTransaction->getTransaction($this->request->post['transactionId']);
+                    $transaction = Transaction::getInstance()->getTransaction($this->request->post['transactionId']);
                     if ($transaction['invoice_id'] != 0)
                     {
                         $this->data['error_warning'] = $this->language->get('ERROR_RELATED_INVOICE_EXISTS');
@@ -1135,7 +1129,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
                     }
                     else
                     {
-                        Transaction::deleteTransaction($this->request->post['transactionId']);
+                        Transaction::getInstance()->deleteTransaction($this->request->post['transactionId']);
                         $this->data['success'] = sprintf(
                             $this->language->get('SUCCESS_TRANSACTION_DELETED'), $this->request->post['transactionId']);
                     }
@@ -1146,7 +1140,7 @@ class ControllerSaleCustomer extends \system\engine\Controller {
                 $this->data['error_warning'] = $this->language->get('error_permission');
         }
 		
-		if (($this->request->server['REQUEST_METHOD'] == 'POST') && !$this->user->hasPermission('modify', 'sale/customer')) {
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && !$this->getUser()->hasPermission('modify', 'sale/customer')) {
 			$this->data['error_warning'] = $this->language->get('error_permission');
 		}
 		
@@ -1163,64 +1157,57 @@ class ControllerSaleCustomer extends \system\engine\Controller {
         $this->getTransactions($customer);
         $this->getCreditRequests($customer);
         $this->getResponse()->setOutput($this->render('sale/customerTransaction.tpl.php'));
-        return;
-
-		if (isset($_REQUEST['page'])) {
-			$page = $_REQUEST['page'];
-		} else {
-			$page = 1;
-		}  
-		
-		$this->data['transactions'] = array();
-			
-		$results = CustomerDAO::getInstance()->getTransactions($_REQUEST['customer_id'], ($page - 1) * 10, 10);
-
-		foreach ($results as $result) {
-            $actions = array();
-            $actions[] = array(
-                'text' => $this->language->get('DELETE'),
-                'onclick' => "deleteTransaction(" . $result['customer_transaction_id'] . ");"
-            );
-
-        	$this->data['transactions'][] = array(
-                'transactionId' => $result['customer_transaction_id'],
-                'actions' => $actions,
-				'amount'      => $this->currency->format($result['amount'], $result['currency_code'], 1),
-				'description' => $result['description'],
-        		'date_added'  => $result['date_added'],
-                'invoiceId' => $result['invoice_id'] ? $result['invoice_id'] : '',
-                'invoiceUrl' => $this->url->link('sale/invoice/showForm', 'invoiceId=' . $result['invoice_id'] . '&token=' . $this->session->data['token'], 'SSL')
-        	);
-      	}			
-		
-		$this->data['balance'] = $this->currency->format(
-            CustomerDAO::getInstance()->getCustomerBalance($_REQUEST['customer_id']), $customer['base_currency_code'], 1);
-		
-		$transaction_total = CustomerDAO::getInstance()->getTotalTransactions($_REQUEST['customer_id']);
-			
-		$pagination = new Pagination();
-		$pagination->total = $transaction_total;
-		$pagination->page = $page;
-		$pagination->limit = 10; 
-		$pagination->text = $this->language->get('text_pagination');
-		$pagination->url = $this->url->link('sale/customer/transaction', 'token=' . $this->session->data['token'] . '&customer_id=' . $_REQUEST['customer_id'] . '&page={page}', 'SSL');
-			
-		$this->data['pagination'] = $pagination->render();
-
-		$this->template = 'sale/customer_transaction.tpl';		
-		
-		$this->getResponse()->setOutput($this->render());
+//        return;
+//
+//
+//		$this->data['transactions'] = array();
+//
+//		$results = CustomerDAO::getInstance()->getTransactions($_REQUEST['customer_id'], ($page - 1) * 10, 10);
+//
+//		foreach ($results as $result) {
+//            $actions = array();
+//            $actions[] = array(
+//                'text' => $this->language->get('DELETE'),
+//                'onclick' => "deleteTransaction(" . $result['customer_transaction_id'] . ");"
+//            );
+//
+//        	$this->data['transactions'][] = array(
+//                'transactionId' => $result['customer_transaction_id'],
+//                'actions' => $actions,
+//				'amount'      => $this->currency->format($result['amount'], $result['currency_code'], 1),
+//				'description' => $result['description'],
+//        		'date_added'  => $result['date_added'],
+//                'invoiceId' => $result['invoice_id'] ? $result['invoice_id'] : '',
+//                'invoiceUrl' => $this->getUrl()->link('sale/invoice/showForm', 'invoiceId=' . $result['invoice_id'] . '&token=' . $this->session->data['token'], 'SSL')
+//        	);
+//      	}
+//
+//		$this->data['balance'] = $this->currency->format(
+//            CustomerDAO::getInstance()->getCustomerBalance($_REQUEST['customer_id']), $customer['base_currency_code'], 1);
+//
+//		$transaction_total = CustomerDAO::getInstance()->getTotalTransactions($_REQUEST['customer_id']);
+//
+//		$pagination = new Pagination();
+//		$pagination->total = $transaction_total;
+//		$pagination->page = $page;
+//		$pagination->limit = 10;
+//		$pagination->text = $this->language->get('text_pagination');
+//		$pagination->url = $this->getUrl()->link('sale/customer/transaction', 'token=' . $this->session->data['token'] . '&customer_id=' . $_REQUEST['customer_id'] . '&page={page}', 'SSL');
+//
+//		$this->data['pagination'] = $pagination->render();
+//
+//		$this->getResponse()->setOutput($this->render('sale/customer_transaction.tpl'));
 	}
 			
 	public function reward() {
-        if (!$this->user->hasPermission('access', 'sale/customer_deposit'))
+        if (!$this->getUser()->hasPermission('access', 'sale/customer_deposit'))
         {
             $this->data['error_fatal'] = $this->language->get('error_deposit_permission');
         }
         else
         {
             $this->data['error_fatal'] = '';
-            if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->user->hasPermission('modify', 'sale/customer')) {
+            if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->getUser()->hasPermission('modify', 'sale/customer')) {
                 CustomerDAO::getInstance()->addReward($_REQUEST['customer_id'], $this->request->post['description'], $this->request->post['points']);
 
                 $this->data['success'] = $this->language->get('text_success');
@@ -1265,13 +1252,12 @@ class ControllerSaleCustomer extends \system\engine\Controller {
             $pagination->page = $page;
             $pagination->limit = 10;
             $pagination->text = $this->language->get('text_pagination');
-            $pagination->url = $this->url->link('sale/customer/reward', 'token=' . $this->session->data['token'] . '&customer_id=' . $_REQUEST['customer_id'] . '&page={page}', 'SSL');
+            $pagination->url = $this->getUrl()->link('sale/customer/reward', 'token=' . $this->session->data['token'] . '&customer_id=' . $_REQUEST['customer_id'] . '&page={page}', 'SSL');
 
             $this->data['pagination'] = $pagination->render();
         }
-		$this->template = 'sale/customer_reward.tpl';		
-		
-		$this->getResponse()->setOutput($this->render());
+
+		$this->getResponse()->setOutput($this->render('sale/customer_reward.tpl'));
 	}
 
 	public function autocomplete() {
@@ -1323,4 +1309,3 @@ class ControllerSaleCustomer extends \system\engine\Controller {
 		$this->getResponse()->setOutput(json_encode($json));
 	}
 }
-?>

@@ -1,8 +1,7 @@
 <?php
 namespace system\library;
 
-use system\library\LibraryClass;
-use system\library\SystemMessageClassFactory;
+use model\DAO;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -11,19 +10,7 @@ use system\library\SystemMessageClassFactory;
  * Time: 19:49
  * To change this template use File | Settings | File Templates.
  */
-class Messaging extends LibraryClass {
-    private static $instance;
-
-    protected function __construct($registry) {
-        parent::__construct($registry);
-    }
-
-    public static function getInstance($registry) {
-        if (!isset($instance))
-            Messaging::$instance = new Messaging($registry);
-        return Messaging::$instance;
-    }
-
+class Messaging extends DAO {
     private function buildFilterString($data = array()) {
 //        $this->log->write(print_r($data, true));
         $filter = "";
@@ -33,7 +20,7 @@ class Messaging extends LibraryClass {
             if (!empty($data['filterCustomerId']))
                 $filter .= ($filter ? " AND " : "") . "m.sender_id IN (" . implode(', ', $data['filterCustomerId']) . ")";
             if (!empty($data['filterTimeAdded']))
-                $filter .= ($filter ? " AND " : "") . "DATE(m.time_added) = DATE('" . $this->db->escape($data['filterTimeAdded']) . "')";
+                $filter .= ($filter ? " AND " : "") . "DATE(m.time_added) = DATE('" . $this->getDb()->escape($data['filterTimeAdded']) . "')";
             if (!empty($data['systemMessageType']))
                 $filter .= ($filter ? " AND " : "") . "m.message_type_id = " . (int)$data['systemMessageType'];
         }
@@ -42,16 +29,16 @@ class Messaging extends LibraryClass {
         return $filter;
     }
 
-    private function buildLimitString($data = array()) {
-        $limit = "";
-        if (isset($data['start']) && is_numeric($data['start']) && isset($data['limit']) && is_numeric($data['limit']))
-            $limit = "LIMIT " . $data['start'] . ", " . $data['limit'];
-        return $limit;
-    }
+//    protected function buildLimitString($data = array()) {
+//        $limit = "";
+//        if (isset($data['start']) && is_numeric($data['start']) && isset($data['limit']) && is_numeric($data['limit']))
+//            $limit = "LIMIT " . $data['start'] . ", " . $data['limit'];
+//        return $limit;
+//    }
 
 
-    public static function getSystemMessage($messageId) {
-        $query = Messaging::$instance->db->query("
+    public function getSystemMessage($messageId) {
+        $query = $this->getDb()->query("
             SELECT *
             FROM messages AS m
             WHERE message_id = " . (int)$messageId
@@ -70,9 +57,9 @@ class Messaging extends LibraryClass {
     }
 
 //    public static function getSystemMessages($messageTypeId, $senderId = null, $start = null, $limit = null)
-    public static function getSystemMessages($data = array()) {
-        $filter = Messaging::$instance->buildFilterString($data);
-        $limit = Messaging::$instance->buildLimitString($data);
+    public function getSystemMessages($data = array()) {
+        $filter = $this->buildFilterString($data);
+        $limit = $this->buildLimitString($data);
         $sql = "
             SELECT *
             FROM messages AS m
@@ -80,8 +67,8 @@ class Messaging extends LibraryClass {
             ORDER BY time_added DESC
             $limit
         ";
-        Messaging::$instance->log->write($sql);
-        $query = Messaging::$instance->db->query($sql);
+        $this->log->write($sql);
+        $query = $this->getDb()->query($sql);
         if ($query->num_rows) {
             $messages = array();
             foreach ($query->rows as $messageRecord) {
@@ -99,8 +86,8 @@ class Messaging extends LibraryClass {
             return array();
     }
 
-    public static function getSystemMessagesCount($messageTypeId, $senderId = null) {
-        $query = Messaging::$instance->db->query("
+    public function getSystemMessagesCount($messageTypeId, $senderId = null) {
+        $query = $this->getDb()->query("
             SELECT count(*) AS quantity
             FROM messages
             WHERE
@@ -110,30 +97,28 @@ class Messaging extends LibraryClass {
         return $query->row['quantity'];
     }
 
-    public static function submitSystemMessage($senderId, $recipientId, $messageTypeId, $data) {
-        Messaging::$instance->db->query("
+    public function submitSystemMessage($senderId, $recipientId, $messageTypeId, $data) {
+        $this->getDb()->query("
             INSERT INTO messages
             SET
                 sender_id = " . (int)$senderId . ",
                 recipient_id = " . (int)$recipientId . ",
                 message_type_id = " . (int)$messageTypeId . ",
-                message = '" . Messaging::$instance->db->escape(json_encode($data)) . "',
+                message = '" . $this->getDb()->escape(json_encode($data)) . "',
                 time_added = NOW()
         ");
-        Messaging::$instance->load->library('SystemMessageClassFactory');
-        SystemMessageClassFactory::createInstance($messageTypeId, Messaging::$instance->load)->handleCreate(Messaging::$instance->db->getLastId());
+        (new AddCreditRequest($this->getRegistry()))->handleCreate($this->getDb()->getLastId());
     }
 
-    public static function updateSystemMessage($messageId, $data) {
-//        system\library\Messaging::$instance->log->write(print_r($data, true));
+    public function updateSystemMessage($messageId, $data) {
+//        system\library\$this->log->write(print_r($data, true));
         $message = Messaging::getSystemMessage($messageId);
-        Messaging::$instance->db->query("
+        $this->getDb()->query("
             UPDATE messages
             SET
-                message = '" . Messaging::$instance->db->escape(json_encode($data)) . "'
+                message = '" . $this->getDb()->escape(json_encode($data)) . "'
             WHERE message_id = " . (int)$messageId
         );
-        Messaging::$instance->load->library('SystemMessageClassFactory');
-        SystemMessageClassFactory::createInstance($message['messageTypeId'], Messaging::$instance->load)->handleUpdate($messageId);
+        (new AddCreditRequest($this->getRegistry()))->handleUpdate($messageId);
     }
 }

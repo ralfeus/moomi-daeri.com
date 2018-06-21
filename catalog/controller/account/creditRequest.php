@@ -21,7 +21,7 @@ class ControllerAccountCreditRequest extends CustomerZoneController {
     }
 
     public function getList() {
-        $addCreditRequests = Messaging::getSystemMessages(
+        $addCreditRequests = Messaging::getInstance()->getSystemMessages(
             array(
                 'systemMessageType' => SYS_MSG_ADD_CREDIT,
                 'filterCustomerId' => array($this->customer->getId())

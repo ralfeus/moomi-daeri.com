@@ -6,40 +6,32 @@
  * Time: 20:56
  * To change this template use File | Settings | File Templates.
  */
-use system\library\Messaging;
-use system\library\Transaction;
+namespace system\library;
 
-include_once("SystemMessageBase.php");
-class AddCreditRequest extends SystemMessageBase
-{
+class AddCreditRequest extends SystemMessageBase {
     private static $instance;
 
-    static function getInstance($registry)
-    {
+    static function getInstance($registry) {
         if (!isset(AddCreditRequest::$instance))
             AddCreditRequest::$instance = new AddCreditRequest($registry);
         return AddCreditRequest::$instance;
     }
 
-    public function handleCreate($messageId)
-    {
+    public function handleCreate($messageId) {
         // TODO: Implement handleCreate() method.
     }
 
-    public function handleUpdate($messageId)
-    {
-//        AddCreditRequest::$instance->log->write('Starting');
-        $request = Messaging::getSystemMessage($messageId);
-//        AddCreditRequest::$instance->log->write(print_r($request, true));
-        if ($request['data']->status == ADD_CREDIT_STATUS_ACCEPTED)
-        {
+    public function handleUpdate($messageId) {
+//        system\library\AddCreditRequest::$instance->log->write('Starting');
+        $request = Messaging::getInstance()->getSystemMessage($messageId);
+//        system\library\AddCreditRequest::$instance->log->write(print_r($request, true));
+        if ($request['data']->status == ADD_CREDIT_STATUS_ACCEPTED) {
             //$this->load->library("Transaction");
-            Transaction::addCredit($request['senderId'], $request['data']->amount, $request['data']->currency, $this->registry, $request['data']->comment);
+            Transaction::getInstance()->addCredit($request['senderId'], $request['data']->amount, $request['data']->currency, $this->registry, $request['data']->comment);
         }
     }
 
-    public function handleDelete($messageId)
-    {
+    public function handleDelete($messageId) {
         // TODO: Implement handleDelete() method.
     }
 }

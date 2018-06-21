@@ -39,21 +39,24 @@ final class Front {
 		$method = $action->getMethod();
 		$args = $action->getArgs();
 
-		if (file_exists($file)) {
-			require_once($file);
+		$controller = null;
+		$action = $this->error;
+		$this->error = '';
 
-			$controller = new $class($this->registry, $method);
-			
-			if (is_callable(array($controller, $method))) {
-				$action = call_user_func_array(array($controller, $method), $args);
-			} else {
-				$action = $this->error;
-				$this->error = '';
-			}
-		} else {
-			$action = $this->error;
-			$this->error = '';
-		}
+		$namespace = str_replace('/', '\\', substr(dirname($file), strlen(DIR_ROOT)));
+		try {
+		    $fqcn = "$namespace\\$class";
+		    $controller = new $fqcn($this->registry, $method);
+        } catch (Error $exception) {
+		    if (file_exists($file)) {
+                require_once($file);
+                $controller = new $class($this->registry, $method);
+            }
+        }
+
+        if (is_callable(array($controller, $method))) {
+            $action = call_user_func_array(array($controller, $method), $args);
+        }
 		return $action;
 	}
 }

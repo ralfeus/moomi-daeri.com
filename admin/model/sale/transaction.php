@@ -55,6 +55,10 @@ class ModelSaleTransaction extends \system\engine\Model
         $this->getCache()->delete('customer.' . $transaction['customer_id']);
     }
 
+    /**
+     * @param int $transactionId
+     * @return array Associated array with transaction data
+     */
     public function getTransaction($transactionId) {
         $query = $this->getDb()->query("
             SELECT *

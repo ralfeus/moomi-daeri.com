@@ -20,7 +20,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
     {
         //$this->load->library('system\library\Messaging');
         //$this->load->library('status');
-        $addCreditRequests = Messaging::getSystemMessages(
+        $addCreditRequests = Messaging::getInstance()->getSystemMessages(
             array(
                 'systemMessageType' => SYS_MSG_ADD_CREDIT,
                 'filterCustomerId' => array($this->customer->getId()),
@@ -54,7 +54,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
         $pagination->page = $this->parameters['creditRequestsPage'];
         $pagination->limit = 10;
         $pagination->text = $this->language->get('text_pagination');
-        $pagination->url = $this->url->link(
+        $pagination->url = $this->getUrl()->link(
             'account/transaction',
             'creditRequestsPage={page}&transactionsPage=' . $this->parameters['transactionsPage'], 'SSL');
         $this->data['creditRequestsPagination'] = $pagination->render();
@@ -63,7 +63,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
     public function getTransactions()
     {
 
-        $this->data['addCreditUrl'] = $this->url->link('account/addCredit', '', 'SSL');
+        $this->data['addCreditUrl'] = $this->getUrl()->link('account/addCredit', '', 'SSL');
         $this->data['textTimeAdded'] = $this->language->get('TIME_ADDED');
         $this->data['textComment'] = $this->language->get('COMMENT');
         $this->data['textBalance'] = $this->language->get('BALANCE');
@@ -104,7 +104,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
                 'date_added'  => $transaction['date_added'],
                 'description' => $transaction['description'],
                 'invoiceId' => $transaction['invoice_id'] ? $transaction['invoice_id'] : '',
-                'invoiceUrl' => $this->url->link('account/invoice/showForm', 'invoiceId=' . $transaction['invoice_id'], 'SSL'),
+                'invoiceUrl' => $this->getUrl()->link('account/invoice/showForm', 'invoiceId=' . $transaction['invoice_id'], 'SSL'),
                 'transactionId' => $transaction['customer_transaction_id']
             );
         }
@@ -114,7 +114,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
         $pagination->page = $this->parameters['transactionsPage'];
         $pagination->limit = 10;
         $pagination->text = $this->language->get('text_pagination');
-        $pagination->url = $this->url->link(
+        $pagination->url = $this->getUrl()->link(
             'account/transaction',
             'transactionsPage={page}&creditRequestsPage=' . $this->parameters['creditRequestsPage'], 'SSL');
         $this->data['transactionsPagination'] = $pagination->render();
@@ -122,9 +122,9 @@ class ControllerAccountTransaction extends CustomerZoneController {
 
 	public function index() {
 		if (!$this->customer->isLogged()) {
-			$this->session->data['redirect'] = $this->url->link('account/transaction', '', 'SSL');
+			$this->session->data['redirect'] = $this->getUrl()->link('account/transaction', '', 'SSL');
 			
-	  		$this->redirect($this->url->link('account/login', '', 'SSL'));
+	  		$this->redirect($this->getUrl()->link('account/login', '', 'SSL'));
     	}
         $this->getCreditRequests();
         $this->getTransactions();
@@ -153,25 +153,25 @@ class ControllerAccountTransaction extends CustomerZoneController {
         $this->parameters['transactionsPage'] = empty($_REQUEST['transactionsPage']) ? 1 : $_REQUEST['transactionsPage'];
     }
 
-    protected function setBreadcrumbs()
+    protected function setBreadcrumbs($breadcrumbs = [])
     {
         $this->data['breadcrumbs'] = array();
 
         $this->data['breadcrumbs'][] = array(
             'text'      => $this->language->get('text_home'),
-            'href'      => $this->url->link('common/home'),
+            'href'      => $this->getUrl()->link('common/home'),
             'separator' => false
         );
 
         $this->data['breadcrumbs'][] = array(
             'text'      => $this->language->get('text_account'),
-            'href'      => $this->url->link('account/account', '', 'SSL'),
+            'href'      => $this->getUrl()->link('account/account', '', 'SSL'),
             'separator' => $this->language->get('text_separator')
         );
 
         $this->data['breadcrumbs'][] = array(
             'text'      => $this->language->get('text_transaction'),
-            'href'      => $this->url->link('account/transaction', '', 'SSL'),
+            'href'      => $this->getUrl()->link('account/transaction', '', 'SSL'),
             'separator' => $this->language->get('text_separator')
         );
     }

@@ -16,11 +16,11 @@ class Transaction extends DAO {
         $this->modelTransaction = $this->getLoader()->model('sale/transaction', 'admin');
     }
 
-    public static function addCredit($customerId, $amount, $currency, $registry, $description = "") {
+    public function addCredit($customerId, $amount, $currency, $registry, $description = "") {
 //        $this->log->write("Starting");
 //        $customer = CustomerDAO::getInstance()->getCustomer($customerId);
 //        $this->log->write("Adding transaction");
-        Transaction::addTransaction(0, $customerId, -$amount, $currency, $description);
+        $this->addTransaction(0, $customerId, -$amount, $currency, $description);
 
         /// Try to pay all payment awaiting invoices
         $invoices = InvoiceDAO::getInstance()->getInvoices(array(
@@ -48,7 +48,7 @@ class Transaction extends DAO {
             InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
         } else {
             $temp = $invoice->getCustomer();
-            Transaction::addTransaction(
+            $this->addTransaction(
                 $invoiceId,
                 $customerId,
                 $invoice->getTotalCustomerCurrency(),
@@ -108,7 +108,7 @@ class Transaction extends DAO {
         );
     }
 
-    private function getTransaction($transactionId) {
+    public function getTransaction($transactionId) {
         return $this->modelTransaction->getTransaction($transactionId);
     }
 

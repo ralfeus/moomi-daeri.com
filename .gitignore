@@ -6,3 +6,4 @@ vendor/
 composer.*
 .idea/
 yandex_7db4879326d0ef09.html
+/.gitignore
