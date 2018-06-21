@@ -1,10 +1,10 @@
 <?php
 use model\sale\InvoiceDAO;
 use model\sale\OrderItemDAO;
+use model\sale\TransactionDAO;
 use model\shipping\ShippingMethodDAO;
 use system\engine\CustomerZoneController;
 use system\helper\ImageService;
-use system\library\Transaction;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -33,10 +33,9 @@ class ControllerAccountInvoice extends CustomerZoneController {
             $json['error'] = "Unexpected error";
         else
         {
-            Transaction::getInstance()->addPayment(
+            TransactionDAO::getInstance()->addPayment(
                 $this->customer->getId(),
-                $this->request->request['invoiceId'],
-                $this->registry);
+                $this->request->request['invoiceId']);
             $invoice = InvoiceDAO::getInstance()->getInvoice($this->request->request['invoiceId']);
             $json['newStatus'] = $this->load->model('localisation/invoice')->getInvoiceStatus(
                 $invoice->getStatusId(),
@@ -93,7 +92,7 @@ class ControllerAccountInvoice extends CustomerZoneController {
                         $this->session->data['language_id']),
                     'subtotal' => $this->getCurrency()->format($invoice->getSubtotal()),
                     'total' => $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $this->getCurrency()->getCode(), 1),
-                    'transaction' => $invoice->getStatusId() == IS_PAID ? Transaction::getInstance()->getTransactionByInvoiceId($invoice->getId()) : null,
+                    'transaction' => $invoice->getStatusId() == IS_PAID ? TransactionDAO::getInstance()->getTransactionByInvoiceId($invoice->getId()) : null,
                     'weight' => $invoice->getWeight(),
                     'package_number' => $invoice->getPackageNumber()
                 );

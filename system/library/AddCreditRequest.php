@@ -8,6 +8,8 @@
  */
 namespace system\library;
 
+use model\sale\TransactionDAO;
+
 class AddCreditRequest extends SystemMessageBase {
     private static $instance;
 
@@ -27,7 +29,11 @@ class AddCreditRequest extends SystemMessageBase {
 //        system\library\AddCreditRequest::$instance->log->write(print_r($request, true));
         if ($request['data']->status == ADD_CREDIT_STATUS_ACCEPTED) {
             //$this->load->library("Transaction");
-            Transaction::getInstance()->addCredit($request['senderId'], $request['data']->amount, $request['data']->currency, $this->registry, $request['data']->comment);
+            TransactionDAO::getInstance()->addCredit(
+                $request['senderId'],
+                $request['data']->amount,
+                $request['data']->currency,
+                $request['data']->comment);
         }
     }
 

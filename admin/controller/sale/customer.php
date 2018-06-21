@@ -1,11 +1,11 @@
 <?php
 use model\sale\CustomerDAO;
 use model\sale\OrderItemDAO;
+use model\sale\TransactionDAO;
 use model\setting\StoreDAO;
 use system\engine\AdminController;
 use system\library\Messaging;
 use system\library\Status;
-use system\library\Transaction;
 
 class ControllerSaleCustomer extends AdminController {
 	private $error = array();
@@ -1097,17 +1097,16 @@ class ControllerSaleCustomer extends AdminController {
                 {
                     if ($this->request->post['amount'] < 0)
                     {
-                        Transaction::getInstance()->addCredit(
+                        TransactionDAO::getInstance()->addCredit(
                             $this->parameters['customerId'],
                             -$this->request->post['amount'],
                             $customer['base_currency_code'],
-                            $this->registry,
                             $this->request->post['description']);
                         $this->data['success'] = $this->language->get('SUCCESS_CREDIT_ADDED');
                     }
                     elseif ($this->request->post['amount'] > 0)
                     {
-                        Transaction::getInstance()->addTransaction(
+                        TransactionDAO::getInstance()->addTransaction(
                             0,
                             $this->parameters['customerId'],
                             $this->request->post['amount'],
@@ -1118,7 +1117,7 @@ class ControllerSaleCustomer extends AdminController {
                 }
                 elseif ($this->request->post['action'] == 'delete')
                 {
-                    $transaction = Transaction::getInstance()->getTransaction($this->request->post['transactionId']);
+                    $transaction = TransactionDAO::getInstance()->getTransaction($this->request->post['transactionId']);
                     if ($transaction['invoice_id'] != 0)
                     {
                         $this->data['error_warning'] = $this->language->get('ERROR_RELATED_INVOICE_EXISTS');
@@ -1129,7 +1128,7 @@ class ControllerSaleCustomer extends AdminController {
                     }
                     else
                     {
-                        Transaction::getInstance()->deleteTransaction($this->request->post['transactionId']);
+                        TransactionDAO::getInstance()->deleteTransaction($this->request->post['transactionId']);
                         $this->data['success'] = sprintf(
                             $this->language->get('SUCCESS_TRANSACTION_DELETED'), $this->request->post['transactionId']);
                     }

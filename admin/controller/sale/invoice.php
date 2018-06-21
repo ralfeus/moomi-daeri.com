@@ -3,10 +3,10 @@ use model\sale\CustomerDAO;
 use model\sale\InvoiceDAO;
 use model\sale\OrderItem;
 use model\sale\OrderItemDAO;
+use model\sale\TransactionDAO;
 use model\shipping\ShippingMethodDAO;
-use system\engine\Controller;
+use system\engine\AdminController;
 use system\helper\ImageService;
-use system\library\Transaction;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -15,7 +15,7 @@ use system\library\Transaction;
  * Time: 21:43
  * To change this template use File | Settings | File Templates.
  */
-class ControllerSaleInvoice extends \system\engine\Controller {
+class ControllerSaleInvoice extends AdminController {
     /** @var ModelReferenceAddress */
     private $modelReferenceAddress;
     /** @var ModelSaleOrder */
@@ -108,9 +108,9 @@ class ControllerSaleInvoice extends \system\engine\Controller {
 
     public function delete() {
         if (!empty($this->parameters['invoiceId'])) {
-            $relatedTransaction = Transaction::getInstance()->getTransactionByInvoiceId($this->parameters['invoiceId']);
+            $relatedTransaction = TransactionDAO::getInstance()->getTransactionByInvoiceId($this->parameters['invoiceId']);
             if (!empty($relatedTransaction))
-                Transaction::getInstance()->deleteTransaction($relatedTransaction['customer_transaction_id']);
+                TransactionDAO::getInstance()->deleteTransaction($relatedTransaction['customer_transaction_id']);
             InvoiceDAO::getInstance()->deleteInvoice($this->request->request['invoiceId']);
             $this->data['notifications']['success'] = sprintf(
                 $this->language->get('SUCCESS_INVOICE_DELETED'), $this->request->request['invoiceId']);
@@ -252,14 +252,14 @@ class ControllerSaleInvoice extends \system\engine\Controller {
             if ($temp['balance'] < $totalToPay)
                 if ($temp['allow_overdraft'])
                 {
-                    Transaction::addPayment($temp['customer_id'], $invoiceId, $this->registry);
+                    TransactionDAO::getInstance()->addPayment($temp['customer_id'], $invoiceId);
                     InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_PAID);
                 }
                 else
                     InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_PAYMENT);
             else
             {
-                Transaction::addPayment($temp['customer_id'], $invoiceId, $this->registry);
+                TransactionDAO::getInstance()->addPayment($temp['customer_id'], $invoiceId);
                 InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_PAID);
             }
         }
