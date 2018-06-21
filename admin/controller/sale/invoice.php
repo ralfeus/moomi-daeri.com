@@ -137,18 +137,18 @@ class ControllerSaleInvoice extends AdminController {
             $action = array();
             $action[] = array(
                 'text' => $this->getLanguage()->get('VIEW'),
-                'href' => $this->url->link('sale/invoice/showForm', 'invoiceId=' . $invoice->getId() . '&token=' . $this->session->data['token'], 'SSL')
+                'href' => $this->getUrl()->link('sale/invoice/showForm', 'invoiceId=' . $invoice->getId() . '&token=' . $this->session->data['token'], 'SSL')
             );
-            if (!$this->getLoader()->model('sale/transaction')->getTransactionByInvoiceId($invoice->getId()))
+            if (!TransactionDAO::getInstance()->getTransactionByInvoiceId($invoice->getId()))
                 $action[] = array(
                     'text' => $this->getLanguage()->get('DELETE'),
-                    'href' => $this->url->link('sale/invoice/delete', 'invoiceId=' . $invoice->getId() . '&token=' . $this->session->data['token'], 'SSL')
+                    'href' => $this->getUrl()->link('sale/invoice/delete', 'invoiceId=' . $invoice->getId() . '&token=' . $this->session->data['token'], 'SSL')
                 );
             else
                 $action[] = array(
                     'text' => $this->getLanguage()->get('DELETE'),
                     'onclick' => "confirmDeletion('" .
-                        $this->url->link(
+                        $this->getUrl()->link(
                             'sale/invoice/delete',
                             'invoiceId=' . $invoice->getId() . '&token=' . $this->session->data['token'], 'SSL') .
                         "')"
@@ -345,17 +345,17 @@ class ControllerSaleInvoice extends AdminController {
         $this->getResponse()->setOutput('');
     }
 
-    protected function setBreadcrumbs()
+    protected function setBreadcrumbs($breadcrumbs = [])
     {
         $this->data['breadcrumbs'] = array();
         $this->data['breadcrumbs'][] = array(
             'text'      => $this->language->get('text_home'),
-            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+            'href'      => $this->getUrl()->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
             'separator' => false
         );
         $this->data['breadcrumbs'][] = array(
             'text'      => $this->language->get('textOrderItems'),
-            'href'      => $this->url->link('sale/order_items', 'token=' . $this->session->data['token'], 'SSL'),
+            'href'      => $this->getUrl()->link('sale/order_items', 'token=' . $this->session->data['token'], 'SSL'),
             'separator' => ' :: '
         );
         $this->data['breadcrumbs'][] = array(
@@ -452,7 +452,7 @@ class ControllerSaleInvoice extends AdminController {
         $this->data['shippingCost'] =
             $this->getCurrency()->format($shippingCost, $this->getConfig()->get('config_currency'));
         $this->data['shippingCostRoute'] =
-            $this->url->link(
+            $this->getUrl()->link(
                 'sale/invoice/getShippingCost',
                 'token=' . $this->parameters['token'] . $orderItemIdParam,
                 'SSL'
@@ -542,7 +542,7 @@ class ControllerSaleInvoice extends AdminController {
         $this->data['shippingCost'] = $this->getCurrency()->format($invoice->getShippingCost(), $this->getConfig()->get('config_currency'));
         $this->data['shippingCostRaw'] = $invoice->getShippingCost();
         $this->data['shippingCostRoute'] =
-            $this->url->link(
+            $this->getUrl()->link(
                 'sale/invoice/getShippingCost',
                 'token=' . $this->parameters['token'] . $orderItemIdParam,
                 'SSL'
@@ -590,20 +590,20 @@ class ControllerSaleInvoice extends AdminController {
           $this->data['submitAction'] = "javascript:window.close();";
           $this->showEditForm();
         } elseif ($this->getRequest()->getMethod() == 'POST') {
-          $this->data['submitAction'] = $this->url->link('sale/invoice/create', 'token=' . $this->session->data['token'], 'SSL');
+          $this->data['submitAction'] = $this->getUrl()->link('sale/invoice/create', 'token=' . $this->session->data['token'], 'SSL');
           $this->showCreateForm();
         }
-        $this->template = 'sale/invoiceForm.tpl.php';
+
         $this->children = array(
             'common/header',
             'common/footer'
         );
-        $this->getResponse()->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render('sale/invoiceForm.tpl.php'));
     }
 
     private function validateDeletion($invoiceId)
     {
-        $relatedTransaction = $this->getLoader()->model('sale/transaction')->getTransactionByInvoiceId($invoiceId);
+        $relatedTransaction = TransactionDAO::getInstance()->getTransactionByInvoiceId($invoiceId);
         if ($relatedTransaction)
             $this->data['notifications']['error'] = sprintf(
                 $this->language->get('ERROR_RELATED_TRANSACTION_EXISTS'), $relatedTransaction['customer_transaction_id'], $invoiceId);

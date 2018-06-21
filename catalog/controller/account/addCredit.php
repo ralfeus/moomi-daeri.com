@@ -23,7 +23,7 @@ class ControllerAccountAddCredit extends CustomerZoneController
         if ($this->validateInput())
         {
             //$this->load->library("system\library\Messaging");
-            Messaging::submitSystemMessage(
+            Messaging::getInstance()->submitSystemMessage(
                 $this->customer->getId(),
                 0,
                 SYS_MSG_ADD_CREDIT,
@@ -35,7 +35,7 @@ class ControllerAccountAddCredit extends CustomerZoneController
                 )
             );
             $this->session->data['notifications']['success'] = $this->language->get('SUCCESS_ADD_CREDIT_REQUEST_SENT');
-            $this->redirect($this->url->link('account/account', '', 'SSL'));
+            $this->redirect($this->getUrl()->link('account/account', '', 'SSL'));
         }
         else
             $this->index();
