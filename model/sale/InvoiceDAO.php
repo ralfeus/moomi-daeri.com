@@ -92,7 +92,7 @@ class InvoiceDAO extends DAO {
                 ':discount' => $discount,
                 ':shippingAddressId' => $orderModel->getShippingAddressId($orderId),
                 ':shippingMethod' => $shippingMethod,
-                ':shippingDate' => $shippingDate,
+                ':shippingDate' => $shippingDate ? $shippingDate : null,
                 ':shippingCost' => $shippingCost,
                 ':subtotal' => $subtotal,
                 ':total' => $total,
