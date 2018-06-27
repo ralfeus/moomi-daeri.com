@@ -92,10 +92,13 @@ abstract class OpenCartBase {
     protected function getCurrentCurrency() {
         return $this->registry->get('currency');
     }
+
     /**
+     * @param null $code
      * @return Currency
+     * @deprecated
      */
-    protected function getCurrency() {
+    protected function getCurrency($code = null) {
         return $this->getCurrentCurrency();
     }
 

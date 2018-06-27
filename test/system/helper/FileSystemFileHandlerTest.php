@@ -44,4 +44,16 @@ class FileSystemFileHandlerTest extends TestCase {
         $this->assertTrue($content == 'test', "File content is identical to source: $content");
         unlink($cwd . '/' . $tgt);
     }
+
+    /**
+     * @test
+     * @covers FileSystemFileHandler::getDirectories()
+     */
+    public function getDirectories() {
+        $cwd = dirname(__FILE__);
+        $fileHandler = new FileSystemFileHandler($cwd);
+        $dirs = $fileHandler->getDirectories('.');
+        print_r($dirs);
+        $this->assertTrue(sizeof($dirs) == 2);
+    }
 }

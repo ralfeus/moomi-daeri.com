@@ -1,14 +1,17 @@
 <?php
-use system\engine\Controller;
+use model\core\CurrencyDAO;
+use model\setting\ExtensionDAO;
+use model\total\TotalBaseDAO;
+use system\engine\CustomerController;
 
-class ControllerCommonHeader extends \system\engine\Controller {
+class ControllerCommonHeader extends CustomerController {
 	protected function index() {
 		$this->data['title'] = $this->document->getTitle();
 
 		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
-			$this->data['base'] = $this->config->get('config_ssl');
+			$this->data['base'] = $this->getConfig()->get('config_ssl');
 		} else {
-			$this->data['base'] = $this->config->get('config_url');
+			$this->data['base'] = $this->getConfig()->get('config_url');
 		}
 
         $this->data['description'] = $this->document->getDescription();
@@ -18,7 +21,7 @@ class ControllerCommonHeader extends \system\engine\Controller {
 		$this->data['scripts'] = $this->document->getScripts();
 		$this->data['lang'] = $this->language->get('code');
 		$this->data['direction'] = $this->language->get('direction');
-		$this->data['google_analytics'] = html_entity_decode($this->config->get('config_google_analytics'), ENT_QUOTES, 'UTF-8');
+		$this->data['google_analytics'] = html_entity_decode($this->getConfig()->get('config_google_analytics'), ENT_QUOTES, 'UTF-8');
 
 		$this->language->load('common/header');
 
@@ -28,16 +31,16 @@ class ControllerCommonHeader extends \system\engine\Controller {
 			$server = HTTP_IMAGE;
 		}
 
-		if ($this->config->get('config_icon') && file_exists(DIR_IMAGE . $this->config->get('config_icon'))) {
-			$this->data['icon'] = $server . $this->config->get('config_icon');
+		if ($this->getConfig()->get('config_icon') && file_exists(DIR_IMAGE . $this->getConfig()->get('config_icon'))) {
+			$this->data['icon'] = $server . $this->getConfig()->get('config_icon');
 		} else {
 			$this->data['icon'] = '';
 		}
 
-		$this->data['name'] = $this->config->get('config_name');
+		$this->data['name'] = $this->getConfig()->get('config_name');
 
-		if ($this->config->get('config_logo') && file_exists(DIR_IMAGE . $this->config->get('config_logo'))) {
-			$this->data['logo'] = $server . $this->config->get('config_logo');
+		if ($this->getConfig()->get('config_logo') && file_exists(DIR_IMAGE . $this->getConfig()->get('config_logo'))) {
+			$this->data['logo'] = $server . $this->getConfig()->get('config_logo');
 		} else {
 			$this->data['logo'] = '';
 		}
@@ -45,32 +48,31 @@ class ControllerCommonHeader extends \system\engine\Controller {
 		// Calculate Totals
 		$total_data = array();
 		$total = 0;
-		$taxes = $this->cart->getTaxes(false);
+//		$taxes = $this->getCart()->getTaxes(false);
 
-		if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-			$this->load->model('setting/extension');
+		if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
+			$this->getLoader()->model('setting/extension');
 
 			$sort_order = array();
 
-			$results = \model\setting\ExtensionDAO::getInstance()->getExtensions('total');
+			$results = ExtensionDAO::getInstance()->getExtensions('total');
 
 			foreach ($results as $key => $value) {
-				$sort_order[$key] = $this->config->get($value['code'] . '_sort_order');
+				$sort_order[$key] = $this->getConfig()->get($value['code'] . '_sort_order');
 			}
 
 			array_multisort($sort_order, SORT_ASC, $results);
 
 			foreach ($results as $result) {
-				if ($this->config->get($result['code'] . '_status')) {
-					$this->load->model('total/' . $result['code']);
-
-					$this->{'model_total_' . $result['code']}->getTotal($total_data, $total, $taxes, false);
+				if ($this->getConfig()->get($result['code'] . '_status')) {
+                    $totalExtension = TotalBaseDAO::getTotalExtension($result['code']);
+                    $totalExtension->getTotal($total_data, $total, $false);
 				}
 			}
 		}
 
 		if($this->customer->isLogged()){
-			$this->load->model('shop/general');
+			$this->getLoader()->model('shop/general');
 			$isVip = $this->model_shop_general->isVip($this->customer->getId());
 		}
 
@@ -89,16 +91,16 @@ class ControllerCommonHeader extends \system\engine\Controller {
         $this->data['text_favorites'] = $this->language->get('text_favorites');
 		$this->data['text_wishlist'] = sprintf($this->language->get('text_wishlist'), (isset($this->session->data['wishlist']) ? count($this->session->data['wishlist']) : 0));
 		$this->data['text_cart'] = sprintf($this->language->get('text_cart'),(isset($this->session->data['cart']) ? count($this->session->data['cart']) : 0));
-		$this->data['text_items'] = sprintf($this->language->get('text_items'), $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->currency->format($total));
+		$this->data['text_items'] = sprintf($this->language->get('text_items'), $this->getCart()->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->getCurrentCurrency()->format($total));
    	    $this->data['textSearchPrompt'] = $this->language->get('SEARCH_PROMPT');
-		$this->data['text_welcome'] = sprintf($this->language->get('text_welcome'), $this->url->link('account/login', '', 'SSL'), $this->url->link('account/register', '', 'SSL'));
-		$this->data['text_welcome_help'] = sprintf($this->language->get('text_welcome_help'), $this->url->link('account/login', '', 'SSL'));
-		$this->data['text_welcome_guest_left'] = sprintf($this->language->get('text_welcome_guest_left'), $this->url->link('account/login', '', 'SSL'));
-		$this->data['text_welcome_guest_right'] = sprintf($this->language->get('text_welcome_guest_right'), $this->url->link('account/register', '', 'SSL'));
-		$this->data['text_logged'] = sprintf($this->language->get('text_logged'), $str, $this->url->link('account/account', '', 'SSL'), $this->customer->getNickName(), $this->url->link('account/logout', '', 'SSL'));
+		$this->data['text_welcome'] = sprintf($this->language->get('text_welcome'), $this->getUrl()->link('account/login', '', 'SSL'), $this->getUrl()->link('account/register', '', 'SSL'));
+		$this->data['text_welcome_help'] = sprintf($this->language->get('text_welcome_help'), $this->getUrl()->link('account/login', '', 'SSL'));
+		$this->data['text_welcome_guest_left'] = sprintf($this->language->get('text_welcome_guest_left'), $this->getUrl()->link('account/login', '', 'SSL'));
+		$this->data['text_welcome_guest_right'] = sprintf($this->language->get('text_welcome_guest_right'), $this->getUrl()->link('account/register', '', 'SSL'));
+		$this->data['text_logged'] = sprintf($this->language->get('text_logged'), $str, $this->getUrl()->link('account/account', '', 'SSL'), $this->customer->getNickName(), $this->getUrl()->link('account/logout', '', 'SSL'));
 		$this->data['text_logged_help'] = sprintf($this->language->get('text_logged_help'), $str, $this->customer->getNickName());
-		$this->data['text_logged_customer_left'] = sprintf($this->language->get('text_logged_customer_left'), $str, $this->url->link('account/account', '', 'SSL'), $this->customer->getNickName(),$this->customer->getNickName());
-		$this->data['text_logged_customer_right'] = sprintf($this->language->get('text_logged_customer_right'), $this->url->link('account/logout', '', 'SSL'));
+		$this->data['text_logged_customer_left'] = sprintf($this->language->get('text_logged_customer_left'), $str, $this->getUrl()->link('account/account', '', 'SSL'), $this->customer->getNickName(),$this->customer->getNickName());
+		$this->data['text_logged_customer_right'] = sprintf($this->language->get('text_logged_customer_right'), $this->getUrl()->link('account/logout', '', 'SSL'));
 		$this->data['text_account'] = $this->language->get('text_account');
    	$this->data['text_checkout'] = $this->language->get('text_checkout');
 		$this->data['text_language'] = $this->language->get('text_language');
@@ -118,18 +120,18 @@ class ControllerCommonHeader extends \system\engine\Controller {
         $this->data['text_totop'] = $this->language->get('text_totop');
         $this->data['text_back'] = $this->language->get('text_back');
 
-		$this->data['home'] = $this->url->link('common/home');
-		$this->data['wishlist'] = $this->url->link('account/wishlist');
+		$this->data['home'] = $this->getUrl()->link('common/home');
+		$this->data['wishlist'] = $this->getUrl()->link('account/wishlist');
 		$this->data['logged'] = $this->customer->isLogged();
-		$this->data['account'] = $this->url->link('account/account', '', 'SSL');
-		$this->data['cart'] = $this->url->link('checkout/cart');
- if($this->config->get('wk_auction_timezone_set')){
-    $this->data['menuauction'] = $this->url->link('catalog/wkallauctions', '', 'SSL');
+		$this->data['account'] = $this->getUrl()->link('account/account', '', 'SSL');
+		$this->data['cart'] = $this->getUrl()->link('checkout/cart');
+ if($this->getConfig()->get('wk_auction_timezone_set')){
+    $this->data['menuauction'] = $this->getUrl()->link('catalog/wkallauctions', '', 'SSL');
 }
-		$this->data['checkout'] = $this->url->link('checkout/checkout', '', 'SSL');
-    $this->data['repurchase_order'] = $this->url->link('product/repurchase', '', 'SSL');
-    $this->data['urlGallery'] = $this->url->link('product/gallery', '', 'SSL');
-    $this->data['urlShoppingGuide'] = $this->url->link('shop/admin/showPage&page_id=15', '', 'SSL');
+		$this->data['checkout'] = $this->getUrl()->link('checkout/checkout', '', 'SSL');
+    $this->data['repurchase_order'] = $this->getUrl()->link('product/repurchase', '', 'SSL');
+    $this->data['urlGallery'] = $this->getUrl()->link('product/gallery', '', 'SSL');
+    $this->data['urlShoppingGuide'] = $this->getUrl()->link('shop/admin/showPage&page_id=15', '', 'SSL');
 
 		if (isset($this->request->get['filter_name'])) {
 			$this->data['filter_name'] = $this->request->get['filter_name'];
@@ -137,10 +139,10 @@ class ControllerCommonHeader extends \system\engine\Controller {
 			$this->data['filter_name'] = '';
 		}
 
-		$this->data['action'] = $this->url->link('common/home');
+		$this->data['action'] = $this->getUrl()->link('common/home');
 
 		if (!isset($this->request->get['route'])) {
-			$this->data['redirect'] = $this->url->link('common/home');
+			$this->data['redirect'] = $this->getUrl()->link('common/home');
 		} else {
 			$data = $this->request->get;
 
@@ -157,12 +159,14 @@ class ControllerCommonHeader extends \system\engine\Controller {
 				$url = '&' . urldecode(http_build_query($data, '', '&'));
 			}
 
-			$this->data['redirect'] = $this->url->link($route, $url);
+			$this->data['redirect'] = $this->getUrl()->link($route, $url);
 		}
 
+		$modelLanguage = new ModelLocalisationLanguage($this->getRegistry());
+		$languages = $modelLanguage->getLanguages();
     	if (($this->request->server['REQUEST_METHOD'] == 'POST') && !empty($this->request->post['language_code'])) {
 			$this->session->data['language'] = $this->request->post['language_code'];
-            foreach ($this->load->model('localisation/language')->getLanguages() as $language)
+            foreach ($languages as $language)
                 if ($language['code'] == $this->session->data['language'])
                 {
                     $this->session->data['language_id'] = $language['language_id'];
@@ -172,15 +176,15 @@ class ControllerCommonHeader extends \system\engine\Controller {
 			if (isset($this->request->post['redirect'])) {
 				$this->redirect($this->request->post['redirect']);
 			} else {
-				$this->redirect($this->url->link('common/home'));
+				$this->redirect($this->getUrl()->link('common/home'));
 			}
     	}
 
 		$this->data['language_code'] = $this->session->data['language'];
-		$this->load->model('localisation/language');
+//		$this->getLoader()->model('localisation/language');
 		$this->data['languages'] = array();
-		$results = $this->model_localisation_language->getLanguages();
-		foreach ($results as $result) {
+//		$results = $this->model_localisation_language->getLanguages();
+		foreach ($languages as $result) {
 			if ($result['status']) {
 				$this->data['languages'][] = array(
 					'name'  => $result['name'],
@@ -199,7 +203,7 @@ class ControllerCommonHeader extends \system\engine\Controller {
             );
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && !empty($this->request->post['currency_code'])) {
-      		$this->currency->set($this->request->post['currency_code']);
+      		$this->getCurrentCurrency()->set($this->request->post['currency_code']);
 
 			unset($this->session->data['shipping_methods']);
 			unset($this->session->data['shipping_method']);
@@ -207,14 +211,14 @@ class ControllerCommonHeader extends \system\engine\Controller {
 			if (isset($this->request->post['redirect'])) {
 				$this->redirect($this->request->post['redirect']);
 			} else {
-				$this->redirect($this->url->link('common/home'));
+				$this->redirect($this->getUrl()->link('common/home'));
 			}
    		}
 
-		$this->data['currency_code'] = $this->currency->getCode();
-		$this->load->model('localisation/currency');
+		$this->data['currency_code'] = $this->getCurrentCurrency()->getCode();
+//		$this->getLoader()->model('localisation/currency');
 	    $this->data['currencies'] = array();
-		$results = $this->model_localisation_currency->getCurrencies();
+		$results = CurrencyDAO::getInstance()->getCurrencies();
 		foreach ($results as $result) {
 			if ($result['status']) {
                 if ($result['code'] == 'RUB') {
@@ -229,13 +233,13 @@ class ControllerCommonHeader extends \system\engine\Controller {
 			}
 		}
 
-		$this->load->language('shop/general');
+		$this->getLoader()->language('shop/general');
 		$this->data['text_no_select_images'] = $this->language->get('text_no_select_images');
 		$this->data['text_button_download'] = $this->language->get('text_button_download');
         $this->setBreadcrumbs();
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/header.tpl.php'))
-			$this->template = $this->config->get('config_template') . '/template/common/header.tpl.php';
+		if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/common/header.tpl.php'))
+			$this->template = $this->getConfig()->get('config_template') . '/template/common/header.tpl.php';
 		else
 			$this->template = 'default/template/common/header.tpl.php';
 

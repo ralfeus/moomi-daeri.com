@@ -1,34 +1,30 @@
 <?php
 use catalog\model\tool\ModelToolImage;
+use model\catalog\ProductDAO;
 use system\engine\Controller;
 
-class ControllerModuleBestSeller extends \system\engine\Controller {
+class ControllerModuleBestSeller extends Controller {
 	protected function index($setting) {
 		$this->language->load('module/bestseller');
  
       	$this->data['heading_title'] = $this->language->get('heading_title');
-				
 		$this->data['button_cart'] = $this->language->get('button_cart');
 		
-		$this->getLoader()->model('catalog/product');
-		
-		//$this->getLoader()->model('tool/image');
-
 		$this->data['products'] = array();
 
-		$results = $this->model_catalog_product->getBestSellerProducts($setting['limit']);
+		$results = ProductDAO::getInstance()->getBestSellerProducts($setting['limit']);
 		
 		foreach ($results as $result) {
             $image = $result['image'] ? (new ModelToolImage($this->getRegistry()))->resize($result['image'], $setting['image_width'], $setting['image_height']) : false;
 			
 			if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
-				$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->getConfig()->get('config_tax')));
+				$price = $this->getCurrentCurrency()->format($this->getTax()->calculate($result['price'], $result['tax_class_id'], $this->getConfig()->get('config_tax')));
 			} else {
 				$price = false;
 			}
 					
-			if ((float)$result['special']) {
-				$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->getConfig()->get('config_tax')));
+			if (key_exists('special', $result) && (float)$result['special']) {
+				$special = $this->getCurrentCurrency()->format($this->getTax()->calculate($result['special'], $result['tax_class_id'], $this->getConfig()->get('config_tax')));
 			} else {
 				$special = false;
 			}	
@@ -42,12 +38,12 @@ class ControllerModuleBestSeller extends \system\engine\Controller {
 			$this->data['products'][] = array(
 				'product_id' => $result['product_id'],
 				'thumb'   	 => $image,
-				'name'    	 => $result['name'],
+				'name'    	 => key_exists('name', $result) ? $result['name'] : '',
 				'price'   	 => $price,
 				'special' 	 => $special,
 				'rating'     => $rating,
-				'reviews'    => sprintf($this->language->get('text_reviews'), (int)$result['reviews']),
-				'href'    	 => $this->url->link('product/product', 'product_id=' . $result['product_id']),
+				'reviews'    => sprintf($this->language->get('text_reviews'), key_exists('reviews', $result) ? (int)$result['reviews'] : 0),
+				'href'    	 => $this->getUrl()->link('product/product', 'product_id=' . $result['product_id']),
 			);
 		}
 

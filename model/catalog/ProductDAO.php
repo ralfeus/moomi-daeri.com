@@ -784,7 +784,7 @@ SQL
         if (!$product_data) {
             $product_data = array();
 
-            $query = $this->getDb()->query("
+            $queryText = "
 			    SELECT op.product_id, COUNT(*) AS total
 			    FROM
 			        order_product op
@@ -792,17 +792,17 @@ SQL
 			        LEFT JOIN `product` p ON (op.product_id = p.product_id)
 			        LEFT JOIN product_to_store p2s ON (p.product_id = p2s.product_id)
                 WHERE
-                    o.order_status_id > '0' AND p.status = '1' AND p.date_available <= ?
+                    o.order_status_id > 0 AND p.status = 1 AND p.date_available <= :dateAvailable
                     AND op.product_id <> " . REPURCHASE_ORDER_PRODUCT_ID . "
-                    AND p2s.store_id = ?
+                    AND p2s.store_id = :storeId
                 GROUP BY op.product_id
-                ORDER BY total DESC
-                LIMIT ?
-                ", array(
-                    's:' . date('Y-m-d H:00:00'),
-                    'i:' . $this->getConfig()->get('config_store_id'),
-                    "i:$limit"
-                )
+                ORDER BY total DESC";
+            $queryText .= $this->buildLimitString(0, $limit);
+            $query = $this->getDb()->query($queryText,
+                [
+                    ':dateAvailable' => date('Y-m-d H:00:00'),
+                    ':storeId' => $this->getConfig()->get('config_store_id')
+                ]
             );
 
             foreach ($query->rows as $result) {

@@ -2,9 +2,10 @@
 ############################################################################################
 #  Category Accordion for Opencart 1.5.1.x from HostJars http://opencart.hostjars.com      #
 ############################################################################################
+use model\catalog\CategoryDAO;
 use system\engine\Controller;
 
-class ControllerModuleCategoryAccordion extends \system\engine\Controller {
+class ControllerModuleCategoryAccordion extends Controller {
 	protected function index($settings) {
 		$this->language->load('module/category');
 		
@@ -31,7 +32,7 @@ class ControllerModuleCategoryAccordion extends \system\engine\Controller {
   	
 	
 	private function getCategoriesAccordion($parent_id, $current_path = '') {
-		$results = $this->model_catalog_category->getCategories($parent_id);
+		$results = CategoryDAO::getInstance()->getCategories($parent_id);
 
 		$output = '<ul>';
 		
@@ -42,8 +43,8 @@ class ControllerModuleCategoryAccordion extends \system\engine\Controller {
 				$new_path = $current_path . '_' . $result['category_id'];
 			}
 
-			$children = $this->model_catalog_category->getCategories($result['category_id']);
-			$caturl = $this->url->link("product/category", "path=" . $new_path);
+			$children = CategoryDAO::getInstance()->getCategories($result['category_id']);
+			$caturl = $this->getUrl()->link("product/category", "path=" . $new_path);
 			if (empty($children)) {
 				$output .= '<li><a href="' . $caturl . '">' . $result['name'] . '</a></li>';
 			} else {
@@ -58,4 +59,3 @@ class ControllerModuleCategoryAccordion extends \system\engine\Controller {
 		return $output;
 	}
 }
-?>

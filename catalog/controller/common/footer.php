@@ -1,7 +1,7 @@
 <?php
 use system\engine\Controller;
 
-class ControllerCommonFooter extends \system\engine\Controller {
+class ControllerCommonFooter extends Controller {
 	protected function index() {
 		$this->language->load('common/footer');
 		
@@ -20,12 +20,13 @@ class ControllerCommonFooter extends \system\engine\Controller {
 		$this->data['text_order'] = $this->language->get('text_order');
 		$this->data['text_wishlist'] = $this->language->get('text_wishlist');
 		$this->data['text_newsletter'] = $this->language->get('text_newsletter');
-		
-		$this->load->model('catalog/information');
+
+        /** @var ModelCatalogInformation $modelCatalogInfo */
+        $modelCatalogInfo = $this->getLoader()->model('catalog/information');
 
 		$this->data['informations'] = array();
 
-		foreach ($this->model_catalog_information->getFooterInformations() as $result) {
+		foreach ($modelCatalogInfo->getFooterInformations() as $result) {
       		$this->data['informations'][] = array(
         		'title' => $result['title'],
 	    		'href'  => $this->url->link('information/information', 'information_id=' . $result['information_id'])

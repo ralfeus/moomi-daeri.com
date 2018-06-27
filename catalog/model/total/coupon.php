@@ -2,6 +2,10 @@
 use model\total\CouponDAO;
 use model\total\TotalBaseDAO;
 
+/**
+ * Class ModelTotalCoupon
+ * @deprecated
+ */
 class ModelTotalCoupon extends TotalBaseDAO {
     public function getOrderTotal(&$totalData, &$total, &$taxes, $orderId, $chosenOnes = false) {
         CouponDAO::getInstance()->getOrderTotal($totalData, $total, $taxes, $orderId, $chosenOnes);

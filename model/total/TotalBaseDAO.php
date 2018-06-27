@@ -49,4 +49,19 @@ abstract class TotalBaseDAO extends DAO {
             ", array('s:' . $totalData['text'], 'd:' . $totalData['value'], "i:$orderId", "s:$extension")
         );
     }
+
+    /**
+     * @param string $extensionName Total extension name. Class of such name must exist in namespace model\total
+     * @return TotalBaseDAO
+     */
+    public static function getTotalExtension($extensionName) {
+        if ($extensionName == 'paymentmethoddiscounts') {
+            $extensionName = 'PaymentMethodDiscounts';
+        } else if ($extensionName == 'sub_total') {
+            $extensionName = 'Subtotal';
+        }
+        $extensionClassName = "model\\total\\" . str_replace('_', '', ucwords($extensionName, '_')) . "DAO";
+        /** @noinspection PhpUndefinedMethodInspection */
+        return $extensionClassName::getInstance();
+    }
 }

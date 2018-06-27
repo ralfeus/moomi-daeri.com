@@ -16,7 +16,26 @@ use system\library\WeightOld;
 
 // Version
 define('VERSION', '1.5.1.3');
+// ============= Class autoload ===============================================
 require_once('vendor/autoload.php');
+$class_map = require_once 'vendor/composer/autoload_classmap.php';
+$new_class_map = array();
+foreach ($class_map as $class => $file)
+    $new_class_map [strtolower($class)] = $file;
+unset($class_map);
+spl_autoload_register(function ($class)use($new_class_map)
+{
+    $class = strtolower($class);
+    if (isset($new_class_map[$class]))
+    {
+        require_once $new_class_map[$class];
+        return true;
+    }
+    else
+        return false;
+}, true, false);
+unset($new_class_map);
+// ============================================================================
 // Config
 require_once('config.php');
 /// Constants
