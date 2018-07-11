@@ -3,7 +3,7 @@ use system\engine\Registry;
 use system\library\Config;
 use system\library\Currency;
 
-final class Customer {
+class Customer {
     /** @var Config */
     private $config;
 	private $customer_id;
@@ -23,7 +23,11 @@ final class Customer {
     private $balance;
     private $affiliate_id;
 
-  	public function __construct($registry) {
+    /**
+     * Customer constructor.
+     * @param Registry $registry
+     */
+    public function __construct($registry, $clientIP) {
         $this->registry = $registry;
 		$this->config = $registry->get('config');
 		$this->db = $registry->get('db');
@@ -48,22 +52,38 @@ final class Customer {
                 $this->balance = $customer_query->row['balance'];
                 $this->affiliate_id = $customer_query->row['affiliate_id'];
                 $this->getBaseCurrency()->set($customer_query->row['base_currency_code']);
-                $purgeCart = empty($customer_query->row['purge_cart']) ? 0 : $customer_query->row['purge_cart'];
+//                $purgeCart = empty($customer_query->row['purge_cart']) ? 0 : $customer_query->row['purge_cart'];
+//
+//                if ($purgeCart)
+//                {
+//                    $this->session->data['cart'] = null;
+//                    $this->db->query("
+//                        UPDATE customer
+//                        SET cart = NULL, purge_cart = 0
+//                        WHERE customer_id = " . (int)$this->session->data['customer_id']
+//                    );
+//                }
 
-                if ($purgeCart)
-                {
-                    $this->session->data['cart'] = null;
-                    $this->db->query("
-                        UPDATE customer
-                        SET cart = NULL, purge_cart = 0
-                        WHERE customer_id = " . (int)$this->session->data['customer_id']
-                    );
-                }
+      			$this->db->query("
+                    UPDATE customer 
+                    SET 
+                        cart = :cart, 
+                        wishlist = :wishlist, 
+                        ip = :ip 
+                    WHERE customer_id = :customerId
+                ", [
+                    ':cart' => $this->db->escape(isset($this->session->data['cart']) ? serialize($this->session->data['cart']) : ''),
+                    ':wishlist' => $this->db->escape(isset($this->session->data['wishlist']) ? serialize($this->session->data['wishlist']) : ''),
+                    ':ip' => $clientIP,
+                    ':customerId' => (int)$this->session->data['customer_id']
+                ]);
 
-      			$this->db->query("UPDATE customer SET cart = '" . $this->db->escape(isset($this->session->data['cart']) ? serialize($this->session->data['cart']) : '') . "', wishlist = '" . $this->db->escape(isset($this->session->data['wishlist']) ? serialize($this->session->data['wishlist']) : '') . "', ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "' WHERE customer_id = '" . (int)$this->session->data['customer_id'] . "'");
-			
-				$query = $this->db->query("SELECT * FROM customer_ip WHERE customer_id = '" . (int)$this->session->data['customer_id'] . "' AND ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "'");
-				
+				$query = $this->db->query("
+                    SELECT * 
+                    FROM customer_ip 
+                    WHERE customer_id = :customerId
+                ", [ ':customerId' => (int)$this->session->data['customer_id']]);
+
 				if (!$query->num_rows) {
 					$this->db->query("INSERT INTO customer_ip SET customer_id = '" . (int)$this->session->data['customer_id'] . "', ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "', date_added = NOW()");
 				}
@@ -72,7 +92,7 @@ final class Customer {
 			}
   		}
 	}
-		
+
   	public function login($email, $password, $override = false) {
 		if ($override) {
 			$customer_query = $this->db->query("SELECT * FROM customer where LOWER(email) = '" . $this->db->escape(strtolower($email)) . "' AND status = '1'");
@@ -81,36 +101,36 @@ final class Customer {
 		} else {
 			$customer_query = $this->db->query("SELECT * FROM customer WHERE LOWER(email) = '" . $this->db->escape(strtolower($email)) . "' AND password = '" . $this->db->escape(md5($password)) . "' AND status = '1' AND approved = '1'");
 		}
-		
+
 		if ($customer_query->num_rows) {
-			$this->session->data['customer_id'] = $customer_query->row['customer_id'];	
-		    
+			$this->session->data['customer_id'] = $customer_query->row['customer_id'];
+
 			if ($customer_query->row['cart'] && is_string($customer_query->row['cart'])) {
 				$cart = unserialize($customer_query->row['cart']);
-				
+
 				foreach ($cart as $key => $value) {
 					if (!array_key_exists($key, $this->session->data['cart'])) {
 						$this->session->data['cart'][$key] = $value;
 					} else {
 						$this->session->data['cart'][$key] += $value;
 					}
-				}			
+				}
 			}
 
 			if ($customer_query->row['wishlist'] && is_string($customer_query->row['wishlist'])) {
 				if (!isset($this->session->data['wishlist'])) {
 					$this->session->data['wishlist'] = array();
 				}
-								
+
 				$wishlist = unserialize($customer_query->row['wishlist']);
-			
+
 				foreach ($wishlist as $product_id) {
 					if (!in_array($product_id, $this->session->data['wishlist'])) {
 						$this->session->data['wishlist'][] = $product_id;
 					}
-				}			
+				}
 			}
-									
+
 			$this->customer_id = $customer_query->row['customer_id'];
 			$this->firstname = $customer_query->row['firstname'];
 			$this->lastname = $customer_query->row['lastname'];
@@ -124,7 +144,7 @@ final class Customer {
             $this->balance = $customer_query->row['balance'];
             $this->affiliate_id = $customer_query->row['affiliate_id'];
             $this->getBaseCurrency()->set($customer_query->row['base_currency_code']);
-          	
+
 			$this->db->query("UPDATE customer SET ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "' WHERE customer_id = '" . (int)$customer_query->row['customer_id'] . "'");
 			$this->setAffiliateId();
 	  		return true;
@@ -132,7 +152,7 @@ final class Customer {
       		return false;
     	}
   	}
-  	
+
 	public function logout() {
 		unset($this->session->data['customer_id']);
 
@@ -149,7 +169,7 @@ final class Customer {
         $this->balance = 0;
         $this->baseCurrency = null;
   	}
-  
+
   	public function isLogged() {
     	return $this->customer_id;
   	}
@@ -168,11 +188,11 @@ final class Customer {
     public function getId() {
     	return $this->customer_id;
   	}
-      
+
   	public function getFirstName() {
 		return $this->firstname;
   	}
-  
+
   	public function getLastName() {
 		return $this->lastname;
   	}
@@ -180,21 +200,21 @@ final class Customer {
   	public function getNickName() {
 		return $this->nickname;
   	}
-  
+
   	public function getEmail() {
 		return $this->email;
   	}
-  
+
   	public function getTelephone() {
 		return $this->telephone;
   	}
-  
+
   	public function getFax() {
 		return $this->fax;
   	}
-	
+
   	public function getNewsletter() {
-		return $this->newsletter;	
+		return $this->newsletter;
   	}
 
     /**
@@ -232,13 +252,13 @@ final class Customer {
 
 
   	public function getAddressId() {
-		return $this->address_id;	
+		return $this->address_id;
   	}
 
   	public function getRewardPoints() {
 		$query = $this->db->query("SELECT SUM(points) AS total FROM customer_reward WHERE customer_id = '" . (int)$this->customer_id . "'");
-	
-		return $query->row['total'];	
+
+		return $query->row['total'];
   	}
 
     public function setBalance($value)
@@ -250,4 +270,3 @@ final class Customer {
         );
     }
 }
-?>

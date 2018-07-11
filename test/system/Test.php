@@ -16,6 +16,6 @@ abstract class Test extends TestCase {
         Warning::$enabled = true;
         $_SERVER['HTTP_HOST'] = 'ubuntu.home.local';
 
-        $this->registry = initTestEnvironment('admin');
+        $this->registry = initTestEnvironment('');
     }
 }

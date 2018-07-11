@@ -1,4 +1,5 @@
 <?php
+use model\shop\GeneralDAO;
 use system\engine\Controller;
 
 class ControllerShopAdmin extends \system\engine\Controller {
@@ -122,8 +123,7 @@ class ControllerShopAdmin extends \system\engine\Controller {
     $data['customer_group_id'] = empty($customer_group_id) ? 0 : $customer_group_id;
     $data['current_date'] = date("Y-m-d");
 
-    $this->getLoader()->model('shop/general');
-    $result = $this->model_shop_general->getAction($data);
+    $result = GeneralDAO::getInstance()->getAction($data);
 
     return !empty($result) ? $result[0] : null;
   }

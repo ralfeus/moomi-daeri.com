@@ -8,12 +8,13 @@
 
 namespace test\catalog\controller\product;
 use PHPUnit\Framework\Error\Warning;
+use test\catalog\Test;
 
 /**
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class ControllerProductGalleryTest extends CatalogControllerProductTest {
+class ControllerProductGalleryTest extends Test {
     public function __construct($name = null, $data = array(), $dataName = '') {
         parent::__construct($name, $data, $dataName );
     }

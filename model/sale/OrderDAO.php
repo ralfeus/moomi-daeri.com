@@ -467,11 +467,11 @@ class OrderDAO extends DAO {
 		        (
 		            SELECT os.name
 		            FROM order_status os
-		            WHERE os.order_status_id = o.order_status_id AND os.language_id = '" . (int)$this->config->get('config_language_id') . "'
+		            WHERE os.order_status_id = o.order_status_id AND os.language_id = :languageId
                 ) AS status, o.order_status_id AS status_id, o.total, o.currency_code, o.currency_value, o.date_added, o.date_modified
             FROM `order` AS o
-            " . ($filter ? "WHERE $filter" : "")
-        ;
+        ";
+        $sql .= $filter ? "WHERE $filter" : "";
 
 		$sort_data = array(
 			'o.order_id',
@@ -506,7 +506,7 @@ class OrderDAO extends DAO {
 			$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 		}
 //        $this->log->write($sql);
-		$query = $this->getDb()->query($sql);
+		$query = $this->getDb()->query($sql, [ ':languageId' => (int)$this->getConfig()->get('config_language_id')]);
 
 		return $query->rows;
 	}
@@ -601,13 +601,13 @@ class OrderDAO extends DAO {
 		return ShippingMethodDAO::getInstance()->getMethod($shipping_method[0])->getCost($shipping_method[1], $orderItems, $ext);
 	}
 
-	public function getTotalOrders($data = array()) {
+	public function getOrdersCount($data = array()) {
         $filter = $this->buildFilterString($data);
       	$sql = "
       	    SELECT COUNT(*) AS total
       	    FROM `order` AS o
-            " . ($filter ? "WHERE $filter" : "")
-        ;
+        ";
+      	$sql .= $filter ? "WHERE $filter" : "";
 
 
 		$query = $this->getDb()->query($sql);

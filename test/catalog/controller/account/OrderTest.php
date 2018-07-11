@@ -6,7 +6,12 @@
  * Time: 15:40
  */
 
-namespace test\catalog\controller\account;
+namespace catalog\controller\account;
+
+use ControllerAccountOrder;
+use PHPUnit\Framework\Error\Notice;
+use PHPUnit\Framework\Error\Warning;
+use test\catalog\Test;
 
 /**
  * @backupGlobals disabled
@@ -19,15 +24,11 @@ class OrderTest extends Test {
 
     /**
      * @test
-     * @covers ControllerAccountOrder::index
-     * @expectedException \Exception
-     * @expectedExceptionMessage Not logged in
+     * @covers ControllerAccountOrder::index()
+     * @expectedException \system\exception\NotLoggedInException
      */
     public function testIndexAnonymously() {
-        $mockBuilder = $this->getMockBuilder('ControllerAccountOrder');
-        $mockBuilder->setConstructorArgs(['redirect', $this->registry]);
-        $mock = $mockBuilder->getMock();
-        $mock->expects($this->never())->method('redirect');
+        $mock = new ControllerAccountOrder($this->registry);
         $mock->index();
     }
 
@@ -36,12 +37,12 @@ class OrderTest extends Test {
      * @covers ControllerAccountOrder::index
     */
     public function testIndexLoggedIn() {
+        Warning::$enabled = false;
+        Notice::$enabled = false;
         $this->logIn();
-        $mockBuilder = $this->getMockBuilder('ControllerAccountOrder');
-        $mockBuilder->setConstructorArgs(['redirect', $this->registry]);
-        $mock = $mockBuilder->getMock();
-        $mock->expects($this->never())->method('redirect');
-        $mock->index();
+        $class = new ControllerAccountOrder($this->registry);
+        $class->index();
+        self::assertAttributeNotEmpty('output', runMethod($class, 'getResponse'));
     }
 }
  

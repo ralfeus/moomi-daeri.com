@@ -1,8 +1,7 @@
 <?php
-namespace test\library;
+namespace system\library;
 
-use model\DAO;
-use system\library\Filter;
+use test\system\Test;
 
 /**
  * @backupGlobals disabled

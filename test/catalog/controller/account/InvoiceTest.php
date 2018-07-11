@@ -8,6 +8,7 @@
 
 namespace test\catalog\controller\account;
 use ControllerAccountAccount;
+use test\catalog\Test;
 
 /**
  * @backupGlobals disabled
@@ -23,8 +24,9 @@ class InvoiceTest extends Test {
      */
     public function testIndexLoggedIn() {
         $this->logIn();
-        $this->class = new ControllerAccountAccount($this->registry);
-        $this->class->index();
+        $class = new ControllerAccountAccount($this->registry);
+        $class->index();
+        self::assertAttributeNotEmpty('output', runMethod($class, 'getResponse'));
     }
 }
  

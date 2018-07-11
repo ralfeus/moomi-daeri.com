@@ -1,14 +1,14 @@
 <?php
 namespace test\catalog;
 
+use Customer;
 use model\sale\CustomerDAO;
 use PHPUnit\Framework\Error\Notice;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Error\Warning;
 
-abstract class CatalogTest extends TestCase {
+abstract class Test extends TestCase {
     protected $registry;
-    protected $class;
 
     public function __construct($name = null, $data = array(), $dataName = '') {
         parent::__construct($name, $data, $dataName);
@@ -27,7 +27,7 @@ abstract class CatalogTest extends TestCase {
             $token = md5(mt_rand());
             CustomerDAO::getInstance()->editToken($customerId, $token);
             $this->registry->get('session')->data['customer_id'] = $customerId;
-            $customer = new \Customer($this->registry);
+            $customer = new \Customer($this->registry, '0.0.0.0');
             $this->registry->set('customer', $customer);
         }
     }

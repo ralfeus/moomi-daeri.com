@@ -1,6 +1,7 @@
 <?php
 use system\engine\Loader;
 use system\engine\Registry;
+use system\exception\NotLoggedInException;
 use system\library\Config;
 use system\library\Currency;
 use system\library\DB;
@@ -261,7 +262,7 @@ $document = new Document();
 $registry->set('document', $document);
 
 // Customer
-$registry->set('customer', new Customer($registry));
+$registry->set('customer', new Customer($registry, $_SERVER['REMOTE_ADDR']));
 
 // Affiliate
 $affiliate = new Affiliate($registry);
@@ -306,8 +307,15 @@ if (isset($request->get['route'])) {
 	$action = new Action('common/home');
 }
 
+$errorAction = new Action('error/not_found');
+try {
 // Dispatch
-$controller->dispatch($action, new Action('error/not_found'));
+    $controller->dispatch($action, $errorAction);
 
+} catch (NotLoggedInException $exception) {
+    $session->data['redirect'] = $exception->returnUrl;
+    $controller->dispatch(new Action('account/login'), $errorAction);
+
+}
 // Output
 $response->output();

@@ -174,7 +174,7 @@ function initTestEnvironment($section) {
     $registry->set('document', $document);
 
     // Customer
-    $registry->set('customer', new Customer($registry));
+    $registry->set('customer', new Customer($registry, '0.0.0.0'));
 
     // Affiliate
     $affiliate = new Affiliate($registry);

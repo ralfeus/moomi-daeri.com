@@ -8,11 +8,13 @@
 
 namespace test\catalog\controller\product;
 
+use test\catalog\Test;
+
 /**
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class ControllerProductRepurchaseTest extends CatalogControllerProductTest {
+class ControllerProductRepurchaseTest extends Test {
     public function __construct($name = null, $data = array(), $dataName = '') {
         parent::__construct($name, $data, $dataName );
     }

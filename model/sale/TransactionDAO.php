@@ -139,16 +139,51 @@ class TransactionDAO extends DAO {
             return null;
     }
 
-    public function getTransactions($customerId) {
+    /**
+     * @param $customerId
+     * @param $sortColumn
+     * @param $sortOrder
+     * @param $start
+     * @param $limit
+     * @return array
+     */
+    public function getTransactions($customerId, $sortColumn = 'date_added', $sortOrder = 'DESC', $start = 0, $limit = 20) {
+        $sortData = array(
+            'amount',
+            'customer_transaction_id',
+            'description',
+            'date_added'
+        );
+        $sortColumn = in_array($sortColumn, $sortData) ? $sortColumn : 'date_added';
+        $sortOrder = $sortOrder == 'ASC' ? 'ASC' : 'DESC';
+        $limit = $this->buildLimitString($start, $limit);
         $query = $this->getDb()->query("
             SELECT *
             FROM customer_transaction
-            WHERE customer_id = " . (int)$customerId
-        );
-        if ($query->num_rows)
+            WHERE customer_id = :customerId
+            ORDER BY $sortColumn $sortOrder
+            $limit
+        ", [
+            ':customerId' => $customerId
+        ]);
+
+        if ($query->num_rows) {
             return $query->rows;
-        else
+        } else {
             return null;
+        }
+    }
+
+    public function getTransactionsCount($customerId) {
+        $result = $this->getDb()->queryScalar("
+            SELECT COUNT(*) AS total 
+            FROM `customer_transaction` 
+            WHERE customer_id = :customerId
+        ", [
+            ':customerId' => $customerId
+        ]);
+
+        return $result;
     }
 
 

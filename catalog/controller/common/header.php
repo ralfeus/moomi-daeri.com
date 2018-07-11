@@ -1,6 +1,7 @@
 <?php
 use model\core\CurrencyDAO;
 use model\setting\ExtensionDAO;
+use model\shop\GeneralDAO;
 use model\total\TotalBaseDAO;
 use system\engine\CustomerController;
 
@@ -50,7 +51,7 @@ class ControllerCommonHeader extends CustomerController {
 		$total = 0;
 //		$taxes = $this->getCart()->getTaxes(false);
 
-		if (($this->getConfig()->get('config_customer_price') && $this->customer->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
+		if (($this->getConfig()->get('config_customer_price') && $this->getCurrentCustomer()->isLogged()) || !$this->getConfig()->get('config_customer_price')) {
 			$this->getLoader()->model('setting/extension');
 
 			$sort_order = array();
@@ -71,9 +72,8 @@ class ControllerCommonHeader extends CustomerController {
 			}
 		}
 
-		if($this->customer->isLogged()){
-			$this->getLoader()->model('shop/general');
-			$isVip = $this->model_shop_general->isVip($this->customer->getId());
+		if($this->getCurrentCustomer()->isLogged()){
+			$isVip = GeneralDAO::getInstance()->isVip($this->getCurrentCustomer()->getId());
 		}
 
 		$str = "";
@@ -97,9 +97,9 @@ class ControllerCommonHeader extends CustomerController {
 		$this->data['text_welcome_help'] = sprintf($this->language->get('text_welcome_help'), $this->getUrl()->link('account/login', '', 'SSL'));
 		$this->data['text_welcome_guest_left'] = sprintf($this->language->get('text_welcome_guest_left'), $this->getUrl()->link('account/login', '', 'SSL'));
 		$this->data['text_welcome_guest_right'] = sprintf($this->language->get('text_welcome_guest_right'), $this->getUrl()->link('account/register', '', 'SSL'));
-		$this->data['text_logged'] = sprintf($this->language->get('text_logged'), $str, $this->getUrl()->link('account/account', '', 'SSL'), $this->customer->getNickName(), $this->getUrl()->link('account/logout', '', 'SSL'));
-		$this->data['text_logged_help'] = sprintf($this->language->get('text_logged_help'), $str, $this->customer->getNickName());
-		$this->data['text_logged_customer_left'] = sprintf($this->language->get('text_logged_customer_left'), $str, $this->getUrl()->link('account/account', '', 'SSL'), $this->customer->getNickName(),$this->customer->getNickName());
+		$this->data['text_logged'] = sprintf($this->language->get('text_logged'), $str, $this->getUrl()->link('account/account', '', 'SSL'), $this->getCurrentCustomer()->getNickName(), $this->getUrl()->link('account/logout', '', 'SSL'));
+		$this->data['text_logged_help'] = sprintf($this->language->get('text_logged_help'), $str, $this->getCurrentCustomer()->getNickName());
+		$this->data['text_logged_customer_left'] = sprintf($this->language->get('text_logged_customer_left'), $str, $this->getUrl()->link('account/account', '', 'SSL'), $this->getCurrentCustomer()->getNickName(),$this->getCurrentCustomer()->getNickName());
 		$this->data['text_logged_customer_right'] = sprintf($this->language->get('text_logged_customer_right'), $this->getUrl()->link('account/logout', '', 'SSL'));
 		$this->data['text_account'] = $this->language->get('text_account');
    	$this->data['text_checkout'] = $this->language->get('text_checkout');
@@ -122,7 +122,7 @@ class ControllerCommonHeader extends CustomerController {
 
 		$this->data['home'] = $this->getUrl()->link('common/home');
 		$this->data['wishlist'] = $this->getUrl()->link('account/wishlist');
-		$this->data['logged'] = $this->customer->isLogged();
+		$this->data['logged'] = $this->getCurrentCustomer()->isLogged();
 		$this->data['account'] = $this->getUrl()->link('account/account', '', 'SSL');
 		$this->data['cart'] = $this->getUrl()->link('checkout/cart');
  if($this->getConfig()->get('wk_auction_timezone_set')){

@@ -1,4 +1,5 @@
 <?php
+use model\sale\OrderDAO;
 use model\sale\OrderItemDAO;
 use model\catalog\ProductDAO;
 use model\shipping\ShippingMethodDAO;
@@ -19,12 +20,12 @@ class ControllerAccountOrder extends CustomerZoneController {
     }
 
 	public function index() {
-    	if (!$this->customer->isLogged()) {
-      		$this->session->data['redirect'] = $this->url->link('account/order', '', 'SSL');
+    	if (!$this->getCurrentCustomer()->isLogged()) {
+      		$this->session->data['redirect'] = $this->getUrl()->link('account/order', '', 'SSL');
 
-	  		$this->redirect($this->url->link('account/login', '', 'SSL'));
+	  		$this->redirect($this->getUrl()->link('account/login', '', 'SSL'));
     	}
-
+        $customerId = $this->getCurrentCustomer()->getId();
         $this->setBreadcrumbs();
 
 		$this->data['text_order_id'] = $this->language->get('text_order_id');
@@ -38,9 +39,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 		$this->data['button_view'] = $this->language->get('button_view');
 		$this->data['button_continue'] = $this->language->get('button_continue');
 
-		$this->data['action'] = $this->url->link('account/order', '', 'SSL');
-
-		$this->load->model('account/order');
+		$this->data['action'] = $this->getUrl()->link('account/order', '', 'SSL');
 
 		if (isset($this->request->get['page'])) {
 			$page = $this->request->get['page'];
@@ -50,21 +49,28 @@ class ControllerAccountOrder extends CustomerZoneController {
 
 		$this->data['orders'] = array();
 
-		$order_total = $this->model_account_order->getTotalOrders();
+		$order_total = OrderDAO::getInstance()->getOrdersCount(['filterCustomerId' => [$customerId]]);
 
-		$results = $this->model_account_order->getOrders(($page - 1) * $this->getConfig()->get('config_catalog_limit'), $this->getConfig()->get('config_catalog_limit'));
+		$results = OrderDAO::getInstance()->getOrders([
+		    'filterCustomerId' => [$customerId],
+            'start' => ($page - 1) * $this->getConfig()->get('config_catalog_limit'),
+            'limit' => $this->getConfig()->get('config_catalog_limit')
+        ]);
 
 		foreach ($results as $result) {
-            $product_total = $this->model_account_order->getTotalOrderProductsByOrderId($result['order_id']);
+            $product_total = OrderItemDAO::getInstance()->getOrderItemsCount([
+                'filterCustomerId' => $customerId,
+                'filterOrderId' => $result['order_id']]
+            );
 
 			$this->data['orders'][] = array(
 				'order_id'   => $result['order_id'],
-				'name'       => $result['firstname'] . ' ' . $result['lastname'],
+				'name'       => (in_array('firstname', $result) ? $result['firstname'] : '') . ' ' . (in_array('lastname', $result) ? $result['lastname'] : ''),
 				'status'     => $result['status'],
-				'date_added' => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
+				'date_added' => date($this->getLanguage()->get('date_format_short'), strtotime($result['date_added'])),
 				'products'   => $product_total,
-				'total'      => $this->currency->format($result['total'], $result['currency_code'], $result['currency_value']),
-				'href'       => $this->url->link('account/order/info', 'order_id=' . $result['order_id'], 'SSL')
+				'total'      => $this->getCurrentCurrency()->format($result['total'], $result['currency_code'], $result['currency_value']),
+				'href'       => $this->getUrl()->link('account/order/info', 'order_id=' . $result['order_id'], 'SSL')
 			);
 		}
 
@@ -72,12 +78,12 @@ class ControllerAccountOrder extends CustomerZoneController {
 		$pagination->total = $order_total;
 		$pagination->page = $page;
 		$pagination->limit = $this->getConfig()->get('config_catalog_limit');
-		$pagination->text = $this->language->get('text_pagination');
-		$pagination->url = $this->url->link('account/order', 'page={page}', 'SSL');
+		$pagination->text = $this->getLanguage()->get('text_pagination');
+		$pagination->url = $this->getUrl()->link('account/order', 'page={page}', 'SSL');
 
 		$this->data['pagination'] = $pagination->render();
 
-		$this->data['continue'] = $this->url->link('account/account', '', 'SSL');
+		$this->data['continue'] = $this->getUrl()->link('account/account', '', 'SSL');
 
         $templateName = '/template/account/order_list.tpl';
 		if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . $templateName)) {
@@ -111,9 +117,9 @@ class ControllerAccountOrder extends CustomerZoneController {
 		}
 
 		if (!$this->customer->isLogged()) {
-			$this->session->data['redirect'] = $this->url->link('account/order/info', 'order_id=' . $order_id, 'SSL');
+			$this->session->data['redirect'] = $this->getUrl()->link('account/order/info', 'order_id=' . $order_id, 'SSL');
 
-			$this->redirect($this->url->link('account/login', '', 'SSL'));
+			$this->redirect($this->getUrl()->link('account/login', '', 'SSL'));
     	}
 
 		$this->language->load('account/order');
@@ -145,7 +151,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 							$this->cart->add($orderItem->getProductId(), $orderItem->getQuantity(), $option_data);
 						}
 					}
-					$this->redirect($this->url->link('checkout/cart', '', 'SSL'));
+					$this->redirect($this->getUrl()->link('checkout/cart', '', 'SSL'));
 				}
 			}
 
@@ -193,7 +199,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 				$this->data['error_warning'] = '';
 			}
 
-			$this->data['action'] = $this->url->link('account/order/info', 'order_id=' . $this->request->get['order_id'], 'SSL');
+			$this->data['action'] = $this->getUrl()->link('account/order/info', 'order_id=' . $this->request->get['order_id'], 'SSL');
 
 			if ($order_info['invoice_no']) {
 				$this->data['invoice_no'] = $order_info['invoice_prefix'] . $order_info['invoice_no'];
@@ -292,7 +298,7 @@ class ControllerAccountOrder extends CustomerZoneController {
                 if (($orderItem->getStatusId() & 0x0000FFFF) <= 2)
                     $actions[] = array(
                         'text' => $this->language->get('CANCEL'),
-                        'href' => $this->url->link(
+                        'href' => $this->getUrl()->link(
                             'account/orderItems/cancel',
                             'orderItemId=' . $orderItem->getId() . '&returnUrl=' . urlencode($this->selfUrl))
                     );
@@ -357,7 +363,7 @@ class ControllerAccountOrder extends CustomerZoneController {
         		);
       		}
 
-      		$this->data['continue'] = $this->url->link('account/order', '', 'SSL');
+      		$this->data['continue'] = $this->getUrl()->link('account/order', '', 'SSL');
 
 			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/account/order_info.tpl.php')) {
 				$this->template = $this->getConfig()->get('config_template') . '/template/account/order_info.tpl.php';
@@ -386,7 +392,7 @@ class ControllerAccountOrder extends CustomerZoneController {
 
 			$this->setBreadcrumbs();
 
-      		$this->data['continue'] = $this->url->link('account/order', '', 'SSL');
+      		$this->data['continue'] = $this->getUrl()->link('account/order', '', 'SSL');
 
 			if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/error/not_found.tpl')) {
 				$this->template = $this->getConfig()->get('config_template') . '/template/error/not_found.tpl';
@@ -621,19 +627,19 @@ class ControllerAccountOrder extends CustomerZoneController {
         $this->data['breadcrumbs'] = array();
       	$this->data['breadcrumbs'][] = array(
         	'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home'),
+			'href'      => $this->getUrl()->link('common/home'),
         	'separator' => false
       	);
 
       	$this->data['breadcrumbs'][] = array(
         	'text'      => $this->language->get('text_account'),
-			'href'      => $this->url->link('account/account', '', 'SSL'),
+			'href'      => $this->getUrl()->link('account/account', '', 'SSL'),
         	'separator' => $this->language->get('text_separator')
       	);
 
       	$this->data['breadcrumbs'][] = array(
         	'text'      => $this->language->get('heading_title'),
-			'href'      => $this->url->link('account/order', '', 'SSL'),
+			'href'      => $this->getUrl()->link('account/order', '', 'SSL'),
         	'separator' => $this->language->get('text_separator')
       	);
     }

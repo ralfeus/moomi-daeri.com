@@ -6,13 +6,15 @@
  * Time: 15:40
  */
 
-namespace test\catalog\controller\product;
+namespace catalog\controller\product;
+
+use test\catalog\Test;
 
 /**
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class ControllerProductCompareTest extends CatalogControllerProductTest {
+class ControllerProductCompareTest extends Test {
     public function __construct($name = null, $data = array(), $dataName = '') {
         parent::__construct($name, $data, $dataName );
     }

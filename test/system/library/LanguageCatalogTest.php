@@ -8,12 +8,7 @@
 
 namespace system\library;
 
-use PHPUnit\Framework\Error\Notice;
-use PHPUnit\Framework\Error\Warning;
-use PHPUnit\Framework\TestCase;
-use test\library\Test;
-
-require_once('/var/www/moomi-daeri.com/test/initTestEnvironment.php');
+use test\system\Test;
 
 class LanguageCatalogTest extends Test {
     /**
@@ -23,6 +18,6 @@ class LanguageCatalogTest extends Test {
     public function loadCatalog() {
         $language = new Language('chinese');
         $language->load('module/wkproduct_auction');
-        $this->assertTrue(!empty($language->get("heading_title")));
+        self::assertTrue(!empty($language->get("heading_title")));
     }
 }

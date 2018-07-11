@@ -26,6 +26,28 @@ class TransactionDAOTest extends Test {
         $transactionId = TransactionDAO::getInstance()->addTransaction(0, $customerId, $transactionAmount, $customerBaseCurrencyCode, "Test");
         $this->assertTrue(isset($transactionId));
         $customer = CustomerDAO::getInstance()->getCustomer($customerId);
-        $this->assertTrue($customerBalance - $transactionAmount == $customer['balance']);
+        $this->assertEquals($customerBalance - $transactionAmount, $customer['balance']);
+    }
+
+    /**
+     * @test
+     * @covers TransactionDAO::getTransactions()
+     */
+    public function getTransactions() {
+        $customerId = 2;
+        $transactions = TransactionDAO::getInstance()->getTransactions($customerId);
+        //print_r($transactions);
+        self::assertNotNull($transactions);
+        self::assertEquals($customerId, $transactions[0]['customer_id']);
+    }
+
+    /**
+     * @test
+     * @covers TransactionDAO::getTransactionsCount()
+     */
+    public function getTransactionsCount() {
+        $customerId = 2;
+        $result = TransactionDAO::getInstance()->getTransactionsCount($customerId);
+        self::assertTrue(!is_null($result));
     }
 }

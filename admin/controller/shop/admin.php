@@ -1,4 +1,5 @@
 <?php
+use model\shop\GeneralDAO;
 use system\engine\Controller;
 
 class ControllerShopAdmin extends \system\engine\Controller {
@@ -21,8 +22,7 @@ class ControllerShopAdmin extends \system\engine\Controller {
 
  		$this->data['heading_title_holiday'] = $this->language->get('heading_title_holiday');
 
- 		$this->load->model('shop/general');
- 		$this->data['holidays'] = $this->model_shop_general->getAllHolidays();
+ 		$this->data['holidays'] = GeneralDAO::getInstance()->getAllHolidays();
  		//print_r($this->data['holidays']); die();
 
  		$this->data['token'] = $this->session->data['token'];
@@ -44,9 +44,7 @@ class ControllerShopAdmin extends \system\engine\Controller {
 		$data['end'] = $end;
 		$data['name'] = $name;
 
-		$this->load->model('shop/general');
-
-		$holiday_id = $this->model_shop_general->addHoliday($data);
+    	$holiday_id = GeneralDAO::getInstance()->addHoliday($data);
 
 		$response['success'] = true;
 		$response['start'] = $start;
@@ -63,7 +61,7 @@ class ControllerShopAdmin extends \system\engine\Controller {
 
 		$this->load->model('shop/general');
 
-		$holiday_id = $this->model_shop_general->deleteHoliday($holiday_id);
+		$holiday_id = GeneralDAO::getInstance()->deleteHoliday($holiday_id);
 
 		$response['success'] = true;
 
@@ -71,4 +69,3 @@ class ControllerShopAdmin extends \system\engine\Controller {
 
 	}
 }
-?>

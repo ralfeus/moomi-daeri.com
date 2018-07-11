@@ -8,13 +8,13 @@
 
 namespace test\catalog\controller\product;
 
-use test\catalog\CatalogTest;
+use test\catalog\Test;
 
 /**
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class ControllerProductCategoryTest extends CatalogTest {
+class ControllerProductCategoryTest extends Test {
     public function __construct($name = null, $data = array(), $dataName = '') {
         parent::__construct($name, $data, $dataName );
     }

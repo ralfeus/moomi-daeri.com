@@ -10,12 +10,12 @@ class ControllerAccountLogin extends \system\engine\Controller {
 			$modelAccountCustomer = $this->load->model('account/customer');
 			$customer_info = $modelAccountCustomer->getCustomerByToken($_REQUEST['token']);
 		 	if ($customer_info && $this->customer->login($customer_info['email'], '', true)) {
-				$this->redirect($this->url->link('account/account', '', 'SSL')); 
+				$this->redirect($this->getUrl()->link('account/account', '', 'SSL')); 
 			}
 		}		
 		
 		if ($this->customer->isLogged()) {  
-      		$this->redirect($this->url->link('account/account', '', 'SSL'));
+      		$this->redirect($this->getUrl()->link('account/account', '', 'SSL'));
     	}
 	
     	$this->language->load('account/login');
@@ -29,7 +29,7 @@ class ControllerAccountLogin extends \system\engine\Controller {
 			if (isset($this->request->post['redirect']) && (strpos($this->request->post['redirect'], HTTP_SERVER) !== false || strpos($this->request->post['redirect'], HTTPS_SERVER) !== false)) {
 				$this->redirect(str_replace('&amp;', '&', $this->request->post['redirect']));
 			} else {
-				$this->redirect($this->url->link('account/account', '', 'SSL')); 
+				$this->redirect($this->getUrl()->link('account/account', '', 'SSL')); 
 			}
     	}  
 		
@@ -37,19 +37,19 @@ class ControllerAccountLogin extends \system\engine\Controller {
 
       	$this->data['breadcrumbs'][] = array(
         	'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home'),       	
+			'href'      => $this->getUrl()->link('common/home'),       	
         	'separator' => false
       	);
   
       	$this->data['breadcrumbs'][] = array(
         	'text'      => $this->language->get('text_account'),
-			'href'      => $this->url->link('account/account', '', 'SSL'),
+			'href'      => $this->getUrl()->link('account/account', '', 'SSL'),
         	'separator' => $this->language->get('text_separator')
       	);
 		
       	$this->data['breadcrumbs'][] = array(
         	'text'      => $this->language->get('text_login'),
-			'href'      => $this->url->link('account/login', '', 'SSL'),      	
+			'href'      => $this->getUrl()->link('account/login', '', 'SSL'),      	
         	'separator' => $this->language->get('text_separator')
       	);
 				
@@ -79,9 +79,9 @@ class ControllerAccountLogin extends \system\engine\Controller {
 		$this->data['text_enter_with_loginza'] = $this->language->get('text_enter_with_loginza');
 		// loginza
 		
-		$this->data['action'] = $this->url->link('account/login', '', 'SSL');
-		$this->data['register'] = $this->url->link('account/register', '', 'SSL');
-		$this->data['forgotten'] = $this->url->link('account/forgotten', '', 'SSL');
+		$this->data['action'] = $this->getUrl()->link('account/login', '', 'SSL');
+		$this->data['register'] = $this->getUrl()->link('account/register', '', 'SSL');
+		$this->data['forgotten'] = $this->getUrl()->link('account/forgotten', '', 'SSL');
 
     	// Added strpos check to pass McAfee PCI compliance test (http://forum.opencart.com/viewtopic.php?f=10&t=12043&p=151494#p151295)
 		if (isset($this->request->post['redirect']) && (strpos($this->request->post['redirect'], HTTP_SERVER) !== false || strpos($this->request->post['redirect'], HTTPS_SERVER) !== false)) {
@@ -102,8 +102,8 @@ class ControllerAccountLogin extends \system\engine\Controller {
 			$this->data['success'] = '';
 		}
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/account/login.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/account/login.tpl';
+		if (file_exists(DIR_TEMPLATE . $this->getConfig()->get('config_template') . '/template/account/login.tpl')) {
+			$this->template = $this->getConfig()->get('config_template') . '/template/account/login.tpl';
 		} else {
 			$this->template = 'default/template/account/login.tpl';
 		}
@@ -132,4 +132,3 @@ class ControllerAccountLogin extends \system\engine\Controller {
     	}  	
   	}
 }
-?>

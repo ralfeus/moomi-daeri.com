@@ -1,4 +1,5 @@
 <?php
+use model\sale\TransactionDAO;
 use system\engine\CustomerZoneController;
 use system\library\Messaging;
 use system\library\Status;
@@ -11,7 +12,6 @@ class ControllerAccountTransaction extends CustomerZoneController {
 // ----- deposit modules START -----    
         @$this->language->load('account/multi_pay');
 // ----- deposit modules END -----    
-        $this->load->model('account/transaction');
         $this->document->setTitle($this->language->get('headingTitle'));
         $this->data['heading_title'] = $this->language->get('headingTitle');
     }
@@ -50,7 +50,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
         $this->data['textTimeAdded'] = $this->language->get('TIME_ADDED');
 
         $pagination = new Pagination();
-        $pagination->total = Messaging::getSystemMessagesCount(SYS_MSG_ADD_CREDIT, $this->customer->getId());
+        $pagination->total = Messaging::getInstance()->getSystemMessagesCount(SYS_MSG_ADD_CREDIT, $this->customer->getId());
         $pagination->page = $this->parameters['creditRequestsPage'];
         $pagination->limit = 10;
         $pagination->text = $this->language->get('text_pagination');
@@ -80,7 +80,7 @@ class ControllerAccountTransaction extends CustomerZoneController {
 			$this->data['text_deposit'] = $this->language->get('text_deposit');
 			$this->data['text_transfer'] = $this->language->get('text_transfer');
 // ----- deposit modules END -----    
-        $this->data['total'] = $this->currency->format($this->customer->getBalance(), $this->customer->getBaseCurrency()->getCode(), 1);
+        $this->data['total'] = $this->getCurrentCurrency()->format($this->customer->getBalance(), $this->customer->getBaseCurrency()->getCode(), 1);
 
         $data = array(
             'sort'  => 'customer_transaction_id',
@@ -89,15 +89,15 @@ class ControllerAccountTransaction extends CustomerZoneController {
             'limit' => 10
         );
 
-        $transaction_total = $this->model_account_transaction->getTotalTransactions($data);
-        $transactions = $this->model_account_transaction->getTransactions($data);
+        $transaction_total = TransactionDAO::getInstance()->getTransactionsCount($this->getCurrentCustomer()->getId());
+        $transactions = TransactionDAO::getInstance()->getTransactions($data);
 
         $this->data['transactions'] = array();
         foreach ($transactions as $transaction) {
             $amount = -$transaction['amount'];
-            $amountString = $this->currency->format($amount, $transaction['currency_code'], 1);
+            $amountString = $this->getCurrentCurrency()->format($amount, $transaction['currency_code'], 1);
             $this->data['transactions'][] = array(
-                'balance' => $this->currency->format($transaction['balance'], $this->customer->getBaseCurrency()->getCode(), 1),
+                'balance' => $this->getCurrentCurrency()->format($transaction['balance'], $this->customer->getBaseCurrency()->getCode(), 1),
                 'expenseAmount'      => $amount < 0 ? $amountString : '',
                 'incomeAmount'      => $amount >= 0 ? $amountString : '',
                 'currency_code' => $transaction['currency_code'],
