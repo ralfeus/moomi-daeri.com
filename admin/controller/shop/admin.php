@@ -58,14 +58,8 @@ class ControllerShopAdmin extends \system\engine\Controller {
 
 	public function deleteHoliday() {
 		$holiday_id = $_POST['holiday_id'];
-
-		$this->load->model('shop/general');
-
-		$holiday_id = GeneralDAO::getInstance()->deleteHoliday($holiday_id);
-
+		GeneralDAO::getInstance()->deleteHoliday($holiday_id);
 		$response['success'] = true;
-
 		print(json_encode($response));
-
 	}
 }

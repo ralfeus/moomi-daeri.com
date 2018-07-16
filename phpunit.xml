@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/6.3/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         convertNoticesToExceptions="false"
+         convertWarningsToExceptions="false"
+         convertDeprecationsToExceptions="false">
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">/var/www/moomi-daeri.com</directory>
+            <exclude><file>/var/www/moomi-daeri.com/admin/index.php</file></exclude>
+            <exclude>
+                <directory>/var/www/moomi-daeri.com/admin/view</directory>
+                <directory>/var/www/moomi-daeri.com/catalog/view</directory>
+                <directory>/var/www/moomi-daeri.com/automation</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+    <logging>
+        <!--<log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>-->
+    </logging>
+</phpunit>
