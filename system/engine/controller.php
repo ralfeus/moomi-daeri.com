@@ -119,8 +119,12 @@ abstract class Controller extends OpenCartBase {
         if (file_exists($file)) {
             require_once($file);
 
-            $controller = new $class($this->registry);
-
+            try {
+                $controller = new $class($this->registry);
+            } catch (\Error $e) {
+                $fqcn = (strpos($file, 'admin') === false ? 'catalog' : 'admin') . '\controller\\' . str_replace('/', '\\', $child);
+                $controller = new $fqcn($this->registry);
+            }
             $controller->$method($args);
 
             return $controller->output;

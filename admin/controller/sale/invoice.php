@@ -1,6 +1,7 @@
 <?php
 use model\sale\CustomerDAO;
 use model\sale\InvoiceDAO;
+use model\sale\OrderDAO;
 use model\sale\OrderItem;
 use model\sale\OrderItemDAO;
 use model\sale\TransactionDAO;
@@ -18,15 +19,12 @@ use system\helper\ImageService;
 class ControllerSaleInvoice extends AdminController {
     /** @var ModelReferenceAddress */
     private $modelReferenceAddress;
-    /** @var ModelSaleOrder */
-    private $modelSaleOrder;
 
     public function __construct($registry) {
         parent::__construct($registry);
         $this->getLoader()->language('sale/invoice');
         //$this->getLoader()->library("Transaction");
         $this->modelReferenceAddress = $this->getLoader()->model('reference/address');
-        $this->modelSaleOrder = $this->getLoader()->model('sale/order');
 
         $this->data['notifications'] = array();
         $this->document->setTitle($this->language->get('headingTitle'));
@@ -41,7 +39,7 @@ class ControllerSaleInvoice extends AdminController {
         $firstAddress = "";
         foreach ($orderItems as $orderItem)
         {
-            $order = $this->registry->get('model_sale_order')->getOrder($orderItem->getId());
+            $order = OrderDAO::getInstance()->getOrder($orderItem->getId());
             if (!$firstAddress)
                 $firstAddress = $this->getOrderAddressString($order);
             else
@@ -163,13 +161,13 @@ class ControllerSaleInvoice extends AdminController {
                 'action' => $action,
                 'customer' => $temp['lastname'] . ' ' . $temp['firstname'],
                 'customerId' => $temp['customer_id'],
-                'shippingCost' => $this->getCurrency()->format($invoice->getShippingCost(), $this->getConfig()->get('config_currency')),
+                'shippingCost' => $this->getCurrentCurrency()->format($invoice->getShippingCost(), $this->getConfig()->get('config_currency')),
                 'shippingMethod' => ShippingMethodDAO::getInstance()->getMethod(explode('.', $invoice->getShippingMethod())[0])->
                     getName(),
                 'status' => $this->getLoader()->model('localisation/invoice')->getInvoiceStatus($invoice->getStatusId()),
-                'subtotal' => $this->getCurrency()->format($invoice->getSubtotal(), $this->getConfig()->get('config_currency')),
-                'total' => $this->getCurrency()->format($invoice->getTotal(), $this->getConfig()->get('config_currency')),
-                'totalCustomerCurrency' => $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1),
+                'subtotal' => $this->getCurrentCurrency()->format($invoice->getSubtotal(), $this->getConfig()->get('config_currency')),
+                'total' => $this->getCurrentCurrency()->format($invoice->getTotal(), $this->getConfig()->get('config_currency')),
+                'totalCustomerCurrency' => $this->getCurrentCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1),
                 'weight' => $invoice->getWeight(),
                 'date' => $invoiceDate,
                 'package_number' => $invoice->getPackageNumber(),
@@ -246,7 +244,7 @@ class ControllerSaleInvoice extends AdminController {
         if ($temp['await_invoice_confirmation']) {
             InvoiceDAO::getInstance()->setInvoiceStatus($invoiceId, IS_AWAITING_CUSTOMER_CONFIRMATION);
         } else {
-            $totalToPay = $this->getCurrency()->convert(
+            $totalToPay = $this->getCurrentCurrency()->convert(
                 $invoice->getTotalCustomerCurrency(),
                 $invoice->getCurrencyCode(),
                 $temp['base_currency_code']);
@@ -269,8 +267,8 @@ class ControllerSaleInvoice extends AdminController {
             sprintf(
                 $this->getLanguage()->get('INVOICE_STATUS_NOTIFICATION'),
                 $this->getLoader()->model('localisation/invoice')->getInvoiceStatus($invoiceId),
-                $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1),
-                $this->getCurrency()->format(
+                $this->getCurrentCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1),
+                $this->getCurrentCurrency()->format(
                     CustomerDAO::getInstance()->getCustomerBalance($temp['customer_id']),
                     $temp['base_currency_code'],
                     1)
@@ -416,11 +414,11 @@ class ControllerSaleInvoice extends AdminController {
                 'name' => $orderItem->getName(),
                 'order_id' => $orderItem->getOrderId(),
                 'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
-                'price' => $this->getCurrency()->format($orderItem->getPrice(), $this->getConfig()->get('config_currency')),
+                'price' => $this->getCurrentCurrency()->format($orderItem->getPrice(), $this->getConfig()->get('config_currency')),
                 'quantity' => $orderItem->getQuantity(),
                 'shipping' => $orderItem->getShippingCost(),
-                'subtotal' => $this->getCurrency()->format($orderItem->getPrice() * $orderItem->getQuantity() + $orderItem->getShippingCost(), $this->getConfig()->get('config_currency')),
-                'subtotalCustomerCurrency' => $this->getCurrency()->format(
+                'subtotal' => $this->getCurrentCurrency()->format($orderItem->getPrice() * $orderItem->getQuantity() + $orderItem->getShippingCost(), $this->getConfig()->get('config_currency')),
+                'subtotalCustomerCurrency' => $this->getCurrentCurrency()->format(
                     $orderItem->getPrice(true) * $orderItem->getQuantity() + $orderItem->getShippingCost(true),
                     $orderItem->getCustomer()['base_currency_code'], 1
                 )
@@ -439,7 +437,7 @@ class ControllerSaleInvoice extends AdminController {
         /// Check whether suppliers have free shipping
         $this->checkFreeLocalShipping($localShipping, $total, $totalCustomerCurrency);
         /// Set invoice data
-        $firstItemOrder = $this->modelSaleOrder->getOrder($orderItems[0]->getOrderId());
+        $firstItemOrder = OrderDAO::getInstance()->getOrder($orderItems[0]->getOrderId());
 //        $this->log->write(print_r($firstItemOrder, true));
         $customer = CustomerDAO::getInstance()->getCustomer($firstItemOrder['customer_id']);
 //        $shippingCost = \Shipping::getCost($orderItems, $firstItemOrder['shipping_method'], array('weight' => $totalWeight), $this->registry);
@@ -451,7 +449,7 @@ class ControllerSaleInvoice extends AdminController {
         $this->data['packageNumber'] = '';
         $this->data['shippingAddress'] = nl2br($this->getOrderAddressString($firstItemOrder)) . " (" . $firstItemOrder['shipping_phone'] . ")";
         $this->data['shippingCost'] =
-            $this->getCurrency()->format($shippingCost, $this->getConfig()->get('config_currency'));
+            $this->getCurrentCurrency()->format($shippingCost, $this->getConfig()->get('config_currency'));
         $this->data['shippingCostRoute'] =
             $this->getUrl()->link(
                 'sale/invoice/getShippingCost',
@@ -461,13 +459,13 @@ class ControllerSaleInvoice extends AdminController {
         $this->data['shippingMethod'] = $firstItemOrder['shipping_method'];
         $this->data['shippingMethodCode'] = $firstItemOrder['shipping_method'];
 
-        $this->data['total'] = $this->getCurrency()->format($total, $this->getConfig()->get('config_currency'));
+        $this->data['total'] = $this->getCurrentCurrency()->format($total, $this->getConfig()->get('config_currency'));
         $this->data['totalRaw'] = $total;
         $this->data['totalWeight'] = $totalWeight;
-        $this->data['grandTotal'] = $this->getCurrency()->format($total + $shippingCost, $this->getConfig()->get('config_currency'));
-        $this->data['totalCustomerCurrency'] = $this->getCurrency()->format(
+        $this->data['grandTotal'] = $this->getCurrentCurrency()->format($total + $shippingCost, $this->getConfig()->get('config_currency'));
+        $this->data['totalCustomerCurrency'] = $this->getCurrentCurrency()->format(
             $totalCustomerCurrency +
-            $this->getCurrency()->convert($shippingCost, $this->getConfig()->get('config_currency'), $customer['base_currency_code']),
+            $this->getCurrentCurrency()->convert($shippingCost, $this->getConfig()->get('config_currency'), $customer['base_currency_code']),
             $customer['base_currency_code'], 1);
         $this->data['shippingMethods'] = ShippingMethodDAO::getInstance()->getShippingOptions($this->getOrderAddress($firstItemOrder));
 //        $this->log->write(print_r($this->data, true));
@@ -498,11 +496,11 @@ class ControllerSaleInvoice extends AdminController {
                 'name' => $orderItem->getName(),
                 'options' => OrderItemDAO::getInstance()->getOrderItemOptionsString($orderItem->getId()),
                 'order_id' => $orderItem->getOrderId(),
-                'price' => $this->getCurrency()->format($orderItem->getPrice(), $this->getConfig()->get('config_currency')),
+                'price' => $this->getCurrentCurrency()->format($orderItem->getPrice(), $this->getConfig()->get('config_currency')),
                 'quantity' => $orderItem->getQuantity(),
-                'subtotal' => $this->getCurrency()->format($orderItem->getTotal(), $this->getConfig()->get('config_currency')),
-                'subtotalCustomerCurrency' => $this->getCurrency()->format($orderItem->getTotal(true), $orderItem->getCustomer()['base_currency_code'], 1),
-                'shipping' => $this->getCurrency()->format($orderItem->getShippingCost(), $this->getConfig()->get('config_currency'))
+                'subtotal' => $this->getCurrentCurrency()->format($orderItem->getTotal(), $this->getConfig()->get('config_currency')),
+                'subtotalCustomerCurrency' => $this->getCurrentCurrency()->format($orderItem->getTotal(true), $orderItem->getCustomer()['base_currency_code'], 1),
+                'shipping' => $this->getCurrentCurrency()->format($orderItem->getShippingCost(), $this->getConfig()->get('config_currency'))
             );
             $orderItemIdParam .= '&orderItemId[]=' . $orderItem->getId();
         }
@@ -540,7 +538,7 @@ class ControllerSaleInvoice extends AdminController {
         $this->data['invoiceId'] = $invoice->getId();
         $this->data['packageNumber'] = $invoice->getPackageNumber();
         $this->data['shippingAddress'] = nl2br($this->modelReferenceAddress->toString($invoice->getShippingAddressId())) . "<br />" . $order_info['shipping_phone'];//$add['phone'];
-        $this->data['shippingCost'] = $this->getCurrency()->format($invoice->getShippingCost(), $this->getConfig()->get('config_currency'));
+        $this->data['shippingCost'] = $this->getCurrentCurrency()->format($invoice->getShippingCost(), $this->getConfig()->get('config_currency'));
         $this->data['shippingCostRaw'] = $invoice->getShippingCost();
         $this->data['shippingCostRoute'] =
             $this->getUrl()->link(
@@ -550,12 +548,12 @@ class ControllerSaleInvoice extends AdminController {
             );
         $this->data['shippingMethod'] = $invoice->getShippingMethod();
         $this->data['shippingDate'] = $invoice->getShippingDate();
-        $this->data['total'] = $this->getCurrency()->format($invoice->getSubtotal(), $this->getConfig()->get('config_currency'));
+        $this->data['total'] = $this->getCurrentCurrency()->format($invoice->getSubtotal(), $this->getConfig()->get('config_currency'));
         $this->data['totalRaw'] = $invoice->getSubtotal();
-        $this->data['totalCustomerCurrency'] = $this->getCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1);
+        $this->data['totalCustomerCurrency'] = $this->getCurrentCurrency()->format($invoice->getTotalCustomerCurrency(), $invoice->getCurrencyCode(), 1);
         $this->data['totalWeight'] = $invoice->getWeight();
         $this->data['grandTotal'] =
-            $this->getCurrency()->format(
+            $this->getCurrentCurrency()->format(
                 $invoice->getTotal(),
                 $this->getConfig()->get('config_currency'));
         $this->data['customerCurrencyCode'] = $invoice->getCurrencyCode();
@@ -638,7 +636,7 @@ class ControllerSaleInvoice extends AdminController {
             }
             OrderItemDAO::getInstance()->saveOrderItem($orderItem, true);
             $this->data['orderItems'][$orderItem->getId()]['shipping'] = $orderItem->getShippingCost();
-            $this->data['orderItems'][$orderItem->getId()]['subtotal'] = $this->getCurrency()->format(
+            $this->data['orderItems'][$orderItem->getId()]['subtotal'] = $this->getCurrentCurrency()->format(
                 $orderItem->getPrice() * $orderItem->getQuantity() + $orderItem->getShippingCost(),
                 $this->getConfig()->get('config_currency')
             );

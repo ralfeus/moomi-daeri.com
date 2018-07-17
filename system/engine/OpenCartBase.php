@@ -96,7 +96,7 @@ abstract class OpenCartBase {
     /**
      * @param null $code
      * @return Currency
-     * @deprecated
+     * @deprecated use getCurrentCurrency() instead
      */
     protected function getCurrency($code = null) {
         return $this->getCurrentCurrency();

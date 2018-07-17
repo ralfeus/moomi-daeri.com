@@ -22,17 +22,13 @@ class HomeTest extends Test {
         require_once(DIR_APPLICATION . "/controller/common/home.php");
     }
 
-    protected function setUp() {
-        parent::setUp();
-        $this->class = new \ControllerCommonHome($this->registry);
-    }
-
     /**
      * @test
      * @covers ControllerCommonHome::index
      */
     public function index() {
-        $this->class->index();
+        $class = new \ControllerCommonHome($this->registry);
+        $class->index();
         self::assertTrue(true);
     }
 
@@ -41,7 +37,8 @@ class HomeTest extends Test {
      */
     public function checkLatestCount() {
         define('LAYOUT_ID_HOME', 1);
-        $this->class->index();
+        $class = new \ControllerCommonHome($this->registry);
+        $class->index();
 
         /// Get amount of the latest modules to be shown
         $modules = $this->registry->get('config')->get('latest_module');
@@ -59,7 +56,7 @@ class HomeTest extends Test {
         /// Compare amount of the latest modules actually shown with expected one
         $this->assertEquals(
             $latestModulesCount,
-            preg_match_all('/class="box-latest"/', self::readAttribute($this->class, 'output'))
+            preg_match_all('/class="box-latest"/', self::readAttribute($class, 'output'))
         );
     }
 }
