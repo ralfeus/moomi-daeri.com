@@ -26,6 +26,7 @@ class ControllerProductSearchTest extends Test {
         $class = new \ControllerProductSearch($this->registry);
         $class->index();
         $this->assertTrue(true);
+        self::assertAttributeNotEmpty('output', runMethod($class, 'getResponse'));
     }
 }
  

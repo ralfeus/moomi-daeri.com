@@ -25,6 +25,7 @@ class ControllerProductRepurchaseTest extends Test {
     public function index() {
         $class = new \ControllerProductRepurchase($this->registry);
         $class->index();
+        self::assertAttributeNotEmpty('output', runMethod($class, 'getResponse'));
     }
 }
  

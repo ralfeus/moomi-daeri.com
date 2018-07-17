@@ -25,6 +25,7 @@ class ControllerProductProductTest extends Test {
     public function index() {
         $class = new \ControllerProductProduct($this->registry);
         $class->index();
+        self::assertAttributeNotEmpty('output', runMethod($class, 'getResponse'));
     }
 }
  

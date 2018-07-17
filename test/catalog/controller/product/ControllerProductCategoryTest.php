@@ -8,6 +8,7 @@
 
 namespace test\catalog\controller\product;
 
+use catalog\controller\product\ControllerProductCategory;
 use test\catalog\Test;
 
 /**
@@ -23,8 +24,9 @@ class ControllerProductCategoryTest extends Test {
      * @covers ControllerProductCategory::index
      */
     public function index() {
-        $class = new \ControllerProductCategory($this->registry);
+        $class = new ControllerProductCategory($this->registry);
         $class->index();
+        self::assertAttributeNotEmpty('output', runMethod($class, 'getResponse'));
     }
 }
  

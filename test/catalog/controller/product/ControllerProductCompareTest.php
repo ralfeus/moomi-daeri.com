@@ -25,6 +25,7 @@ class ControllerProductCompareTest extends Test {
     public function index() {
         $class = new \ControllerProductCompare($this->registry);
         $class->index();
+        self::assertAttributeNotEmpty('output', runMethod($class, 'getResponse'));
     }
 }
  

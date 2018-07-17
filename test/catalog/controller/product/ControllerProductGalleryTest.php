@@ -27,6 +27,7 @@ class ControllerProductGalleryTest extends Test {
         $class = new \ControllerProductGallery($this->registry);
         $class->index();
         Warning::$enabled = true;
+        self::assertAttributeNotEmpty('output', runMethod($class, 'getResponse'));
     }
 }
  
