@@ -43,7 +43,7 @@ class ControllerModuleCategoryAccordion extends Controller {
 				$new_path = $current_path . '_' . $result['category_id'];
 			}
 
-			$children = CategoryDAO::getInstance()->getCategories($result['category_id']);
+			$children = CategoryDAO::getInstance()->getCategories($result['category_id'], 1);
 			$caturl = $this->getUrl()->link("product/category", "path=" . $new_path);
 			if (empty($children)) {
 				$output .= '<li><a href="' . $caturl . '">' . $result['name'] . '</a></li>';
