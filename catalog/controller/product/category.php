@@ -159,7 +159,7 @@ class ControllerProductCategory extends Controller {
                 $product_total = ProductDAO::getInstance()->getProductsCount($filter, true);
 
                 $this->data['categories'][] = array(
-                    'name' => $result['name'] . ' (' . $product_total . ')',
+                    'name' => $result['path'] . ' (' . $product_total . ')',
                     'href' => $this->getUrl()->link('product/category', 'path=' . $this->request->get['path'] . '_' . $result['category_id'] . $url)
                 );
             }

@@ -206,7 +206,8 @@ SQL
             foreach ($query->rows as $result) {
                 $category_data[] = array(
                     'category_id' => $result['category_id'],
-                    'name'        => $this->getPath($result['category_id'], $this->getConfig()->get('config_language_id')),
+                    'name' => $result['name'],
+                    'path'        => $this->getPath($result['category_id'], $this->getConfig()->get('config_language_id')),
                     'status'  	  => $result['status'],
                     'sort_order'  => $result['sort_order']
                 );
@@ -220,11 +221,23 @@ SQL
         return $category_data;
     }
 
-    public function getPath($category_id) {
-        $query = $this->getDb()->query("SELECT name, parent_id FROM category c LEFT JOIN category_description cd ON (c.category_id = cd.category_id) WHERE c.category_id = '" . (int)$category_id . "' AND cd.language_id = '" . (int)$this->getConfig()->get('config_language_id') . "' ORDER BY c.sort_order, cd.name ASC");
+    private function getPath($category_id, $languageId) {
+        $query = $this->getDb()->query("
+            SELECT name, parent_id 
+            FROM 
+                category AS c 
+                LEFT JOIN category_description AS cd ON c.category_id = cd.category_id 
+            WHERE 
+                c.category_id = :categoryId
+                AND cd.language_id = :languageId 
+            ORDER BY c.sort_order, cd.name ASC
+        ", [
+            ':categoryId' => $category_id,
+            ':languageId' => $languageId
+        ]);
 
         if ($query->row['parent_id']) {
-            return $this->getPath($query->row['parent_id'], $this->getConfig()->get('config_language_id')) . $this->language->get('text_separator') . $query->row['name'];
+            return $this->getPath($query->row['parent_id'], $languageId) . $this->getLanguage()->get('text_separator') . $query->row['name'];
         } else {
             return $query->row['name'];
         }
@@ -280,11 +293,11 @@ SQL
         return $query->row['total'];
     }
 
-    public function getTotalCategoriesByImageId($image_id) {
-        $query = $this->getDb()->query("SELECT COUNT(*) AS total FROM category WHERE image_id = '" . (int)$image_id . "'");
-
-        return $query->row['total'];
-    }
+//    public function getTotalCategoriesByImageId($image_id) {
+//        $query = $this->getDb()->query("SELECT COUNT(*) AS total FROM category WHERE image_id = '" . (int)$image_id . "'");
+//
+//        return $query->row['total'];
+//    }
 
     public function getTotalCategoriesByLayoutId($layout_id) {
         $query = $this->getDb()->query("SELECT COUNT(*) AS total FROM category_to_layout WHERE layout_id = '" . (int)$layout_id . "'");
