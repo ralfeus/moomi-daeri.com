@@ -180,13 +180,28 @@ SQL
         return ((isset($data[$type]) && isset($data[$type][$id])) ? $data[$type][$id] : array());
     }
 
-    public function getCategories($parent_id = 0) {
+    public function getCategories($parent_id = 0, $depth = PHP_INT_MAX) {
+        if (!$depth) {
+            return [];
+        }
         $category_data = $this->getCache()->get('category.' . (int)$this->getConfig()->get('config_language_id') . '.' . (int)$parent_id);
 
         if (!$category_data) {
             $category_data = array();
 
-            $query = $this->getDb()->query("SELECT * FROM category c LEFT JOIN category_description cd ON (c.category_id = cd.category_id) WHERE c.parent_id = '" . (int)$parent_id . "' AND cd.language_id = '" . (int)$this->getConfig()->get('config_language_id') . "' ORDER BY c.sort_order, cd.name ASC");
+            $query = $this->getDb()->query("
+                SELECT * 
+                FROM 
+                    category AS c 
+                    LEFT JOIN category_description AS cd ON c.category_id = cd.category_id 
+                WHERE 
+                    c.parent_id = :parentId
+                    AND cd.language_id = :languageId
+                ORDER BY c.sort_order, cd.name ASC
+            ", [
+                ':parentId' => $parent_id,
+                ':languageId' => (int)$this->getConfig()->get('config_language_id')
+            ]);
 
             foreach ($query->rows as $result) {
                 $category_data[] = array(
@@ -196,7 +211,7 @@ SQL
                     'sort_order'  => $result['sort_order']
                 );
 
-                $category_data = array_merge($category_data, $this->getCategories($result['category_id']));
+                $category_data = array_merge($category_data, $this->getCategories($result['category_id'], $depth - 1));
             }
 
             $this->getCache()->set('category.' . (int)$this->getConfig()->get('config_language_id') . '.' . (int)$parent_id, $category_data);

@@ -32,7 +32,7 @@ class ControllerModuleCategoryAccordion extends Controller {
   	
 	
 	private function getCategoriesAccordion($parent_id, $current_path = '') {
-		$results = CategoryDAO::getInstance()->getCategories($parent_id);
+		$results = CategoryDAO::getInstance()->getCategories($parent_id, 1);
 
 		$output = '<ul>';
 		
