@@ -34,6 +34,6 @@ class ProductCategory {
      * @return boolean
      */
     public function isMain() {
-        return $this->isMain;
+        return (bool)$this->isMain;
     }
 }
