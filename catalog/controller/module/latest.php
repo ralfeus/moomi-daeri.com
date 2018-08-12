@@ -32,7 +32,7 @@ class ControllerModuleLatest extends \system\engine\Controller {
 			'order' => 'DESC',
 			'start' => ($page - 1) * $setting['limit'],
 			'limit' => $setting['limit'],
-			'filter_category_id' => $setting['category_ids'],
+			'filter_category_id' => isset($setting['category_ids']) ? $setting['category_ids'] : null,
             'nocache'   => 1
 		);
 
