@@ -1657,7 +1657,7 @@ SQL
                     ':lengthClassId' => $product->getDimension()->getUnit()->getId(),
                     ':subtract' => $product->getSubtract(),
                     ':minimum' => $product->getMinimum(),
-                    ':sortOrder' => $product->getSortOrder(),
+                    ':sortOrder' => (int)$product->getSortOrder(),
                     ':status' => $product->getStatus(),
                     ':userId' => $product->getUserId(),
                     ':afcId' => $product->getAfcId(),
