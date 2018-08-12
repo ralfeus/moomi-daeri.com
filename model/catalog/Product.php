@@ -868,6 +868,9 @@ class Product {
     public function getSortOrder() {
         if (!isset($this->sortOrder)) {
             $this->sortOrder = ProductDAO::getInstance()->getSortOrder($this->id);
+            if (empty($this->sortOrder)) {
+                $this->sortOrder = 0;
+            }
         }
         return $this->sortOrder;
     }
