@@ -1720,7 +1720,7 @@ SQL
                         ':height' => $product->getDimension()->getHeight(),
                         ':lengthClassId' => $product->getDimension()->getUnit()->getId(),
                         ':status' => $product->getStatus(),
-                        ':sortOrder' => $product->getSortOrder(),
+                        ':sortOrder' => (int)$product->getSortOrder(),
                         ':affiliateCommission' => $product->getAffiliateCommission(),
                         ':image' => $product->getImagePath(),
                         ':productId' => $product->getId(),
