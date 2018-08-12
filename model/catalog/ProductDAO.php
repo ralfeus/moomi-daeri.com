@@ -1977,7 +1977,7 @@ SQL
                     ", [
                     ':productId' => $product->getId(),
                     ':categoryId' => $category->getCategory()->getId(),
-                    ':isMainCategory' => (bool)$category->isMain()
+                    ':isMainCategory' => (int)$category->isMain()
                 ]);
             }
         }
