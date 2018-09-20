@@ -3,7 +3,6 @@ namespace system\library;
 use system\exception\CacheNotInstalledException;
 
 final class WinCache extends Cache{
-    private $destination = '/var/tmpfs';
 	private $cacheName = 'WinCache';
 
     /**
@@ -47,7 +46,7 @@ final class WinCache extends Cache{
     }
 
 	/**
-	 * @param string keyPattern A regex describing keys to delete
+	 * @param string $keyPattern A regex describing keys to delete
 	 * @return bool
 	 * @throws CacheNotInstalledException
 	*/
@@ -62,6 +61,7 @@ final class WinCache extends Cache{
 					wincache_ucache_delete($entry['key']);
 				}
             }
+            return true;
         } else {
             throw new CacheNotInstalledException($this->cacheName);
         }
