@@ -54,6 +54,9 @@ final class WinCache extends Cache{
     public function deleteAll($keyPattern) {
         if (function_exists('wincache_ucache_info')) {
             $cacheInfo = wincache_ucache_info();
+            if ($keyPattern == '/^product/') {
+                $this->logger->write(print_r($cacheInfo, true));
+            }
             foreach ($cacheInfo['ucache_entries'] as $entry) {
 				if (preg_match($keyPattern, $entry['key_name'])) {
 					wincache_ucache_delete($entry['key']);
