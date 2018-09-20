@@ -58,7 +58,7 @@ final class WinCache extends Cache{
             }
             foreach ($cacheInfo['ucache_entries'] as $entry) {
 				if (preg_match($keyPattern, $entry['key_name'])) {
-					wincache_ucache_delete($entry['key']);
+					wincache_ucache_delete($entry['key_name']);
 				}
             }
             return true;
