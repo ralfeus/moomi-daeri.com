@@ -63,7 +63,8 @@ class FileSystemFileHandler implements IFileHandler {
      * @return bool True on success, false on failure
      */
     public function mv($localFile, $destinationFile) {
-        $directories = explode('/', dirname(str_replace('../', '', $destinationFile)));
+        $relDstPath = str_replace($this->baseDir, '', $destinationFile);
+        $directories = explode('/', dirname(str_replace('../', '', $relDstPath)));
         $path = '';
         foreach ($directories as $directory) {
             $path = $path . '/' . $directory;
@@ -73,7 +74,7 @@ class FileSystemFileHandler implements IFileHandler {
             }
         }
 //        $this->log->write("Trying to move $localFile to $destinationFile");
-        $result = rename($localFile, $this->baseDir . $destinationFile);
+        $result = rename($localFile, $this->baseDir . $relDstPath);
 //        if ($result) {
 //            $this->log->write("Moved");
 //        } else {
