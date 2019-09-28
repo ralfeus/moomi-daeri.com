@@ -68,8 +68,9 @@ final class Image {
         $info = $this->fileHandler->getInfo($file);
 
         $extension = strtolower($info['extension']);
-        $tmpFile = tempnam(DIR_IMAGE, 'img');
-        chmod($tmpFile, 0644);
+//        $tmpFile = tempnam(DIR_IMAGE, 'img');
+        $tmpFile = $file;
+//        chmod($tmpFile, 0644);
 //        echo("\n" . $tmpFile . "\n");
 //        echo($file . "\n");
 
@@ -80,8 +81,8 @@ final class Image {
         } elseif ($extension == 'gif') {
             imagegif($this->image, $tmpFile);
         }
-//        print_r(scandir(dirname($tmpFile)));
-        $this->fileHandler->mv($tmpFile, $file);
+////        print_r(scandir(dirname($tmpFile)));
+//        $this->fileHandler->mv($tmpFile, $file);
         imagedestroy($this->image);
     }
 
