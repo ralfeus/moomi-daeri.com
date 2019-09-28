@@ -68,6 +68,7 @@ final class Image {
         $info = $this->fileHandler->getInfo($file);
 
         $extension = strtolower($info['extension']);
+        // In case of different file storages it's necessary to enable and ensure it works
 //        $tmpFile = tempnam(DIR_IMAGE, 'img');
         $tmpFile = $file;
 //        chmod($tmpFile, 0644);
@@ -82,6 +83,7 @@ final class Image {
             imagegif($this->image, $tmpFile);
         }
 ////        print_r(scandir(dirname($tmpFile)));
+        // In case of different file storages it's necessary to enable and ensure it works
 //        $this->fileHandler->mv($tmpFile, $file);
         imagedestroy($this->image);
     }
