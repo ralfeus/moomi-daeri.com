@@ -11,11 +11,12 @@ use system\library\Status;
  * Time: 8:16
  * To change this template use File | Settings | File Templates.
  */
-class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
+class ControllerSaleRepurchaseOrders extends Controller {
+    private $error = [];
     public function __construct($registry) {
         parent::__construct($registry);
         $this->data['notifications'] = array();
-        $this->load->language('sale/repurchaseOrders');
+        $this->getLoader()->language('sale/repurchaseOrders');
         //$this->load->library('status');
         $this->document->setTitle($this->getLanguage()->get('HEADING_TITLE'));
         $this->data['headingTitle'] = $this->getLanguage()->get('HEADING_TITLE');
@@ -87,7 +88,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
                 'siteName'			 => $siteName,
                 'customerName' => $order_item['customerName'],
                 'customerNick' => $order_item['customerNick'],
-                'customerUrl' => $this->url->link(
+                'customerUrl' => $this->getUrl()->link(
                     'sale/customer/update',
                     'token=' . $this->session->data['token'] . '&customer_id=' . $order_item['customerId'],
                     'SSL'),
@@ -100,7 +101,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
                 'status'       	=> $order_item['status']
                     ? Status::getInstance($this->getRegistry())->getStatus(
                         $order_item['status'],
-                        $this->config->get('config_language_id'))
+                        $this->getConfig()->get('config_language_id'))
                     : "",
                 'quantity'		=> $order_item['quantity'],
                 'price' => (float)$order_item['price'],
@@ -129,15 +130,15 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
         $pagination = new Pagination();
         $pagination->total = RepurchaseOrderDAO::getInstance()->getOrdersCount($data);
         $pagination->page = $this->parameters['page'];
-        $pagination->limit = $this->config->get('config_admin_limit');
+        $pagination->limit = $this->getConfig()->get('config_admin_limit');
         $pagination->text = $this->getLanguage()->get('text_pagination');
-        $pagination->url = $this->url->link('sale/repurchaseOrders', $urlParameters . '&page={page}', 'SSL');
+        $pagination->url = 'javascript:$(\'input#page\').val({page}); $(\'form\').submit()';
 
         $this->data['pagination'] = $pagination->render();
-        $this->data['currencyCode'] = $this->config->get('config_currency');
-        $this->data['invoiceUrl'] = $this->url->link('sale/invoice/showForm', 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['urlImageChange'] = $this->url->link('sale/repurchaseOrders/setProperty', 'propName=image&token=' . $this->parameters['token'], 'SSL');
-        $this->data['urlImageManager'] = $this->url->link('common/filemanager', 'field=image&token=' . $this->parameters['token'], 'SSL');
+        $this->data['currencyCode'] = $this->getConfig()->get('config_currency');
+        $this->data['invoiceUrl'] = $this->getUrl()->link('sale/invoice/showForm', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['urlImageChange'] = $this->getUrl()->link('sale/repurchaseOrders/setProperty', 'propName=image&token=' . $this->parameters['token'], 'SSL');
+        $this->data['urlImageManager'] = $this->getUrl()->link('common/filemanager', 'field=image&token=' . $this->parameters['token'], 'SSL');
         $this->data = array_merge($this->data, $this->parameters);
     }
 
@@ -230,7 +231,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
         $this->data['statuses'] = array();
         foreach (Status::getInstance($this->getRegistry())->getStatuses(
                      GROUP_REPURCHASE_ORDER_ITEM_STATUS,
-                     $this->config->get('config_language_id')) as $statusId => $status)
+                     $this->getConfig()->get('config_language_id')) as $statusId => $status)
             $this->data['statuses'][] = array(
                 'statusId'    => $statusId,
                 'name' => $status
@@ -276,8 +277,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
         $this->data['textSiteName'] = $this->getLanguage()->get('SITE_NAME');
         $this->data['textWhoOrders'] = $this->getLanguage()->get('WHO_ORDERS');
 
-        $this->template = 'sale/repurchaseOrdersListPrint.tpl.php';
-        $this->getResponse()->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render('sale/repurchaseOrdersListPrint.tpl.php'));
     }
 
     public function recalculateShipping() {
@@ -343,12 +343,12 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
 
         $this->data['breadcrumbs'][] = array(
             'text'      => $this->getLanguage()->get('text_home'),
-            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+            'href'      => $this->getUrl()->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
             'separator' => false
         );
         $this->data['breadcrumbs'][] = array(
             'text'      => $this->getLanguage()->get('HEADING_TITLE'),
-            'href'      => $this->url->link('sale/repurchaseOrders', 'token=' . $this->session->data['token'], 'SSL'),
+            'href'      => $this->getUrl()->link('sale/repurchaseOrders', 'token=' . $this->session->data['token'], 'SSL'),
             'separator' => ' :: '
         );
     }
@@ -358,7 +358,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
             return;
         }
         /** @var ModelSaleOrder $modelSaleOrder */
-        $modelSaleOrder = $this->load->model('sale/order');
+        $modelSaleOrder = $this->getLoader()->model('sale/order');
         foreach ($this->parameters['selectedItems'] as $orderId) {
             RepurchaseOrderDAO::getInstance()->setStatus($orderId, $_REQUEST['statusId']);
             $repurchaseOrder = RepurchaseOrderDAO::getInstance()->getOrder($orderId);
@@ -366,7 +366,7 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
         }
 
         $json['newStatusName'] = Status::getInstance($this->getRegistry())->getStatus(
-            $_REQUEST['statusId'], $this->config->get('config_language_id'));
+            $_REQUEST['statusId'], $this->getConfig()->get('config_language_id'));
 
         $this->getResponse()->setOutput(json_encode($json));
     }

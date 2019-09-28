@@ -41,6 +41,7 @@ window.onload = function() {
       </div>
         <div id="content_scroll">
         <form action="" id="form" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="page" name="page" />
             <table class="list">
                 <thead>
                     <tr>
