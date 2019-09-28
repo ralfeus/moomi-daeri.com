@@ -200,7 +200,9 @@ class RepurchaseOrderDAO extends OrderItemDAO {
                 'status' => $repurchaseOrderItem->getStatusId() >> 16 == GROUP_REPURCHASE_ORDER_ITEM_STATUS
                         ? $repurchaseOrderItem->getStatusId() : REPURCHASE_ORDER_ITEM_STATUS_WAITING,
                 'timeAdded' => $repurchaseOrderItem->getTimeCreated(),
-                'total' => $repurchaseOrderItem->getTotal()
+                'total' => $repurchaseOrderItem->getTotal(),
+                'whoOrders' => !empty($options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID])
+                        ? $options[REPURCHASE_ORDER_WHO_BUYS_OPTION_ID]['value'] : ''
             );
         }
         return $items;

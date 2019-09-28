@@ -53,6 +53,11 @@ class ModelToolImage extends Model {
 
         if (!file_exists(DIR_IMAGE . $new_image) || (filemtime(DIR_IMAGE . $old_image) > filemtime(DIR_IMAGE . $new_image))) {
             $path = '';
+            $this->getLogger()->write($old_image);
+            $this->getLogger()->write(filemtime(DIR_IMAGE . $old_image));
+            $this->getLogger()->write($new_image);
+            $this->getLogger()->write(filemtime(DIR_IMAGE . $new_image));
+
 
             $directories = explode('/', dirname(str_replace('../', '', $new_image)));
 

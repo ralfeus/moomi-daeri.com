@@ -25,13 +25,13 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
         $modelToolImage = $modelToolImage = new \catalog\model\tool\ModelToolImage($this->getRegistry());
         $urlParameters = $this->buildUrlParameterString($this->parameters);
 
-        $this->data['invoice'] = $this->url->link('sale/invoice/showForm', $urlParameters, 'SSL');
-        $this->data['print'] = $this->url->link('sale/repurchaseOrders/printPage', $urlParameters, 'SSL');
+        $this->data['invoice'] = $this->getUrl()->link('sale/invoice/showForm', $urlParameters, 'SSL');
+        $this->data['print'] = $this->getUrl()->link('sale/repurchaseOrders/printPage', $urlParameters, 'SSL');
         $this->data['orders'] = array();
 
         $data = array(
-            'start'           => ($this->parameters['page'] - 1) * $this->config->get('config_admin_limit'),
-            'limit'           => $this->config->get('config_admin_limit')
+            'start'           => ($this->parameters['page'] - 1) * $this->getConfig()->get('config_admin_limit'),
+            'limit'           => $this->getConfig()->get('config_admin_limit')
         );
         $data = array_merge($data, $this->parameters);
 
@@ -174,12 +174,11 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
 
         $this->setBreadcrumbs();
         $this->initStatuses();
-        $this->template = 'sale/repurchaseOrdersList.tpl.php';
         $this->children = array(
             'common/header',
             'common/footer'
         );
-        $this->getResponse()->setOutput($this->render());
+        $this->getResponse()->setOutput($this->render('sale/repurchaseOrdersList.tpl.php'));
     }
 
     protected function initParameters()
@@ -191,12 +190,12 @@ class ControllerSaleRepurchaseOrders extends \system\engine\Controller {
         $this->parameters['filterShopName'] = empty($_REQUEST['filterShopName']) ? null : $_REQUEST['filterShopName'];
         $this->parameters['filterSiteName'] = empty($_REQUEST['filterSiteName']) ? null : $_REQUEST['filterSiteName'];
         if (empty($_REQUEST['filterStatusSetDate'])) {
-            $this->parameters['filterStatusId'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
-            $this->parameters['filterStatusIdDateSet'] = null;
+            $this->parameters['filterStatusId'] = empty($_REQUEST['filterStatusId']) ? [] : $_REQUEST['filterStatusId'];
+            $this->parameters['filterStatusIdDateSet'] = [];
             $this->parameters['filterStatusSetDate'] = null;
         } else {
-            $this->parameters['filterStatusId'] = array();
-            $this->parameters['filterStatusIdDateSet'] = empty($_REQUEST['filterStatusId']) ? array() : $_REQUEST['filterStatusId'];
+            $this->parameters['filterStatusId'] = [];
+            $this->parameters['filterStatusIdDateSet'] = empty($_REQUEST['filterStatusId']) ? [] : $_REQUEST['filterStatusId'];
             $this->parameters['filterStatusSetDate'] = empty($_REQUEST['filterStatusId']) ? null : $_REQUEST['filterStatusSetDate'];
         }
 //        $this->parameters['filterWhoOrders'] = empty($_REQUEST['filterWhoOrders']) ? null : $_REQUEST['filterWhoOrders'];
