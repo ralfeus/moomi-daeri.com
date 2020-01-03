@@ -6,8 +6,8 @@ use system\library\Config;
 use system\library\Currency;
 use system\library\DB;
 use system\library\Language;
-use system\library\Log;
-use system\library\NoCache;
+//use system\library\Log;
+//use system\library\NoCache;
 use system\library\Session;
 use system\library\WeightOld;
 
@@ -304,7 +304,8 @@ $controller->addPreAction(new Action('common/up/cc'));
 if (isset($request->get['route'])) {
 	$action = new Action($request->get['route']);
 } else {
-	$action = new Action('common/home');
+	//$action = new Action('common/home');
+	$action = new Action('product/repurchase');
 }
 
 $errorAction = new Action('error/not_found');
