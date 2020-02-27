@@ -4,7 +4,6 @@ namespace system\database;
 //use system\library\Cache;
 use system\exception\CacheNotInstalledException;
 use Exception;
-use system\library\Log;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -51,7 +50,7 @@ final class MySQL extends DBDriver {
 //                    SET CHARACTER_SET_CONNECTION=utf8;
 //                    SET SQL_MODE = ''
 //                "
-                PDO::ATTR_PERSISTENT => true,
+                PDO::ATTR_PERSISTENT => false,
 //                PDO::MYSQL_ATTR_USE_BUFFERED_QUERY
             )
         );
